@@ -14,13 +14,14 @@ class MarkerWindow : public Window
 {
 private:
     HeaderBar headerbar;
-    Button preview_button;
+    Button refresh_button;
     Paned paned;
     WebKitWebView* web_view;
     Gsv::View source_view;
 public:
     MarkerWindow();
     ~MarkerWindow();
+    void refresh_web_view();
 };
 
 #endif
