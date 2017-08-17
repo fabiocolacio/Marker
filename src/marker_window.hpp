@@ -15,6 +15,9 @@ class MarkerWindow : public Window
 private:
     HeaderBar headerbar;
     Button refresh_button;
+    Button save_button;
+    Button save_as_button;
+    Button open_button;
     Paned paned;
     WebKitWebView* web_view;
     Gsv::View source_view;
@@ -22,6 +25,9 @@ public:
     MarkerWindow();
     ~MarkerWindow();
     void refresh_web_view();
+    void save_document();
+    void save_document_as();
+    void open_document();
 };
 
 #endif

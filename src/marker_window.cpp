@@ -4,6 +4,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <gtkmm/filechooserdialog.h>
 
 #include "marker_window.hpp"
 
@@ -17,7 +18,23 @@ MarkerWindow::MarkerWindow() :
     
     headerbar.set_title("Editing: Untitled");
     headerbar.set_show_close_button(true);
+    
+    headerbar.pack_start(save_button);
+    headerbar.pack_start(save_as_button);
+    headerbar.pack_start(open_button);
     headerbar.pack_start(refresh_button);
+    
+    save_button.set_image_from_icon_name("document-save-symbolic");
+    save_button.signal_clicked().connect(
+        sigc::mem_fun(this, &MarkerWindow::save_document));
+        
+    save_as_button.set_image_from_icon_name("document-save-as-symbolic");
+    save_as_button.signal_clicked().connect(
+        sigc::mem_fun(this, &MarkerWindow::save_document_as));
+    
+    open_button.set_image_from_icon_name("document-open-symbolic");
+    open_button.signal_clicked().connect(
+        sigc::mem_fun(this, &MarkerWindow::open_document));
     
     refresh_button.set_image_from_icon_name("view-refresh-symbolic");
     refresh_button.signal_clicked().connect(
@@ -35,6 +52,33 @@ MarkerWindow::MarkerWindow() :
 }
 
 MarkerWindow::~MarkerWindow()
+{
+
+}
+
+void MarkerWindow::save_document()
+{
+
+}
+
+void MarkerWindow::save_document_as()
+{
+    FileChooserDialog dialog(*this,
+                             "Save File",
+                             FILE_CHOOSER_ACTION_SAVE);
+    dialog.set_do_overwrite_confirmation(true);
+    dialog.set_filename("Untitled.md");
+    
+    int res = dialog.run();
+    if (res == RESPONSE_ACCEPT)
+    {
+        std::string filename;
+        filename = dialog.get_filename();
+        std::cout << filename << std::endl;
+    }
+}
+
+void MarkerWindow::open_document()
 {
 
 }
