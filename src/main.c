@@ -2,25 +2,16 @@
 #include <gtksourceview/gtksource.h>
 #include <webkit2/webkit2.h>
 
+#include "marker-editor-window.h"
+
 static void
 activate(GtkApplication* app,
          gpointer        user_data)
 {
-    GtkWidget* window;
-    GtkWidget* paned;
-    GtkWidget* source_view;
-    GtkWidget* web_view;
-    window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-    paned = gtk_paned_new(GTK_ORIENTATION_HORIZONTAL);
-    source_view = gtk_source_view_new();
-    web_view = webkit_web_view_new();
-    gtk_window_set_title(GTK_WINDOW(window), "Editing: Untitled");
-    gtk_window_set_default_size(GTK_WINDOW(window), 500, 500);
-    gtk_paned_add1(GTK_PANED(paned), source_view);
-    gtk_paned_add2(GTK_PANED(paned), web_view);
-    gtk_container_add(GTK_CONTAINER(window), paned);
+    MarkerEditorWindow* window;
+    window = marker_editor_window_new();
     gtk_application_add_window(app, GTK_WINDOW(window));
-    gtk_widget_show_all(window);
+    gtk_widget_show_all(GTK_WIDGET(window));
 }
 
 int
