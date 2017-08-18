@@ -6,6 +6,7 @@
 #include <string.h>
 
 #include "marker-editor-window.h"
+#include "marker-utils.h"
 
 struct _MarkerEditorWindow
 {
@@ -19,60 +20,9 @@ struct _MarkerEditorWindow
 
 G_DEFINE_TYPE(MarkerEditorWindow, marker_editor_window, GTK_TYPE_WINDOW)
 
-static void
-open_btn_pressed(GtkWidget* widget,
-                 gpointer   user_data)
+void
+marker_editor_window_refresh_web_view(MarkerEditorWindow* self)
 {
-    GtkWidget*      dialog;
-    MarkerEditorWindow*      self;
-    GtkTextBuffer*  buffer;
-    GtkFileChooser* chooser;
-    char*           filename;
-    gint            response;
-    FILE*           fp;
-    long int        file_size;
-    char*           file_contents;
-    
-    self = user_data;
-    
-    dialog = gtk_file_chooser_dialog_new("Open File",
-                                         user_data,
-                                         GTK_FILE_CHOOSER_ACTION_OPEN,
-                                         "Cancel",
-                                         GTK_RESPONSE_CANCEL,
-                                         "Open",
-                                         GTK_RESPONSE_ACCEPT,
-                                         NULL);
-    
-    response = gtk_dialog_run(GTK_DIALOG(dialog));
-    if (response == GTK_RESPONSE_ACCEPT)
-    {
-        chooser = GTK_FILE_CHOOSER (dialog);
-        filename = gtk_file_chooser_get_filename (chooser);
-        
-        fp = fopen(filename, "r");
-        fseek(fp, 0L, SEEK_END);
-        file_size = ftell(fp);
-        rewind(fp);
-        file_contents = malloc(file_size);
-        memset(file_contents, 0, file_size);
-        fread(file_contents, file_size, 1, fp);
-        
-        buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(self->source_view));
-        gtk_text_buffer_set_text(buffer, file_contents, file_size);
-        
-        free(file_contents);
-        g_free(filename);
-    }
-    
-    gtk_widget_destroy(dialog);
-}
-
-static void
-refresh_btn_pressed(GtkWidget* widget,
-                    gpointer   user_data)
-{
-    MarkerEditorWindow* self;
     GtkTextBuffer* buffer;
     GtkTextIter start_iter;
     GtkTextIter end_iter;
@@ -81,7 +31,6 @@ refresh_btn_pressed(GtkWidget* widget,
     gchar* buffer_text;
     FILE* fp;
     
-    self = user_data;
     buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(self->source_view));
     gtk_text_buffer_get_start_iter(GTK_TEXT_BUFFER(buffer), &start_iter);
     gtk_text_buffer_get_end_iter(GTK_TEXT_BUFFER(buffer), &end_iter);
@@ -106,6 +55,85 @@ refresh_btn_pressed(GtkWidget* widget,
     strcat(uri, "/tmp.html");
     
     webkit_web_view_load_uri(WEBKIT_WEB_VIEW(self->web_view), uri);
+}
+
+void
+marker_editor_window_open_file(MarkerEditorWindow* self,
+                               char*               filepath)
+{
+    FILE*          fp;
+    long int       file_size;
+    char*          file_contents;
+    int            last_slash;
+    char*          filename;
+    GtkTextBuffer* buffer;
+
+    last_slash = marker_utils_rfind('/', filepath);
+    filename = &filepath[last_slash + 1];
+    char path_to_file[last_slash + 2];
+    memset(path_to_file, 0, last_slash + 2);
+    memcpy(path_to_file, filepath, last_slash + 1);
+    printf("filepath:%s\nslash index:%d\nfilename:%s\npath:%s\n", filepath, last_slash, filename, path_to_file);
+
+    fp = fopen(filepath, "r");
+    fseek(fp, 0L, SEEK_END);
+    file_size = ftell(fp);
+    rewind(fp);
+    file_contents = malloc(file_size);
+    memset(file_contents, 0, file_size);
+    fread(file_contents, file_size, 1, fp);
+    
+    buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(self->source_view));
+    gtk_text_buffer_set_text(buffer, file_contents, file_size);
+    gtk_header_bar_set_title(GTK_HEADER_BAR(self->header_bar), filename);
+    gtk_header_bar_set_subtitle(GTK_HEADER_BAR(self->header_bar), path_to_file);
+    marker_editor_window_refresh_web_view(self);
+    
+    free(file_contents);
+}
+
+static void
+open_btn_pressed(GtkWidget* widget,
+                 gpointer   user_data)
+{
+    GtkWidget*          dialog;
+    MarkerEditorWindow* self;
+    GtkFileChooser*     chooser;
+    char*               filename;
+    gint                response;
+    
+    self = user_data;
+    
+    dialog = gtk_file_chooser_dialog_new("Open File",
+                                         user_data,
+                                         GTK_FILE_CHOOSER_ACTION_OPEN,
+                                         "Cancel",
+                                         GTK_RESPONSE_CANCEL,
+                                         "Open",
+                                         GTK_RESPONSE_ACCEPT,
+                                         NULL);
+    
+    response = gtk_dialog_run(GTK_DIALOG(dialog));
+    if (response == GTK_RESPONSE_ACCEPT)
+    {
+        chooser = GTK_FILE_CHOOSER (dialog);
+        filename = gtk_file_chooser_get_filename (chooser);
+        
+        marker_editor_window_open_file(self, filename);
+        
+        g_free(filename);
+    }
+    
+    gtk_widget_destroy(dialog);
+}
+
+static void
+refresh_btn_pressed(GtkWidget* widget,
+                    gpointer   user_data)
+{
+    MarkerEditorWindow* self;
+    self = user_data;
+    marker_editor_window_refresh_web_view(self);
 }
 
 static void

@@ -13,7 +13,15 @@ G_DECLARE_FINAL_TYPE(MarkerEditorWindow,
                      EDITOR_WINDOW,
                      GtkWindow)
 
-MarkerEditorWindow* marker_editor_window_new(void);
+MarkerEditorWindow*
+marker_editor_window_new(void);
+
+void
+marker_editor_window_refresh_web_view(MarkerEditorWindow*);
+
+void
+marker_editor_window_open_file(MarkerEditorWindow*,
+                               char*);
 
 G_END_DECLS
 
