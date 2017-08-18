@@ -23,6 +23,10 @@ void
 marker_editor_window_open_file(MarkerEditorWindow*,
                                char*);
 
+void
+marker_editor_window_save_file_as(MarkerEditorWindow*,
+                                  char*);
+
 G_END_DECLS
 
 #endif

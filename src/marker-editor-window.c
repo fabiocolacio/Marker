@@ -73,7 +73,6 @@ marker_editor_window_open_file(MarkerEditorWindow* self,
     char path_to_file[last_slash + 2];
     memset(path_to_file, 0, last_slash + 2);
     memcpy(path_to_file, filepath, last_slash + 1);
-    printf("filepath:%s\nslash index:%d\nfilename:%s\npath:%s\n", filepath, last_slash, filename, path_to_file);
 
     fp = fopen(filepath, "r");
     fseek(fp, 0L, SEEK_END);
@@ -90,6 +89,99 @@ marker_editor_window_open_file(MarkerEditorWindow* self,
     marker_editor_window_refresh_web_view(self);
     
     free(file_contents);
+}
+
+void
+marker_editor_window_save_file_as(MarkerEditorWindow* self,
+                                  char*               filepath)
+{
+    GtkTextBuffer* buffer;
+    GtkTextIter    start_iter;
+    GtkTextIter    end_iter;
+    FILE*          fp;
+    gchar*         buffer_text;
+    size_t         buffer_size;
+    int            last_slash;
+    char*          filename;
+    
+    
+    buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(self->source_view));
+    gtk_text_buffer_get_start_iter(GTK_TEXT_BUFFER(buffer), &start_iter);
+    gtk_text_buffer_get_end_iter(GTK_TEXT_BUFFER(buffer), &end_iter);
+    
+    buffer_text = gtk_text_buffer_get_text(GTK_TEXT_BUFFER(buffer),
+                                           &start_iter,
+                                           &end_iter,
+                                           FALSE);
+    
+    last_slash = marker_utils_rfind('/', filepath);
+    filename = &filepath[last_slash + 1];
+    char path_to_file[last_slash + 2];
+    memset(path_to_file, 0, last_slash + 2);
+    memcpy(path_to_file, filepath, last_slash + 1);
+    gtk_header_bar_set_title(GTK_HEADER_BAR(self->header_bar), filename);
+    gtk_header_bar_set_subtitle(GTK_HEADER_BAR(self->header_bar), path_to_file);
+    
+    fp = fopen(filepath, "w");
+    buffer_size = strlen(buffer_text);
+    fwrite(buffer_text, sizeof(gchar), buffer_size, fp);
+    fclose(fp);
+}
+
+static void
+save_btn_pressed(GtkWidget* widget,
+                 gpointer   user_data)
+{
+    GtkWidget*          dialog;
+    MarkerEditorWindow* self;
+    GtkFileChooser*     chooser;
+    char*               filename;
+    gint                response;
+    const gchar*        title = NULL;
+    const gchar*        subtitle = NULL;
+    
+    self = user_data;
+    
+    title = gtk_header_bar_get_title(GTK_HEADER_BAR(self->header_bar));
+    subtitle = gtk_header_bar_get_subtitle(GTK_HEADER_BAR(self->header_bar));
+    
+    if (title && subtitle)
+    {
+        size_t title_len = strlen(title);
+        size_t subtitle_len = strlen(subtitle);
+        size_t filepath_len = title_len + subtitle_len + 1;
+        char filepath[filepath_len];
+        memset(filepath, 0, filepath_len);
+        strcat(filepath, subtitle);
+        strcat(filepath, title);
+        marker_editor_window_save_file_as(self, filepath);
+    }
+    else
+    {
+        dialog = gtk_file_chooser_dialog_new("Open File",
+                                             user_data,
+                                             GTK_FILE_CHOOSER_ACTION_SAVE,
+                                             "Cancel",
+                                             GTK_RESPONSE_CANCEL,
+                                             "Save",
+                                             GTK_RESPONSE_ACCEPT,
+                                             NULL);
+        
+        gtk_file_chooser_set_do_overwrite_confirmation(GTK_FILE_CHOOSER(dialog), TRUE);
+        
+        response = gtk_dialog_run(GTK_DIALOG(dialog));
+        if (response == GTK_RESPONSE_ACCEPT)
+        {
+            chooser = GTK_FILE_CHOOSER (dialog);
+            filename = gtk_file_chooser_get_filename (chooser);
+            
+            marker_editor_window_save_file_as(self, filename);
+            
+            g_free(filename);
+        }
+        
+        gtk_widget_destroy(dialog);
+    }
 }
 
 static void
@@ -141,14 +233,20 @@ marker_editor_window_init(MarkerEditorWindow* self)
 {
     GtkWidget* refresh_btn;
     GtkWidget* open_btn;
+    GtkWidget* save_btn;
     GtkSourceLanguageManager* source_language_manager;
     GtkSourceLanguage* source_language;
     GtkSourceBuffer* source_buffer;
 
     refresh_btn = gtk_button_new_from_icon_name("view-refresh-symbolic",
                                                 GTK_ICON_SIZE_SMALL_TOOLBAR);
+    gtk_widget_set_tooltip_text(refresh_btn, "refresh markdown preview");
     open_btn = gtk_button_new_from_icon_name("document-open-symbolic",
                                              GTK_ICON_SIZE_SMALL_TOOLBAR);
+    gtk_widget_set_tooltip_text(open_btn, "open a document");
+    save_btn = gtk_button_new_from_icon_name("document-save-symbolic",
+                                             GTK_ICON_SIZE_SMALL_TOOLBAR);
+    gtk_widget_set_tooltip_text(save_btn, "save the current document");
     
     source_language_manager = gtk_source_language_manager_get_default();
     source_language = gtk_source_language_manager_get_language(source_language_manager, "markdown");
@@ -161,6 +259,7 @@ marker_editor_window_init(MarkerEditorWindow* self)
     
     g_signal_connect(open_btn, "clicked", G_CALLBACK(open_btn_pressed), self);
     g_signal_connect(refresh_btn, "clicked", G_CALLBACK(refresh_btn_pressed), self);
+    g_signal_connect(save_btn, "clicked", G_CALLBACK(save_btn_pressed), self);
     
     gtk_window_set_default_size(GTK_WINDOW(self), 800, 700);
     gtk_window_set_titlebar(GTK_WINDOW(self), self->header_bar);
@@ -168,6 +267,7 @@ marker_editor_window_init(MarkerEditorWindow* self)
     gtk_header_bar_set_title(GTK_HEADER_BAR(self->header_bar), "Untitled.md");
     gtk_header_bar_set_show_close_button(GTK_HEADER_BAR(self->header_bar), TRUE);
     gtk_header_bar_pack_start(GTK_HEADER_BAR(self->header_bar), open_btn);
+    gtk_header_bar_pack_start(GTK_HEADER_BAR(self->header_bar), save_btn);
     gtk_header_bar_pack_end(GTK_HEADER_BAR(self->header_bar), refresh_btn);
     
     gtk_paned_add1(GTK_PANED(self->paned), self->source_view);
