@@ -234,6 +234,7 @@ marker_editor_window_init(MarkerEditorWindow* self)
     GtkWidget* refresh_btn;
     GtkWidget* open_btn;
     GtkWidget* save_btn;
+    GtkWidget* scrolled_window;
     GtkSourceLanguageManager* source_language_manager;
     GtkSourceLanguage* source_language;
     GtkSourceBuffer* source_buffer;
@@ -270,8 +271,12 @@ marker_editor_window_init(MarkerEditorWindow* self)
     gtk_header_bar_pack_start(GTK_HEADER_BAR(self->header_bar), save_btn);
     gtk_header_bar_pack_end(GTK_HEADER_BAR(self->header_bar), refresh_btn);
     
-    gtk_paned_add1(GTK_PANED(self->paned), self->source_view);
-    gtk_paned_add2(GTK_PANED(self->paned), self->web_view);
+    scrolled_window = gtk_scrolled_window_new(NULL, NULL);
+    gtk_container_add(GTK_CONTAINER(scrolled_window), self->source_view);
+    gtk_paned_add1(GTK_PANED(self->paned), scrolled_window);
+    scrolled_window = gtk_scrolled_window_new(NULL, NULL);
+    gtk_container_add(GTK_CONTAINER(scrolled_window), self->web_view);
+    gtk_paned_add2(GTK_PANED(self->paned), scrolled_window);
     
     gtk_container_add(GTK_CONTAINER(self), self->paned);
 }
