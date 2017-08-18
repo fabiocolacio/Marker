@@ -15,15 +15,50 @@ struct _MarkerEditorWindow
     GtkWidget* source_view;
     GtkWidget* web_view;
     GtkWidget* header_bar;
-    GtkWidget* refresh_btn;
 };
 
 G_DEFINE_TYPE(MarkerEditorWindow, marker_editor_window, GTK_TYPE_WINDOW)
 
 static void
+open_btn_pressed(GtkWidget* widget,
+                 gpointer   user_data)
+{
+    GtkWidget*      dialog;
+    GtkWidget*      self;
+    GtkFileChooser* chooser;
+    char*           filename;
+    gint            response;
+    FILE*           fp;
+    
+    self = user_data;
+    
+    dialog = gtk_file_chooser_dialog_new("Open File",
+                                         user_data,
+                                         GTK_FILE_CHOOSER_ACTION_OPEN,
+                                         "Cancel",
+                                         GTK_RESPONSE_CANCEL,
+                                         "Open",
+                                         GTK_RESPONSE_ACCEPT,
+                                         NULL);
+    
+    response = gtk_dialog_run(GTK_DIALOG(dialog));
+    if (response == GTK_RESPONSE_ACCEPT)
+    {
+        chooser = GTK_FILE_CHOOSER (dialog);
+        filename = gtk_file_chooser_get_filename (chooser);
+        
+        /* TODO: Load contents of file into source buffer */
+        
+        g_free(filename);
+    }
+    
+    gtk_widget_destroy(dialog);
+}
+
+static void
 refresh_btn_pressed(GtkWidget* widget,
                     gpointer   user_data)
-{   
+{
     MarkerEditorWindow* self;
     GtkTextBuffer* buffer;
     GtkTextIter start_iter;
@@ -62,22 +97,37 @@ refresh_btn_pressed(GtkWidget* widget,
 
 static void
 marker_editor_window_init(MarkerEditorWindow* self)
-{   
+{
+    GtkWidget* refresh_btn;
+    GtkWidget* open_btn;
+    GtkSourceLanguageManager* source_language_manager;
+    GtkSourceLanguage* source_language;
+    GtkSourceBuffer* source_buffer;
+
+    refresh_btn = gtk_button_new_from_icon_name("view-refresh-symbolic",
+                                                GTK_ICON_SIZE_SMALL_TOOLBAR);
+    open_btn = gtk_button_new_from_icon_name("document-open-symbolic",
+                                             GTK_ICON_SIZE_SMALL_TOOLBAR);
+    
+    source_language_manager = gtk_source_language_manager_get_default();
+    source_language = gtk_source_language_manager_get_language(source_language_manager, "markdown");
+    source_buffer = gtk_source_buffer_new_with_language(source_language);
+
     self->header_bar = gtk_header_bar_new();
     self->paned = gtk_paned_new(GTK_ORIENTATION_HORIZONTAL);
-    self->source_view = gtk_source_view_new();
+    self->source_view = gtk_source_view_new_with_buffer(source_buffer);
     self->web_view = webkit_web_view_new();
-    self->refresh_btn = gtk_button_new_from_icon_name("view-refresh-symbolic",
-                                                      GTK_ICON_SIZE_SMALL_TOOLBAR);
     
-    g_signal_connect(self->refresh_btn, "clicked", G_CALLBACK(refresh_btn_pressed), self);
+    g_signal_connect(open_btn, "clicked", G_CALLBACK(open_btn_pressed), self);
+    g_signal_connect(refresh_btn, "clicked", G_CALLBACK(refresh_btn_pressed), self);
     
-    gtk_window_set_default_size(GTK_WINDOW(self), 500, 500);
+    gtk_window_set_default_size(GTK_WINDOW(self), 800, 700);
     gtk_window_set_titlebar(GTK_WINDOW(self), self->header_bar);
     
     gtk_header_bar_set_title(GTK_HEADER_BAR(self->header_bar), "Untitled.md");
     gtk_header_bar_set_show_close_button(GTK_HEADER_BAR(self->header_bar), TRUE);
-    gtk_header_bar_pack_start(GTK_HEADER_BAR(self->header_bar), self->refresh_btn);
+    gtk_header_bar_pack_start(GTK_HEADER_BAR(self->header_bar), open_btn);
+    gtk_header_bar_pack_end(GTK_HEADER_BAR(self->header_bar), refresh_btn);
     
     gtk_paned_add1(GTK_PANED(self->paned), self->source_view);
     gtk_paned_add2(GTK_PANED(self->paned), self->web_view);
