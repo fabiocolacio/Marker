@@ -1,6 +1,3 @@
-#include <gtk/gtk.h>
-#include <gtksourceview/gtksource.h>
-#include <webkit2/webkit2.h>
 
 #include "marker-editor-window.h"
 
