@@ -24,11 +24,14 @@ open_btn_pressed(GtkWidget* widget,
                  gpointer   user_data)
 {
     GtkWidget*      dialog;
-    GtkWidget*      self;
+    MarkerEditorWindow*      self;
+    GtkTextBuffer*  buffer;
     GtkFileChooser* chooser;
     char*           filename;
     gint            response;
     FILE*           fp;
+    long int        file_size;
+    char*           file_contents;
     
     self = user_data;
     
@@ -47,8 +50,18 @@ open_btn_pressed(GtkWidget* widget,
         chooser = GTK_FILE_CHOOSER (dialog);
         filename = gtk_file_chooser_get_filename (chooser);
         
-        /* TODO: Load contents of file into source buffer */
+        fp = fopen(filename, "r");
+        fseek(fp, 0L, SEEK_END);
+        file_size = ftell(fp);
+        rewind(fp);
+        file_contents = malloc(file_size);
+        memset(file_contents, 0, file_size);
+        fread(file_contents, file_size, 1, fp);
         
+        buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(self->source_view));
+        gtk_text_buffer_set_text(buffer, file_contents, file_size);
+        
+        free(file_contents);
         g_free(filename);
     }
     
