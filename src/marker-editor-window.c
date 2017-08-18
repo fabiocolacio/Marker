@@ -16,9 +16,32 @@ struct _MarkerEditorWindow
     GtkWidget* source_view;
     GtkWidget* web_view;
     GtkWidget* header_bar;
+    
+    char* file_name;
+    char* file_location;
 };
 
 G_DEFINE_TYPE(MarkerEditorWindow, marker_editor_window, GTK_TYPE_WINDOW)
+
+void
+marker_editor_window_set_file_name(MarkerEditorWindow* self,
+                                   char*               filepath)
+{
+    free(self->file_name);
+    free(self->file_location);
+    
+    int last_slash = marker_utils_rfind('/', filepath);
+    
+    self->file_location = malloc(last_slash + 2);
+    memset(self->file_location, 0, last_slash + 2);
+    memcpy(self->file_location, filepath, last_slash + 1);
+    
+    char* name = &filepath[last_slash + 1];
+    int name_len = strlen(name);
+    self->file_name = malloc(name_len + 1);
+    memset(self->file_name, 0, name_len + 1);
+    memcpy(self->file_name, name, name_len);
+}
 
 void
 marker_editor_window_refresh_web_view(MarkerEditorWindow* self)
@@ -68,11 +91,7 @@ marker_editor_window_open_file(MarkerEditorWindow* self,
     char*          filename;
     GtkTextBuffer* buffer;
 
-    last_slash = marker_utils_rfind('/', filepath);
-    filename = &filepath[last_slash + 1];
-    char path_to_file[last_slash + 2];
-    memset(path_to_file, 0, last_slash + 2);
-    memcpy(path_to_file, filepath, last_slash + 1);
+    marker_editor_window_set_file_name(self, filepath);
 
     fp = fopen(filepath, "r");
     fseek(fp, 0L, SEEK_END);
@@ -84,8 +103,8 @@ marker_editor_window_open_file(MarkerEditorWindow* self,
     
     buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(self->source_view));
     gtk_text_buffer_set_text(buffer, file_contents, file_size);
-    gtk_header_bar_set_title(GTK_HEADER_BAR(self->header_bar), filename);
-    gtk_header_bar_set_subtitle(GTK_HEADER_BAR(self->header_bar), path_to_file);
+    gtk_header_bar_set_title(GTK_HEADER_BAR(self->header_bar), self->file_name);
+    gtk_header_bar_set_subtitle(GTK_HEADER_BAR(self->header_bar), self->file_location);
     marker_editor_window_refresh_web_view(self);
     
     free(file_contents);
@@ -104,7 +123,6 @@ marker_editor_window_save_file_as(MarkerEditorWindow* self,
     int            last_slash;
     char*          filename;
     
-    
     buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(self->source_view));
     gtk_text_buffer_get_start_iter(GTK_TEXT_BUFFER(buffer), &start_iter);
     gtk_text_buffer_get_end_iter(GTK_TEXT_BUFFER(buffer), &end_iter);
@@ -114,13 +132,9 @@ marker_editor_window_save_file_as(MarkerEditorWindow* self,
                                            &end_iter,
                                            FALSE);
     
-    last_slash = marker_utils_rfind('/', filepath);
-    filename = &filepath[last_slash + 1];
-    char path_to_file[last_slash + 2];
-    memset(path_to_file, 0, last_slash + 2);
-    memcpy(path_to_file, filepath, last_slash + 1);
-    gtk_header_bar_set_title(GTK_HEADER_BAR(self->header_bar), filename);
-    gtk_header_bar_set_subtitle(GTK_HEADER_BAR(self->header_bar), path_to_file);
+    marker_editor_window_set_file_name(self, filepath);
+    gtk_header_bar_set_title(GTK_HEADER_BAR(self->header_bar), self->file_name);
+    gtk_header_bar_set_subtitle(GTK_HEADER_BAR(self->header_bar), self->file_location);
     
     fp = fopen(filepath, "w");
     buffer_size = strlen(buffer_text);
@@ -142,18 +156,15 @@ save_btn_pressed(GtkWidget* widget,
     
     self = user_data;
     
-    title = gtk_header_bar_get_title(GTK_HEADER_BAR(self->header_bar));
-    subtitle = gtk_header_bar_get_subtitle(GTK_HEADER_BAR(self->header_bar));
-    
-    if (title && subtitle)
+    if (self->file_name && self->file_location)
     {
-        size_t title_len = strlen(title);
-        size_t subtitle_len = strlen(subtitle);
-        size_t filepath_len = title_len + subtitle_len + 1;
+        size_t name_len = strlen(self->file_name);
+        size_t location_len = strlen(self->file_location);
+        size_t filepath_len = name_len + location_len + 1;
         char filepath[filepath_len];
         memset(filepath, 0, filepath_len);
-        strcat(filepath, subtitle);
-        strcat(filepath, title);
+        strcat(filepath, self->file_location);
+        strcat(filepath, self->file_name);
         marker_editor_window_save_file_as(self, filepath);
     }
     else
@@ -229,8 +240,18 @@ refresh_btn_pressed(GtkWidget* widget,
 }
 
 static void
+source_buffer_changed(GtkTextBuffer* buffer,
+                      gpointer       user_data)
+{
+    MarkerEditorWindow* self = user_data;
+}
+
+static void
 marker_editor_window_init(MarkerEditorWindow* self)
 {
+    self->file_name = NULL;
+    self->file_location = NULL;
+
     GtkWidget* refresh_btn;
     GtkWidget* open_btn;
     GtkWidget* save_btn;
@@ -252,6 +273,7 @@ marker_editor_window_init(MarkerEditorWindow* self)
     source_language_manager = gtk_source_language_manager_get_default();
     source_language = gtk_source_language_manager_get_language(source_language_manager, "markdown");
     source_buffer = gtk_source_buffer_new_with_language(source_language);
+    g_signal_connect(source_buffer, "changed", G_CALLBACK(source_buffer_changed), self);
 
     self->header_bar = gtk_header_bar_new();
     self->paned = gtk_paned_new(GTK_ORIENTATION_HORIZONTAL);

@@ -26,6 +26,10 @@ marker_editor_window_open_file(MarkerEditorWindow*,
 void
 marker_editor_window_save_file_as(MarkerEditorWindow*,
                                   char*);
+                                  
+void
+marker_editor_window_set_file_name(MarkerEditorWindow*,
+                                   char*);
 
 G_END_DECLS
 
