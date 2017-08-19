@@ -17,7 +17,6 @@ struct _MarkerEditorWindow
     GtkWidget* web_view;
     GtkWidget* header_bar;
     
-    double     last_refresh_seconds;
     gboolean   unsaved_changes;
     char*      file_name;
     char*      file_location;
@@ -81,8 +80,6 @@ marker_editor_window_refresh_web_view(MarkerEditorWindow* self)
     strcat(uri, "/tmp.html");
     
     webkit_web_view_load_uri(WEBKIT_WEB_VIEW(self->web_view), uri);
-    
-    self->last_refresh_seconds = marker_utils_get_current_time_seconds();
 }
 
 void
@@ -273,13 +270,14 @@ source_buffer_changed(GtkTextBuffer* buffer,
             gtk_header_bar_set_has_subtitle(GTK_HEADER_BAR(self->header_bar), FALSE);
         }
     }
-    
-    // TODO: Find a way to stagger the execution of the next line
-    double c_time = marker_utils_get_current_time_seconds();
-    if (c_time - self->last_refresh_seconds > 0.25)
-    {
-        marker_editor_window_refresh_web_view(self);
-    }
+}
+
+static gboolean
+auto_refresh(gpointer user_data)
+{
+    MarkerEditorWindow* self = user_data;
+    marker_editor_window_refresh_web_view(self);
+    return TRUE;
 }
 
 static void
@@ -288,7 +286,6 @@ marker_editor_window_init(MarkerEditorWindow* self)
     self->file_name = NULL;
     self->file_location = NULL;
     self->unsaved_changes = FALSE;
-    self->last_refresh_seconds = 0.0;
 
     GtkWidget* refresh_btn;
     GtkWidget* open_btn;
@@ -339,6 +336,8 @@ marker_editor_window_init(MarkerEditorWindow* self)
     gtk_paned_add2(GTK_PANED(self->paned), scrolled_window);
     
     gtk_container_add(GTK_CONTAINER(self), self->paned);
+    
+    g_timeout_add_seconds(1, auto_refresh, self);
 }
 
 static void

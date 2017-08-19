@@ -19,7 +19,7 @@ marker_utils_rfind(char query, char* str)
     return pos;
 }
 
-double
+int
 marker_utils_get_current_time_seconds()
 {
     time_t timer;
