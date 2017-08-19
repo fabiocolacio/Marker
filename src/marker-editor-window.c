@@ -17,8 +17,10 @@ struct _MarkerEditorWindow
     GtkWidget* web_view;
     GtkWidget* header_bar;
     
-    char* file_name;
-    char* file_location;
+    double     last_refresh_seconds;
+    gboolean   unsaved_changes;
+    char*      file_name;
+    char*      file_location;
 };
 
 G_DEFINE_TYPE(MarkerEditorWindow, marker_editor_window, GTK_TYPE_WINDOW)
@@ -46,7 +48,7 @@ marker_editor_window_set_file_name(MarkerEditorWindow* self,
 void
 marker_editor_window_refresh_web_view(MarkerEditorWindow* self)
 {
-    GtkTextBuffer* buffer;
+    GtkTextBuffer* buffer = NULL;
     GtkTextIter start_iter;
     GtkTextIter end_iter;
     char uri[50];
@@ -55,6 +57,7 @@ marker_editor_window_refresh_web_view(MarkerEditorWindow* self)
     FILE* fp;
     
     buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(self->source_view));
+    
     gtk_text_buffer_get_start_iter(GTK_TEXT_BUFFER(buffer), &start_iter);
     gtk_text_buffer_get_end_iter(GTK_TEXT_BUFFER(buffer), &end_iter);
     
@@ -78,6 +81,8 @@ marker_editor_window_refresh_web_view(MarkerEditorWindow* self)
     strcat(uri, "/tmp.html");
     
     webkit_web_view_load_uri(WEBKIT_WEB_VIEW(self->web_view), uri);
+    
+    self->last_refresh_seconds = marker_utils_get_current_time_seconds();
 }
 
 void
@@ -90,6 +95,8 @@ marker_editor_window_open_file(MarkerEditorWindow* self,
     int            last_slash;
     char*          filename;
     GtkTextBuffer* buffer;
+
+    self->unsaved_changes = FALSE;
 
     marker_editor_window_set_file_name(self, filepath);
 
@@ -122,6 +129,8 @@ marker_editor_window_save_file_as(MarkerEditorWindow* self,
     size_t         buffer_size;
     int            last_slash;
     char*          filename;
+    
+    self->unsaved_changes = FALSE;
     
     buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(self->source_view));
     gtk_text_buffer_get_start_iter(GTK_TEXT_BUFFER(buffer), &start_iter);
@@ -244,12 +253,33 @@ source_buffer_changed(GtkTextBuffer* buffer,
                       gpointer       user_data)
 {
     MarkerEditorWindow* self = user_data;
-    int len = strlen(self->file_name);
-    char title[len + 2];
-    memset(title, 0, len + 2);
-    strcat(title, "*");
-    strcat(title, self->file_name);
-    gtk_header_bar_set_title(GTK_HEADER_BAR(self->header_bar), title);
+    
+    if (!self->unsaved_changes)
+    {
+        self->unsaved_changes = TRUE;
+        
+        if (self->file_name)
+        {
+            int len = strlen(self->file_name);
+            char title[len + 2];
+            memset(title, 0, len + 2);
+            strcat(title, "*");
+            strcat(title, self->file_name);
+            gtk_header_bar_set_title(GTK_HEADER_BAR(self->header_bar), title);
+        }
+        else
+        {
+            gtk_header_bar_set_title(GTK_HEADER_BAR(self->header_bar), "*Untitled.md");
+            gtk_header_bar_set_has_subtitle(GTK_HEADER_BAR(self->header_bar), FALSE);
+        }
+    }
+    
+    // TODO: Find a way to stagger the execution of the next line
+    double c_time = marker_utils_get_current_time_seconds();
+    if (c_time - self->last_refresh_seconds > 0.25)
+    {
+        marker_editor_window_refresh_web_view(self);
+    }
 }
 
 static void
@@ -257,6 +287,8 @@ marker_editor_window_init(MarkerEditorWindow* self)
 {
     self->file_name = NULL;
     self->file_location = NULL;
+    self->unsaved_changes = FALSE;
+    self->last_refresh_seconds = 0.0;
 
     GtkWidget* refresh_btn;
     GtkWidget* open_btn;

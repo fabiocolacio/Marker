@@ -1,3 +1,4 @@
+#include <time.h>
 
 #include "marker-utils.h"
 
@@ -16,5 +17,22 @@ marker_utils_rfind(char query, char* str)
         ch = str[++index];
     }
     return pos;
+}
+
+double
+marker_utils_get_current_time_seconds()
+{
+    time_t timer;
+    struct tm y2k = {0};
+    double seconds;
+
+    y2k.tm_hour = 0;   y2k.tm_min = 0; y2k.tm_sec = 0;
+    y2k.tm_year = 100; y2k.tm_mon = 0; y2k.tm_mday = 1;
+
+    time(&timer);  /* get current time; same as: timer = time(NULL)  */
+
+    seconds = difftime(timer,mktime(&y2k));
+    
+    return seconds;
 }
 
