@@ -244,6 +244,12 @@ source_buffer_changed(GtkTextBuffer* buffer,
                       gpointer       user_data)
 {
     MarkerEditorWindow* self = user_data;
+    int len = strlen(self->file_name);
+    char title[len + 2];
+    memset(title, 0, len + 2);
+    strcat(title, "*");
+    strcat(title, self->file_name);
+    gtk_header_bar_set_title(GTK_HEADER_BAR(self->header_bar), title);
 }
 
 static void
