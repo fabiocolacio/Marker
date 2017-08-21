@@ -19,6 +19,7 @@
   <!-- Popover Menu -->
   <object class="GtkPopoverMenu" id="menu_popover">
     <property name="modal">True</property>
+    <property name="border-width">6</property>
     <child>
       <object class="GtkBox">
         <property name="visible">True</property>
@@ -96,7 +97,7 @@
       </object>
     </child>
     <child>
-      <object class="GtkScrolledWindow">
+      <object class="GtkScrolledWindow" id="web_view_scroll">
         <child>
           <object class="WebkitWebView" id="web_view">
           </object>

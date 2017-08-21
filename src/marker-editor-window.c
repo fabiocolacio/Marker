@@ -17,6 +17,8 @@ struct _MarkerEditorWindow
     GtkWidget* web_view;
     GtkWidget* popover;
     
+    gboolean   refresh_scheduled;
+    
     gboolean   unsaved_changes;
     char*      file_name;
     char*      file_location;
@@ -259,6 +261,15 @@ refresh_btn_pressed(GtkWidget* widget,
     marker_editor_window_refresh_web_view(self);
 }
 
+static gboolean
+auto_refresh(gpointer user_data)
+{
+    MarkerEditorWindow* self = user_data;
+    marker_editor_window_refresh_web_view(self);
+    self->refresh_scheduled = FALSE;
+    return FALSE;
+}
+
 static void
 source_buffer_changed(GtkTextBuffer* buffer,
                       gpointer       user_data)
@@ -283,14 +294,12 @@ source_buffer_changed(GtkTextBuffer* buffer,
             gtk_header_bar_set_has_subtitle(GTK_HEADER_BAR(self->header_bar), FALSE);
         }
     }
-}
-
-static gboolean
-auto_refresh(gpointer user_data)
-{
-    MarkerEditorWindow* self = user_data;
-    marker_editor_window_refresh_web_view(self);
-    return TRUE;
+    
+    if (!self->refresh_scheduled)
+    {
+        g_timeout_add_seconds(1, auto_refresh, self);
+        self->refresh_scheduled = TRUE;
+    }
 }
 
 static void
@@ -313,6 +322,7 @@ marker_editor_window_init(MarkerEditorWindow* self)
     self->file_name = NULL;
     self->file_location = NULL;
     self->unsaved_changes = FALSE;
+    self->refresh_scheduled = FALSE;
     
     GError* err = NULL;
     GtkBuilder* builder = gtk_builder_new();
@@ -353,8 +363,6 @@ marker_editor_window_init(MarkerEditorWindow* self)
     gtk_builder_add_callback_symbol(builder, "refresh_btn_pressed", G_CALLBACK(refresh_btn_pressed));
     gtk_builder_add_callback_symbol(builder, "menu_btn_toggled", G_CALLBACK(menu_btn_toggled));
     gtk_builder_connect_signals(builder, self);
-    
-    g_timeout_add_seconds(1, auto_refresh, self);
 }
 
 static void
