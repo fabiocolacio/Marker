@@ -15,6 +15,7 @@ struct _MarkerEditorWindow
     GtkWidget* header_bar;
     GtkWidget* source_view;
     GtkWidget* web_view;
+    GtkWidget* popover;
     
     gboolean   unsaved_changes;
     char*      file_name;
@@ -282,10 +283,10 @@ auto_refresh(gpointer user_data)
 }
 
 static void
-menu_btn_toggled(GtkToggleButton* button,
-                 GtkWidget*       popover)
+menu_btn_toggled(GtkToggleButton*    button,
+                 MarkerEditorWindow* self)
 {
-    gtk_widget_set_visible(popover, gtk_toggle_button_get_active(button));
+    gtk_widget_set_visible(self->popover, gtk_toggle_button_get_active(button));
 }
 
 static void
@@ -316,20 +317,29 @@ marker_editor_window_init(MarkerEditorWindow* self)
     GtkSourceBuffer* source_buffer = gtk_source_buffer_new_with_language(source_language);
     g_signal_connect(source_buffer, "changed", G_CALLBACK(source_buffer_changed), self);
 
+    GtkWidget* widget;
+
     self->header_bar = GTK_WIDGET(gtk_builder_get_object(builder, "header_bar"));
     self->source_view = GTK_WIDGET(gtk_builder_get_object(builder, "source_view"));
     self->web_view = GTK_WIDGET(gtk_builder_get_object(builder, "web_view"));
     
-    GtkWidget* widget;
+    gtk_text_view_set_buffer(GTK_TEXT_VIEW(self->source_view), GTK_TEXT_BUFFER(source_buffer));
+    
+    self->popover = GTK_WIDGET(gtk_builder_get_object(builder, "menu_popover"));
+    widget = GTK_WIDGET(gtk_builder_get_object(builder, "menu_toggler"));
+    gtk_popover_set_relative_to(GTK_POPOVER(self->popover), widget);
+    g_signal_connect(self->popover, "closed", G_CALLBACK(menu_popover_closed), widget);
+    
     widget = GTK_WIDGET(gtk_builder_get_object(builder, "editor"));
     gtk_container_add(GTK_CONTAINER(self), widget);
     gtk_window_set_titlebar(GTK_WINDOW(self), self->header_bar);
     
-    gtk_window_set_default_size(GTK_WINDOW(self), 800, 400);
+    gtk_window_set_default_size(GTK_WINDOW(self), 800, 500);
     
     gtk_builder_add_callback_symbol(builder, "open_btn_pressed", G_CALLBACK(open_btn_pressed));
     gtk_builder_add_callback_symbol(builder, "save_btn_pressed", G_CALLBACK(save_btn_pressed));
     gtk_builder_add_callback_symbol(builder, "refresh_btn_pressed", G_CALLBACK(refresh_btn_pressed));
+    gtk_builder_add_callback_symbol(builder, "menu_btn_toggled", G_CALLBACK(menu_btn_toggled));
     gtk_builder_connect_signals(builder, self);
     
     g_timeout_add_seconds(1, auto_refresh, self);
