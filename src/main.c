@@ -5,8 +5,11 @@ static void
 activate(GtkApplication* app,
          gpointer        user_data)
 {
-    MarkerEditorWindow* window;
-    window = marker_editor_window_new();
+    GtkBuilder* builder = gtk_builder_new_from_resource("/com/github/fabiocolacio/marker/marker-app-menu.ui");
+    GMenuModel* app_menu = G_MENU_MODEL(gtk_builder_get_object(builder, "app_menu"));
+    gtk_application_set_app_menu(GTK_APPLICATION(app), app_menu);
+
+    MarkerEditorWindow* window = marker_editor_window_new();
     gtk_application_add_window(app, GTK_WINDOW(window));
     gtk_widget_show_all(GTK_WIDGET(window));
 }

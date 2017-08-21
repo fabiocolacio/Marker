@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <!-- interface-requires gtk+ 3.0 -->
+  <menu id="app_menu">
+    <section>
+      <item>
+        <attribute name="label">Preferences</attribute>
+      </item>
+    </section>
+    <section>
+      <item>
+        <attribute name="label">About</attribute>
+      </item>
+      <item>
+        <attribute name="label">Quit</attribute>
+      </item>
+    </section>
+  </menu>
+</interface>

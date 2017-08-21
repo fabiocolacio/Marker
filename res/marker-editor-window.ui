@@ -83,6 +83,9 @@
   
   <!-- Editor / Web Preview -->
   <object class="GtkPaned" id="editor">
+    <property name="border-width">8</property>
+    <property name="position">400</property>
+    <property name="wide-handle">True</property>
     <child>
       <object class="GtkScrolledWindow">
         <child>
