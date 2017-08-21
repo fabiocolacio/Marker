@@ -297,6 +297,8 @@ menu_popover_closed(GtkPopover*      popover,
 static void
 marker_editor_window_init(MarkerEditorWindow* self)
 {
+
+    /*
     self->file_name = NULL;
     self->file_location = NULL;
     self->unsaved_changes = FALSE;
@@ -310,9 +312,21 @@ marker_editor_window_init(MarkerEditorWindow* self)
     GtkWidget* menu_popover;
     GtkWidget* popover_box;
     GtkWidget* widget;
+    GtkBuilder* builder;
+    GError*     err;
     GtkSourceLanguageManager* source_language_manager;
     GtkSourceLanguage* source_language;
     GtkSourceBuffer* source_buffer;
+
+    
+
+    err = NULL;
+    builder = gtk_builder_new();
+    gtk_builder_add_from_file(builder, "../src/ui/marker-editor-window.ui", &err);
+    if (err)
+    {
+        puts(err->message);
+    }
 
     refresh_btn = gtk_button_new_from_icon_name("view-refresh-symbolic",
                                                 GTK_ICON_SIZE_SMALL_TOOLBAR);
@@ -373,12 +387,15 @@ marker_editor_window_init(MarkerEditorWindow* self)
     gtk_container_add(GTK_CONTAINER(self), self->paned);
     
     g_timeout_add_seconds(1, auto_refresh, self);
+    */
+    
+    gtk_widget_init_template(GTK_WIDGET(self));
 }
 
 static void
 marker_editor_window_class_init(MarkerEditorWindowClass* class)
 {
-
+    gtk_widget_class_set_template_from_resource(GTK_WIDGET_CLASS(class),"/com/github/fabiocolacio/marker/marker-editor-window.ui");
 }
 
 MarkerEditorWindow*
