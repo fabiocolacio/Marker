@@ -2,5 +2,6 @@
 <gresources>
     <gresource prefix="/com/github/fabiocolacio/marker">
         <file preprocess="xml-stripblanks">marker-editor-window.ui</file>
+        <file preprocess="xml-stripblanks">marker-app-menu.ui</file>
     </gresource>
 </gresources>
