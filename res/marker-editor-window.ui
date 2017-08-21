@@ -27,6 +27,7 @@
           <object class="GtkModelButton">
             <property name="visible">True</property>
             <property name="text">Save As...</property>
+            <signal name="clicked" handler="save_as_btn_pressed" swapped="no" />
           </object>
         </child>
         <child>

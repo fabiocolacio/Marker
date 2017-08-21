@@ -148,6 +148,42 @@ marker_editor_window_save_file_as(MarkerEditorWindow* self,
     fclose(fp);
 }
 
+static void save_as_btn_pressed(GtkWidget* widget,
+                                gpointer   user_data)
+{
+    GtkWidget*          dialog;
+    MarkerEditorWindow* self;
+    GtkFileChooser*     chooser;
+    char*               filename;
+    gint                response;
+    
+    self = user_data;
+    
+    dialog = gtk_file_chooser_dialog_new("Open File",
+                                         user_data,
+                                         GTK_FILE_CHOOSER_ACTION_SAVE,
+                                         "Cancel",
+                                         GTK_RESPONSE_CANCEL,
+                                         "Save",
+                                         GTK_RESPONSE_ACCEPT,
+                                         NULL);
+        
+    gtk_file_chooser_set_do_overwrite_confirmation(GTK_FILE_CHOOSER(dialog), TRUE);
+    
+    response = gtk_dialog_run(GTK_DIALOG(dialog));
+    if (response == GTK_RESPONSE_ACCEPT)
+    {
+        chooser = GTK_FILE_CHOOSER (dialog);
+        filename = gtk_file_chooser_get_filename (chooser);
+        
+        marker_editor_window_save_file_as(self, filename);
+        
+        g_free(filename);
+    }
+    
+    gtk_widget_destroy(dialog);
+}
+
 static void
 save_btn_pressed(GtkWidget* widget,
                  gpointer   user_data)
@@ -175,29 +211,7 @@ save_btn_pressed(GtkWidget* widget,
     }
     else
     {
-        dialog = gtk_file_chooser_dialog_new("Open File",
-                                             user_data,
-                                             GTK_FILE_CHOOSER_ACTION_SAVE,
-                                             "Cancel",
-                                             GTK_RESPONSE_CANCEL,
-                                             "Save",
-                                             GTK_RESPONSE_ACCEPT,
-                                             NULL);
-        
-        gtk_file_chooser_set_do_overwrite_confirmation(GTK_FILE_CHOOSER(dialog), TRUE);
-        
-        response = gtk_dialog_run(GTK_DIALOG(dialog));
-        if (response == GTK_RESPONSE_ACCEPT)
-        {
-            chooser = GTK_FILE_CHOOSER (dialog);
-            filename = gtk_file_chooser_get_filename (chooser);
-            
-            marker_editor_window_save_file_as(self, filename);
-            
-            g_free(filename);
-        }
-        
-        gtk_widget_destroy(dialog);
+        save_as_btn_pressed(widget, self);
     }
 }
 
@@ -335,6 +349,7 @@ marker_editor_window_init(MarkerEditorWindow* self)
     
     gtk_builder_add_callback_symbol(builder, "open_btn_pressed", G_CALLBACK(open_btn_pressed));
     gtk_builder_add_callback_symbol(builder, "save_btn_pressed", G_CALLBACK(save_btn_pressed));
+    gtk_builder_add_callback_symbol(builder, "save_as_btn_pressed", G_CALLBACK(save_as_btn_pressed));
     gtk_builder_add_callback_symbol(builder, "refresh_btn_pressed", G_CALLBACK(refresh_btn_pressed));
     gtk_builder_add_callback_symbol(builder, "menu_btn_toggled", G_CALLBACK(menu_btn_toggled));
     gtk_builder_connect_signals(builder, self);
