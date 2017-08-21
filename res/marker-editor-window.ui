@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <requires lib="gtk+" version="3.10"/>
+  <requires lib="gtk+" version="3.16"/>
+  
+  <!-- Image Icons -->
   <object class="GtkImage" id="refresh">
     <property name="icon_name">view-refresh-symbolic</property>
     <property name="icon_size">2</property>
@@ -13,60 +15,94 @@
     <property name="icon_name">open-menu-symbolic</property>
     <property name="icon_size">2</property>
   </object>
-  <template class="MarkerEditorWindow" parent="GtkWindow">
-    <property name="default_width">600</property>
-    <property name="default_height">400</property>
-    <child type="titlebar">
-      <object class="GtkHeaderBar">
-        <property name="title">Untitled.md</property>
-        <property name="show_close_button">True</property>
+  
+  <!-- Popover Menu -->
+  <object class="GtkPopoverMenu" id="menu_popover">
+    <child>
+      <object class="GtkBox">
+        <property name="orientation">vertical</property>
         <child>
-          <object class="GtkButton">
-            <property name="receives_default">False</property>
-            <property name="label">Open...</property>
+          <object class="GtkModelButton">
+            <property name="text">Open...</property>
+            <signal name="clicked" handler="open_btn_pressed" swapped="no"/>
           </object>
-          <packing>
-            <property name="pack_type">start</property>
-          </packing>
         </child>
         <child>
-          <object class="GtkButton">
-            <property name="receives_default">False</property>
-            <property name="label">Save</property>
+          <object class="GtkModelButton">
+            <property name="text">Save As...</property>
           </object>
-          <packing>
-            <property name="pack_type">start</property>
-          </packing>
         </child>
         <child>
-          <object class="GtkToggleButton">
-            <property name="image">open-menu</property>
+          <object class="GtkModelButton">
+            <property name="text">Save</property>
           </object>
-          <packing>
-            <property name="pack_type">end</property>
-          </packing>
         </child>
         <child>
-          <object class="GtkButton">
-            <property name="image">refresh</property>
+          <object class="GtkModelButton">
+            <property name="text">New</property>
           </object>
-          <packing>
-            <property name="pack_type">end</property>
-          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
+  
+  <object class="GtkHeaderBar" id="header_bar">
+    <property name="title">Untitled.md</property>
+    <property name="show_close_button">True</property>
+    <child>
+      <object class="GtkButton">
+        <property name="label">Open...</property>
+        <signal name="clicked" handler="open_btn_pressed" swapped="no"/>
+      </object>
+      <packing>
+        <property name="pack_type">start</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkButton">
+        <property name="label">Save</property>
+        <signal name="clicked" handler="save_btn_pressed" swapped="no"/>
+      </object>
+      <packing>
+        <property name="pack_type">start</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkToggleButton">
+        <property name="image">open-menu</property>
+      </object>
+      <packing>
+        <property name="pack_type">end</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkButton">
+        <property name="image">refresh</property>
+        <signal name="clicked" handler="refresh_btn_pressed" swapped="no"/>
+      </object>
+      <packing>
+        <property name="pack_type">end</property>
+      </packing>
+    </child>
+  </object>
+  
+  <object class="GtkPaned" id="editor">
+    <child>
+      <object class="GtkScrolledWindow">
+        <child>
+          <object class="GtkSourceView" id="source_view">
+          </object>
         </child>
       </object>
     </child>
     <child>
-      <object class="GtkPaned">
+      <object class="GtkScrolledWindow">
         <child>
-          <object class="GtkSourceView">
-          </object>
-        </child>
-        <child>
-          <object class="WebkitWebView">
+          <object class="WebkitWebView" id="web_view">
           </object>
         </child>
       </object>
     </child>
-  </template>
+  </object>
+      
 </interface>
