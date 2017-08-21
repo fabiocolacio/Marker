@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+    <gresource prefix="/com/github/fabiocolacio/marker">
+        <file preprocess="xml-stripblanks">marker-editor-window.ui</file>
+    </gresource>
+</gresources>

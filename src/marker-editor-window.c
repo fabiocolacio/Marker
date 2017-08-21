@@ -12,10 +12,10 @@ struct _MarkerEditorWindow
 {
     GtkWindow parent_instance;
     
-    GtkWidget* paned;
+    GtkWidget* header_bar;
     GtkWidget* source_view;
     GtkWidget* web_view;
-    GtkWidget* header_bar;
+    GtkWidget* popover;
     
     gboolean   unsaved_changes;
     char*      file_name;
@@ -250,7 +250,6 @@ source_buffer_changed(GtkTextBuffer* buffer,
                       gpointer       user_data)
 {
     MarkerEditorWindow* self = user_data;
-    
     if (!self->unsaved_changes)
     {
         self->unsaved_changes = TRUE;
@@ -281,10 +280,10 @@ auto_refresh(gpointer user_data)
 }
 
 static void
-menu_btn_toggled(GtkToggleButton* button,
-                 GtkWidget*       popover)
+menu_btn_toggled(GtkToggleButton*    button,
+                 MarkerEditorWindow* self)
 {
-    gtk_widget_set_visible(popover, gtk_toggle_button_get_active(button));
+    gtk_widget_set_visible(self->popover, gtk_toggle_button_get_active(button));
 }
 
 static void
@@ -300,77 +299,45 @@ marker_editor_window_init(MarkerEditorWindow* self)
     self->file_name = NULL;
     self->file_location = NULL;
     self->unsaved_changes = FALSE;
+    
+    GError* err = NULL;
+    GtkBuilder* builder = gtk_builder_new();
+    gtk_builder_add_from_resource(builder, "/com/github/fabiocolacio/marker/marker-editor-window.ui", &err);
+    if (err)
+    {
+        puts(err->message);
+        exit(-1);
+    }
+    
+    GtkSourceLanguageManager* source_language_manager = gtk_source_language_manager_get_default();
+    GtkSourceLanguage* source_language = gtk_source_language_manager_get_language(source_language_manager, "markdown");
+    GtkSourceBuffer* source_buffer = gtk_source_buffer_new_with_language(source_language);
 
-    GtkWidget* refresh_btn;
-    GtkWidget* open_btn;
-    GtkWidget* save_btn;
-    GtkWidget* menu_btn;
-    GtkWidget* scrolled_window;
-    GtkWidget* icon;
-    GtkWidget* menu_popover;
-    GtkWidget* popover_box;
     GtkWidget* widget;
-    GtkSourceLanguageManager* source_language_manager;
-    GtkSourceLanguage* source_language;
-    GtkSourceBuffer* source_buffer;
 
-    refresh_btn = gtk_button_new_from_icon_name("view-refresh-symbolic",
-                                                GTK_ICON_SIZE_SMALL_TOOLBAR);
-    gtk_widget_set_tooltip_text(refresh_btn, "refresh markdown preview");
-    open_btn = gtk_button_new_from_icon_name("document-open-symbolic",
-                                             GTK_ICON_SIZE_SMALL_TOOLBAR);
-    gtk_widget_set_tooltip_text(open_btn, "open a document");
-    save_btn = gtk_button_new_from_icon_name("document-save-symbolic",
-                                             GTK_ICON_SIZE_SMALL_TOOLBAR);
-    gtk_widget_set_tooltip_text(save_btn, "save the current document");
-    menu_btn = gtk_toggle_button_new();
-    icon = gtk_image_new_from_icon_name("open-menu-symbolic",
-                                        GTK_ICON_SIZE_SMALL_TOOLBAR);
-    gtk_button_set_image(GTK_BUTTON(menu_btn), icon);
+    self->header_bar = GTK_WIDGET(gtk_builder_get_object(builder, "header_bar"));
+    self->source_view = GTK_WIDGET(gtk_builder_get_object(builder, "source_view"));
+    self->web_view = GTK_WIDGET(gtk_builder_get_object(builder, "web_view"));
     
-    menu_popover = gtk_popover_new(menu_btn);
-    gtk_popover_set_modal(GTK_POPOVER(menu_popover), TRUE);
-    gtk_popover_set_position(GTK_POPOVER(menu_popover), GTK_POS_BOTTOM);
-    widget = gtk_menu_item_new_with_label("Open...");
-    popover_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 6);
-    gtk_container_add(GTK_CONTAINER(menu_popover), popover_box);
-    gtk_box_pack_start(GTK_BOX(popover_box), widget, TRUE, TRUE, 10);
-    gtk_widget_show_all(GTK_WIDGET(popover_box));
-    g_signal_connect(menu_btn, "toggled", G_CALLBACK(menu_btn_toggled), menu_popover);
-    g_signal_connect(menu_popover, "closed", G_CALLBACK(menu_popover_closed), menu_btn);
-    
-    source_language_manager = gtk_source_language_manager_get_default();
-    source_language = gtk_source_language_manager_get_language(source_language_manager, "markdown");
-    source_buffer = gtk_source_buffer_new_with_language(source_language);
+    gtk_text_view_set_buffer(GTK_TEXT_VIEW(self->source_view), GTK_TEXT_BUFFER(source_buffer));
     g_signal_connect(source_buffer, "changed", G_CALLBACK(source_buffer_changed), self);
-
-    self->header_bar = gtk_header_bar_new();
-    self->paned = gtk_paned_new(GTK_ORIENTATION_HORIZONTAL);
-    self->source_view = gtk_source_view_new_with_buffer(source_buffer);
-    self->web_view = webkit_web_view_new();
     
-    g_signal_connect(open_btn, "clicked", G_CALLBACK(open_btn_pressed), self);
-    g_signal_connect(refresh_btn, "clicked", G_CALLBACK(refresh_btn_pressed), self);
-    g_signal_connect(save_btn, "clicked", G_CALLBACK(save_btn_pressed), self);
+    self->popover = GTK_WIDGET(gtk_builder_get_object(builder, "menu_popover"));
+    widget = GTK_WIDGET(gtk_builder_get_object(builder, "menu_toggler"));
+    gtk_popover_set_relative_to(GTK_POPOVER(self->popover), widget);
+    g_signal_connect(self->popover, "closed", G_CALLBACK(menu_popover_closed), widget);
     
-    gtk_window_set_default_size(GTK_WINDOW(self), 800, 700);
+    widget = GTK_WIDGET(gtk_builder_get_object(builder, "editor"));
+    gtk_container_add(GTK_CONTAINER(self), widget);
     gtk_window_set_titlebar(GTK_WINDOW(self), self->header_bar);
     
-    gtk_header_bar_set_title(GTK_HEADER_BAR(self->header_bar), "Untitled.md");
-    gtk_header_bar_set_show_close_button(GTK_HEADER_BAR(self->header_bar), TRUE);
-    gtk_header_bar_pack_start(GTK_HEADER_BAR(self->header_bar), open_btn);
-    gtk_header_bar_pack_start(GTK_HEADER_BAR(self->header_bar), save_btn);
-    gtk_header_bar_pack_end(GTK_HEADER_BAR(self->header_bar), menu_btn);
-    gtk_header_bar_pack_end(GTK_HEADER_BAR(self->header_bar), refresh_btn);
+    gtk_window_set_default_size(GTK_WINDOW(self), 800, 500);
     
-    scrolled_window = gtk_scrolled_window_new(NULL, NULL);
-    gtk_container_add(GTK_CONTAINER(scrolled_window), self->source_view);
-    gtk_paned_add1(GTK_PANED(self->paned), scrolled_window);
-    scrolled_window = gtk_scrolled_window_new(NULL, NULL);
-    gtk_container_add(GTK_CONTAINER(scrolled_window), self->web_view);
-    gtk_paned_add2(GTK_PANED(self->paned), scrolled_window);
-    
-    gtk_container_add(GTK_CONTAINER(self), self->paned);
+    gtk_builder_add_callback_symbol(builder, "open_btn_pressed", G_CALLBACK(open_btn_pressed));
+    gtk_builder_add_callback_symbol(builder, "save_btn_pressed", G_CALLBACK(save_btn_pressed));
+    gtk_builder_add_callback_symbol(builder, "refresh_btn_pressed", G_CALLBACK(refresh_btn_pressed));
+    gtk_builder_add_callback_symbol(builder, "menu_btn_toggled", G_CALLBACK(menu_btn_toggled));
+    gtk_builder_connect_signals(builder, self);
     
     g_timeout_add_seconds(1, auto_refresh, self);
 }

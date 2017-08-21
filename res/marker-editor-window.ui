@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk+" version="3.16"/>
+  
+  <!-- Image Icons -->
+  <object class="GtkImage" id="refresh">
+    <property name="icon_name">view-refresh-symbolic</property>
+    <property name="icon_size">2</property>
+  </object>
+  <object class="GtkImage" id="doc-open">
+    <property name="icon_name">document-open-symbolic</property>
+    <property name="icon_size">2</property>
+  </object>
+  <object class="GtkImage" id="open-menu">
+    <property name="icon_name">open-menu-symbolic</property>
+    <property name="icon_size">2</property>
+  </object>
+  
+  <!-- Popover Menu -->
+  <object class="GtkPopoverMenu" id="menu_popover">
+    <property name="modal">True</property>
+    <child>
+      <object class="GtkBox">
+        <property name="visible">True</property>
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="GtkModelButton">
+            <property name="visible">True</property>
+            <property name="text">Save As...</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkModelButton">
+            <property name="visible">True</property>
+            <property name="text">New</property>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+  
+  <!-- Header Bar -->
+  <object class="GtkHeaderBar" id="header_bar">
+    <property name="title">Untitled.md</property>
+    <property name="show_close_button">True</property>
+    <child>
+      <object class="GtkButton">
+        <property name="label">Open...</property>
+        <signal name="clicked" handler="open_btn_pressed" swapped="no"/>
+      </object>
+      <packing>
+        <property name="pack_type">start</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkButton">
+        <property name="label">Save</property>
+        <signal name="clicked" handler="save_btn_pressed" swapped="no"/>
+      </object>
+      <packing>
+        <property name="pack_type">start</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkToggleButton" id="menu_toggler">
+        <property name="image">open-menu</property>
+        <signal name="toggled" handler="menu_btn_toggled" swapped="no" />
+      </object>
+      <packing>
+        <property name="pack_type">end</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkButton">
+        <property name="image">refresh</property>
+        <signal name="clicked" handler="refresh_btn_pressed" swapped="no"/>
+      </object>
+      <packing>
+        <property name="pack_type">end</property>
+      </packing>
+    </child>
+  </object>
+  
+  <!-- Editor / Web Preview -->
+  <object class="GtkPaned" id="editor">
+    <child>
+      <object class="GtkScrolledWindow">
+        <child>
+          <object class="GtkSourceView" id="source_view">
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="GtkScrolledWindow">
+        <child>
+          <object class="WebkitWebView" id="web_view">
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+      
+</interface>
