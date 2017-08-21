@@ -152,8 +152,6 @@ static void
 save_btn_pressed(GtkWidget* widget,
                  gpointer   user_data)
 {
-    puts("test");
-
     GtkWidget*          dialog;
     MarkerEditorWindow* self;
     GtkFileChooser*     chooser;
@@ -252,7 +250,6 @@ source_buffer_changed(GtkTextBuffer* buffer,
                       gpointer       user_data)
 {
     MarkerEditorWindow* self = user_data;
-    
     if (!self->unsaved_changes)
     {
         self->unsaved_changes = TRUE;
@@ -315,7 +312,6 @@ marker_editor_window_init(MarkerEditorWindow* self)
     GtkSourceLanguageManager* source_language_manager = gtk_source_language_manager_get_default();
     GtkSourceLanguage* source_language = gtk_source_language_manager_get_language(source_language_manager, "markdown");
     GtkSourceBuffer* source_buffer = gtk_source_buffer_new_with_language(source_language);
-    g_signal_connect(source_buffer, "changed", G_CALLBACK(source_buffer_changed), self);
 
     GtkWidget* widget;
 
@@ -324,6 +320,7 @@ marker_editor_window_init(MarkerEditorWindow* self)
     self->web_view = GTK_WIDGET(gtk_builder_get_object(builder, "web_view"));
     
     gtk_text_view_set_buffer(GTK_TEXT_VIEW(self->source_view), GTK_TEXT_BUFFER(source_buffer));
+    g_signal_connect(source_buffer, "changed", G_CALLBACK(source_buffer_changed), self);
     
     self->popover = GTK_WIDGET(gtk_builder_get_object(builder, "menu_popover"));
     widget = GTK_WIDGET(gtk_builder_get_object(builder, "menu_toggler"));
