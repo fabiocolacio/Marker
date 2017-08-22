@@ -53,6 +53,7 @@ marker_editor_window_refresh_web_view(MarkerEditorWindow* self)
     fp = fopen("tmp.md", "w");
     fprintf(fp, buffer_text);
     fclose(fp);
+    g_free(buffer_text);
     
     char command[256] = "pandoc -s -o tmp.html tmp.md -c ";
     strcat(command, STYLES_DIR);
@@ -174,6 +175,7 @@ marker_editor_window_save_file_as(MarkerEditorWindow* self,
             g_free(basename);
             g_free(path);
             g_free(buffer_text);
+            g_free(stream);
         }
     }
 }
@@ -181,10 +183,10 @@ marker_editor_window_save_file_as(MarkerEditorWindow* self,
 static void save_as_btn_pressed(GtkWidget*          widget,
                                 MarkerEditorWindow* self)
 {
-    GtkWidget*          dialog;
-    GtkFileChooser*     chooser;
-    char*               filename;
-    gint                response;
+    GtkWidget*      dialog;
+    GtkFileChooser* chooser;
+    char*           filename;
+    gint            response;
     
     dialog = gtk_file_chooser_dialog_new("Open File",
                                          GTK_WINDOW(self),
@@ -226,19 +228,16 @@ save_btn_pressed(GtkWidget*          widget,
 }
 
 static void
-open_btn_pressed(GtkWidget* widget,
-                 gpointer   user_data)
+open_btn_pressed(GtkWidget*          widget,
+                 MarkerEditorWindow* self)
 {
-    GtkWidget*          dialog;
-    MarkerEditorWindow* self;
-    GtkFileChooser*     chooser;
-    char*               filename;
-    gint                response;
-    
-    self = user_data;
+    GtkWidget*      dialog;
+    GtkFileChooser* chooser;
+    char*           filename;
+    gint            response;
     
     dialog = gtk_file_chooser_dialog_new("Open File",
-                                         user_data,
+                                         GTK_WINDOW(self),
                                          GTK_FILE_CHOOSER_ACTION_OPEN,
                                          "Cancel",
                                          GTK_RESPONSE_CANCEL,
@@ -262,11 +261,9 @@ open_btn_pressed(GtkWidget* widget,
 }
 
 static void
-refresh_btn_pressed(GtkWidget* widget,
-                    gpointer   user_data)
+refresh_btn_pressed(GtkWidget*          widget,
+                    MarkerEditorWindow* self)
 {
-    MarkerEditorWindow* self;
-    self = user_data;
     marker_editor_window_refresh_web_view(self);
 }
 
@@ -342,15 +339,16 @@ marker_editor_window_init(MarkerEditorWindow* self)
     if (err)
     {
         puts(err->message);
-        exit(-1);
+        g_error_free(err);
     }
     
     GtkSourceLanguageManager* source_language_manager = gtk_source_language_manager_get_default();
     GtkSourceLanguage* source_language = gtk_source_language_manager_get_language(source_language_manager, "markdown");
     GtkSourceBuffer* source_buffer = gtk_source_buffer_new_with_language(source_language);
+    g_object_unref(source_language_manager);
 
     GtkWidget* widget;
-
+    
     self->header_bar = GTK_WIDGET(gtk_builder_get_object(builder, "header_bar"));
     self->source_view = GTK_WIDGET(gtk_builder_get_object(builder, "source_view"));
     self->web_view = GTK_WIDGET(gtk_builder_get_object(builder, "web_view"));
