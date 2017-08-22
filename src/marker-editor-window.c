@@ -10,7 +10,7 @@
 
 struct _MarkerEditorWindow
 {
-    GtkWindow parent_instance;
+    GtkWindow  parent_instance;
     
     GtkWidget* header_bar;
     GtkWidget* source_view;
@@ -22,6 +22,8 @@ struct _MarkerEditorWindow
     gboolean   unsaved_changes;
     char*      file_name;
     char*      file_location;
+    
+    char*      stylesheet_name;
 };
 
 G_DEFINE_TYPE(MarkerEditorWindow, marker_editor_window, GTK_TYPE_WINDOW)
@@ -67,11 +69,17 @@ marker_editor_window_refresh_web_view(MarkerEditorWindow* self)
                                            &end_iter,
                                            FALSE);
     
+    printf("size %d\n", strlen(buffer_text));
+    
     fp = fopen("tmp.md", "w");
     fprintf(fp, buffer_text);
     fclose(fp);
     
-    system("pandoc -s -o tmp.html tmp.md -c classy.css");
+    char command[256] = "pandoc -s -o tmp.html tmp.md -c ";
+    strcat(command, STYLES_DIR);
+    strcat(command, self->stylesheet_name);
+    strcat(command, "\0");  
+    system(command);
     
     memset(uri, 0, 50);
     memset(cwd, 0, 50);
@@ -323,6 +331,7 @@ marker_editor_window_init(MarkerEditorWindow* self)
     self->file_location = NULL;
     self->unsaved_changes = FALSE;
     self->refresh_scheduled = FALSE;
+    self->stylesheet_name = "classy.css";
     
     GError* err = NULL;
     GtkBuilder* builder = gtk_builder_new();

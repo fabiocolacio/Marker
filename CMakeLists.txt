@@ -9,7 +9,7 @@ set(DATA_DIR ${CMAKE_SOURCE_DIR}/data)
 
 set(DATA_DEST ${CMAKE_INSTALL_PREFIX}/share)
 
-add_definitions(-DSTYLES_DIR="${STYLES_DIR}")
+add_definitions(-DSTYLES_DIR="${DATA_DEST}/${EXEC_NAME}/styles/")
 
 find_package(PkgConfig REQUIRED)
 pkg_search_module(GTK REQUIRED gtk+-3.0)
@@ -48,5 +48,7 @@ install(FILES ${DATA_DIR}/${EXEC_NAME}.desktop
         DESTINATION ${DATA_DEST}/applications/)
 
 install(DIRECTORY ${STYLES_DIR}
-        DESTINATION ${DATA_DEST}/${EXEC_NAME})
+        DESTINATION ${DATA_DEST}/${EXEC_NAME}
+        FILES_MATCHING PATTERN "*"
+        PERMISSIONS WORLD_READ WORLD_WRITE WORLD_EXECUTE)
 	
