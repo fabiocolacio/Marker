@@ -355,6 +355,8 @@ marker_editor_window_init(MarkerEditorWindow* self)
     self->source_view = GTK_WIDGET(gtk_builder_get_object(builder, "source_view"));
     self->web_view = GTK_WIDGET(gtk_builder_get_object(builder, "web_view"));
     
+    gtk_widget_grab_focus(GTK_WIDGET(self->source_view));
+    
     gtk_text_view_set_buffer(GTK_TEXT_VIEW(self->source_view), GTK_TEXT_BUFFER(source_buffer));
     g_signal_connect(source_buffer, "changed", G_CALLBACK(source_buffer_changed), self);
     
