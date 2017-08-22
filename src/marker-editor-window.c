@@ -29,6 +29,29 @@ struct _MarkerEditorWindow
 
 G_DEFINE_TYPE(MarkerEditorWindow, marker_editor_window, GTK_TYPE_WINDOW)
 
+static void
+show_unsaved_documents_warning(GtkWindow* window)
+{
+    GtkWidget* dialog = gtk_message_dialog_new_with_markup(window,
+                                                           GTK_DIALOG_MODAL,
+                                                           GTK_MESSAGE_QUESTION,
+                                                           GTK_BUTTONS_OK_CANCEL,
+                                                           "<span weight='bold' size='larger'>"
+                                                           "Discard changes to this document?"
+                                                           "</span>\n\n"
+                                                           "This document has unsaved changes "
+                                                           "that will be lost if you quit.");
+    gint response = gtk_dialog_run(GTK_DIALOG(dialog));
+    switch (response)
+    {
+        case GTK_RESPONSE_OK:
+            gtk_widget_destroy(GTK_WIDGET(window));
+            break;
+    }
+    
+    gtk_widget_destroy(dialog);
+}
+
 void
 marker_editor_window_refresh_web_view(MarkerEditorWindow* self)
 {
@@ -323,6 +346,17 @@ menu_popover_closed(GtkPopover*      popover,
     gtk_toggle_button_set_active(toggle_btn, FALSE);
 }
 
+static gboolean
+close_btn_pressed(MarkerEditorWindow* self,
+                  gpointer*           user_data)
+{
+    if (self->unsaved_changes)
+    {
+        show_unsaved_documents_warning(GTK_WINDOW(self));
+    }
+    return TRUE;
+}
+
 static void
 marker_editor_window_init(MarkerEditorWindow* self)
 {
@@ -368,6 +402,8 @@ marker_editor_window_init(MarkerEditorWindow* self)
     gtk_window_set_titlebar(GTK_WINDOW(self), self->header_bar);
     
     gtk_window_set_default_size(GTK_WINDOW(self), 800, 500);
+    
+    g_signal_connect(self, "delete-event", G_CALLBACK(close_btn_pressed), NULL); 
     
     gtk_builder_add_callback_symbol(builder, "open_btn_pressed", G_CALLBACK(open_btn_pressed));
     gtk_builder_add_callback_symbol(builder, "save_btn_pressed", G_CALLBACK(save_btn_pressed));
