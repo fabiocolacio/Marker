@@ -162,6 +162,7 @@ marker_editor_window_save_file_as(MarkerEditorWindow* self,
             }
                    
             self->unsaved_changes = FALSE;
+            self->file = file;
             
             char* basename = g_file_get_basename(file);
             char* path = g_file_get_path(file);
