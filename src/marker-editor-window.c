@@ -22,31 +22,12 @@ struct _MarkerEditorWindow
     gboolean   unsaved_changes;
     char*      file_name;
     char*      file_location;
+    GFile*     file;
     
     char*      stylesheet_name;
 };
 
 G_DEFINE_TYPE(MarkerEditorWindow, marker_editor_window, GTK_TYPE_WINDOW)
-
-void
-marker_editor_window_set_file_name(MarkerEditorWindow* self,
-                                   char*               filepath)
-{
-    free(self->file_name);
-    free(self->file_location);
-    
-    int last_slash = marker_utils_rfind('/', filepath);
-    
-    self->file_location = malloc(last_slash + 2);
-    memset(self->file_location, 0, last_slash + 2);
-    memcpy(self->file_location, filepath, last_slash + 1);
-    
-    char* name = &filepath[last_slash + 1];
-    int name_len = strlen(name);
-    self->file_name = malloc(name_len + 1);
-    memset(self->file_name, 0, name_len + 1);
-    memcpy(self->file_name, name, name_len);
-}
 
 void
 marker_editor_window_refresh_web_view(MarkerEditorWindow* self)
@@ -68,8 +49,6 @@ marker_editor_window_refresh_web_view(MarkerEditorWindow* self)
                                            &start_iter,
                                            &end_iter,
                                            FALSE);
-    
-    printf("size %d\n", strlen(buffer_text));
     
     fp = fopen("tmp.md", "w");
     fprintf(fp, buffer_text);
@@ -94,83 +73,120 @@ marker_editor_window_refresh_web_view(MarkerEditorWindow* self)
 
 void
 marker_editor_window_open_file(MarkerEditorWindow* self,
-                               char*               filepath)
+                               GFile*              file)
 {
-    FILE*          fp;
-    long int       file_size;
-    char*          file_contents;
-    int            last_slash;
-    char*          filename;
-    GtkTextBuffer* buffer;
-
-    self->unsaved_changes = FALSE;
-
-    marker_editor_window_set_file_name(self, filepath);
-
-    fp = fopen(filepath, "r");
-    fseek(fp, 0L, SEEK_END);
-    file_size = ftell(fp);
-    rewind(fp);
-    file_contents = malloc(file_size);
-    memset(file_contents, 0, file_size);
-    fread(file_contents, file_size, 1, fp);
-    
-    buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(self->source_view));
-    gtk_text_buffer_set_text(buffer, file_contents, file_size);
-    gtk_header_bar_set_title(GTK_HEADER_BAR(self->header_bar), self->file_name);
-    gtk_header_bar_set_subtitle(GTK_HEADER_BAR(self->header_bar), self->file_location);
-    marker_editor_window_refresh_web_view(self);
-    
-    free(file_contents);
+    if (file)
+    {        
+        char* file_contents = NULL;
+        gsize file_size = 0;
+        GError* err = NULL;
+        g_file_load_contents(file, NULL, &file_contents, &file_size, NULL, &err);
+        
+        if (err)
+        {
+            printf("There was a problem opening the file!\n\n%s\n", err->message);
+            g_error_free(err);
+        }
+        else
+        {
+            GtkTextBuffer* buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(self->source_view));
+            gtk_text_buffer_set_text(buffer, file_contents, file_size);
+            char* basename = g_file_get_basename(file);
+            char* path = g_file_get_path(file);
+            int last_slash = marker_utils_rfind('/', path);
+            path[last_slash] = '\0';
+            gtk_header_bar_set_title(GTK_HEADER_BAR(self->header_bar), basename);
+            gtk_header_bar_set_subtitle(GTK_HEADER_BAR(self->header_bar), path);
+            marker_editor_window_refresh_web_view(self);
+            
+            g_free(basename);
+            g_free(path);
+            g_free(file_contents);
+            
+            self->unsaved_changes = FALSE;
+            self->file = file;
+        }
+    }
 }
 
 void
 marker_editor_window_save_file_as(MarkerEditorWindow* self,
-                                  char*               filepath)
+                                  GFile*              file)
 {
-    GtkTextBuffer* buffer;
-    GtkTextIter    start_iter;
-    GtkTextIter    end_iter;
-    FILE*          fp;
-    gchar*         buffer_text;
-    size_t         buffer_size;
-    int            last_slash;
-    char*          filename;
-    
-    self->unsaved_changes = FALSE;
-    
-    buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(self->source_view));
-    gtk_text_buffer_get_start_iter(GTK_TEXT_BUFFER(buffer), &start_iter);
-    gtk_text_buffer_get_end_iter(GTK_TEXT_BUFFER(buffer), &end_iter);
-    
-    buffer_text = gtk_text_buffer_get_text(GTK_TEXT_BUFFER(buffer),
-                                           &start_iter,
-                                           &end_iter,
-                                           FALSE);
-    
-    marker_editor_window_set_file_name(self, filepath);
-    gtk_header_bar_set_title(GTK_HEADER_BAR(self->header_bar), self->file_name);
-    gtk_header_bar_set_subtitle(GTK_HEADER_BAR(self->header_bar), self->file_location);
-    
-    fp = fopen(filepath, "w");
-    buffer_size = strlen(buffer_text);
-    fwrite(buffer_text, sizeof(gchar), buffer_size, fp);
-    fclose(fp);
+    if (file)
+    {
+        GError* err = NULL;
+        
+        GFileOutputStream* stream = g_file_replace(file,
+                                                   NULL,
+                                                   false,
+                                                   G_FILE_CREATE_NONE,
+                                                   NULL,
+                                                   &err);
+        if (err)
+        {
+            printf("There was a problem opening the file stream!\n\n%s\n", err->message);
+            g_error_free(err);
+        }
+        else
+        {
+            GtkTextBuffer* buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(self->source_view));
+            GtkTextIter    start_iter;
+            GtkTextIter    end_iter;
+            gtk_text_buffer_get_start_iter(GTK_TEXT_BUFFER(buffer), &start_iter);
+            gtk_text_buffer_get_end_iter(GTK_TEXT_BUFFER(buffer), &end_iter);
+            gchar* buffer_text = gtk_text_buffer_get_text(GTK_TEXT_BUFFER(buffer),
+                                                          &start_iter,
+                                                          &end_iter,
+                                                          FALSE);
+            size_t buffer_size = strlen(buffer_text);
+            gsize bytes_written = 0;
+            g_output_stream_write_all(G_OUTPUT_STREAM(stream),
+                                      buffer_text,
+                                      buffer_size,
+                                      &bytes_written,
+                                      NULL,
+                                      &err);
+            
+            if (err)
+            {
+                printf("There was a problem writing to the file!\n\n%s\n", err->message);
+                g_error_free(err);
+            }
+                                
+            g_output_stream_close(G_OUTPUT_STREAM(stream), FALSE, &err);
+            if (err)
+            {
+                printf("There was a problem closing the stream!\n\n%s\n", err->message);
+                g_error_free(err);
+            }
+                   
+            self->unsaved_changes = FALSE;
+            
+            char* basename = g_file_get_basename(file);
+            char* path = g_file_get_path(file);
+            int last_slash = marker_utils_rfind('/', path);
+            path[last_slash] = '\0';
+            gtk_header_bar_set_title(GTK_HEADER_BAR(self->header_bar), basename);
+            gtk_header_bar_set_subtitle(GTK_HEADER_BAR(self->header_bar), path);
+            marker_editor_window_refresh_web_view(self);
+            g_free(basename);
+            g_free(path);
+            g_free(buffer_text);
+        }
+    }
 }
 
-static void save_as_btn_pressed(GtkWidget* widget,
-                                gpointer   user_data)
+static void save_as_btn_pressed(GtkWidget*          widget,
+                                MarkerEditorWindow* self)
 {
     GtkWidget*          dialog;
-    MarkerEditorWindow* self;
     GtkFileChooser*     chooser;
     char*               filename;
     gint                response;
     
-    self = user_data;
-    
     dialog = gtk_file_chooser_dialog_new("Open File",
-                                         user_data,
+                                         GTK_WINDOW(self),
                                          GTK_FILE_CHOOSER_ACTION_SAVE,
                                          "Cancel",
                                          GTK_RESPONSE_CANCEL,
@@ -185,8 +201,8 @@ static void save_as_btn_pressed(GtkWidget* widget,
     {
         chooser = GTK_FILE_CHOOSER (dialog);
         filename = gtk_file_chooser_get_filename (chooser);
-        
-        marker_editor_window_save_file_as(self, filename);
+        GFile* file = g_file_new_for_path(filename);
+        marker_editor_window_save_file_as(self, file);
         
         g_free(filename);
     }
@@ -195,29 +211,12 @@ static void save_as_btn_pressed(GtkWidget* widget,
 }
 
 static void
-save_btn_pressed(GtkWidget* widget,
-                 gpointer   user_data)
+save_btn_pressed(GtkWidget*          widget,
+                 MarkerEditorWindow* self)
 {
-    GtkWidget*          dialog;
-    MarkerEditorWindow* self;
-    GtkFileChooser*     chooser;
-    char*               filename;
-    gint                response;
-    const gchar*        title = NULL;
-    const gchar*        subtitle = NULL;
-    
-    self = user_data;
-    
-    if (self->file_name && self->file_location)
+    if (self->file)
     {
-        size_t name_len = strlen(self->file_name);
-        size_t location_len = strlen(self->file_location);
-        size_t filepath_len = name_len + location_len + 1;
-        char filepath[filepath_len];
-        memset(filepath, 0, filepath_len);
-        strcat(filepath, self->file_location);
-        strcat(filepath, self->file_name);
-        marker_editor_window_save_file_as(self, filepath);
+        marker_editor_window_save_file_as(self, self->file);
     }
     else
     {
@@ -252,7 +251,8 @@ open_btn_pressed(GtkWidget* widget,
         chooser = GTK_FILE_CHOOSER (dialog);
         filename = gtk_file_chooser_get_filename (chooser);
         
-        marker_editor_window_open_file(self, filename);
+        GFile* file = g_file_new_for_path(filename);
+        marker_editor_window_open_file(self, file);
         
         g_free(filename);
     }
@@ -279,22 +279,23 @@ auto_refresh(gpointer user_data)
 }
 
 static void
-source_buffer_changed(GtkTextBuffer* buffer,
-                      gpointer       user_data)
+source_buffer_changed(GtkTextBuffer*      buffer,
+                      MarkerEditorWindow* self)
 {
-    MarkerEditorWindow* self = user_data;
     if (!self->unsaved_changes)
     {
         self->unsaved_changes = TRUE;
         
-        if (self->file_name)
+        if (self->file)
         {
-            int len = strlen(self->file_name);
+            char* basename = g_file_get_basename(self->file);        
+            int len = strlen(basename);
             char title[len + 2];
             memset(title, 0, len + 2);
             strcat(title, "*");
-            strcat(title, self->file_name);
+            strcat(title, basename);
             gtk_header_bar_set_title(GTK_HEADER_BAR(self->header_bar), title);
+            g_free(basename);
         }
         else
         {
@@ -327,6 +328,7 @@ menu_popover_closed(GtkPopover*      popover,
 static void
 marker_editor_window_init(MarkerEditorWindow* self)
 {
+    self->file = NULL;
     self->file_name = NULL;
     self->file_location = NULL;
     self->unsaved_changes = FALSE;

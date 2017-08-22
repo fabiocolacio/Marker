@@ -21,15 +21,11 @@ marker_editor_window_refresh_web_view(MarkerEditorWindow*);
 
 void
 marker_editor_window_open_file(MarkerEditorWindow*,
-                               char*);
+                               GFile*);
 
 void
 marker_editor_window_save_file_as(MarkerEditorWindow*,
-                                  char*);
-                                  
-void
-marker_editor_window_set_file_name(MarkerEditorWindow*,
-                                   char*);
+                                  GFile*);
 
 G_END_DECLS
 
