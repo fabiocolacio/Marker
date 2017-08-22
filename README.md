@@ -2,6 +2,10 @@
 
 Marker is a markdown editor for linux made with Gtk+-3.0
 
+## Screenshots
+
+![scrot.png](scrot.png)
+
 ## Installation From Source
 
 ### Dependencies
