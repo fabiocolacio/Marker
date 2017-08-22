@@ -71,7 +71,7 @@ marker_editor_window_refresh_web_view(MarkerEditorWindow* self)
     fprintf(fp, buffer_text);
     fclose(fp);
     
-    system("pandoc -s -o tmp.html tmp.md");
+    system("pandoc -s -o tmp.html tmp.md -c classy.css");
     
     memset(uri, 0, 50);
     memset(cwd, 0, 50);

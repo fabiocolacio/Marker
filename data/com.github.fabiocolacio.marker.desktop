@@ -1,0 +1,12 @@
+[Desktop Entry]
+Name=Marker
+GenericName=Markdown Editor
+Comment=A simple markdown editor for GTK+
+Categories=GTK;Utility;
+Exec=com.github.fabiocolacio.marker
+Icon=application-default-icon
+Terminal=false
+Type=Application
+X-GNOME-Gettext-Domain=marker
+Keywords=marker;markdown;editor;web;
+Name[en_US]=Marker

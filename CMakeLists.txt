@@ -1,9 +1,15 @@
 cmake_minimum_required(VERSION 2.8)
 project("Marker")
 
-set(EXEC_NAME "marker")
+set(EXEC_NAME "com.github.fabiocolacio.marker")
 
-set(RES_DIR ${CMAKE_SOURCE_DIR}/res)
+set(GRES_DIR ${CMAKE_SOURCE_DIR}/gres)
+set(STYLES_DIR ${CMAKE_SOURCE_DIR}/styles)
+set(DATA_DIR ${CMAKE_SOURCE_DIR}/data)
+
+set(DATA_DEST ${CMAKE_INSTALL_PREFIX}/share)
+
+add_definitions(-DSTYLES_DIR="${STYLES_DIR}")
 
 find_package(PkgConfig REQUIRED)
 pkg_search_module(GTK REQUIRED gtk+-3.0)
@@ -31,9 +37,16 @@ target_link_libraries(${EXEC_NAME}
 
 add_custom_target(gres
                   glib-compile-resources marker.gresource.xml --target="../src/resources.c" --generate-source
-                  WORKING_DIRECTORY ${RES_DIR})
+                  WORKING_DIRECTORY ${GRES_DIR})
                   
 add_dependencies(${EXEC_NAME} gres)
 
-install(FILES ${EXEC_NAME}
-	RUNTIME DESTINATION bin)
+install(TARGETS ${EXEC_NAME}
+        RUNTIME DESTINATION bin)
+
+install(FILES ${DATA_DIR}/${EXEC_NAME}.desktop
+        DESTINATION ${DATA_DEST}/applications/)
+
+install(DIRECTORY ${STYLES_DIR}
+        DESTINATION ${DATA_DEST}/${EXEC_NAME})
+	
