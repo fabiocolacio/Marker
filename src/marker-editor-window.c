@@ -353,8 +353,9 @@ close_btn_pressed(MarkerEditorWindow* self,
     if (self->unsaved_changes)
     {
         show_unsaved_documents_warning(GTK_WINDOW(self));
+        return TRUE;
     }
-    return TRUE;
+    return FALSE;
 }
 
 static void
