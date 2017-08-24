@@ -9,7 +9,7 @@ body {
   color: #444;
   font-family: Georgia, Palatino, 'Palatino Linotype', Times, 'Times New Roman', serif;
   font-size: 12px;
-  line-height: 1.5em;
+  line-height: 2em;
   padding: 1em;
   margin: auto;
   max-width: 42em;
@@ -135,6 +135,9 @@ samp {
   font-family: monospace, monospace;
   _font-family: 'courier new', monospace;
   font-size: 0.98em;
+  background-color: #f3f3f3;
+  padding: 5px;
+  border-radius: 4px;
 }
 
 pre {
