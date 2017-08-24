@@ -52,47 +52,94 @@ show_unsaved_documents_warning(GtkWindow* window)
     gtk_widget_destroy(dialog);
 }
 
+static void
+web_view_load_event(WebKitWebView* web_view,
+                    gint           progress,
+                    char*          html_file)
+{
+    if (progress >= 100)
+    {
+        remove(html_file);
+        free(html_file);
+    }
+}
+
 void
 marker_editor_window_refresh_web_view(MarkerEditorWindow* self)
 {
-    GtkTextBuffer* buffer = NULL;
+    char* tmp_md = ".marker_tmp.md";
+    char* tmp_html = ".marker_tmp.html";
+
+    char* dir;
+
+    if (self->file)
+    {
+        char* path = g_file_get_path(self->file);
+        int last_slash = marker_utils_rfind('/', path);
+        path[last_slash] = '\0';
+        chdir(path);
+        g_free(path);
+    }
+    
+    GtkTextBuffer* buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(self->source_view));
     GtkTextIter start_iter;
     GtkTextIter end_iter;
-    char uri[50];
-    char cwd[50];
-    gchar* buffer_text;
-    FILE* fp;
-    
-    buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(self->source_view));
-    
     gtk_text_buffer_get_start_iter(GTK_TEXT_BUFFER(buffer), &start_iter);
     gtk_text_buffer_get_end_iter(GTK_TEXT_BUFFER(buffer), &end_iter);
     
-    buffer_text = gtk_text_buffer_get_text(GTK_TEXT_BUFFER(buffer),
-                                           &start_iter,
-                                           &end_iter,
-                                           FALSE);
+    char* buffer_text = gtk_text_buffer_get_text(GTK_TEXT_BUFFER(buffer),
+                                                 &start_iter,
+                                                 &end_iter,
+                                                 FALSE);
     
-    fp = fopen("tmp.md", "w");
+    FILE* fp = fopen(tmp_md, "w");
     fprintf(fp, buffer_text);
     fclose(fp);
     g_free(buffer_text);
     
-    char command[256] = "pandoc -s -o tmp.html tmp.md -c ";
+    char command[256] = "pandoc -s -c ";
     strcat(command, STYLES_DIR);
     strcat(command, self->stylesheet_name);
-    strcat(command, "\0");  
+    strcat(command, " -o ");
+    strcat(command, tmp_html);
+    strcat(command, " ");
+    strcat(command, tmp_md);
+    strcat(command, "\0");
     system(command);
     
-    memset(uri, 0, 50);
+    char cwd[50];
     memset(cwd, 0, 50);
-    
     getcwd(cwd, 50);
+    
+    int cwd_len = strlen(cwd);
+    int html_len = strlen(tmp_html);
+    int html_full_path_len = cwd_len + html_len + 2;
+    char* html_full_path = malloc(html_full_path_len);
+    memset(html_full_path, 0, html_full_path_len);
+    strcat(html_full_path, cwd);
+    strcat(html_full_path, "/");
+    strcat(html_full_path, tmp_html);
+    
+    char uri[html_full_path_len + strlen("file://") + 1];
+    memset(uri, 0, sizeof(uri));
     strcat(uri, "file://");
-    strcat(uri, cwd);
-    strcat(uri, "/tmp.html");
+    strcat(uri, html_full_path);
     
     webkit_web_view_load_uri(WEBKIT_WEB_VIEW(self->web_view), uri);
+    g_signal_connect(self->web_view, "load-progress-changed", G_CALLBACK(web_view_load_event), html_full_path);
+    
+    /*
+    guint nsig;
+    guint* sigs = g_signal_list_ids(WEBKIT_TYPE_WEB_VIEW, &nsig);
+    printf("%u\n", nsig);
+    
+    for (int i = 0; i < nsig; ++i)
+    {
+        printf("name: %s\n", g_signal_name(sigs[i]));
+    }
+    */
+    
+    remove(tmp_md);
 }
 
 void
@@ -412,6 +459,8 @@ marker_editor_window_init(MarkerEditorWindow* self)
     gtk_builder_add_callback_symbol(builder, "refresh_btn_pressed", G_CALLBACK(refresh_btn_pressed));
     gtk_builder_add_callback_symbol(builder, "menu_btn_toggled", G_CALLBACK(menu_btn_toggled));
     gtk_builder_connect_signals(builder, self);
+    
+    g_object_unref(builder);
 }
 
 static void

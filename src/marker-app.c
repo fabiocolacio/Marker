@@ -15,6 +15,7 @@ marker_app_activate(GApplication* app)
     GtkBuilder* builder = gtk_builder_new_from_resource("/com/github/fabiocolacio/marker/marker-app-menu.ui");
     GMenuModel* app_menu = G_MENU_MODEL(gtk_builder_get_object(builder, "app_menu"));
     gtk_application_set_app_menu(GTK_APPLICATION(app), app_menu);
+    g_object_unref(builder);
 
     MarkerEditorWindow* window = marker_editor_window_new();
     gtk_application_add_window(GTK_APPLICATION(app), GTK_WINDOW(window));
