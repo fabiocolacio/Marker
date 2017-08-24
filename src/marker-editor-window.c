@@ -54,13 +54,11 @@ show_unsaved_documents_warning(GtkWindow* window)
 
 static void
 web_view_load_event(WebKitWebView* web_view,
-                    gint           progress,
-                    char*          html_file)
+                    gint           progress)
 {
     if (progress >= 100)
     {
-        remove(html_file);
-        free(html_file);
+        remove(".marker_tmp.html");
     }
 }
 
@@ -114,7 +112,7 @@ marker_editor_window_refresh_web_view(MarkerEditorWindow* self)
     int cwd_len = strlen(cwd);
     int html_len = strlen(tmp_html);
     int html_full_path_len = cwd_len + html_len + 2;
-    char* html_full_path = malloc(html_full_path_len);
+    char html_full_path[html_full_path_len];
     memset(html_full_path, 0, html_full_path_len);
     strcat(html_full_path, cwd);
     strcat(html_full_path, "/");
@@ -126,7 +124,7 @@ marker_editor_window_refresh_web_view(MarkerEditorWindow* self)
     strcat(uri, html_full_path);
     
     webkit_web_view_load_uri(WEBKIT_WEB_VIEW(self->web_view), uri);
-    g_signal_connect(self->web_view, "load-progress-changed", G_CALLBACK(web_view_load_event), html_full_path);
+    g_signal_connect(self->web_view, "load-progress-changed", G_CALLBACK(web_view_load_event), NULL);
     
     /*
     guint nsig;
@@ -245,7 +243,6 @@ marker_editor_window_save_file_as(MarkerEditorWindow* self,
             g_free(basename);
             g_free(path);
             g_free(buffer_text);
-            g_free(stream);
         }
     }
 }
