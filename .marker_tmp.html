@@ -1,0 +1,36 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <link rel="stylesheet" href="/usr/share/com.github.fabiocolacio.marker/styles/classy.css" type="text/css" />
+</head>
+<body>
+<h1 id="marker">Marker</h1>
+<p>Marker is a markdown editor for linux made with Gtk+-3.0</p>
+<h2 id="screenshots">Screenshots</h2>
+<div class="figure">
+<img src="scrot.png" alt="scrot.png" />
+<p class="caption">scrot.png</p>
+</div>
+<h2 id="installation-from-source">Installation From Source</h2>
+<h3 id="dependencies">Dependencies</h3>
+<ul>
+<li>gtk3-devel</li>
+<li>gtksourceview3-devel</li>
+<li>webkitgtk3-devel</li>
+<li>pandoc</li>
+<li>cmake</li>
+</ul>
+<h3 id="build-instructions">Build Instructions</h3>
+<pre><code>$ git clone https://github.com/fabiocolacio/Marker.git
+$ cd Marker
+$ mkdir build &amp;&amp; cd build
+$ cmake -DCMAKE_INSTALL_PREFIX=/usr ..
+$ make
+$ sudo make install</code></pre>
+</body>
+</html>

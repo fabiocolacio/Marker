@@ -70,7 +70,7 @@ marker_editor_window_refresh_web_view(MarkerEditorWindow* self)
 
     char* dir;
 
-    if (self->file)
+    if (G_IS_FILE(self->file))
     {
         char* path = g_file_get_path(self->file);
         int last_slash = marker_utils_rfind('/', path);
@@ -145,7 +145,9 @@ marker_editor_window_open_file(MarkerEditorWindow* self,
                                GFile*              file)
 {
     if (file)
-    {        
+    {   
+        self->unsaved_changes = FALSE;
+        self->file = file;
         char* file_contents = NULL;
         gsize file_size = 0;
         GError* err = NULL;
@@ -171,9 +173,6 @@ marker_editor_window_open_file(MarkerEditorWindow* self,
             g_free(basename);
             g_free(path);
             g_free(file_contents);
-            
-            self->unsaved_changes = FALSE;
-            self->file = file;
         }
     }
 }
@@ -406,8 +405,6 @@ static void
 marker_editor_window_init(MarkerEditorWindow* self)
 {
     self->file = NULL;
-    self->file_name = NULL;
-    self->file_location = NULL;
     self->unsaved_changes = FALSE;
     self->refresh_scheduled = FALSE;
     self->stylesheet_name = "classy.css";
@@ -470,5 +467,16 @@ MarkerEditorWindow*
 marker_editor_window_new(void)
 {
     return g_object_new(MARKER_TYPE_EDITOR_WINDOW, NULL);
+}
+
+MarkerEditorWindow*
+marker_editor_window_new_from_file(GFile* file)
+{
+    MarkerEditorWindow* win = marker_editor_window_new();
+    if (G_IS_FILE(file))
+    {
+        marker_editor_window_open_file(win, file);
+    }
+    return win;
 }
 

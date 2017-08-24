@@ -14,6 +14,9 @@ G_DECLARE_FINAL_TYPE(MarkerEditorWindow,
 MarkerEditorWindow*
 marker_editor_window_new(void);
 
+MarkerEditorWindow*
+marker_editor_window_new_from_file(GFile*);
+
 void
 marker_editor_window_refresh_web_view(MarkerEditorWindow*);
 

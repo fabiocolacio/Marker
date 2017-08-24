@@ -28,7 +28,14 @@ marker_app_open(GApplication* app,
                 gint          num_files,
                 const gchar*  hint)
 {
-    
+    printf("num files %d\n", num_files);
+    for (int i = 0; i < num_files; ++i)
+    {
+        GFile* file = files[i];
+        GtkWindow* win = GTK_WINDOW(marker_editor_window_new_from_file(file));
+        gtk_application_add_window(GTK_APPLICATION(app), win);
+        gtk_widget_show_all(GTK_WIDGET(win));
+    }
 }
 
 static void
