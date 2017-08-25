@@ -329,6 +329,77 @@ open_btn_pressed(GtkWidget*          widget,
     gtk_widget_destroy(dialog);
 }
 
+void
+marker_editor_window_export_file_as(MarkerEditorWindow*  window,
+                                    GFile*               file,
+                                    MarkerExportSettings settings)
+{
+
+}
+
+static void
+export_btn_pressed(GtkWidget*          widget,
+                   MarkerEditorWindow* self)
+{
+    GtkBuilder* builder = gtk_builder_new_from_resource("/com/github/fabiocolacio/marker/marker-export-dialog.ui");
+    GtkDialog* export_dialog = GTK_DIALOG(gtk_builder_get_object(builder, "export_dialog"));
+    gtk_window_set_transient_for(GTK_WINDOW(export_dialog), GTK_WINDOW(self));
+    
+    GtkComboBox* format_chooser = GTK_COMBO_BOX(gtk_builder_get_object(builder, "format_chooser"));
+    GtkListStore* export_format_model = GTK_LIST_STORE(gtk_builder_get_object(builder, "export_format_model"));
+    gtk_combo_box_set_model(format_chooser, GTK_TREE_MODEL(export_format_model));
+    GtkCellRenderer* cell_renderer = gtk_cell_renderer_text_new();
+    gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(format_chooser), cell_renderer, TRUE);
+    gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(format_chooser),
+                                   cell_renderer,
+                                   "text", 0,
+                                   NULL);
+    gtk_combo_box_set_active(format_chooser, 0);
+    
+    gtk_widget_show_all(GTK_WIDGET(format_chooser));
+    g_object_unref(builder);
+    
+    gtk_dialog_run(export_dialog);
+    gtk_widget_destroy(GTK_WIDGET(export_dialog));
+    
+    /*
+    GtkDialogFlags flags = GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT;
+    GtkWidget* dialog = gtk_dialog_new_with_buttons("Export",
+                                                    self,
+                                                    flags,
+                                                    "Export",
+                                                    GTK_RESPONSE_ACCEPT,
+                                                    "Cancel",
+                                                    GTK_RESPONSE_CANCEL,
+                                                    NULL);
+    
+
+    GtkWidget* file_dialog = gtk_file_chooser_dialog_new("Open File",
+                                                    GTK_WINDOW(self),
+                                                    GTK_FILE_CHOOSER_ACTION_SAVE,
+                                                    "Cancel",
+                                                    GTK_RESPONSE_CANCEL,
+                                                    "Save",
+                                                    GTK_RESPONSE_ACCEPT,
+                                                    NULL);
+    
+    gtk_file_chooser_set_do_overwrite_confirmation(GTK_FILE_CHOOSER(file_dialog), TRUE);
+    
+    gint response = gtk_dialog_run(GTK_DIALOG(file_dialog));
+    if (response == GTK_RESPONSE_ACCEPT)
+    {
+        GtkFileChooser* chooser = GTK_FILE_CHOOSER (file_dialog);
+        char* filename = gtk_file_chooser_get_filename (chooser);
+        GFile* file = g_file_new_for_path(filename);
+        marker_editor_window_save_file_as(self, file);
+        
+        g_free(filename);
+    }
+    
+    gtk_widget_destroy(file_dialog);
+    */
+}
+
 static void
 new_btn_pressed(GtkWidget*          widget,
                 MarkerEditorWindow* self)
@@ -423,14 +494,7 @@ marker_editor_window_init(MarkerEditorWindow* self)
     self->refresh_scheduled = FALSE;
     self->stylesheet_name = "marker.css";
     
-    GError* err = NULL;
-    GtkBuilder* builder = gtk_builder_new();
-    gtk_builder_add_from_resource(builder, "/com/github/fabiocolacio/marker/marker-editor-window.ui", &err);
-    if (err)
-    {
-        puts(err->message);
-        g_error_free(err);
-    }
+    GtkBuilder* builder = gtk_builder_new_from_resource("/com/github/fabiocolacio/marker/marker-editor-window.ui");
     
     GtkSourceLanguageManager* source_language_manager = gtk_source_language_manager_get_default();
     GtkSourceLanguage* source_language = gtk_source_language_manager_get_language(source_language_manager, "markdown");
@@ -464,6 +528,7 @@ marker_editor_window_init(MarkerEditorWindow* self)
     gtk_builder_add_callback_symbol(builder, "open_btn_pressed", G_CALLBACK(open_btn_pressed));
     gtk_builder_add_callback_symbol(builder, "save_btn_pressed", G_CALLBACK(save_btn_pressed));
     gtk_builder_add_callback_symbol(builder, "save_as_btn_pressed", G_CALLBACK(save_as_btn_pressed));
+    gtk_builder_add_callback_symbol(builder, "export_btn_pressed", G_CALLBACK(export_btn_pressed));
     gtk_builder_add_callback_symbol(builder, "new_btn_pressed", G_CALLBACK(new_btn_pressed));
     gtk_builder_add_callback_symbol(builder, "refresh_btn_pressed", G_CALLBACK(refresh_btn_pressed));
     gtk_builder_add_callback_symbol(builder, "menu_btn_toggled", G_CALLBACK(menu_btn_toggled));

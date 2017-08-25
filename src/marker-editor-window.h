@@ -13,6 +13,23 @@ G_DECLARE_FINAL_TYPE(MarkerEditorWindow,
                      EDITOR_WINDOW,
                      GtkApplicationWindow)
 
+typedef enum
+{
+    HTML,
+    PDF,
+    RTF,
+    EPUB,
+    ODT,
+    DOCX,
+    LATEX
+} MarkerFileFormat;
+
+typedef struct
+{
+    MarkerFileFormat file_type;
+    char* style_sheet;
+} MarkerExportSettings;
+
 MarkerEditorWindow*
 marker_editor_window_new(GtkApplication* app);
 
@@ -30,6 +47,12 @@ marker_editor_window_open_file(MarkerEditorWindow* window,
 void
 marker_editor_window_save_file_as(MarkerEditorWindow* window,
                                   GFile*              file);
+                                  
+void
+marker_editor_window_export_file_as(MarkerEditorWindow*  window,
+                                    GFile*               file,
+                                    MarkerExportSettings settings);
+
 G_END_DECLS
 
 #endif

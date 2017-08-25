@@ -34,6 +34,13 @@
         <child>
           <object class="GtkModelButton">
             <property name="visible">True</property>
+            <property name="text">Export...</property>
+            <signal name="clicked" handler="export_btn_pressed" swapped="no" />
+          </object>
+        </child>
+        <child>
+          <object class="GtkModelButton">
+            <property name="visible">True</property>
             <property name="text">New</property>
             <signal name="clicked" handler="new_btn_pressed" swapped="no" />
           </object>
