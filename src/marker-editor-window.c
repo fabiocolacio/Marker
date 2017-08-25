@@ -147,8 +147,6 @@ marker_editor_window_open_file(MarkerEditorWindow* self,
 {
     if (G_IS_FILE(file))
     {   
-        self->unsaved_changes = FALSE;
-        self->file = file;
         char* file_contents = NULL;
         gsize file_size = 0;
         GError* err = NULL;
@@ -161,6 +159,8 @@ marker_editor_window_open_file(MarkerEditorWindow* self,
         }
         else
         {
+            self->file = file;
+            
             GtkTextBuffer* buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(self->source_view));
             gtk_text_buffer_set_text(buffer, file_contents, file_size);
             char* basename = g_file_get_basename(file);
@@ -174,6 +174,8 @@ marker_editor_window_open_file(MarkerEditorWindow* self,
             g_free(basename);
             g_free(path);
             g_free(file_contents);
+            
+            self->unsaved_changes = FALSE;
         }
     }
 }
@@ -309,7 +311,12 @@ open_btn_pressed(GtkWidget*          widget,
         char* filename = gtk_file_chooser_get_filename (chooser);
         
         GFile* file = g_file_new_for_path(filename);
-        marker_editor_window_open_file(self, file);
+        
+        GtkApplication* app;
+        g_object_get(self, "application", &app, NULL);
+        MarkerEditorWindow* win = marker_editor_window_new_from_file(app, file);
+        gtk_widget_show_all(GTK_WIDGET(win));
+        g_object_unref(app);
         
         g_free(filename);
     }
@@ -395,7 +402,11 @@ close_btn_pressed(MarkerEditorWindow* self,
 static void
 marker_editor_window_init(MarkerEditorWindow* self)
 {
-    self->file = NULL;
+    if (!self->file)
+    {
+        self->file = NULL;
+    }
+    
     self->unsaved_changes = FALSE;
     self->refresh_scheduled = FALSE;
     self->stylesheet_name = "classy.css";
