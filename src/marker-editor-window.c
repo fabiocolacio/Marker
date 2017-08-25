@@ -71,7 +71,7 @@ void
 marker_editor_window_refresh_web_view(MarkerEditorWindow* self)
 {
     int ret;
-    if (G_IS_FILE(self->file))
+    if (self->file && G_IS_FILE(self->file))
     {
         char* path = g_file_get_path(self->file);
         int last_slash = marker_utils_rfind('/', path);
@@ -100,9 +100,13 @@ marker_editor_window_refresh_web_view(MarkerEditorWindow* self)
     fclose(fp);
     g_free(buffer_text);
     
-    char command[256] = "pandoc -s -c ";
-    strcat(command, STYLES_DIR);
-    strcat(command, self->stylesheet_name);
+    char command[256] = "pandoc -s ";
+    if (self->stylesheet_name)
+    {
+        strcat(command, "-c ");
+        strcat(command, STYLES_DIR);
+        strcat(command, self->stylesheet_name);
+    }
     strcat(command, " -o ");
     strcat(command, TMP_HTML);
     strcat(command, " ");
@@ -111,6 +115,7 @@ marker_editor_window_refresh_web_view(MarkerEditorWindow* self)
     ret = system(command);
     if (ret != 0)
     {
+        puts(command);
         puts("There was a problem generating the html document");
     }
     
@@ -145,7 +150,7 @@ void
 marker_editor_window_open_file(MarkerEditorWindow* self,
                                GFile*              file)
 {
-    if (G_IS_FILE(file))
+    if (file && G_IS_FILE(file))
     {   
         char* file_contents = NULL;
         gsize file_size = 0;
@@ -184,7 +189,7 @@ void
 marker_editor_window_save_file_as(MarkerEditorWindow* self,
                                   GFile*              file)
 {
-    if (G_IS_FILE(file))
+    if (file && G_IS_FILE(file))
     {
         GError* err = NULL;
         
@@ -281,7 +286,7 @@ static void
 save_btn_pressed(GtkWidget*          widget,
                  MarkerEditorWindow* self)
 {
-    if (G_IS_FILE(self->file))
+    if (self->file && G_IS_FILE(self->file))
     {
         marker_editor_window_save_file_as(self, self->file);
     }
@@ -348,7 +353,7 @@ source_buffer_changed(GtkTextBuffer*      buffer,
     {
         self->unsaved_changes = TRUE;
         
-        if (self->file)
+        if (self->file && G_IS_FILE(self->file))
         {
             char* basename = g_file_get_basename(self->file);        
             int len = strlen(basename);
@@ -401,15 +406,11 @@ close_btn_pressed(MarkerEditorWindow* self,
 
 static void
 marker_editor_window_init(MarkerEditorWindow* self)
-{
-    if (!self->file)
-    {
-        self->file = NULL;
-    }
-    
+{   
+    self->file = NULL;
     self->unsaved_changes = FALSE;
     self->refresh_scheduled = FALSE;
-    self->stylesheet_name = "classy.css";
+    self->stylesheet_name = "marker.css";
     
     GError* err = NULL;
     GtkBuilder* builder = gtk_builder_new();
@@ -478,7 +479,7 @@ marker_editor_window_new_from_file(GtkApplication* app,
                                    GFile*          file)
 {
     MarkerEditorWindow* win = marker_editor_window_new(app);
-    if (G_IS_FILE(file))
+    if (file && G_IS_FILE(file))
     {
         marker_editor_window_open_file(win, file);
     }

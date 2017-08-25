@@ -22,11 +22,9 @@ marker_open(GtkApplication* app,
     for (int i = 0; i < num_files; ++i)
     {
         GFile* file = files[i];
-        if (G_IS_FILE(file))
-        {
-            MarkerEditorWindow* win = marker_editor_window_new_from_file(app, file);
-            gtk_widget_show_all(GTK_WIDGET(win));
-        }
+        g_object_ref(file);
+        MarkerEditorWindow* win = marker_editor_window_new_from_file(app, file);
+        gtk_widget_show_all(GTK_WIDGET(win));
     }
 }
 
