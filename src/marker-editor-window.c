@@ -71,7 +71,7 @@ void
 marker_editor_window_refresh_web_view(MarkerEditorWindow* self)
 {
     int ret;
-    if (self->file && G_IS_FILE(self->file))
+    if (G_IS_FILE(self->file))
     {
         char* path = g_file_get_path(self->file);
         int last_slash = marker_utils_rfind('/', path);
@@ -150,7 +150,7 @@ void
 marker_editor_window_open_file(MarkerEditorWindow* self,
                                GFile*              file)
 {
-    if (file && G_IS_FILE(file))
+    if (G_IS_FILE(file))
     {   
         char* file_contents = NULL;
         gsize file_size = 0;
@@ -189,7 +189,7 @@ void
 marker_editor_window_save_file_as(MarkerEditorWindow* self,
                                   GFile*              file)
 {
-    if (file && G_IS_FILE(file))
+    if (G_IS_FILE(file))
     {
         GError* err = NULL;
         
@@ -286,7 +286,7 @@ static void
 save_btn_pressed(GtkWidget*          widget,
                  MarkerEditorWindow* self)
 {
-    if (self->file && G_IS_FILE(self->file))
+    if (G_IS_FILE(self->file))
     {
         marker_editor_window_save_file_as(self, self->file);
     }
@@ -330,6 +330,17 @@ open_btn_pressed(GtkWidget*          widget,
 }
 
 static void
+new_btn_pressed(GtkWidget*          widget,
+                MarkerEditorWindow* self)
+{
+    GtkApplication* app;
+    g_object_get(self, "application", &app, NULL);
+    MarkerEditorWindow* win = marker_editor_window_new(app);
+    gtk_widget_show_all(GTK_WIDGET(win));
+    g_object_unref(app);
+}
+
+static void
 refresh_btn_pressed(GtkWidget*          widget,
                     MarkerEditorWindow* self)
 {
@@ -353,7 +364,7 @@ source_buffer_changed(GtkTextBuffer*      buffer,
     {
         self->unsaved_changes = TRUE;
         
-        if (self->file && G_IS_FILE(self->file))
+        if (G_IS_FILE(self->file))
         {
             char* basename = g_file_get_basename(self->file);        
             int len = strlen(basename);
@@ -453,6 +464,7 @@ marker_editor_window_init(MarkerEditorWindow* self)
     gtk_builder_add_callback_symbol(builder, "open_btn_pressed", G_CALLBACK(open_btn_pressed));
     gtk_builder_add_callback_symbol(builder, "save_btn_pressed", G_CALLBACK(save_btn_pressed));
     gtk_builder_add_callback_symbol(builder, "save_as_btn_pressed", G_CALLBACK(save_as_btn_pressed));
+    gtk_builder_add_callback_symbol(builder, "new_btn_pressed", G_CALLBACK(new_btn_pressed));
     gtk_builder_add_callback_symbol(builder, "refresh_btn_pressed", G_CALLBACK(refresh_btn_pressed));
     gtk_builder_add_callback_symbol(builder, "menu_btn_toggled", G_CALLBACK(menu_btn_toggled));
     gtk_builder_connect_signals(builder, self);
@@ -479,7 +491,7 @@ marker_editor_window_new_from_file(GtkApplication* app,
                                    GFile*          file)
 {
     MarkerEditorWindow* win = marker_editor_window_new(app);
-    if (file && G_IS_FILE(file))
+    if (G_IS_FILE(file))
     {
         marker_editor_window_open_file(win, file);
     }
