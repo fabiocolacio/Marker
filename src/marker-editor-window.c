@@ -10,7 +10,7 @@
 
 struct _MarkerEditorWindow
 {
-    GtkWindow  parent_instance;
+    GtkApplicationWindow  parent_instance;
     
     GtkWidget* header_bar;
     GtkWidget* source_view;
@@ -27,20 +27,25 @@ struct _MarkerEditorWindow
     char*      stylesheet_name;
 };
 
-G_DEFINE_TYPE(MarkerEditorWindow, marker_editor_window, GTK_TYPE_WINDOW)
+G_DEFINE_TYPE(MarkerEditorWindow, marker_editor_window, GTK_TYPE_APPLICATION_WINDOW)
+
+const char* TMP_MD   = ".marker_tmp.md";
+const char* TMP_HTML = ".marker_tmp.html";
 
 static void
 show_unsaved_documents_warning(GtkWindow* window)
 {
-    GtkWidget* dialog = gtk_message_dialog_new_with_markup(window,
-                                                           GTK_DIALOG_MODAL,
-                                                           GTK_MESSAGE_QUESTION,
-                                                           GTK_BUTTONS_OK_CANCEL,
-                                                           "<span weight='bold' size='larger'>"
-                                                           "Discard changes to this document?"
-                                                           "</span>\n\n"
-                                                           "This document has unsaved changes "
-                                                           "that will be lost if you quit.");
+    GtkWidget* dialog =
+        gtk_message_dialog_new_with_markup(window,
+                                           GTK_DIALOG_MODAL,
+                                           GTK_MESSAGE_QUESTION,
+                                           GTK_BUTTONS_OK_CANCEL,
+                                           "<span weight='bold' size='larger'>"
+                                           "Discard changes to this document?"
+                                           "</span>\n\n"
+                                           "This document has unsaved changes "
+                                           "that will be lost if you quit.");
+                                           
     gint response = gtk_dialog_run(GTK_DIALOG(dialog));
     switch (response)
     {
@@ -58,40 +63,40 @@ web_view_load_event(WebKitWebView* web_view,
 {
     if (progress >= 100)
     {
-        remove(".marker_tmp.html");
+        remove(TMP_HTML);
     }
 }
 
 void
 marker_editor_window_refresh_web_view(MarkerEditorWindow* self)
 {
-    char* tmp_md = ".marker_tmp.md";
-    char* tmp_html = ".marker_tmp.html";
-
-    char* dir;
-
+    int ret;
     if (G_IS_FILE(self->file))
     {
         char* path = g_file_get_path(self->file);
         int last_slash = marker_utils_rfind('/', path);
         path[last_slash] = '\0';
-        chdir(path);
+        ret = chdir(path);
+        if (ret != 0)
+        {
+            puts("There was a problem changing directories");
+        }
         g_free(path);
     }
     
-    GtkTextBuffer* buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(self->source_view));
+    GtkTextBuffer* buffer;
+    buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(self->source_view));
     GtkTextIter start_iter;
     GtkTextIter end_iter;
     gtk_text_buffer_get_start_iter(GTK_TEXT_BUFFER(buffer), &start_iter);
     gtk_text_buffer_get_end_iter(GTK_TEXT_BUFFER(buffer), &end_iter);
-    
     char* buffer_text = gtk_text_buffer_get_text(GTK_TEXT_BUFFER(buffer),
                                                  &start_iter,
                                                  &end_iter,
                                                  FALSE);
     
-    FILE* fp = fopen(tmp_md, "w");
-    fprintf(fp, buffer_text);
+    FILE* fp = fopen(TMP_MD, "w");
+    fputs(buffer_text, fp);
     fclose(fp);
     g_free(buffer_text);
     
@@ -99,24 +104,30 @@ marker_editor_window_refresh_web_view(MarkerEditorWindow* self)
     strcat(command, STYLES_DIR);
     strcat(command, self->stylesheet_name);
     strcat(command, " -o ");
-    strcat(command, tmp_html);
+    strcat(command, TMP_HTML);
     strcat(command, " ");
-    strcat(command, tmp_md);
+    strcat(command, TMP_MD);
     strcat(command, "\0");
-    system(command);
+    ret = system(command);
+    if (ret != 0)
+    {
+        puts("There was a problem generating the html document");
+    }
     
-    char cwd[50];
-    memset(cwd, 0, 50);
-    getcwd(cwd, 50);
+    char* cwd = getcwd(NULL, 0);
+    if (cwd == NULL)
+    {
+        puts("There was a problem getting the current working directory");
+    }
     
     int cwd_len = strlen(cwd);
-    int html_len = strlen(tmp_html);
+    int html_len = strlen(TMP_HTML);
     int html_full_path_len = cwd_len + html_len + 2;
     char html_full_path[html_full_path_len];
     memset(html_full_path, 0, html_full_path_len);
     strcat(html_full_path, cwd);
     strcat(html_full_path, "/");
-    strcat(html_full_path, tmp_html);
+    strcat(html_full_path, TMP_HTML);
     
     char uri[html_full_path_len + strlen("file://") + 1];
     memset(uri, 0, sizeof(uri));
@@ -126,25 +137,15 @@ marker_editor_window_refresh_web_view(MarkerEditorWindow* self)
     webkit_web_view_load_uri(WEBKIT_WEB_VIEW(self->web_view), uri);
     g_signal_connect(self->web_view, "load-progress-changed", G_CALLBACK(web_view_load_event), NULL);
     
-    /*
-    guint nsig;
-    guint* sigs = g_signal_list_ids(WEBKIT_TYPE_WEB_VIEW, &nsig);
-    printf("%u\n", nsig);
-    
-    for (int i = 0; i < nsig; ++i)
-    {
-        printf("name: %s\n", g_signal_name(sigs[i]));
-    }
-    */
-    
-    remove(tmp_md);
+    remove(TMP_MD);
+    free(cwd);
 }
 
 void
 marker_editor_window_open_file(MarkerEditorWindow* self,
                                GFile*              file)
 {
-    if (file)
+    if (G_IS_FILE(file))
     {   
         self->unsaved_changes = FALSE;
         self->file = file;
@@ -181,7 +182,7 @@ void
 marker_editor_window_save_file_as(MarkerEditorWindow* self,
                                   GFile*              file)
 {
-    if (file)
+    if (G_IS_FILE(file))
     {
         GError* err = NULL;
         
@@ -248,28 +249,23 @@ marker_editor_window_save_file_as(MarkerEditorWindow* self,
 
 static void save_as_btn_pressed(GtkWidget*          widget,
                                 MarkerEditorWindow* self)
-{
-    GtkWidget*      dialog;
-    GtkFileChooser* chooser;
-    char*           filename;
-    gint            response;
-    
-    dialog = gtk_file_chooser_dialog_new("Open File",
-                                         GTK_WINDOW(self),
-                                         GTK_FILE_CHOOSER_ACTION_SAVE,
-                                         "Cancel",
-                                         GTK_RESPONSE_CANCEL,
-                                         "Save",
-                                         GTK_RESPONSE_ACCEPT,
-                                         NULL);
+{    
+    GtkWidget* dialog = gtk_file_chooser_dialog_new("Open File",
+                                                    GTK_WINDOW(self),
+                                                    GTK_FILE_CHOOSER_ACTION_SAVE,
+                                                    "Cancel",
+                                                    GTK_RESPONSE_CANCEL,
+                                                    "Save",
+                                                    GTK_RESPONSE_ACCEPT,
+                                                    NULL);
         
     gtk_file_chooser_set_do_overwrite_confirmation(GTK_FILE_CHOOSER(dialog), TRUE);
     
-    response = gtk_dialog_run(GTK_DIALOG(dialog));
+    gint response = gtk_dialog_run(GTK_DIALOG(dialog));
     if (response == GTK_RESPONSE_ACCEPT)
     {
-        chooser = GTK_FILE_CHOOSER (dialog);
-        filename = gtk_file_chooser_get_filename (chooser);
+        GtkFileChooser* chooser = GTK_FILE_CHOOSER (dialog);
+        char* filename = gtk_file_chooser_get_filename (chooser);
         GFile* file = g_file_new_for_path(filename);
         marker_editor_window_save_file_as(self, file);
         
@@ -283,7 +279,7 @@ static void
 save_btn_pressed(GtkWidget*          widget,
                  MarkerEditorWindow* self)
 {
-    if (self->file)
+    if (G_IS_FILE(self->file))
     {
         marker_editor_window_save_file_as(self, self->file);
     }
@@ -296,26 +292,21 @@ save_btn_pressed(GtkWidget*          widget,
 static void
 open_btn_pressed(GtkWidget*          widget,
                  MarkerEditorWindow* self)
-{
-    GtkWidget*      dialog;
-    GtkFileChooser* chooser;
-    char*           filename;
-    gint            response;
+{    
+    GtkWidget* dialog = gtk_file_chooser_dialog_new("Open File",
+                                                    GTK_WINDOW(self),
+                                                    GTK_FILE_CHOOSER_ACTION_OPEN,
+                                                    "Cancel",
+                                                    GTK_RESPONSE_CANCEL,
+                                                    "Open",
+                                                    GTK_RESPONSE_ACCEPT,
+                                                    NULL);
     
-    dialog = gtk_file_chooser_dialog_new("Open File",
-                                         GTK_WINDOW(self),
-                                         GTK_FILE_CHOOSER_ACTION_OPEN,
-                                         "Cancel",
-                                         GTK_RESPONSE_CANCEL,
-                                         "Open",
-                                         GTK_RESPONSE_ACCEPT,
-                                         NULL);
-    
-    response = gtk_dialog_run(GTK_DIALOG(dialog));
+    gint response = gtk_dialog_run(GTK_DIALOG(dialog));
     if (response == GTK_RESPONSE_ACCEPT)
     {
-        chooser = GTK_FILE_CHOOSER (dialog);
-        filename = gtk_file_chooser_get_filename (chooser);
+        GtkFileChooser* chooser = GTK_FILE_CHOOSER (dialog);
+        char* filename = gtk_file_chooser_get_filename (chooser);
         
         GFile* file = g_file_new_for_path(filename);
         marker_editor_window_open_file(self, file);
@@ -464,15 +455,18 @@ marker_editor_window_class_init(MarkerEditorWindowClass* class)
 }
 
 MarkerEditorWindow*
-marker_editor_window_new(void)
+marker_editor_window_new(GtkApplication* app)
 {
-    return g_object_new(MARKER_TYPE_EDITOR_WINDOW, NULL);
+    return g_object_new(MARKER_TYPE_EDITOR_WINDOW,
+                        "application", app,
+                        NULL);
 }
 
 MarkerEditorWindow*
-marker_editor_window_new_from_file(GFile* file)
+marker_editor_window_new_from_file(GtkApplication* app,
+                                   GFile*          file)
 {
-    MarkerEditorWindow* win = marker_editor_window_new();
+    MarkerEditorWindow* win = marker_editor_window_new(app);
     if (G_IS_FILE(file))
     {
         marker_editor_window_open_file(win, file);
