@@ -68,9 +68,9 @@
             </child>
             
             <child>
-              <object class="GtkLabel" id="output_label">
+              <object class="GtkLabel">
                 <property name="visible">True</property>
-                <property name="label">Output File: None</property>
+                <property name="label">Output File:</property>
                 <property name="xalign">1.0</property>
               </object>
               <packing>
@@ -79,9 +79,10 @@
               </packing>
             </child>
             <child>
-              <object class="GtkButton">
+              <object class="GtkButton" id="export_location_btn">
                 <property name="visible">True</property>
-                <property name="label">Choose</property>
+                <property name="label">None</property>
+                <signal name="clicked" handler="export_location_btn_pressed" swapped="no" />
               </object>
               <packing>
                 <property name="left_attach">1</property>

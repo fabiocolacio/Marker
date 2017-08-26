@@ -330,11 +330,112 @@ open_btn_pressed(GtkWidget*          widget,
 }
 
 void
-marker_editor_window_export_file_as(MarkerEditorWindow*  window,
+marker_editor_window_export_file_as(MarkerEditorWindow*  self,
                                     GFile*               file,
                                     MarkerExportSettings settings)
 {
+    if (G_IS_FILE(file))
+    {
+        char* filepath = g_file_get_path(file);
+        int slash = marker_utils_rfind('/', filepath);
+        char loc[slash + 1];
+        memset(loc, 0, sizeof(loc));
+        memcpy(loc, filepath, slash);
+        
+        int ret = chdir(loc);
+        if (!ret)
+        {
+            GtkTextBuffer* buffer;
+            buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(self->source_view));
+            GtkTextIter start_iter;
+            GtkTextIter end_iter;
+            gtk_text_buffer_get_start_iter(GTK_TEXT_BUFFER(buffer), &start_iter);
+            gtk_text_buffer_get_end_iter(GTK_TEXT_BUFFER(buffer), &end_iter);
+            char* buffer_text = gtk_text_buffer_get_text(GTK_TEXT_BUFFER(buffer),
+                                                               &start_iter,
+                                                               &end_iter,
+                                                               FALSE);
 
+            FILE* fp = fopen(TMP_MD, "w");
+            fputs(buffer_text, fp);
+            fclose(fp);
+            g_free(buffer_text);
+
+            char command[256] = "pandoc -s -c ";
+            strcat(command, settings.style_sheet);
+            strcat(command, " -o ");
+            strcat(command, filepath);
+            strcat(command, " ");
+            strcat(command, TMP_MD);
+            strcat(command, " -t ");
+
+            switch (settings.file_type)
+            {
+                case HTML:
+                    strcat(command, "html");
+                    break;
+                    
+                case PDF:
+                    strcat(command, "latex");
+                    break;
+                    
+                case RTF:
+                    strcat(command, "rtf");
+                    break;
+                    
+                case EPUB:
+                    strcat(command, "epub");
+                    break;
+                    
+                case ODT:
+                    strcat(command, "odt");
+                    break;
+                    
+                case DOCX:
+                    strcat(command, "docx");
+                    break;
+                    
+                case LATEX:
+                    strcat(command, "latex");
+                    break;
+            }
+            puts(command);
+            ret = system(command);
+            if (!ret)
+            {
+                puts("There was a problem exporting the file");
+            }
+        }
+        g_free(filepath);
+    }
+}
+
+static void
+export_location_btn_pressed(GtkButton* btn,
+                            GtkWindow* win)
+{
+    GtkWidget* dialog = gtk_file_chooser_dialog_new("Open File",
+                                                    win,
+                                                    GTK_FILE_CHOOSER_ACTION_SAVE,
+                                                    "Cancel",
+                                                    GTK_RESPONSE_CANCEL,
+                                                    "Save",
+                                                    GTK_RESPONSE_ACCEPT,
+                                                    NULL);
+        
+    gtk_file_chooser_set_do_overwrite_confirmation(GTK_FILE_CHOOSER(dialog), TRUE);
+    
+    gint response = gtk_dialog_run(GTK_DIALOG(dialog));
+    if (response == GTK_RESPONSE_ACCEPT)
+    {
+        GtkFileChooser* chooser = GTK_FILE_CHOOSER (dialog);
+        char* filename = gtk_file_chooser_get_filename (chooser);
+        gtk_button_set_label(btn, filename);
+        
+        g_free(filename);
+    }
+    
+    gtk_widget_destroy(dialog);
 }
 
 static void
@@ -344,6 +445,9 @@ export_btn_pressed(GtkWidget*          widget,
     GtkBuilder* builder = gtk_builder_new_from_resource("/com/github/fabiocolacio/marker/marker-export-dialog.ui");
     GtkDialog* export_dialog = GTK_DIALOG(gtk_builder_get_object(builder, "export_dialog"));
     gtk_window_set_transient_for(GTK_WINDOW(export_dialog), GTK_WINDOW(self));
+    GtkButton* loc_btn = GTK_BUTTON(gtk_builder_get_object(builder, "export_location_btn"));
+    gtk_builder_add_callback_symbol(builder, "export_location_btn_pressed", G_CALLBACK(export_location_btn_pressed));
+    gtk_builder_connect_signals(builder, export_dialog);
     
     GtkComboBox* format_chooser = GTK_COMBO_BOX(gtk_builder_get_object(builder, "format_chooser"));
     GtkListStore* export_format_model = GTK_LIST_STORE(gtk_builder_get_object(builder, "export_format_model"));
@@ -359,45 +463,22 @@ export_btn_pressed(GtkWidget*          widget,
     gtk_widget_show_all(GTK_WIDGET(format_chooser));
     g_object_unref(builder);
     
-    gtk_dialog_run(export_dialog);
-    gtk_widget_destroy(GTK_WIDGET(export_dialog));
-    
-    /*
-    GtkDialogFlags flags = GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT;
-    GtkWidget* dialog = gtk_dialog_new_with_buttons("Export",
-                                                    self,
-                                                    flags,
-                                                    "Export",
-                                                    GTK_RESPONSE_ACCEPT,
-                                                    "Cancel",
-                                                    GTK_RESPONSE_CANCEL,
-                                                    NULL);
-    
-
-    GtkWidget* file_dialog = gtk_file_chooser_dialog_new("Open File",
-                                                    GTK_WINDOW(self),
-                                                    GTK_FILE_CHOOSER_ACTION_SAVE,
-                                                    "Cancel",
-                                                    GTK_RESPONSE_CANCEL,
-                                                    "Save",
-                                                    GTK_RESPONSE_ACCEPT,
-                                                    NULL);
-    
-    gtk_file_chooser_set_do_overwrite_confirmation(GTK_FILE_CHOOSER(file_dialog), TRUE);
-    
-    gint response = gtk_dialog_run(GTK_DIALOG(file_dialog));
-    if (response == GTK_RESPONSE_ACCEPT)
+    gint ret = gtk_dialog_run(export_dialog);
+    if (ret == GTK_RESPONSE_OK)
     {
-        GtkFileChooser* chooser = GTK_FILE_CHOOSER (file_dialog);
-        char* filename = gtk_file_chooser_get_filename (chooser);
+        MarkerExportSettings settings;
+        settings.file_type = gtk_combo_box_get_active(format_chooser);
+        char style_sheet[strlen(STYLES_DIR) + strlen(self->stylesheet_name) + 1];
+        memset(style_sheet, 0, sizeof(style_sheet));
+        strcat(style_sheet, STYLES_DIR);
+        strcat(style_sheet, self->stylesheet_name);
+        settings.style_sheet = style_sheet;
+        const gchar* filename = gtk_button_get_label(loc_btn);
         GFile* file = g_file_new_for_path(filename);
-        marker_editor_window_save_file_as(self, file);
-        
-        g_free(filename);
+        marker_editor_window_export_file_as(self, file, settings);
     }
     
-    gtk_widget_destroy(file_dialog);
-    */
+    gtk_widget_destroy(GTK_WIDGET(export_dialog));
 }
 
 static void
