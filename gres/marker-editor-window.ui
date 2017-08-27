@@ -16,38 +16,23 @@
     <property name="icon_size">2</property>
   </object>
   
-  <!-- Popover Menu -->
-  <object class="GtkPopoverMenu" id="menu_popover">
-    <property name="modal">True</property>
-    <property name="border-width">6</property>
-    <child>
-      <object class="GtkBox">
-        <property name="visible">True</property>
-        <property name="orientation">vertical</property>
-        <child>
-          <object class="GtkModelButton">
-            <property name="visible">True</property>
-            <property name="text">Save As...</property>
-            <signal name="clicked" handler="save_as_btn_pressed" swapped="no" />
-          </object>
-        </child>
-        <child>
-          <object class="GtkModelButton">
-            <property name="visible">True</property>
-            <property name="text">Export...</property>
-            <signal name="clicked" handler="export_btn_pressed" swapped="no" />
-          </object>
-        </child>
-        <child>
-          <object class="GtkModelButton">
-            <property name="visible">True</property>
-            <property name="text">New</property>
-            <signal name="clicked" handler="new_btn_pressed" swapped="no" />
-          </object>
-        </child>
-      </object>
-    </child>
-  </object>
+  <!-- Gear Popover Menu -->
+  <menu id="gear_menu">
+    <section>
+      <item>
+        <attribute name="label">Save As...</attribute>
+        <attribute name="action">win.saveas</attribute>
+      </item>
+      <item>
+        <attribute name="label">Export...</attribute>
+        <attribute name="action">win.export</attribute>
+      </item>
+      <item>
+        <attribute name="label">New</attribute>
+        <attribute name="action">win.new</attribute>
+      </item>
+    </section>
+  </menu>
   
   <!-- Header Bar -->
   <object class="GtkHeaderBar" id="header_bar">
@@ -72,9 +57,8 @@
       </packing>
     </child>
     <child>
-      <object class="GtkToggleButton" id="menu_toggler">
+      <object class="GtkMenuButton" id="menu_btn">
         <property name="image">open-menu</property>
-        <signal name="toggled" handler="menu_btn_toggled" swapped="no" />
       </object>
       <packing>
         <property name="pack_type">end</property>

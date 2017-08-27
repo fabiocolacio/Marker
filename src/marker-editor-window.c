@@ -254,9 +254,11 @@ marker_editor_window_save_file_as(MarkerEditorWindow* self,
     }
 }
 
-static void save_as_btn_pressed(GtkWidget*          widget,
-                                MarkerEditorWindow* self)
-{    
+static void save_as_btn_pressed(GSimpleAction* action,
+                                GVariant*      parameter,
+                                gpointer       data)
+{   
+    MarkerEditorWindow* self = data;
     GtkWidget* dialog = gtk_file_chooser_dialog_new("Open File",
                                                     GTK_WINDOW(self),
                                                     GTK_FILE_CHOOSER_ACTION_SAVE,
@@ -292,7 +294,7 @@ save_btn_pressed(GtkWidget*          widget,
     }
     else
     {
-        save_as_btn_pressed(widget, self);
+        save_as_btn_pressed(NULL, NULL, self);
     }
 }
 
@@ -439,9 +441,11 @@ export_location_btn_pressed(GtkButton* btn,
 }
 
 static void
-export_btn_pressed(GtkWidget*          widget,
-                   MarkerEditorWindow* self)
+export_btn_pressed(GSimpleAction* action,
+                   GVariant*      parameter,
+                   gpointer       data)
 {
+    MarkerEditorWindow* self = data;
     GtkBuilder* builder = gtk_builder_new_from_resource("/com/github/fabiocolacio/marker/marker-export-dialog.ui");
     GtkDialog* export_dialog = GTK_DIALOG(gtk_builder_get_object(builder, "export_dialog"));
     gtk_window_set_transient_for(GTK_WINDOW(export_dialog), GTK_WINDOW(self));
@@ -482,9 +486,11 @@ export_btn_pressed(GtkWidget*          widget,
 }
 
 static void
-new_btn_pressed(GtkWidget*          widget,
-                MarkerEditorWindow* self)
+new_btn_pressed(GSimpleAction* action,
+                GVariant*      parameter,
+                gpointer       data)
 {
+    MarkerEditorWindow* self = data;
     GtkApplication* app;
     g_object_get(self, "application", &app, NULL);
     MarkerEditorWindow* win = marker_editor_window_new(app);
@@ -541,20 +547,6 @@ source_buffer_changed(GtkTextBuffer*      buffer,
     }
 }
 
-static void
-menu_btn_toggled(GtkToggleButton*    button,
-                 MarkerEditorWindow* self)
-{
-    gtk_widget_set_visible(self->popover, gtk_toggle_button_get_active(button));
-}
-
-static void
-menu_popover_closed(GtkPopover*      popover,
-                    GtkToggleButton* toggle_btn)
-{
-    gtk_toggle_button_set_active(toggle_btn, FALSE);
-}
-
 static gboolean
 close_btn_pressed(MarkerEditorWindow* self,
                   gpointer*           user_data)
@@ -566,6 +558,13 @@ close_btn_pressed(MarkerEditorWindow* self,
     }
     return FALSE;
 }
+
+static GActionEntry win_entries[] =
+{
+    { "saveas", save_as_btn_pressed, NULL, NULL, NULL },
+    { "export", export_btn_pressed, NULL, NULL, NULL },
+    { "new", new_btn_pressed, NULL, NULL, NULL }
+};
 
 static void
 marker_editor_window_init(MarkerEditorWindow* self)
@@ -593,10 +592,14 @@ marker_editor_window_init(MarkerEditorWindow* self)
     gtk_text_view_set_buffer(GTK_TEXT_VIEW(self->source_view), GTK_TEXT_BUFFER(source_buffer));
     g_signal_connect(source_buffer, "changed", G_CALLBACK(source_buffer_changed), self);
     
-    self->popover = GTK_WIDGET(gtk_builder_get_object(builder, "menu_popover"));
-    widget = GTK_WIDGET(gtk_builder_get_object(builder, "menu_toggler"));
-    gtk_popover_set_relative_to(GTK_POPOVER(self->popover), widget);
-    g_signal_connect(self->popover, "closed", G_CALLBACK(menu_popover_closed), widget);
+    GtkMenuButton* menu_btn = GTK_MENU_BUTTON(gtk_builder_get_object(builder, "menu_btn"));
+    GMenuModel* gear_menu = G_MENU_MODEL(gtk_builder_get_object(builder, "gear_menu"));
+    gtk_menu_button_set_use_popover(menu_btn, TRUE);
+    gtk_menu_button_set_menu_model(menu_btn, gear_menu);
+    g_action_map_add_action_entries(G_ACTION_MAP(self),
+                                    win_entries,
+                                    G_N_ELEMENTS(win_entries),
+                                    self);
     
     widget = GTK_WIDGET(gtk_builder_get_object(builder, "editor"));
     gtk_container_add(GTK_CONTAINER(self), widget);
@@ -608,11 +611,7 @@ marker_editor_window_init(MarkerEditorWindow* self)
     
     gtk_builder_add_callback_symbol(builder, "open_btn_pressed", G_CALLBACK(open_btn_pressed));
     gtk_builder_add_callback_symbol(builder, "save_btn_pressed", G_CALLBACK(save_btn_pressed));
-    gtk_builder_add_callback_symbol(builder, "save_as_btn_pressed", G_CALLBACK(save_as_btn_pressed));
-    gtk_builder_add_callback_symbol(builder, "export_btn_pressed", G_CALLBACK(export_btn_pressed));
-    gtk_builder_add_callback_symbol(builder, "new_btn_pressed", G_CALLBACK(new_btn_pressed));
     gtk_builder_add_callback_symbol(builder, "refresh_btn_pressed", G_CALLBACK(refresh_btn_pressed));
-    gtk_builder_add_callback_symbol(builder, "menu_btn_toggled", G_CALLBACK(menu_btn_toggled));
     gtk_builder_connect_signals(builder, self);
     
     g_object_unref(builder);
