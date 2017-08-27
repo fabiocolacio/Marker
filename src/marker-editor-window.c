@@ -254,9 +254,10 @@ marker_editor_window_save_file_as(MarkerEditorWindow* self,
     }
 }
 
-static void save_as_btn_pressed(GSimpleAction* action,
-                                GVariant*      parameter,
-                                gpointer       data)
+static void
+save_as_activated(GSimpleAction* action,
+                  GVariant*      parameter,
+                  gpointer       data)
 {   
     MarkerEditorWindow* self = data;
     GtkWidget* dialog = gtk_file_chooser_dialog_new("Open File",
@@ -294,7 +295,7 @@ save_btn_pressed(GtkWidget*          widget,
     }
     else
     {
-        save_as_btn_pressed(NULL, NULL, self);
+        save_as_activated(NULL, NULL, self);
     }
 }
 
@@ -441,9 +442,9 @@ export_location_btn_pressed(GtkButton* btn,
 }
 
 static void
-export_btn_pressed(GSimpleAction* action,
-                   GVariant*      parameter,
-                   gpointer       data)
+export_activated(GSimpleAction* action,
+                 GVariant*      parameter,
+                 gpointer       data)
 {
     MarkerEditorWindow* self = data;
     GtkBuilder* builder = gtk_builder_new_from_resource("/com/github/fabiocolacio/marker/marker-export-dialog.ui");
@@ -486,9 +487,9 @@ export_btn_pressed(GSimpleAction* action,
 }
 
 static void
-new_btn_pressed(GSimpleAction* action,
-                GVariant*      parameter,
-                gpointer       data)
+new_activated(GSimpleAction* action,
+              GVariant*      parameter,
+              gpointer       data)
 {
     MarkerEditorWindow* self = data;
     GtkApplication* app;
@@ -561,9 +562,9 @@ close_btn_pressed(MarkerEditorWindow* self,
 
 static GActionEntry win_entries[] =
 {
-    { "saveas", save_as_btn_pressed, NULL, NULL, NULL },
-    { "export", export_btn_pressed, NULL, NULL, NULL },
-    { "new", new_btn_pressed, NULL, NULL, NULL }
+    { "saveas", save_as_activated, NULL, NULL, NULL },
+    { "export", export_activated, NULL, NULL, NULL },
+    { "new", new_activated, NULL, NULL, NULL }
 };
 
 static void
