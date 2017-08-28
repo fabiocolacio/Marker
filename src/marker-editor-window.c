@@ -17,8 +17,6 @@ struct _MarkerEditorWindow
     GtkWidget* web_view;
     GtkWidget* popover;
     
-    gboolean   refresh_scheduled;
-    
     gboolean   unsaved_changes;
     char*      file_name;
     char*      file_location;
@@ -29,8 +27,8 @@ struct _MarkerEditorWindow
 
 G_DEFINE_TYPE(MarkerEditorWindow, marker_editor_window, GTK_TYPE_APPLICATION_WINDOW)
 
-const char* TMP_MD   = ".marker_tmp.md";
-const char* TMP_HTML = ".marker_tmp.html";
+#define TMP_MD   ".marker_tmp.md"
+#define TMP_HTML ".marker_tmp.html"
 
 static void
 show_unsaved_documents_warning(GtkWindow* window)
@@ -95,23 +93,32 @@ marker_editor_window_refresh_web_view(MarkerEditorWindow* self)
                                                  &end_iter,
                                                  FALSE);
     
-    FILE* fp = fopen(TMP_MD, "w");
-    fputs(buffer_text, fp);
-    fclose(fp);
-    g_free(buffer_text);
+    char* command_arr[] = {
+        "echo \'",
+        buffer_text,
+        "\' | ",
+        "pandoc -s -c ",
+        STYLES_DIR,
+        self->stylesheet_name,
+        " -o ",
+        TMP_HTML,
+        "\0"
+    };
     
-    char command[256] = "pandoc -s ";
-    if (self->stylesheet_name)
+    size_t command_len = 0;
+    int arr_len = G_N_ELEMENTS(command_arr);
+    for (int i = 0; i < arr_len; ++i)
     {
-        strcat(command, "-c ");
-        strcat(command, STYLES_DIR);
-        strcat(command, self->stylesheet_name);
+        command_len += strlen(command_arr[i]);
     }
-    strcat(command, " -o ");
-    strcat(command, TMP_HTML);
-    strcat(command, " ");
-    strcat(command, TMP_MD);
-    strcat(command, "\0");
+    
+    char* command = malloc(command_len);
+    memset(command, 0, command_len);
+    for (int i = 0; i < arr_len; ++i)
+    {
+        strcat(command, command_arr[i]);
+    }
+    
     ret = system(command);
     if (ret != 0)
     {
@@ -142,8 +149,8 @@ marker_editor_window_refresh_web_view(MarkerEditorWindow* self)
     webkit_web_view_load_uri(WEBKIT_WEB_VIEW(self->web_view), uri);
     g_signal_connect(self->web_view, "load-progress-changed", G_CALLBACK(web_view_load_event), NULL);
     
-    remove(TMP_MD);
     free(cwd);
+    free(command);
 }
 
 void
@@ -506,15 +513,6 @@ refresh_btn_pressed(GtkWidget*          widget,
     marker_editor_window_refresh_web_view(self);
 }
 
-static gboolean
-auto_refresh(gpointer user_data)
-{
-    MarkerEditorWindow* self = user_data;
-    marker_editor_window_refresh_web_view(self);
-    self->refresh_scheduled = FALSE;
-    return FALSE;
-}
-
 static void
 source_buffer_changed(GtkTextBuffer*      buffer,
                       MarkerEditorWindow* self)
@@ -539,12 +537,6 @@ source_buffer_changed(GtkTextBuffer*      buffer,
             gtk_header_bar_set_title(GTK_HEADER_BAR(self->header_bar), "*Untitled.md");
             gtk_header_bar_set_has_subtitle(GTK_HEADER_BAR(self->header_bar), FALSE);
         }
-    }
-    
-    if (!self->refresh_scheduled)
-    {
-        g_timeout_add_seconds(1, auto_refresh, self);
-        self->refresh_scheduled = TRUE;
     }
 }
 
@@ -572,7 +564,6 @@ marker_editor_window_init(MarkerEditorWindow* self)
 {   
     self->file = NULL;
     self->unsaved_changes = FALSE;
-    self->refresh_scheduled = FALSE;
     self->stylesheet_name = "marker.css";
     
     GtkBuilder* builder = gtk_builder_new_from_resource("/com/github/fabiocolacio/marker/marker-editor-window.ui");
