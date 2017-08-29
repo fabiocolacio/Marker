@@ -32,8 +32,6 @@
   </object>
   
   <object class="GtkDialog" id="export_dialog">
-    <property name="default-width">300</property>
-    <property name="default-height">200</property>
     <property name="border-width">18</property>
     <property name="title">Export</property>
     <child internal-child="vbox">

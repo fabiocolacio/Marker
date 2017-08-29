@@ -1,6 +1,26 @@
 #include <time.h>
+#include <string.h>
+#include <stdio.h>
 
 #include "marker-utils.h"
+
+char*
+marker_combo_box_get_active_str(GtkComboBox* combo_box)
+{
+    GtkTreeIter iter;
+    if (gtk_combo_box_get_active_iter(combo_box, &iter))
+    {
+        GtkTreeModel* model = NULL;
+        model = gtk_combo_box_get_model(combo_box);
+        GValue value = G_VALUE_INIT;
+        if (model)
+        {
+            gtk_tree_model_get_value(model, &iter, 0, &value);
+            return g_value_get_string(&value);
+        }
+    }
+    return NULL;
+}
 
 int
 marker_utils_rfind(char query, char* str)
@@ -34,5 +54,18 @@ marker_utils_get_current_time_seconds()
     seconds = difftime(timer,mktime(&y2k));
     
     return seconds;
+}
+
+int
+marker_utils_str_ends_with(char* str,
+                           char* sub_str)
+{
+    size_t str_len = strlen(str);
+    size_t sub_len = strlen(sub_str);
+    if (memcmp(&str[str_len - sub_len], sub_str, sub_len) == 0)
+    {
+        return 1;
+    }
+    return 0;
 }
 

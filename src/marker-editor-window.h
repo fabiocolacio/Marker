@@ -53,6 +53,14 @@ marker_editor_window_export_file_as(MarkerEditorWindow*  window,
                                     GFile*               file,
                                     MarkerExportSettings settings);
 
+void
+marker_editor_window_set_css_theme(MarkerEditorWindow* window,
+                                      char*               theme);
+                                    
+void
+marker_editor_window_set_syntax_theme(MarkerEditorWindow* window,
+                                      char*               theme);
+
 G_END_DECLS
 
 #endif

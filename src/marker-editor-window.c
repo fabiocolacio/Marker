@@ -549,6 +549,24 @@ close_btn_pressed(MarkerEditorWindow* self,
     return FALSE;
 }
 
+void
+marker_editor_window_set_css_theme(MarkerEditorWindow* self,
+                                   char*               theme)
+{
+    self->stylesheet_name = theme;
+    marker_editor_window_refresh_web_view(self);
+}
+
+void
+marker_editor_window_set_syntax_theme(MarkerEditorWindow* self,
+                                      char*               theme)
+{
+    GtkTextBuffer* buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(self->source_view));
+    GtkSourceStyleSchemeManager* style_manager = gtk_source_style_scheme_manager_get_default();
+    GtkSourceStyleScheme* scheme = gtk_source_style_scheme_manager_get_scheme(style_manager, theme);
+    gtk_source_buffer_set_style_scheme(GTK_SOURCE_BUFFER(buffer), scheme);
+}
+
 static GActionEntry win_entries[] =
 {
     { "saveas", save_as_activated, NULL, NULL, NULL },
