@@ -93,32 +93,29 @@ marker_editor_window_refresh_web_view(MarkerEditorWindow* self)
                                                  &end_iter,
                                                  FALSE);
     
+    FILE* fp = fopen(TMP_MD, "w");
+    fputs(buffer_text, fp);
+    fclose(fp);
+    g_free(buffer_text);
+    
     char* command_arr[] = {
-        "echo \'",
-        buffer_text,
-        "\' | ",
-        "pandoc -s -c ",
-        STYLES_DIR,
-        self->stylesheet_name,
-        " -o ",
-        TMP_HTML,
+        "pandoc -s -o ",
+        TMP_HTML, " ",
+        TMP_MD, " -c ",
+        STYLES_DIR, self->stylesheet_name,
         "\0"
     };
-    
     size_t command_len = 0;
-    int arr_len = G_N_ELEMENTS(command_arr);
-    for (int i = 0; i < arr_len; ++i)
+    for (int i = 0; i < G_N_ELEMENTS(command_arr); ++i)
     {
         command_len += strlen(command_arr[i]);
     }
-    
-    char* command = malloc(command_len);
+    char command[command_len];
     memset(command, 0, command_len);
-    for (int i = 0; i < arr_len; ++i)
+    for (int i = 0; i < G_N_ELEMENTS(command_arr); ++i)
     {
         strcat(command, command_arr[i]);
     }
-    
     ret = system(command);
     if (ret != 0)
     {
@@ -149,8 +146,8 @@ marker_editor_window_refresh_web_view(MarkerEditorWindow* self)
     webkit_web_view_load_uri(WEBKIT_WEB_VIEW(self->web_view), uri);
     g_signal_connect(self->web_view, "load-progress-changed", G_CALLBACK(web_view_load_event), NULL);
     
+    remove(TMP_MD);
     free(cwd);
-    free(command);
 }
 
 void
