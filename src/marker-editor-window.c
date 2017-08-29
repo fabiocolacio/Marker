@@ -569,7 +569,7 @@ marker_editor_window_init(MarkerEditorWindow* self)
     GtkSourceLanguage* source_language = gtk_source_language_manager_get_language(source_language_manager, "markdown");
     GtkSourceBuffer* source_buffer = gtk_source_buffer_new_with_language(source_language);
     g_object_unref(source_language_manager);
-
+    
     GtkWidget* widget;
     
     self->header_bar = GTK_WIDGET(gtk_builder_get_object(builder, "header_bar"));

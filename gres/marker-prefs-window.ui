@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk+" version="3.16"/>
+  
+  <object class="GtkWindow" id="prefs_win">
+    <property name="default-width">300</property>
+    <property name="default-height">200</property>
+    <property name="border-width">18</property>
+    <property name="title">Preferences</property>
+    <child>
+      <object class="GtkGrid">
+        <property name="visible">True</property>
+        <property name="column-spacing">12</property>
+        <property name="column-homogeneous">True</property>
+        <property name="row-spacing">6</property>
+          
+        <child>
+          <object class="GtkLabel">
+            <property name="visible">True</property>
+            <property name="label">Syntax Theme:</property>
+            <property name="xalign">1.0</property>
+          </object>
+          <packing>
+            <property name="left_attach">0</property>
+            <property name="top_attach">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkComboBox" id="syntax_chooser">
+            <property name="visible">True</property>
+          </object>
+          <packing>
+            <property name="left_attach">1</property>
+            <property name="top_attach">0</property>
+          </packing>
+        </child>
+                
+        <child>
+          <object class="GtkLabel">
+            <property name="visible">True</property>
+            <property name="label">CSS Theme:</property>
+            <property name="xalign">1.0</property>
+          </object>
+          <packing>
+            <property name="left_attach">0</property>
+            <property name="top_attach">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkComboBox" id="css_chooser">
+            <property name="visible">True</property>
+          </object>
+          <packing>
+            <property name="left_attach">1</property>
+            <property name="top_attach">1</property>
+          </packing>
+        </child>
+        
+      </object>
+    </child>
+  </object>
+  
+</interface>
