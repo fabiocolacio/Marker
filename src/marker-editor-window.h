@@ -68,6 +68,10 @@ void
 marker_editor_window_set_show_line_numbers(MarkerEditorWindow* window,
                                            gboolean            line_nums);
 
+void                                           
+marker_editor_window_set_highlight_current_line(MarkerEditorWindow* window,
+                                                gboolean            highlight);
+
 G_END_DECLS
 
 #endif

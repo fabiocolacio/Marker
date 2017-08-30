@@ -64,6 +64,24 @@ show_line_numbers_toggled(GtkToggleButton* toggler,
   }
 }
 
+static void
+highlight_current_line_toggled(GtkToggleButton* toggler,
+                               gpointer         user_data)
+{
+  GtkApplication* app = user_data;
+  
+  GList* windows = gtk_application_get_windows(app);
+  if (windows)
+  {
+    for (; windows != NULL; windows = windows->next)
+    {
+      MarkerEditorWindow* window = MARKER_EDITOR_WINDOW(windows->data);
+      gboolean toggled = gtk_toggle_button_get_active(toggler);
+      marker_editor_window_set_highlight_current_line(window, toggled);
+    }
+  }
+}
+
 void
 marker_prefs_show_window(GtkApplication* app)
 {
@@ -105,6 +123,7 @@ marker_prefs_show_window(GtkApplication* app)
   gtk_builder_add_callback_symbol(builder, "css_chosen", G_CALLBACK(css_chosen));
   gtk_builder_add_callback_symbol(builder, "syntax_chosen", G_CALLBACK(syntax_chosen));
   gtk_builder_add_callback_symbol(builder, "show_line_numbers_toggled", G_CALLBACK(show_line_numbers_toggled));
+  gtk_builder_add_callback_symbol(builder, "highlight_current_line_toggled", G_CALLBACK(highlight_current_line_toggled));
   gtk_builder_connect_signals(builder, app);
   g_object_unref(builder);
   gtk_widget_show_all(GTK_WIDGET(win));

@@ -581,6 +581,17 @@ marker_editor_window_set_show_line_numbers(MarkerEditorWindow* window,
   }
 }
 
+void                                           
+marker_editor_window_set_highlight_current_line(MarkerEditorWindow* window,
+                                                gboolean            highlight)
+{
+  GtkSourceView* source_view = GTK_SOURCE_VIEW(window->source_view);
+  if (source_view)
+  {
+    gtk_source_view_set_highlight_current_line(source_view, highlight);
+  }
+}
+
 static GActionEntry win_entries[] =
 {
   { "saveas", save_as_activated, NULL, NULL, NULL },
