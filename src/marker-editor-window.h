@@ -60,6 +60,9 @@ marker_editor_window_set_css_theme(MarkerEditorWindow* window,
 void
 marker_editor_window_set_syntax_theme(MarkerEditorWindow* window,
                                       char*               theme);
+                                      
+void
+marker_editor_window_try_close(MarkerEditorWindow* window);
 
 G_END_DECLS
 

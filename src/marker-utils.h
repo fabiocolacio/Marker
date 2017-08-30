@@ -13,7 +13,11 @@ int
 marker_utils_str_ends_with(char* str, char* sub_str);
 
 char*
-marker_combo_box_get_active_str(GtkComboBox* combo_box);
+marker_utils_combo_box_get_active_str(GtkComboBox* combo_box);
+
+void
+marker_utils_combo_box_set_model(GtkComboBox*  combo_box,
+                                 GtkTreeModel* model);
 
 #endif
 

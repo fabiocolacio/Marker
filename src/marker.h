@@ -9,5 +9,8 @@ marker_open(GtkApplication* app,
             gint            num_files,
             const gchar*    hint);
 
+void
+marker_quit(GtkApplication* app);
+
 #endif
 

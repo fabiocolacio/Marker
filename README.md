@@ -2,6 +2,22 @@
 
 Marker is a markdown editor for linux made with Gtk+-3.0
 
+## Features
+
+* Opening markdown documents
+* HTML Preview of markdown documents
+* Editing markdown documents
+* Flexible export options through pandoc
+	* HTML
+	* PDF
+	* RTF
+	* ODT
+	* DOCX
+	* LaTeX
+* Custom CSS themes
+* Custom syntax themes
+* Native Gtk3+ application with full theme support
+
 ## Screenshots
 
 ![scrot.png](scrot.png)
