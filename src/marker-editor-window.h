@@ -73,8 +73,13 @@ marker_editor_window_set_highlight_current_line(MarkerEditorWindow* window,
                                                 gboolean            highlight);
 
 void                                           
-marker_editor_window_show_right_margin(MarkerEditorWindow* window,
-                                       gboolean            margin);
+marker_editor_window_set_show_right_margin(MarkerEditorWindow* window,
+                                           gboolean            margin);
+                                       
+
+void                                           
+marker_editor_window_set_wrap_text(MarkerEditorWindow* window,
+                                   gboolean            wrap);
 
 G_END_DECLS
 

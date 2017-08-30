@@ -95,7 +95,25 @@ show_right_margin_toggled(GtkToggleButton* toggler,
     {
       MarkerEditorWindow* window = MARKER_EDITOR_WINDOW(windows->data);
       gboolean toggled = gtk_toggle_button_get_active(toggler);
-      marker_editor_window_show_right_margin(window, toggled);
+      marker_editor_window_set_show_right_margin(window, toggled);
+    }
+  }
+}
+
+static void
+wrap_text_toggled(GtkToggleButton* toggler,
+                  gpointer         user_data)
+{
+  GtkApplication* app = user_data;
+  
+  GList* windows = gtk_application_get_windows(app);
+  if (windows)
+  {
+    for (; windows != NULL; windows = windows->next)
+    {
+      MarkerEditorWindow* window = MARKER_EDITOR_WINDOW(windows->data);
+      gboolean toggled = gtk_toggle_button_get_active(toggler);
+      marker_editor_window_set_wrap_text(window, toggled);
     }
   }
 }
@@ -143,6 +161,7 @@ marker_prefs_show_window(GtkApplication* app)
   gtk_builder_add_callback_symbol(builder, "show_line_numbers_toggled", G_CALLBACK(show_line_numbers_toggled));
   gtk_builder_add_callback_symbol(builder, "highlight_current_line_toggled", G_CALLBACK(highlight_current_line_toggled));
   gtk_builder_add_callback_symbol(builder, "show_right_margin_toggled", G_CALLBACK(show_right_margin_toggled));
+  gtk_builder_add_callback_symbol(builder, "wrap_text_toggled", G_CALLBACK(wrap_text_toggled));
   gtk_builder_connect_signals(builder, app);
   g_object_unref(builder);
   gtk_widget_show_all(GTK_WIDGET(win));

@@ -593,13 +593,25 @@ marker_editor_window_set_highlight_current_line(MarkerEditorWindow* window,
 }
 
 void                                           
-marker_editor_window_show_right_margin(MarkerEditorWindow* window,
-                                       gboolean            margin)
+marker_editor_window_set_show_right_margin(MarkerEditorWindow* window,
+                                           gboolean            margin)
 {
   GtkSourceView* source_view = GTK_SOURCE_VIEW(window->source_view);
   if (source_view)
   {
     gtk_source_view_set_show_right_margin(source_view, margin);
+  }
+}
+
+void                                           
+marker_editor_window_set_wrap_text(MarkerEditorWindow* window,
+                                           gboolean            wrap)
+{
+  GtkTextView* source_view = GTK_TEXT_VIEW(window->source_view);
+  if (source_view)
+  {
+    GtkWrapMode mode = (wrap) ? GTK_WRAP_WORD : GTK_WRAP_NONE;
+    gtk_text_view_set_wrap_mode(source_view, mode);
   }
 }
 
