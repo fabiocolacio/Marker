@@ -457,14 +457,7 @@ export_activated(GSimpleAction* action,
   
   GtkComboBox* format_chooser = GTK_COMBO_BOX(gtk_builder_get_object(builder, "format_chooser"));
   GtkListStore* export_format_model = GTK_LIST_STORE(gtk_builder_get_object(builder, "export_format_model"));
-  gtk_combo_box_set_model(format_chooser, GTK_TREE_MODEL(export_format_model));
-  GtkCellRenderer* cell_renderer = gtk_cell_renderer_text_new();
-  gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(format_chooser), cell_renderer, TRUE);
-  gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(format_chooser),
-                                 cell_renderer,
-                                 "text", 0,
-                                 NULL);
-  gtk_combo_box_set_active(format_chooser, 0);
+  marker_utils_combo_box_set_model(format_chooser, GTK_TREE_MODEL(export_format_model));
   
   gtk_widget_show_all(GTK_WIDGET(format_chooser));
   g_object_unref(builder);
