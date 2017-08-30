@@ -64,6 +64,10 @@ marker_editor_window_set_syntax_theme(MarkerEditorWindow* window,
 void
 marker_editor_window_try_close(MarkerEditorWindow* window);
 
+void
+marker_editor_window_set_show_line_numbers(MarkerEditorWindow* window,
+                                           gboolean            line_nums);
+
 G_END_DECLS
 
 #endif

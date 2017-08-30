@@ -570,6 +570,17 @@ marker_editor_window_set_syntax_theme(MarkerEditorWindow* self,
   gtk_source_buffer_set_style_scheme(GTK_SOURCE_BUFFER(buffer), scheme);
 }
 
+void
+marker_editor_window_set_show_line_numbers(MarkerEditorWindow* window,
+                                           gboolean            line_nums)
+{
+  GtkSourceView* source_view = GTK_SOURCE_VIEW(window->source_view);
+  if (source_view)
+  {
+    gtk_source_view_set_show_line_numbers(source_view, line_nums);
+  }
+}
+
 static GActionEntry win_entries[] =
 {
   { "saveas", save_as_activated, NULL, NULL, NULL },
