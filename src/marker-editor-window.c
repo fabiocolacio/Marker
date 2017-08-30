@@ -592,6 +592,17 @@ marker_editor_window_set_highlight_current_line(MarkerEditorWindow* window,
   }
 }
 
+void                                           
+marker_editor_window_show_right_margin(MarkerEditorWindow* window,
+                                       gboolean            margin)
+{
+  GtkSourceView* source_view = GTK_SOURCE_VIEW(window->source_view);
+  if (source_view)
+  {
+    gtk_source_view_set_show_right_margin(source_view, margin);
+  }
+}
+
 static GActionEntry win_entries[] =
 {
   { "saveas", save_as_activated, NULL, NULL, NULL },

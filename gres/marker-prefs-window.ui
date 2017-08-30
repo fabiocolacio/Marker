@@ -124,7 +124,7 @@
         <child>
           <object class="GtkLabel">
             <property name="visible">True</property>
-            <property name="label">Draw spaces:</property>
+            <property name="label">Show right margin:</property>
             <property name="xalign">1.0</property>
           </object>
           <packing>
@@ -135,6 +135,7 @@
         <child>
           <object class="GtkCheckButton">
             <property name="visible">True</property>
+            <signal name="toggled" handler="show_right_margin_toggled" swapped="no"/>
           </object>
           <packing>
             <property name="left_attach">1</property>
