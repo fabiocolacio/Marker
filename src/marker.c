@@ -39,7 +39,7 @@ static GActionEntry app_entries[] =
 };
 
 static void
-activate(GtkApplication* app)
+init_app_menu(GtkApplication* app)
 {
   GtkBuilder* builder = gtk_builder_new_from_resource("/com/github/fabiocolacio/marker/marker-app-menu.ui");
   GMenuModel* app_menu = G_MENU_MODEL(gtk_builder_get_object(builder, "app_menu"));
@@ -50,6 +50,12 @@ activate(GtkApplication* app)
                                   app_entries,
                                   G_N_ELEMENTS(app_entries),
                                   app);
+}
+
+static void
+activate(GtkApplication* app)
+{
+  init_app_menu(app);
 
   MarkerEditorWindow* window = marker_editor_window_new(app);
   gtk_widget_show_all(GTK_WIDGET(window));
@@ -75,6 +81,8 @@ marker_open(GtkApplication* app,
             gint            num_files,
             const gchar*    hint)
 {
+  init_app_menu(app);
+
   for (int i = 0; i < num_files; ++i)
   {
     GFile* file = files[i];
