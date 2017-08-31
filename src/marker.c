@@ -53,8 +53,15 @@ init_app_menu(GtkApplication* app)
 }
 
 static void
+load_prefs(GtkApplication* app)
+{
+  marker_prefs_load(app);
+}
+
+static void
 activate(GtkApplication* app)
 {
+  load_prefs(app);
   init_app_menu(app);
 
   MarkerEditorWindow* window = marker_editor_window_new(app);
@@ -81,6 +88,7 @@ marker_open(GtkApplication* app,
             gint            num_files,
             const gchar*    hint)
 {
+  load_prefs(app);
   init_app_menu(app);
 
   for (int i = 0; i < num_files; ++i)

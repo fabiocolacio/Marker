@@ -76,10 +76,12 @@ void
 marker_editor_window_set_show_right_margin(MarkerEditorWindow* window,
                                            gboolean            margin);
                                        
-
 void                                           
 marker_editor_window_set_wrap_text(MarkerEditorWindow* window,
                                    gboolean            wrap);
+
+void
+marker_editor_window_apply_prefs(MarkerEditorWindow* window);
 
 G_END_DECLS
 

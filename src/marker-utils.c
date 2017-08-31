@@ -76,6 +76,28 @@ marker_utils_get_current_time_seconds()
 }
 
 int
+marker_utils_str_starts_with(char* str,
+                             char* sub_str)
+{
+  size_t sub_len = strlen(sub_str);
+  if (memcmp(str, sub_str, sub_len) == 0)
+  {
+    return 1;
+  }
+  return 0;
+}
+
+char*
+marker_utils_allocate_string(char* str)
+{
+  size_t len = strlen(str);
+  char* loc = malloc(len + 1);
+  memset(loc, 0, len + 1);
+  memcpy(loc, str, len + 1);
+  return loc;
+}
+
+int
 marker_utils_str_ends_with(char* str,
                            char* sub_str)
 {

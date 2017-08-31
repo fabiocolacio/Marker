@@ -6,9 +6,12 @@ set(EXEC_NAME "com.github.fabiocolacio.marker")
 set(GRES_DIR ${CMAKE_SOURCE_DIR}/gres)
 set(STYLES_DIR ${CMAKE_SOURCE_DIR}/styles)
 set(DATA_DIR ${CMAKE_SOURCE_DIR}/data)
+set(CONF_FILE ${DATA_DIR}/marker.config)
 
 set(DATA_DEST ${CMAKE_INSTALL_PREFIX}/share)
 
+add_definitions(-DRES_DIR="${DATA_DEST}/${EXEC_NAME}")
+add_definitions(-DCONF_FILE="${DATA_DEST}/${EXEC_NAME}/marker.config")
 add_definitions(-DSTYLES_DIR="${DATA_DEST}/${EXEC_NAME}/styles/")
 
 find_package(PkgConfig REQUIRED)
@@ -46,6 +49,10 @@ install(TARGETS ${EXEC_NAME}
 
 install(FILES ${DATA_DIR}/${EXEC_NAME}.desktop
         DESTINATION ${DATA_DEST}/applications/)
+
+install(FILES ${CONF_FILE}
+        DESTINATION ${DATA_DEST}/${EXEC_NAME}
+        PERMISSIONS WORLD_READ WORLD_WRITE WORLD_EXECUTE)
 
 install(DIRECTORY ${STYLES_DIR}
         DESTINATION ${DATA_DEST}/${EXEC_NAME}

@@ -7,6 +7,7 @@
 
 #include "marker-editor-window.h"
 #include "marker-utils.h"
+#include "marker-prefs.h"
 
 struct _MarkerEditorWindow
 {
@@ -552,6 +553,7 @@ void
 marker_editor_window_set_css_theme(MarkerEditorWindow* self,
                                    char*               theme)
 {
+  free(self->stylesheet_name);
   size_t str_len = strlen(theme) + 1;
   char* str = malloc(str_len);
   memset(str, 0, str_len);
@@ -605,7 +607,7 @@ marker_editor_window_set_show_right_margin(MarkerEditorWindow* window,
 
 void                                           
 marker_editor_window_set_wrap_text(MarkerEditorWindow* window,
-                                           gboolean            wrap)
+                                   gboolean            wrap)
 {
   GtkTextView* source_view = GTK_TEXT_VIEW(window->source_view);
   if (source_view)
@@ -613,6 +615,25 @@ marker_editor_window_set_wrap_text(MarkerEditorWindow* window,
     GtkWrapMode mode = (wrap) ? GTK_WRAP_WORD : GTK_WRAP_NONE;
     gtk_text_view_set_wrap_mode(source_view, mode);
   }
+}
+
+void
+marker_editor_window_apply_prefs(MarkerEditorWindow* win)
+{
+  char* tmp;
+  
+  tmp = marker_prefs_get_syntax_theme();
+  marker_editor_window_set_syntax_theme(win, tmp);
+  free(tmp);
+  
+  tmp = marker_prefs_get_css_theme();
+  marker_editor_window_set_css_theme(win, tmp);
+  free(tmp);
+  
+  marker_editor_window_set_show_line_numbers(win, marker_prefs_get_show_line_numbers());
+  marker_editor_window_set_highlight_current_line(win, marker_prefs_get_highlight_current_line());
+  marker_editor_window_set_show_right_margin(win, marker_prefs_get_show_right_margin());
+  marker_editor_window_set_wrap_text(win, marker_prefs_get_wrap_text());
 }
 
 static GActionEntry win_entries[] =
@@ -627,7 +648,7 @@ marker_editor_window_init(MarkerEditorWindow* self)
 {   
   self->file = NULL;
   self->unsaved_changes = FALSE;
-  self->stylesheet_name = "marker.css";
+  self->stylesheet_name = marker_utils_allocate_string("marker.css");
   
   GtkBuilder* builder = gtk_builder_new_from_resource("/com/github/fabiocolacio/marker/marker-editor-window.ui");
   
@@ -670,6 +691,8 @@ marker_editor_window_init(MarkerEditorWindow* self)
   gtk_builder_connect_signals(builder, self);
   
   g_object_unref(builder);
+  
+  marker_editor_window_apply_prefs(self);
 }
 
 static void

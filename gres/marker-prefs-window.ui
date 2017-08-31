@@ -68,7 +68,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkCheckButton">
+          <object class="GtkCheckButton" id="show_line_numbers_check_button">
             <property name="visible">True</property>
             <signal name="toggled" handler="show_line_numbers_toggled" swapped="no"/>
           </object>
@@ -90,7 +90,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkCheckButton">
+          <object class="GtkCheckButton" id="highlight_current_line_check_button">
             <property name="visible">True</property>
             <signal name="toggled" handler="highlight_current_line_toggled" swapped="no"/>
           </object>
@@ -112,7 +112,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkCheckButton">
+          <object class="GtkCheckButton" id="wrap_text_check_button">
             <property name="visible">True</property>
             <signal name="toggled" handler="wrap_text_toggled" swapped="no"/>
           </object>
@@ -134,7 +134,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkCheckButton">
+          <object class="GtkCheckButton" id="show_right_margin_check_button">
             <property name="visible">True</property>
             <signal name="toggled" handler="show_right_margin_toggled" swapped="no"/>
           </object>
