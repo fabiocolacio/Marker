@@ -549,6 +549,43 @@ close_btn_pressed(MarkerEditorWindow* self,
   return TRUE;
 }
 
+static gboolean
+modifier_pressed(GdkEventKey     event,
+                 GdkModifierType modifier)
+{
+  return (event.state & modifier) == modifier;
+}
+                 
+
+static gboolean
+key_pressed(GtkWidget*   widget,
+            GdkEventKey* event,
+            gpointer     user_data)
+{
+  gboolean ctrl_pressed = modifier_pressed(*event, GDK_CONTROL_MASK);
+  
+  if (ctrl_pressed)
+  {
+    switch (event->keyval)
+    {
+      case GDK_KEY_s:
+        save_btn_pressed(widget, MARKER_EDITOR_WINDOW(widget));
+        break;
+        
+      case GDK_KEY_S:
+        save_as_activated(NULL, NULL, MARKER_EDITOR_WINDOW(widget));
+        break;
+        
+      case GDK_KEY_r:
+        refresh_btn_pressed(widget, MARKER_EDITOR_WINDOW(widget));
+        break;
+    }
+  }
+  
+  return FALSE;
+}
+
+
 void
 marker_editor_window_set_css_theme(MarkerEditorWindow* self,
                                    char*               theme)
@@ -683,7 +720,8 @@ marker_editor_window_init(MarkerEditorWindow* self)
   
   gtk_window_set_default_size(GTK_WINDOW(self), 800, 500);
   
-  g_signal_connect(self, "delete-event", G_CALLBACK(close_btn_pressed), NULL); 
+  g_signal_connect(self, "delete-event", G_CALLBACK(close_btn_pressed), NULL);
+  g_signal_connect(self, "key-press-event", G_CALLBACK(key_pressed), NULL);
   
   gtk_builder_add_callback_symbol(builder, "open_btn_pressed", G_CALLBACK(open_btn_pressed));
   gtk_builder_add_callback_symbol(builder, "save_btn_pressed", G_CALLBACK(save_btn_pressed));
