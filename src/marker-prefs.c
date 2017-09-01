@@ -16,7 +16,18 @@ css_chosen(GtkComboBox* combo_box,
 {
   GtkApplication* app = user_data;
   char* css_theme = marker_utils_combo_box_get_active_str(combo_box);
-    
+  
+  memset(prefs.css_theme, 0, 50);
+  size_t len = strlen(css_theme);
+  if (len <= 50)
+  {
+    strcpy(prefs.css_theme, css_theme);
+  }
+  else
+  {
+    memcpy(prefs.css_theme, css_theme, 49);
+  }
+  
   GList* windows = gtk_application_get_windows(app);
   if (windows)
   {
@@ -28,6 +39,8 @@ css_chosen(GtkComboBox* combo_box,
   }
   
   free(css_theme);
+  
+  marker_prefs_save();
 }
 
 static void
@@ -36,7 +49,18 @@ syntax_chosen(GtkComboBox* combo_box,
 {
   GtkApplication* app = user_data;
   char* syntax_theme = marker_utils_combo_box_get_active_str(combo_box);
-    
+  
+  memset(prefs.syntax_theme, 0, 50);
+  size_t len = strlen(syntax_theme);
+  if (len <= 50)
+  {
+    strcpy(prefs.syntax_theme, syntax_theme);
+  }
+  else
+  {
+    memcpy(prefs.syntax_theme, syntax_theme, 49);
+  }
+  
   GList* windows = gtk_application_get_windows(app);
   if (windows)
   {
@@ -48,6 +72,8 @@ syntax_chosen(GtkComboBox* combo_box,
   }
     
   free(syntax_theme);
+  
+  marker_prefs_save();
 }
 
 static void
@@ -55,6 +81,9 @@ show_line_numbers_toggled(GtkToggleButton* toggler,
                           gpointer         user_data)
 {
   GtkApplication* app = user_data;
+  gboolean toggled = gtk_toggle_button_get_active(toggler);
+  
+  prefs.show_line_numbers = toggled;
   
   GList* windows = gtk_application_get_windows(app);
   if (windows)
@@ -62,10 +91,11 @@ show_line_numbers_toggled(GtkToggleButton* toggler,
     for (; windows != NULL; windows = windows->next)
     {
       MarkerEditorWindow* window = MARKER_EDITOR_WINDOW(windows->data);
-      gboolean toggled = gtk_toggle_button_get_active(toggler);
       marker_editor_window_set_show_line_numbers(window, toggled);
     }
   }
+  
+  marker_prefs_save();
 }
 
 static void
@@ -73,6 +103,9 @@ highlight_current_line_toggled(GtkToggleButton* toggler,
                                gpointer         user_data)
 {
   GtkApplication* app = user_data;
+  gboolean toggled = gtk_toggle_button_get_active(toggler);
+  
+  prefs.highlight_current_line = toggled;
   
   GList* windows = gtk_application_get_windows(app);
   if (windows)
@@ -80,10 +113,11 @@ highlight_current_line_toggled(GtkToggleButton* toggler,
     for (; windows != NULL; windows = windows->next)
     {
       MarkerEditorWindow* window = MARKER_EDITOR_WINDOW(windows->data);
-      gboolean toggled = gtk_toggle_button_get_active(toggler);
       marker_editor_window_set_highlight_current_line(window, toggled);
     }
   }
+  
+  marker_prefs_save();
 }
 
 static void
@@ -91,6 +125,9 @@ show_right_margin_toggled(GtkToggleButton* toggler,
                           gpointer         user_data)
 {
   GtkApplication* app = user_data;
+  gboolean toggled = gtk_toggle_button_get_active(toggler);
+  
+  prefs.show_right_margin = toggled;
   
   GList* windows = gtk_application_get_windows(app);
   if (windows)
@@ -98,10 +135,11 @@ show_right_margin_toggled(GtkToggleButton* toggler,
     for (; windows != NULL; windows = windows->next)
     {
       MarkerEditorWindow* window = MARKER_EDITOR_WINDOW(windows->data);
-      gboolean toggled = gtk_toggle_button_get_active(toggler);
       marker_editor_window_set_show_right_margin(window, toggled);
     }
   }
+  
+  marker_prefs_save();
 }
 
 static void
@@ -109,6 +147,9 @@ wrap_text_toggled(GtkToggleButton* toggler,
                   gpointer         user_data)
 {
   GtkApplication* app = user_data;
+  gboolean toggled = gtk_toggle_button_get_active(toggler);
+  
+  prefs.wrap_text = toggled;
   
   GList* windows = gtk_application_get_windows(app);
   if (windows)
@@ -116,10 +157,11 @@ wrap_text_toggled(GtkToggleButton* toggler,
     for (; windows != NULL; windows = windows->next)
     {
       MarkerEditorWindow* window = MARKER_EDITOR_WINDOW(windows->data);
-      gboolean toggled = gtk_toggle_button_get_active(toggler);
       marker_editor_window_set_wrap_text(window, toggled);
     }
   }
+  
+  marker_prefs_save();
 }
 
 void
@@ -130,81 +172,129 @@ marker_prefs_load(GtkApplication* app)
   memset(key, 0, sizeof(key));
   memset(val, 0, sizeof(val));
   
-  FILE* fp = fopen(CONF_FILE, "r");
-  while (fscanf(fp, "%s %s", key, val) == 2)
+  FILE* fp = NULL;
+  fp = fopen(CONF_FILE, "r");
+  if (fp)
   {
-    if (marker_utils_str_starts_with(key, "syntax_theme"))
+    while (fscanf(fp, "%s %s", key, val) == 2)
     {
-      memcpy(prefs.syntax_theme, val, 50);
-    }
-    else
-    if (marker_utils_str_starts_with(key, "css_theme"))
-    {
-      memcpy(prefs.css_theme, val, 50);
-    }
-    else
-    if (marker_utils_str_starts_with(key, "show_line_numbers"))
-    {
-      if (strcmp(val, "TRUE") == 0)
+      if (marker_utils_str_starts_with(key, "syntax_theme"))
       {
-        prefs.show_line_numbers = TRUE;
+        memcpy(prefs.syntax_theme, val, 50);
+      }
+      else
+      if (marker_utils_str_starts_with(key, "css_theme"))
+      {
+        memcpy(prefs.css_theme, val, 50);
+      }
+      else
+      if (marker_utils_str_starts_with(key, "show_line_numbers"))
+      {
+        if (strcmp(val, "TRUE") == 0)
+        {
+          prefs.show_line_numbers = TRUE;
+        }
+        else
+        {
+          prefs.show_line_numbers = FALSE;
+        }
+      }
+      else
+      if (marker_utils_str_starts_with(key, "highlight_current_line"))
+      {
+        if (strcmp(val, "TRUE") == 0)
+        {
+          prefs.highlight_current_line = TRUE;
+        }
+        else
+        {
+          prefs.highlight_current_line = FALSE;
+        }
+      }
+      else
+      if (marker_utils_str_starts_with(key, "wrap_text"))
+      {
+        if (strcmp(val, "TRUE") == 0)
+        {
+          prefs.wrap_text = TRUE;
+        }
+        else
+        {
+          prefs.wrap_text = FALSE;
+        }
+      }
+      else
+      if (marker_utils_str_starts_with(key, "show_right_margin"))
+      {
+        if (strcmp(val, "TRUE") == 0)
+        {
+          prefs.show_right_margin = TRUE;
+        }
+        else
+        {
+          prefs.show_right_margin = FALSE;
+        }
       }
       else
       {
-        prefs.show_line_numbers = FALSE;
+        printf("'%s' is not a valid key.\n", key);
       }
+      
+      memset(key, 0, sizeof(key));
+      memset(val, 0, sizeof(val));
     }
-    else
-    if (marker_utils_str_starts_with(key, "highlight_current_line"))
-    {
-      if (strcmp(val, "TRUE") == 0)
-      {
-        prefs.highlight_current_line = TRUE;
-      }
-      else
-      {
-        prefs.highlight_current_line = FALSE;
-      }
-    }
-    else
-    if (marker_utils_str_starts_with(key, "wrap_text"))
-    {
-      if (strcmp(val, "TRUE") == 0)
-      {
-        prefs.wrap_text = TRUE;
-      }
-      else
-      {
-        prefs.wrap_text = FALSE;
-      }
-    }
-    else
-    if (marker_utils_str_starts_with(key, "show_right_margin"))
-    {
-      if (strcmp(val, "TRUE") == 0)
-      {
-        prefs.show_right_margin = TRUE;
-      }
-      else
-      {
-        prefs.show_right_margin = FALSE;
-      }
-    }
-    else
-    {
-      printf("'%s' is not a valid key.\n", key);
-    }
-    
-    memset(key, 0, sizeof(key));
-    memset(val, 0, sizeof(val));
+    fclose(fp);
   }
-  fclose(fp);
 }
 
 void
 marker_prefs_save()
 {
-  
+  FILE* fp = NULL;
+  fp = fopen(CONF_FILE, "w");
+  if (fp)
+  {
+    fprintf(fp, "syntax_theme: %s\n", prefs.syntax_theme);
+    fprintf(fp, "css_theme: %s\n", prefs.css_theme);
+    
+    if (prefs.show_line_numbers)
+    {
+      fputs("show_line_numbers: TRUE\n", fp);
+    }
+    else
+    {
+      fputs("show_line_numbers: FALSE\n", fp);
+    }
+    
+    if (prefs.highlight_current_line)
+    {
+      fputs("highlight_current_line: TRUE\n", fp);
+    }
+    else
+    {
+      fputs("show_line_numbers: FALSE\n", fp);
+    }
+    
+    if (prefs.wrap_text)
+    {
+      fputs("wrap_text: TRUE\n", fp);
+    }
+    else
+    {
+      fputs("wrap_text: FALSE\n", fp);
+    }
+    
+    if (prefs.show_right_margin)
+    {
+      fputs("show_right_margin: TRUE\n", fp);
+    }
+    else
+    {
+      fputs("show_right_margin: FALSE\n", fp);
+    }
+    
+    fclose(fp);
+  }
 }
 
 void
