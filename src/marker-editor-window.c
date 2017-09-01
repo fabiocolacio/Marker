@@ -572,6 +572,10 @@ key_pressed(GtkWidget*   widget,
         save_btn_pressed(widget, MARKER_EDITOR_WINDOW(widget));
         break;
         
+      case GDK_KEY_o:
+        open_btn_pressed(widget, MARKER_EDITOR_WINDOW(widget));
+        break;
+        
       case GDK_KEY_S:
         save_as_activated(NULL, NULL, MARKER_EDITOR_WINDOW(widget));
         break;
