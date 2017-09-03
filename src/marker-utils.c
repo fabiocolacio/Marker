@@ -5,6 +5,26 @@
 #include "marker-utils.h"
 
 char*
+marker_utils_escape_file_path(char* filename)
+{
+  size_t new_len = (2 * strlen(filename)) + 1;
+  char* clean_str = malloc(new_len);
+  memset(clean_str, 0, new_len);
+  char c;
+  for (int i = 0, j = 0; (c = filename[i]) != '\0'; ++i)
+  {
+    if (c == ' ')
+    {
+      clean_str[j] = '\\';
+      ++j;
+    }
+    clean_str[j] = c;
+    ++j;
+  }
+  return clean_str;
+}
+
+char*
 marker_utils_combo_box_get_active_str(GtkComboBox* combo_box)
 {
   GtkTreeIter iter;

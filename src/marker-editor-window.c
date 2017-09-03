@@ -341,12 +341,12 @@ marker_editor_window_export_file_as(MarkerEditorWindow*  self,
 {
   if (G_IS_FILE(file))
   {
-    char* filepath = g_file_get_path(file);
-    int slash = marker_utils_rfind('/', filepath);
+    char* filepath_dirty = g_file_get_path(file);
+    char* filepath = marker_utils_escape_file_path(filepath_dirty);
+    int slash = marker_utils_rfind('/', filepath_dirty);
     char loc[slash + 1];
     memset(loc, 0, sizeof(loc));
-    memcpy(loc, filepath, slash);
-    
+    memcpy(loc, filepath_dirty, slash);
     int ret = chdir(loc);
     if (!ret)
     {
@@ -373,7 +373,7 @@ marker_editor_window_export_file_as(MarkerEditorWindow*  self,
       strcat(command, " ");
       strcat(command, TMP_MD);
       strcat(command, " -t ");
-
+      
       switch (settings.file_type)
       {
         case HTML:
@@ -404,14 +404,15 @@ marker_editor_window_export_file_as(MarkerEditorWindow*  self,
           strcat(command, "latex");
           break;
       }
-      puts(command);
       ret = system(command);
       if (!ret)
       {
+        puts(command);
         puts("There was a problem exporting the file");
       }
     }
-    g_free(filepath);
+    g_free(filepath_dirty);
+    free(filepath);
   }
 }
 

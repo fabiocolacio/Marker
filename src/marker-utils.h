@@ -28,5 +28,8 @@ marker_utils_combo_box_set_model(GtkComboBox*  combo_box,
 char*
 marker_utils_allocate_string(char* str);
 
+char*
+marker_utils_escape_file_path(char* filename);
+
 #endif
 
