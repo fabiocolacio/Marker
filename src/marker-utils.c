@@ -1,6 +1,7 @@
 #include <time.h>
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "marker-utils.h"
 

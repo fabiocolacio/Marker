@@ -10,6 +10,8 @@ set(CONF_FILE ${DATA_DIR}/marker.config)
 
 set(DATA_DEST ${CMAKE_INSTALL_PREFIX}/share)
 
+add_definitions(-lwkhtmltox)
+
 add_definitions(-DRES_DIR="${DATA_DEST}/${EXEC_NAME}")
 add_definitions(-DCONF_FILE="${DATA_DEST}/${EXEC_NAME}/marker.config")
 add_definitions(-DSTYLES_DIR="${DATA_DEST}/${EXEC_NAME}/styles/")
