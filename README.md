@@ -37,6 +37,11 @@ issues tab on [Marker's github repository](https://github.com/fabiocolacio/Marke
 * gtk3-devel
 * gtksourceview3-devel
 * webkitgtk3-devel
+* wkhtmltox c libraries
+    * It is recomended to download this dependency from the
+      [wkhtmltopdf website](https://wkhtmltopdf.org/downloads.html),
+      as the version provided in some distro repositories will not
+      work properly.
 * pandoc
 * cmake
 
