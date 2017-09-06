@@ -103,7 +103,6 @@
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="receives_default">False</property>
-            <property name="draw_indicator">True</property>
             <signal name="toggled" handler="show_line_numbers_toggled" swapped="no"/>
           </object>
           <packing>
@@ -116,7 +115,6 @@
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="receives_default">False</property>
-            <property name="draw_indicator">True</property>
             <signal name="toggled" handler="highlight_current_line_toggled" swapped="no"/>
           </object>
           <packing>
@@ -129,7 +127,6 @@
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="receives_default">False</property>
-            <property name="draw_indicator">True</property>
             <signal name="toggled" handler="wrap_text_toggled" swapped="no"/>
           </object>
           <packing>
@@ -142,7 +139,6 @@
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="receives_default">False</property>
-            <property name="draw_indicator">True</property>
             <signal name="toggled" handler="show_right_margin_toggled" swapped="no"/>
           </object>
           <packing>
@@ -216,37 +212,11 @@
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">False</property>
-            <property name="draw_indicator">True</property>
             <signal name="toggled" handler="use_header_bar_toggled" swapped="no"/>
           </object>
           <packing>
             <property name="left_attach">1</property>
             <property name="top_attach">9</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkLabel">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="label" translatable="yes">Use Appmenu:</property>
-            <property name="xalign">1</property>
-          </object>
-          <packing>
-            <property name="left_attach">0</property>
-            <property name="top_attach">10</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkCheckButton" id="use_app_menu_check_button">
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="receives_default">False</property>
-            <property name="draw_indicator">True</property>
-            <signal name="toggled" handler="use_app_menu_toggled" swapped="no"/>
-          </object>
-          <packing>
-            <property name="left_attach">1</property>
-            <property name="top_attach">10</property>
           </packing>
         </child>
       </object>
