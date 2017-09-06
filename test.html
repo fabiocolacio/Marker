@@ -1,0 +1,67 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <link rel="stylesheet" href="/home/fabio/Code/FOSS/markdown-css-themes/foghorn.css" type="text/css" />
+</head>
+<body>
+<h1 id="marker">Marker</h1>
+<p>Marker is a markdown editor for linux made with Gtk+-3.0</p>
+<p><strong>Note:</strong> Marker is still very new and under heavy development. Use at your own risk! If you do try it out, please report any glitches or feature requests through the issues tab on <a href="https://github.com/fabiocolacio/Marker">Marker's github repository</a></p>
+<h2 id="features">Features</h2>
+<ul>
+<li>Opening markdown documents</li>
+<li>HTML Preview of markdown documents</li>
+<li>Editing markdown documents</li>
+<li>Flexible export options through pandoc
+<ul>
+<li>HTML</li>
+<li>PDF</li>
+<li>RTF</li>
+<li>ODT</li>
+<li>DOCX</li>
+<li>LaTeX</li>
+</ul></li>
+<li>Custom CSS themes</li>
+<li>Custom syntax themes</li>
+<li>Native Gtk3+ application with full theme support</li>
+</ul>
+<h2 id="screenshots">Screenshots</h2>
+<div class="figure">
+<img src="scrot.png" alt="scrot.png" />
+<p class="caption">scrot.png</p>
+</div>
+<div class="figure">
+<img src="scrot1.png" alt="scrot1.png" />
+<p class="caption">scrot1.png</p>
+</div>
+<div class="figure">
+<img src="scrot2.png" alt="scrot2.png" />
+<p class="caption">scrot2.png</p>
+</div>
+<h2 id="installation-from-source">Installation From Source</h2>
+<h3 id="dependencies">Dependencies</h3>
+<ul>
+<li>gtk3-devel</li>
+<li>gtksourceview3-devel</li>
+<li>webkitgtk3-devel</li>
+<li>wkhtmltox c libraries
+<ul>
+<li>It is recomended to download this dependency from the <a href="https://wkhtmltopdf.org/downloads.html">wkhtmltopdf website</a>, as the version provided in some distro repositories will not work properly.</li>
+</ul></li>
+<li>pandoc</li>
+<li>cmake</li>
+</ul>
+<h3 id="build-instructions">Build Instructions</h3>
+<pre><code>$ git clone https://github.com/fabiocolacio/Marker.git
+$ cd Marker
+$ mkdir build &amp;&amp; cd build
+$ cmake -DCMAKE_INSTALL_PREFIX=/usr ..
+$ make
+$ sudo make install</code></pre>
+</body>
+</html>
