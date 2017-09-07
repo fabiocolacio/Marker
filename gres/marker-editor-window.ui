@@ -15,6 +15,10 @@
     <property name="icon_name">open-menu-symbolic</property>
     <property name="icon_size">2</property>
   </object>
+  <object class="GtkImage" id="page-view">
+    <property name="icon_name">view-paged-symbolic</property>
+    <property name="icon_size">2</property>
+  </object>
   
   <!-- Gear Popover Menu -->
   <menu id="gear_menu">
@@ -68,6 +72,15 @@
       <object class="GtkButton">
         <property name="image">refresh</property>
         <signal name="clicked" handler="refresh_btn_pressed" swapped="no"/>
+      </object>
+      <packing>
+        <property name="pack_type">end</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkButton">
+        <property name="image">page-view</property>
+        <signal name="clicked" handler="popout_btn_pressed" swapped="no"/>
       </object>
       <packing>
         <property name="pack_type">end</property>

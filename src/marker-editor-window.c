@@ -19,6 +19,8 @@ struct _MarkerEditorWindow
   GtkWidget* web_view;
   GtkWidget* popover;
     
+  gboolean   split_view;
+    
   gboolean   unsaved_changes;
   char*      file_name;
   char*      file_location;
@@ -554,6 +556,26 @@ new_activated(GSimpleAction* action,
 }
 
 static void
+popout_btn_pressed(GtkButton*          button,
+                   MarkerEditorWindow* window)
+{
+  GtkWidget* image;
+  if (window->split_view)
+  {
+    image = gtk_image_new_from_icon_name("view-paged-symbolic",
+                                         GTK_ICON_SIZE_SMALL_TOOLBAR);
+    gtk_button_set_image(button, image);
+  }
+  else
+  {
+    image = gtk_image_new_from_icon_name("view-dual-symbolic",
+                                         GTK_ICON_SIZE_SMALL_TOOLBAR);
+    gtk_button_set_image(button, image);
+  }
+  window->split_view = !window->split_view;
+}
+
+static void
 refresh_btn_pressed(GtkWidget*          widget,
                     MarkerEditorWindow* self)
 {
@@ -802,6 +824,7 @@ marker_editor_window_init(MarkerEditorWindow* self)
   gtk_builder_add_callback_symbol(builder, "open_btn_pressed", G_CALLBACK(open_btn_pressed));
   gtk_builder_add_callback_symbol(builder, "save_btn_pressed", G_CALLBACK(save_btn_pressed));
   gtk_builder_add_callback_symbol(builder, "refresh_btn_pressed", G_CALLBACK(refresh_btn_pressed));
+  gtk_builder_add_callback_symbol(builder, "popout_btn_pressed", G_CALLBACK(popout_btn_pressed));
   gtk_builder_connect_signals(builder, self);
   
   g_object_unref(builder);
