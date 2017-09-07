@@ -15,9 +15,14 @@ struct _MarkerEditorWindow
   GtkApplicationWindow  parent_instance;
     
   GtkWidget* header_bar;
+  GtkWidget* paned;
   GtkWidget* source_view;
+  GtkWidget* web_view_scroll;
   GtkWidget* web_view;
+  GtkWidget* web_window;
   GtkWidget* popover;
+    
+  gboolean   split_view;
     
   gboolean   unsaved_changes;
   char*      file_name;
@@ -553,6 +558,56 @@ new_activated(GSimpleAction* action,
   g_object_unref(app);
 }
 
+static gboolean
+preview_window_closed(GtkWidget* window,
+                      GdkEvent*  event,
+                      gpointer   user_data)
+{
+  MarkerEditorWindow* marker_window = user_data;
+  g_object_ref(marker_window->web_view_scroll);
+  gtk_container_remove(GTK_CONTAINER(window), marker_window->web_view_scroll);
+  gtk_paned_add2(GTK_PANED(marker_window->paned), marker_window->web_view_scroll); 
+  gtk_widget_destroy(window);
+  return TRUE;
+}
+
+static void
+popout_btn_pressed(GtkButton*          button,
+                   MarkerEditorWindow* window)
+{
+  GtkWidget* image;
+  if (window->split_view)
+  {
+    image = gtk_image_new_from_icon_name("view-paged-symbolic",
+                                         GTK_ICON_SIZE_SMALL_TOOLBAR);
+    gtk_button_set_image(button, image);
+    
+    if (window->web_window)
+    {
+      preview_window_closed(window->web_window, NULL, window);
+      window->web_window = NULL;
+    }
+  }
+  else
+  {
+    image = gtk_image_new_from_icon_name("view-dual-symbolic",
+                                         GTK_ICON_SIZE_SMALL_TOOLBAR);
+    gtk_button_set_image(button, image);
+    
+    g_object_ref(window->web_view_scroll);
+    gtk_container_remove(GTK_CONTAINER(window->paned), window->web_view_scroll);
+    GtkWidget* prev_win = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+    const gchar* title = gtk_header_bar_get_title(GTK_HEADER_BAR(window->header_bar)); 
+    gtk_window_set_title(GTK_WINDOW(prev_win), title);
+    gtk_window_set_default_size(GTK_WINDOW(prev_win), 400, 600);
+    window->web_window = prev_win;
+    gtk_container_add(GTK_CONTAINER(prev_win), window->web_view_scroll);
+    gtk_widget_show_all(GTK_WIDGET(prev_win));
+    g_signal_connect(prev_win, "delete-event", G_CALLBACK(preview_window_closed), window);
+  }
+  window->split_view = !window->split_view;
+}
+
 static void
 refresh_btn_pressed(GtkWidget*          widget,
                     MarkerEditorWindow* self)
@@ -770,8 +825,10 @@ marker_editor_window_init(MarkerEditorWindow* self)
   
   GtkWidget* widget;
   
+  self->paned = GTK_WIDGET(gtk_builder_get_object(builder, "editor"));
   self->header_bar = GTK_WIDGET(gtk_builder_get_object(builder, "header_bar"));
   self->source_view = GTK_WIDGET(gtk_builder_get_object(builder, "source_view"));
+  self->web_view_scroll = GTK_WIDGET(gtk_builder_get_object(builder, "web_view_scroll"));
   self->web_view = GTK_WIDGET(gtk_builder_get_object(builder, "web_view"));
   
   gtk_text_view_set_monospace(GTK_TEXT_VIEW(self->source_view), TRUE);
@@ -802,6 +859,7 @@ marker_editor_window_init(MarkerEditorWindow* self)
   gtk_builder_add_callback_symbol(builder, "open_btn_pressed", G_CALLBACK(open_btn_pressed));
   gtk_builder_add_callback_symbol(builder, "save_btn_pressed", G_CALLBACK(save_btn_pressed));
   gtk_builder_add_callback_symbol(builder, "refresh_btn_pressed", G_CALLBACK(refresh_btn_pressed));
+  gtk_builder_add_callback_symbol(builder, "popout_btn_pressed", G_CALLBACK(popout_btn_pressed));
   gtk_builder_connect_signals(builder, self);
   
   g_object_unref(builder);
