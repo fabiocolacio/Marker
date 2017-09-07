@@ -96,7 +96,7 @@ marker_editor_window_refresh_web_view(MarkerEditorWindow* self)
   fputs(buffer_text, fp);
   fclose(fp);
   g_free(buffer_text);
-    
+  
   char* command_arr[] = {
       "pandoc -s -o ",
       TMP_HTML, " ",
@@ -104,6 +104,14 @@ marker_editor_window_refresh_web_view(MarkerEditorWindow* self)
       STYLES_DIR, self->stylesheet_name,
       "\0"
   };
+  
+  if (!self->stylesheet_name)
+  {
+    command_arr[4] = "\0";
+    command_arr[5] = "\0";
+    command_arr[6] = "\0";
+  }
+  
   size_t command_len = 0;
   for (int i = 0; i < G_N_ELEMENTS(command_arr); ++i)
   {
@@ -654,11 +662,14 @@ marker_editor_window_set_css_theme(MarkerEditorWindow* self,
                                    char*               theme)
 {
   free(self->stylesheet_name);
-  size_t str_len = strlen(theme) + 1;
-  char* str = malloc(str_len);
-  memset(str, 0, str_len);
-  memcpy(str, theme, str_len + 1);
-  self->stylesheet_name = str;
+  if (strcmp(theme, "none") == 0)
+  {
+    self->stylesheet_name = NULL;
+  }
+  else
+  {
+    self->stylesheet_name = marker_utils_allocate_string(theme);
+  }
   marker_editor_window_refresh_web_view(self);
 }
 

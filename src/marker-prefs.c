@@ -333,6 +333,10 @@ marker_prefs_show_window(GtkApplication* app)
   DIR* dir;
   struct dirent* ent;
   char* filename;
+  
+  gtk_list_store_append(css_list, &iter);
+  gtk_list_store_set(css_list, &iter, 0, "none", -1);
+  ++model_len;
   if ((dir = opendir(STYLES_DIR)) != NULL)
   {
     while ((ent = readdir(dir)) != NULL)
