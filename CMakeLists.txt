@@ -52,6 +52,14 @@ install(TARGETS ${EXEC_NAME}
 install(FILES ${DATA_DIR}/${EXEC_NAME}.desktop
         DESTINATION ${DATA_DEST}/applications/)
 
+install(FILES ${DATA_DIR}/com.github.fabiocolacio.marker.svg
+        DESTINATION ${DATA_DEST}/icons/hicolor/scalable/apps)
+
+install(FILES ${DATA_DIR}/com.github.fabiocolacio.marker-symbolic.svg
+        DESTINATION ${DATA_DEST}/icons/hicolor/symbolic/apps)
+
+install(CODE "execute_process(COMMAND gtk-update-icon-cache -f -t ${DATA_DEST}/icons/hicolor)")
+
 install(FILES ${CONF_FILE}
         DESTINATION ${DATA_DEST}/${EXEC_NAME}
         PERMISSIONS WORLD_READ WORLD_WRITE WORLD_EXECUTE)
