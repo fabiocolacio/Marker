@@ -595,8 +595,11 @@ popout_btn_pressed(GtkButton*          button,
     gtk_button_set_image(button, image);
     
     g_object_ref(window->web_view_scroll);
-    gtk_container_remove(GTK_CONTAINER(window->paned), window->web_view_scroll); 
+    gtk_container_remove(GTK_CONTAINER(window->paned), window->web_view_scroll);
     GtkWidget* prev_win = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+    const gchar* title = gtk_header_bar_get_title(GTK_HEADER_BAR(window->header_bar)); 
+    gtk_window_set_title(GTK_WINDOW(prev_win), title);
+    gtk_window_set_default_size(GTK_WINDOW(prev_win), 400, 600);
     window->web_window = prev_win;
     gtk_container_add(GTK_CONTAINER(prev_win), window->web_view_scroll);
     gtk_widget_show_all(GTK_WIDGET(prev_win));
