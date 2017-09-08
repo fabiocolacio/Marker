@@ -84,14 +84,28 @@ marker_editor_window_refresh_web_view(MarkerEditorWindow* self)
                                                &end_iter,
                                                FALSE);
   
-  char* html = marker_markdown_render(buffer_text, strlen(buffer_text));
-  
+  char* html;
+  if (self->stylesheet_name)
+  {
+    char href[strlen(STYLES_DIR) + strlen(self->stylesheet_name) + 1];
+    memset(href, 0, sizeof(href));
+    strcat(href, STYLES_DIR);
+    strcat(href, self->stylesheet_name);
+    html = marker_markdown_render_with_css(buffer_text, strlen(buffer_text), href);
+  }
+  else
+  {
+    html = marker_markdown_render(buffer_text, strlen(buffer_text));
+  }
   webkit_web_view_load_string(WEBKIT_WEB_VIEW(self->web_view),
                               html,
                               NULL,
                               NULL,
                               "file://");
   g_signal_connect(self->web_view, "load-progress-changed", G_CALLBACK(web_view_load_event), NULL);
+  
+  free(html);
+  g_free(buffer_text);
 }
 
 void
