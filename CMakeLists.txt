@@ -10,7 +10,7 @@ set(CONF_FILE ${DATA_DIR}/marker.config)
 
 set(DATA_DEST ${CMAKE_INSTALL_PREFIX}/share)
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -lwkhtmltox")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -lwkhtmltox -lhoedown")
 
 add_definitions(-DRES_DIR="${DATA_DEST}/${EXEC_NAME}")
 add_definitions(-DCONF_FILE="${DATA_DEST}/${EXEC_NAME}/marker.config")
@@ -21,7 +21,7 @@ pkg_search_module(GTK REQUIRED gtk+-3.0)
 pkg_search_module(GTKSOURCEVIEW REQUIRED gtksourceview-3.0)
 pkg_search_module(WEBKITGTK REQUIRED webkitgtk-3.0)
 
-file(GLOB MARKER_SOURCES src/*.c)
+file(GLOB MARKER_SOURCES src/*.c src/hoedown/*.c)
 
 add_executable(${EXEC_NAME} ${MARKER_SOURCES})
 

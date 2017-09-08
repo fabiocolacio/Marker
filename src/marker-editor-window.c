@@ -1,11 +1,12 @@
 #include <gtksourceview/gtksource.h>
-#include <webkit2/webkit2.h>
+#include <webkit/webkitwebview.h>
 #include <wkhtmltox/pdf.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
+#include "marker-markdown.h"
 #include "marker-editor-window.h"
 #include "marker-utils.h"
 #include "marker-prefs.h"
@@ -71,21 +72,7 @@ web_view_load_event(WebKitWebView* web_view,
 
 void
 marker_editor_window_refresh_web_view(MarkerEditorWindow* self)
-{
-  int ret;
-  if (G_IS_FILE(self->file))
-  {
-    char* path = g_file_get_path(self->file);
-    int last_slash = marker_utils_rfind('/', path);
-    path[last_slash] = '\0';
-    ret = chdir(path);
-    if (ret != 0)
-    {
-      puts("There was a problem changing directories");
-    }
-    g_free(path);
-  }
-    
+{    
   GtkTextBuffer* buffer;
   buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(self->source_view));
   GtkTextIter start_iter;
@@ -96,70 +83,29 @@ marker_editor_window_refresh_web_view(MarkerEditorWindow* self)
                                                &start_iter,
                                                &end_iter,
                                                FALSE);
-    
-  FILE* fp = fopen(TMP_MD, "w");
-  fputs(buffer_text, fp);
-  fclose(fp);
-  g_free(buffer_text);
   
-  char* command_arr[] = {
-      "pandoc -s -o ",
-      TMP_HTML, " ",
-      TMP_MD, " -c ",
-      STYLES_DIR, self->stylesheet_name,
-      "\0"
-  };
-  
-  if (!self->stylesheet_name)
+  char* html;
+  if (self->stylesheet_name)
   {
-    command_arr[4] = "\0";
-    command_arr[5] = "\0";
-    command_arr[6] = "\0";
+    char href[strlen(STYLES_DIR) + strlen(self->stylesheet_name) + 1];
+    memset(href, 0, sizeof(href));
+    strcat(href, STYLES_DIR);
+    strcat(href, self->stylesheet_name);
+    html = marker_markdown_render_with_css(buffer_text, strlen(buffer_text), href);
   }
-  
-  size_t command_len = 0;
-  for (int i = 0; i < G_N_ELEMENTS(command_arr); ++i)
+  else
   {
-    command_len += strlen(command_arr[i]);
+    html = marker_markdown_render(buffer_text, strlen(buffer_text));
   }
-  char command[command_len];
-  memset(command, 0, command_len);
-  for (int i = 0; i < G_N_ELEMENTS(command_arr); ++i)
-  {
-    strcat(command, command_arr[i]);
-  }
-  ret = system(command);
-  if (ret != 0)
-  {
-    puts(command);
-      puts("There was a problem generating the html document");
-  }
-    
-  char* cwd = getcwd(NULL, 0);
-  if (cwd == NULL)
-  {
-    puts("There was a problem getting the current working directory");
-  }
-    
-  int cwd_len = strlen(cwd);
-  int html_len = strlen(TMP_HTML);
-  int html_full_path_len = cwd_len + html_len + 2;
-  char html_full_path[html_full_path_len];
-  memset(html_full_path, 0, html_full_path_len);
-  strcat(html_full_path, cwd);
-  strcat(html_full_path, "/");
-  strcat(html_full_path, TMP_HTML);
-    
-  char uri[html_full_path_len + strlen("file://") + 1];
-  memset(uri, 0, sizeof(uri));
-  strcat(uri, "file://");
-  strcat(uri, html_full_path);
-    
-  webkit_web_view_load_uri(WEBKIT_WEB_VIEW(self->web_view), uri);
+  webkit_web_view_load_string(WEBKIT_WEB_VIEW(self->web_view),
+                              html,
+                              NULL,
+                              NULL,
+                              "file://");
   g_signal_connect(self->web_view, "load-progress-changed", G_CALLBACK(web_view_load_event), NULL);
-    
-  remove(TMP_MD);
-  free(cwd);
+  
+  free(html);
+  g_free(buffer_text);
 }
 
 void
