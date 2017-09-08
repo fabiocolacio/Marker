@@ -21,7 +21,7 @@ pkg_search_module(GTK REQUIRED gtk+-3.0)
 pkg_search_module(GTKSOURCEVIEW REQUIRED gtksourceview-3.0)
 pkg_search_module(WEBKITGTK REQUIRED webkitgtk-3.0)
 
-file(GLOB MARKER_SOURCES src/*.c)
+file(GLOB MARKER_SOURCES src/*.c src/hoedown/*.c)
 
 add_executable(${EXEC_NAME} ${MARKER_SOURCES})
 
