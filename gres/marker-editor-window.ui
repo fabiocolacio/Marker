@@ -78,7 +78,7 @@
       </packing>
     </child>
     <child>
-      <object class="GtkButton">
+      <object class="GtkButton" id="popout_btn">
         <property name="image">page-view</property>
         <signal name="clicked" handler="popout_btn_pressed" swapped="no"/>
       </object>

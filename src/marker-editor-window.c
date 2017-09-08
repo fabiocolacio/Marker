@@ -22,6 +22,7 @@ struct _MarkerEditorWindow
   GtkWidget* web_view;
   GtkWidget* web_window;
   GtkWidget* popover;
+  GtkWidget* popout_btn;
     
   gboolean   split_view;
     
@@ -507,15 +508,7 @@ new_activated(GSimpleAction* action,
 static gboolean
 preview_window_closed(GtkWidget* window,
                       GdkEvent*  event,
-                      gpointer   user_data)
-{
-  MarkerEditorWindow* marker_window = user_data;
-  g_object_ref(marker_window->web_view_scroll);
-  gtk_container_remove(GTK_CONTAINER(window), marker_window->web_view_scroll);
-  gtk_paned_add2(GTK_PANED(marker_window->paned), marker_window->web_view_scroll); 
-  gtk_widget_destroy(window);
-  return TRUE;
-}
+                      gpointer   user_data);
 
 static void
 popout_btn_pressed(GtkButton*          button,
@@ -530,7 +523,10 @@ popout_btn_pressed(GtkButton*          button,
     
     if (window->web_window)
     {
-      preview_window_closed(window->web_window, NULL, window);
+      g_object_ref(window->web_view_scroll);
+      gtk_container_remove(GTK_CONTAINER(window->web_window), window->web_view_scroll);
+      gtk_paned_add2(GTK_PANED(window->paned), window->web_view_scroll); 
+      gtk_widget_destroy(GTK_WIDGET(window->web_window));
       window->web_window = NULL;
     }
   }
@@ -552,6 +548,16 @@ popout_btn_pressed(GtkButton*          button,
     g_signal_connect(prev_win, "delete-event", G_CALLBACK(preview_window_closed), window);
   }
   window->split_view = !window->split_view;
+}
+
+static gboolean
+preview_window_closed(GtkWidget* window,
+                      GdkEvent*  event,
+                      gpointer   user_data)
+{
+  MarkerEditorWindow* marker_window = user_data;
+  popout_btn_pressed(GTK_BUTTON(marker_window->popout_btn), marker_window);
+  return TRUE;
 }
 
 static void
@@ -776,6 +782,7 @@ marker_editor_window_init(MarkerEditorWindow* self)
   self->source_view = GTK_WIDGET(gtk_builder_get_object(builder, "source_view"));
   self->web_view_scroll = GTK_WIDGET(gtk_builder_get_object(builder, "web_view_scroll"));
   self->web_view = GTK_WIDGET(gtk_builder_get_object(builder, "web_view"));
+  self->popout_btn = GTK_WIDGET(gtk_builder_get_object(builder, "popout_btn"));
   
   gtk_text_view_set_monospace(GTK_TEXT_VIEW(self->source_view), TRUE);
   
