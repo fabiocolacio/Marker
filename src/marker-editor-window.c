@@ -585,6 +585,16 @@ source_buffer_changed(GtkTextBuffer*      buffer,
   }
 }
 
+static gboolean
+web_view_context_menu(WebKitWebView*       web_view,
+                      GtkWidget*           widget,
+                      WebKitHitTestResult* hit_test_result,
+                      gboolean             triggered_with_keyword,
+                      gpointer             user_data)
+{
+  return TRUE;
+}
+
 void
 marker_editor_window_try_close(MarkerEditorWindow* self)
 {
@@ -775,10 +785,10 @@ marker_editor_window_init(MarkerEditorWindow* self)
   self->web_view = GTK_WIDGET(gtk_builder_get_object(builder, "web_view"));
   self->popout_btn = GTK_WIDGET(gtk_builder_get_object(builder, "popout_btn"));
   
+  g_signal_connect(self->web_view, "context-menu", G_CALLBACK(web_view_context_menu), self);
+  
   gtk_text_view_set_monospace(GTK_TEXT_VIEW(self->source_view), TRUE);
-  
   gtk_widget_grab_focus(GTK_WIDGET(self->source_view));
-  
   gtk_text_view_set_buffer(GTK_TEXT_VIEW(self->source_view), GTK_TEXT_BUFFER(source_buffer));
   g_signal_connect(source_buffer, "changed", G_CALLBACK(source_buffer_changed), self);
   
@@ -796,7 +806,6 @@ marker_editor_window_init(MarkerEditorWindow* self)
   gtk_window_set_titlebar(GTK_WINDOW(self), self->header_bar);
   
   gtk_window_set_default_size(GTK_WINDOW(self), 800, 500);
-  
   g_signal_connect(self, "delete-event", G_CALLBACK(close_btn_pressed), NULL);
   g_signal_connect(self, "key-press-event", G_CALLBACK(key_pressed), NULL);
   
