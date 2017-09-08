@@ -23,14 +23,12 @@ struct _MarkerEditorWindow
   GtkWidget* web_window;
   GtkWidget* popover;
   GtkWidget* popout_btn;
-    
+  gboolean   refreshing;
   gboolean   split_view;
-    
   gboolean   unsaved_changes;
   char*      file_name;
   char*      file_location;
   GFile*     file;
-    
   char*      stylesheet_name;
 };
 
@@ -59,16 +57,6 @@ show_unsaved_documents_warning(GtkWindow* window)
     gtk_widget_destroy(GTK_WIDGET(window));
   }
   gtk_widget_destroy(dialog);
-}
-
-static void
-web_view_load_event(WebKitWebView* web_view,
-                    gint           progress)
-{
-  if (progress >= 100)
-  {
-    remove(TMP_HTML);
-  }
 }
 
 void
@@ -103,7 +91,6 @@ marker_editor_window_refresh_web_view(MarkerEditorWindow* self)
                               NULL,
                               NULL,
                               "file://");
-  g_signal_connect(self->web_view, "load-progress-changed", G_CALLBACK(web_view_load_event), NULL);
   
   free(html);
   g_free(buffer_text);
@@ -574,7 +561,6 @@ source_buffer_changed(GtkTextBuffer*      buffer,
   if (!self->unsaved_changes)
   {
     self->unsaved_changes = TRUE;
-        
     if (G_IS_FILE(self->file))
     {
       char* basename = g_file_get_basename(self->file);        
@@ -591,6 +577,11 @@ source_buffer_changed(GtkTextBuffer*      buffer,
       gtk_header_bar_set_title(GTK_HEADER_BAR(self->header_bar), "*Untitled.md");
       gtk_header_bar_set_has_subtitle(GTK_HEADER_BAR(self->header_bar), FALSE);
     }
+  }
+  
+  if (webkit_web_view_get_load_status(WEBKIT_WEB_VIEW(self->web_view)) == WEBKIT_LOAD_FINISHED)
+  {
+    marker_editor_window_refresh_web_view(self);
   }
 }
 

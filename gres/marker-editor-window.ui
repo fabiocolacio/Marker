@@ -69,15 +69,6 @@
       </packing>
     </child>
     <child>
-      <object class="GtkButton">
-        <property name="image">refresh</property>
-        <signal name="clicked" handler="refresh_btn_pressed" swapped="no"/>
-      </object>
-      <packing>
-        <property name="pack_type">end</property>
-      </packing>
-    </child>
-    <child>
       <object class="GtkButton" id="popout_btn">
         <property name="image">page-view</property>
         <signal name="clicked" handler="popout_btn_pressed" swapped="no"/>
