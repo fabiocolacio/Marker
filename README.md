@@ -1,4 +1,4 @@
-# Marker
+# <img width="30" src="data/com.github.fabiocolacio.marker.svg"/>Marker
 
 Marker is a markdown editor for linux made with Gtk+-3.0
 
@@ -27,8 +27,6 @@ issues tab on [Marker's github repository](https://github.com/fabiocolacio/Marke
 ![scrot.png](scrot.png)
 
 ![scrot1.png](scrot1.png)
-
-![scrot2.png](scrot2.png)
 
 ## Installation From Source
 
