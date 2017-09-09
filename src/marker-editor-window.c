@@ -86,14 +86,26 @@ marker_editor_window_refresh_web_view(MarkerEditorWindow* self)
   {
     html = marker_markdown_render(buffer_text, strlen(buffer_text));
   }
+  
+  char* uri = "file://";
+  gboolean free_uri = false;
+  if (G_IS_FILE(self->file))
+  {
+    uri = g_file_get_uri(self->file);
+    int index = marker_utils_rfind('/', uri);
+    if (index > 0) uri[index + 1] = '\0';
+    free_uri = true;
+  }
+  
   webkit_web_view_load_string(WEBKIT_WEB_VIEW(self->web_view),
                               html,
                               NULL,
                               NULL,
-                              "file://");
+                              uri);
   
   free(html);
   g_free(buffer_text);
+  if (free_uri) g_free(uri);
 }
 
 void
