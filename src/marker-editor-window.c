@@ -38,9 +38,6 @@ struct _MarkerEditorWindow
 
 G_DEFINE_TYPE(MarkerEditorWindow, marker_editor_window, GTK_TYPE_APPLICATION_WINDOW)
 
-#define TMP_MD   ".marker_tmp.md"
-#define TMP_HTML ".marker_tmp.html"
-
 void
 show_unsaved_documents_warning(GtkWindow* window)
 {
@@ -305,131 +302,94 @@ marker_editor_window_export_file_as(MarkerEditorWindow*  self,
 {
   if (G_IS_FILE(file))
   {
-    char* filepath_dirty = g_file_get_path(file);
-    char* filepath = marker_utils_escape_file_path(filepath_dirty);
-    int slash = marker_utils_rfind('/', filepath_dirty);
-    char loc[slash + 1];
-    memset(loc, 0, sizeof(loc));
-    memcpy(loc, filepath_dirty, slash);
-    int ret = chdir(loc);
-    if (!ret)
+    char* filepath = g_file_get_path(file);
+    GtkTextBuffer* buffer;
+    buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(self->source_view));
+    GtkTextIter start_iter;
+    GtkTextIter end_iter;
+    gtk_text_buffer_get_start_iter(GTK_TEXT_BUFFER(buffer), &start_iter);
+    gtk_text_buffer_get_end_iter(GTK_TEXT_BUFFER(buffer), &end_iter);
+    char* buffer_text = gtk_text_buffer_get_text(GTK_TEXT_BUFFER(buffer),
+                                                 &start_iter,
+                                                 &end_iter,
+                                                 FALSE);
+    
+    switch (settings.file_type)
     {
-      GtkTextBuffer* buffer;
-      buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(self->source_view));
-      GtkTextIter start_iter;
-      GtkTextIter end_iter;
-      gtk_text_buffer_get_start_iter(GTK_TEXT_BUFFER(buffer), &start_iter);
-      gtk_text_buffer_get_end_iter(GTK_TEXT_BUFFER(buffer), &end_iter);
-      char* buffer_text = gtk_text_buffer_get_text(GTK_TEXT_BUFFER(buffer),
-                                                   &start_iter,
-                                                   &end_iter,
-                                                   FALSE);
-
-      FILE* fp = fopen(TMP_MD, "w");
-      fputs(buffer_text, fp);
-      fclose(fp);
-      g_free(buffer_text);
-
-      char command[256] = "pandoc -s -c ";
-      strcat(command, settings.style_sheet);
+      case HTML:
+        marker_markdown_render_to_file_with_css(buffer_text,
+                                                strlen(buffer_text),
+                                                filepath,
+                                                settings.style_sheet);
+        break;
       
-      switch (settings.file_type)
-      {
-        case HTML:
-          strcat(command, " -o ");
-          strcat(command, filepath);
-          strcat(command, " ");
-          strcat(command, TMP_MD);
-          strcat(command, " -t ");
-          strcat(command, "html");
-          ret = system(command);
-          break;
-              
-        case RTF:
-          strcat(command, " -o ");
-          strcat(command, filepath);
-          strcat(command, " ");
-          strcat(command, TMP_MD);
-          strcat(command, " -t ");
-          strcat(command, "rtf");
-          ret = system(command);
-          break;
-              
-        case EPUB:
-          strcat(command, " -o ");
-          strcat(command, filepath);
-          strcat(command, " ");
-          strcat(command, TMP_MD);
-          strcat(command, " -t ");
-          strcat(command, "epub");
-          ret = system(command);
-          break;
-              
-        case ODT:
-          strcat(command, " -o ");
-          strcat(command, filepath);
-          strcat(command, " ");
-          strcat(command, TMP_MD);
-          strcat(command, " -t ");
-          strcat(command, "odt");
-          ret = system(command);
-          break;
-              
-        case DOCX:
-          strcat(command, " -o ");
-          strcat(command, filepath);
-          strcat(command, " ");
-          strcat(command, TMP_MD);
-          strcat(command, " -t ");
-          strcat(command, "docx");
-          ret = system(command);
-          break;
-              
-        case LATEX:
-          strcat(command, " -o ");
-          strcat(command, filepath);
-          strcat(command, " ");
-          strcat(command, TMP_MD);
-          strcat(command, " -t ");
-          strcat(command, "latex");
-          ret = system(command);
-          break;
-          
-        case PDF:
+      #ifdef PANDOC
+      case RTF:
+        marker_markdown_pandoc_export(buffer_text,
+                                      settings,
+                                      "rtf",
+                                      filepath);
+        break;
+            
+      case EPUB:
+        marker_markdown_pandoc_export(buffer_text,
+                                      settings,
+                                      "epub",
+                                      filepath);
+        break;
+            
+      case ODT:
+        marker_markdown_pandoc_export(buffer_text,
+                                      settings,
+                                      "odt",
+                                      filepath);
+        break;
+            
+      case DOCX:
+        marker_markdown_pandoc_export(buffer_text,
+                                      settings,
+                                      "docx",
+                                      filepath);
+        break;
+            
+      case LATEX:
+        marker_markdown_pandoc_export(buffer_text,
+                                      settings,
+                                      "latex",
+                                      filepath);
+        break;
+      #endif
         
-          #ifdef WKHTMLTOX
-          strcat(command, " -o ");
-          strcat(command, TMP_HTML);
-          strcat(command, " ");
-          strcat(command, TMP_MD);
-          strcat(command, " -t ");
-          strcat(command, "html");
-          ret = system(command);
-          
-          wkhtmltopdf_global_settings* gs;
-          wkhtmltopdf_object_settings* os;
-          wkhtmltopdf_converter* c;
-          wkhtmltopdf_init(false);
-          gs = wkhtmltopdf_create_global_settings();
-          wkhtmltopdf_set_global_setting(gs, "out", filepath_dirty);
-          os = wkhtmltopdf_create_object_settings();
-          wkhtmltopdf_set_object_setting(os, "page", TMP_HTML);
-          c = wkhtmltopdf_create_converter(gs);
-          wkhtmltopdf_add_object(c, os, NULL);
-          ret = wkhtmltopdf_convert(c);
-          wkhtmltopdf_destroy_global_settings(gs);
-          wkhtmltopdf_destroy_object_settings(os);
-          wkhtmltopdf_destroy_converter(c);
-          wkhtmltopdf_deinit();
-          remove(TMP_HTML);
-          #endif
-          
-          break;
+      case PDF:
+      {
+        #ifdef WKHTMLTOX
+        marker_markdown_render_to_file_with_css(buffer_text,
+                                                strlen(buffer_text),
+                                                TMP_HTML,
+                                                settings.style_sheet);
+        
+        wkhtmltopdf_global_settings* gs;
+        wkhtmltopdf_object_settings* os;
+        wkhtmltopdf_converter* c;
+        wkhtmltopdf_init(false);
+        gs = wkhtmltopdf_create_global_settings();
+        wkhtmltopdf_set_global_setting(gs, "out", filepath);
+        os = wkhtmltopdf_create_object_settings();
+        wkhtmltopdf_set_object_setting(os, "page", TMP_HTML);
+        c = wkhtmltopdf_create_converter(gs);
+        wkhtmltopdf_add_object(c, os, NULL);
+        wkhtmltopdf_convert(c);
+        wkhtmltopdf_destroy_global_settings(gs);
+        wkhtmltopdf_destroy_object_settings(os);
+        wkhtmltopdf_destroy_converter(c);
+        wkhtmltopdf_deinit();
+        remove(TMP_HTML);
+        #endif
+        break;
       }
     }
-    g_free(filepath_dirty);
-    free(filepath);
-    remove(TMP_MD);
+    g_free(buffer_text);
+    g_free(filepath);
   }
 }
 
@@ -475,7 +435,34 @@ export_activated(GSimpleAction* action,
   gtk_builder_connect_signals(builder, export_dialog);
   
   GtkComboBox* format_chooser = GTK_COMBO_BOX(gtk_builder_get_object(builder, "format_chooser"));
-  GtkListStore* export_format_model = GTK_LIST_STORE(gtk_builder_get_object(builder, "export_format_model"));
+  GtkListStore* export_format_model = gtk_list_store_new(1, G_TYPE_STRING);
+  GtkTreeIter iter;
+  
+  gtk_list_store_append(export_format_model, &iter);
+  gtk_list_store_set(export_format_model, &iter, 0, "HTML", -1);
+  
+  #ifdef WKHTMLTOX
+  gtk_list_store_append(export_format_model, &iter);
+  gtk_list_store_set(export_format_model, &iter, 0, "PDF", -1);
+  #endif
+  
+  #ifdef PANDOC
+  gtk_list_store_append(export_format_model, &iter);
+  gtk_list_store_set(export_format_model, &iter, 0, "RTF", -1);
+  
+  gtk_list_store_append(export_format_model, &iter);
+  gtk_list_store_set(export_format_model, &iter, 0, "EPUB", -1);
+  
+  gtk_list_store_append(export_format_model, &iter);
+  gtk_list_store_set(export_format_model, &iter, 0, "ODT", -1);
+  
+  gtk_list_store_append(export_format_model, &iter);
+  gtk_list_store_set(export_format_model, &iter, 0, "DOCX", -1);
+  
+  gtk_list_store_append(export_format_model, &iter);
+  gtk_list_store_set(export_format_model, &iter, 0, "LaTeX", -1);
+  #endif
+  
   marker_utils_combo_box_set_model(format_chooser, GTK_TREE_MODEL(export_format_model));
   
   gtk_widget_show_all(GTK_WIDGET(format_chooser));
@@ -485,7 +472,42 @@ export_activated(GSimpleAction* action,
   if (ret == GTK_RESPONSE_OK)
   {
     MarkerExportSettings settings;
-    settings.file_type = gtk_combo_box_get_active(format_chooser);
+    char* file_type = marker_utils_combo_box_get_active_str(format_chooser);
+    if (strcmp(file_type, "HTML") == 0)
+    {
+      settings.file_type = HTML;
+    }
+    else
+    if (strcmp(file_type, "PDF") == 0)
+    {
+      settings.file_type = PDF;
+    }
+    else
+    if (strcmp(file_type, "RTF") == 0)
+    {
+      settings.file_type = RTF;
+    }
+    else
+    if (strcmp(file_type, "EPUB") == 0)
+    {
+      settings.file_type = EPUB;
+    }
+    else
+    if (strcmp(file_type, "ODT") == 0)
+    {
+      settings.file_type = ODT;
+    }
+    else
+    if (strcmp(file_type, "DOCX") == 0)
+    {
+      settings.file_type = DOCX;
+    }
+    else
+    if (strcmp(file_type, "LaTeX") == 0)
+    {
+      settings.file_type = LATEX;
+    }
+    free(file_type);
     char style_sheet[strlen(STYLES_DIR) + strlen(self->stylesheet_name) + 1];
     memset(style_sheet, 0, sizeof(style_sheet));
     strcat(style_sheet, STYLES_DIR);

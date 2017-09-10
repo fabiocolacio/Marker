@@ -3,6 +3,8 @@
 
 #include <gtk/gtk.h>
 
+#include "marker-markdown.h"
+
 G_BEGIN_DECLS
 
 #define MARKER_TYPE_EDITOR_WINDOW (marker_editor_window_get_type ())
@@ -12,23 +14,6 @@ G_DECLARE_FINAL_TYPE(MarkerEditorWindow,
                      MARKER,
                      EDITOR_WINDOW,
                      GtkApplicationWindow)
-
-typedef enum
-{
-    HTML,
-    PDF,
-    RTF,
-    EPUB,
-    ODT,
-    DOCX,
-    LATEX
-} MarkerFileFormat;
-
-typedef struct
-{
-    MarkerFileFormat file_type;
-    char* style_sheet;
-} MarkerExportSettings;
 
 MarkerEditorWindow*
 marker_editor_window_new(GtkApplication* app);
