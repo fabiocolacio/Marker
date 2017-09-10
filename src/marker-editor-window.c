@@ -363,40 +363,30 @@ marker_editor_window_export_file_as(MarkerEditorWindow*  self,
       case PDF:
       {
         #ifdef WKHTMLTOX
-        
-        FILE* fp = fopen(TMP_MD, "w");
-        fputs(buffer_text, fp);
-        fclose(fp);
-        
-        char command[256] = "pandoc -s -c ";
-        strcat(command, settings.style_sheet);
-        strcat(command, " -o ");
-        strcat(command, TMP_HTML);
-        strcat(command, " ");
-        strcat(command, TMP_MD);
-        strcat(command, " -t ");
-        strcat(command, "html");
-        ret = system(command);
+        marker_markdown_render_to_file_with_css(buffer_text,
+                                                strlen(buffer_text),
+                                                TMP_HTML,
+                                                settings.style_sheet);
         
         wkhtmltopdf_global_settings* gs;
         wkhtmltopdf_object_settings* os;
         wkhtmltopdf_converter* c;
         wkhtmltopdf_init(false);
         gs = wkhtmltopdf_create_global_settings();
-        wkhtmltopdf_set_global_setting(gs, "out", filepath_dirty);
+        wkhtmltopdf_set_global_setting(gs, "out", filepath);
         os = wkhtmltopdf_create_object_settings();
         wkhtmltopdf_set_object_setting(os, "page", TMP_HTML);
         c = wkhtmltopdf_create_converter(gs);
         wkhtmltopdf_add_object(c, os, NULL);
-        ret = wkhtmltopdf_convert(c);
+        wkhtmltopdf_convert(c);
         wkhtmltopdf_destroy_global_settings(gs);
         wkhtmltopdf_destroy_object_settings(os);
         wkhtmltopdf_destroy_converter(c);
         wkhtmltopdf_deinit();
         remove(TMP_HTML);
         #endif
-      }
         break;
+      }
     }
     g_free(buffer_text);
     g_free(filepath);
