@@ -10,8 +10,12 @@ set(CONF_FILE ${DATA_DIR}/marker.config)
 
 set(DATA_DEST ${CMAKE_INSTALL_PREFIX}/share)
 
-option(WKHTMLTOX "Use wkhtmltox to export to pdf and image" OFF)
+option(PANDOC "Use pandoc to export to various file formats" OFF)
+if (PANDOC)
+  add_definitions(-DPANDOC)
+endif()
 
+option(WKHTMLTOX "Use wkhtmltox to export to pdf and image" OFF)
 if (WKHTMLTOX)
   add_definitions(-DWKHTMLTOX)
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -lwkhtmltox -lhoedown")
