@@ -1,6 +1,10 @@
 #include <gtksourceview/gtksource.h>
 #include <webkit/webkitwebview.h>
+
+#ifdef WKHTMLTOX
 #include <wkhtmltox/pdf.h>
+#endif
+
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -392,6 +396,8 @@ marker_editor_window_export_file_as(MarkerEditorWindow*  self,
           break;
           
         case PDF:
+        
+          #ifdef WKHTMLTOX
           strcat(command, " -o ");
           strcat(command, TMP_HTML);
           strcat(command, " ");
@@ -416,6 +422,8 @@ marker_editor_window_export_file_as(MarkerEditorWindow*  self,
           wkhtmltopdf_destroy_converter(c);
           wkhtmltopdf_deinit();
           remove(TMP_HTML);
+          #endif
+          
           break;
       }
     }
