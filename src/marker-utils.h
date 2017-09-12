@@ -3,6 +3,10 @@
 
 #include <gtk/gtk.h>
 
+void
+marker_utils_surround_selection_with(GtkTextBuffer* buffer,
+                                     char*          insertion);
+
 int
 marker_utils_rfind(char  query,
                    char* str);

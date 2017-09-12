@@ -5,6 +5,28 @@
 
 #include "marker-utils.h"
 
+void
+marker_utils_surround_selection_with(GtkTextBuffer* buffer,
+                                     char*          insertion)
+{
+  GtkTextIter start, end;
+  gint start_index, end_index, selection_len;
+  gboolean selected;
+  size_t len = strlen(insertion);
+  
+  selected = gtk_text_buffer_get_selection_bounds(buffer, &start, &end);  
+  if (selected)
+  {
+    start_index = gtk_text_iter_get_line_offset(&start);
+    end_index = gtk_text_iter_get_line_offset(&end);
+    selection_len = end_index - start_index;
+    
+    gtk_text_buffer_insert(buffer, &start, insertion, len);
+    gtk_text_iter_forward_chars(&start, selection_len);
+    gtk_text_buffer_insert(buffer, &start, insertion, len);
+  }
+}
+
 char*
 marker_utils_escape_file_path(char* filename)
 {

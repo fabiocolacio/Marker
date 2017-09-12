@@ -25,13 +25,8 @@ struct _MarkerEditorWindow
   GtkWidget* web_view_scroll;
   GtkWidget* web_view;
   GtkWidget* web_window;
-  GtkWidget* popover;
   GtkWidget* popout_btn;
-  gboolean   refreshing;
   gboolean   split_view;
-  gboolean   unsaved_changes;
-  char*      file_name;
-  char*      file_location;
   GFile*     file;
   char*      stylesheet_name;
 };
@@ -143,7 +138,7 @@ marker_editor_window_open_file(MarkerEditorWindow* self,
       g_free(path);
       g_free(file_contents);
       
-      self->unsaved_changes = FALSE;
+      gtk_text_buffer_set_modified(buffer, false);
     }
   }
 }
@@ -200,7 +195,7 @@ marker_editor_window_save_file_as(MarkerEditorWindow* self,
         g_error_free(err);
       }
                    
-      self->unsaved_changes = FALSE;
+      gtk_text_buffer_set_modified(buffer, FALSE);
       self->file = file;
             
       char* basename = g_file_get_basename(file);
@@ -600,9 +595,9 @@ static void
 source_buffer_changed(GtkTextBuffer*      buffer,
                       MarkerEditorWindow* self)
 {
-  if (!self->unsaved_changes)
+  if (!gtk_text_buffer_get_modified(buffer))
   {
-    self->unsaved_changes = TRUE;
+    gtk_text_buffer_set_modified(buffer, TRUE);
     if (G_IS_FILE(self->file))
     {
       char* basename = g_file_get_basename(self->file);        
@@ -640,7 +635,8 @@ web_view_context_menu(WebKitWebView*       web_view,
 void
 marker_editor_window_try_close(MarkerEditorWindow* self)
 {
-  if (self->unsaved_changes)
+  GtkTextBuffer* buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(self->source_view));
+  if (gtk_text_buffer_get_modified(buffer))
   {
     show_unsaved_documents_warning(GTK_WINDOW(self));
   }
@@ -665,28 +661,6 @@ modifier_pressed(GdkEventKey     event,
   return (event.state & modifier) == modifier;
 }
                  
-static void
-surround_selection_with(GtkTextBuffer* buffer,
-                        char*          insertion)
-{
-  GtkTextIter start, end;
-  gint start_index, end_index, selection_len;
-  gboolean selected;
-  size_t len = strlen(insertion);
-  
-  selected = gtk_text_buffer_get_selection_bounds(buffer, &start, &end);  
-  if (selected)
-  {
-    start_index = gtk_text_iter_get_line_offset(&start);
-    end_index = gtk_text_iter_get_line_offset(&end);
-    selection_len = end_index - start_index;
-    
-    gtk_text_buffer_insert(buffer, &start, insertion, len);
-    gtk_text_iter_forward_chars(&start, selection_len);
-    gtk_text_buffer_insert(buffer, &start, insertion, len);
-  }
-}
-
 static gboolean
 key_pressed(GtkWidget*   widget,
             GdkEventKey* event,
@@ -726,7 +700,7 @@ key_pressed(GtkWidget*   widget,
       {
         GtkTextBuffer* buffer;
         buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(window->source_view));
-        surround_selection_with(buffer, "**");
+        marker_utils_surround_selection_with(buffer, "**");
         break;
       }
        
@@ -734,7 +708,7 @@ key_pressed(GtkWidget*   widget,
       {
         GtkTextBuffer* buffer;
         buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(window->source_view));
-        surround_selection_with(buffer, "*");
+        marker_utils_surround_selection_with(buffer, "*");
         break;
       }
         
@@ -742,7 +716,7 @@ key_pressed(GtkWidget*   widget,
       {
         GtkTextBuffer* buffer;
         buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(window->source_view));
-        surround_selection_with(buffer, "``");
+        marker_utils_surround_selection_with(buffer, "``");
         break;
       }
     }
@@ -853,7 +827,6 @@ static void
 marker_editor_window_init(MarkerEditorWindow* self)
 {   
   self->file = NULL;
-  self->unsaved_changes = FALSE;
   self->stylesheet_name = marker_utils_allocate_string("marker.css");
   
   GtkBuilder* builder = gtk_builder_new_from_resource("/com/github/fabiocolacio/marker/marker-editor-window.ui");
