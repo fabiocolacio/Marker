@@ -665,6 +665,27 @@ modifier_pressed(GdkEventKey     event,
   return (event.state & modifier) == modifier;
 }
                  
+static void
+surround_selection_with(GtkTextBuffer* buffer,
+                        char*          insertion)
+{
+  GtkTextIter start, end;
+  gint start_index, end_index, selection_len;
+  gboolean selected;
+  size_t len = strlen(insertion);
+  
+  selected = gtk_text_buffer_get_selection_bounds(buffer, &start, &end);  
+  if (selected)
+  {
+    start_index = gtk_text_iter_get_line_offset(&start);
+    end_index = gtk_text_iter_get_line_offset(&end);
+    selection_len = end_index - start_index;
+    
+    gtk_text_buffer_insert(buffer, &start, insertion, len);
+    gtk_text_iter_forward_chars(&start, selection_len);
+    gtk_text_buffer_insert(buffer, &start, insertion, len);
+  }
+}
 
 static gboolean
 key_pressed(GtkWidget*   widget,
@@ -672,40 +693,64 @@ key_pressed(GtkWidget*   widget,
             gpointer     user_data)
 {
   gboolean ctrl_pressed = modifier_pressed(*event, GDK_CONTROL_MASK);
-  
+  MarkerEditorWindow* window = MARKER_EDITOR_WINDOW(widget);
   if (ctrl_pressed)
   {
     switch (event->keyval)
     {
       case GDK_KEY_s:
-        save_btn_pressed(widget, MARKER_EDITOR_WINDOW(widget));
+        save_btn_pressed(widget, window);
         break;
         
       case GDK_KEY_o:
-        open_btn_pressed(widget, MARKER_EDITOR_WINDOW(widget));
+        open_btn_pressed(widget, window);
         break;
         
       case GDK_KEY_S:
-        save_as_activated(NULL, NULL, MARKER_EDITOR_WINDOW(widget));
+        save_as_activated(NULL, NULL, window);
         break;
         
       case GDK_KEY_n:
-        new_activated(NULL, NULL, MARKER_EDITOR_WINDOW(widget));
+        new_activated(NULL, NULL, window);
         break;
         
       case GDK_KEY_e:
-        export_activated(NULL, NULL, MARKER_EDITOR_WINDOW(widget));
+        export_activated(NULL, NULL, window);
         break;
         
       case GDK_KEY_r:
-        refresh_btn_pressed(widget, MARKER_EDITOR_WINDOW(widget));
+        refresh_btn_pressed(widget, window);
         break;
+        
+      case GDK_KEY_b:
+      {
+        GtkTextBuffer* buffer;
+        buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(window->source_view));
+        surround_selection_with(buffer, "**");
+        break;
+      }
+       
+      case GDK_KEY_i:
+      {
+        GtkTextBuffer* buffer;
+        buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(window->source_view));
+        surround_selection_with(buffer, "*");
+        break;
+      }
+        
+      case GDK_KEY_m:
+      {
+        GtkTextBuffer* buffer;
+        buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(window->source_view));
+        surround_selection_with(buffer, "``");
+        break;
+      }
     }
   }
   
+  marker_editor_window_refresh_web_view(window);
   return FALSE;
 }
-
 
 void
 marker_editor_window_set_css_theme(MarkerEditorWindow* self,
