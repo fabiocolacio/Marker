@@ -43,7 +43,7 @@
     <child>
       <object class="GtkButton">
         <property name="label">Open...</property>
-        <signal name="clicked" handler="open_btn_pressed" swapped="no"/>
+        <signal name="clicked" handler="open_cb" swapped="no"/>
       </object>
       <packing>
         <property name="pack_type">start</property>
@@ -52,7 +52,7 @@
     <child>
       <object class="GtkButton">
         <property name="label">Save</property>
-        <signal name="clicked" handler="save_btn_pressed" swapped="no"/>
+        <signal name="clicked" handler="save_cb" swapped="no"/>
       </object>
       <packing>
         <property name="pack_type">start</property>
@@ -69,7 +69,7 @@
     <child>
       <object class="GtkButton" id="popout_btn">
         <property name="image">page-view</property>
-        <signal name="clicked" handler="popout_btn_pressed" swapped="no"/>
+        <signal name="clicked" handler="popout_cb" swapped="no"/>
       </object>
       <packing>
         <property name="pack_type">end</property>

@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "marker.h"
 #include "marker-source-view.h"
 #include "marker-markdown.h"
 
@@ -71,15 +72,91 @@ marker_editor_window_open_file(MarkerEditorWindow* window,
                                
 void
 marker_editor_window_save_file(MarkerEditorWindow* window,
-                               char*               filepath)
+                               GFile*              file)
 {
-  FILE* file = NULL;
-  file = fopen(filepath, "w");
-  if (file)
+  char* filepath = g_file_get_path(file);
+  FILE* fp = NULL;
+  fp = fopen(filepath, "w");
+  if (fp)
   {
     char* contents = marker_editor_window_get_markdown(window);
-    fputs(contents, file);
-    fclose(file);
+    fputs(contents, fp);
+    fclose(fp);
+    
+    window->file = file;
+    gtk_window_set_title(GTK_WINDOW(window), filepath);
+  }
+  g_free(filepath);
+}
+
+static void
+open_cb(GtkWidget*          widget,
+        MarkerEditorWindow* window)
+{
+  GtkWidget* dialog = gtk_file_chooser_dialog_new("Open File",
+                                                  GTK_WINDOW(window),
+                                                  GTK_FILE_CHOOSER_ACTION_OPEN,
+                                                  "Cancel",
+                                                  GTK_RESPONSE_CANCEL,
+                                                  "Open",
+                                                  GTK_RESPONSE_ACCEPT,
+                                                  NULL);
+  
+  gint response = gtk_dialog_run(GTK_DIALOG(dialog));
+  if (response == GTK_RESPONSE_ACCEPT)
+  {
+    GtkFileChooser* chooser = GTK_FILE_CHOOSER (dialog);
+    char* filename = gtk_file_chooser_get_filename (chooser);
+    
+    GFile* file = g_file_new_for_path(filename);
+    marker_create_new_window_from_file(file);
+    
+    g_free(filename);
+  }
+    
+  gtk_widget_destroy(dialog);
+}
+
+static void
+save_as_cb(GtkWidget*          widget,
+           MarkerEditorWindow* window)
+{
+  GtkWidget* dialog = gtk_file_chooser_dialog_new("Open File",
+                                                  GTK_WINDOW(window),
+                                                  GTK_FILE_CHOOSER_ACTION_SAVE,
+                                                  "Cancel",
+                                                  GTK_RESPONSE_CANCEL,
+                                                  "Save",
+                                                  GTK_RESPONSE_ACCEPT,
+                                                  NULL);
+        
+  gtk_file_chooser_set_do_overwrite_confirmation(GTK_FILE_CHOOSER(dialog), TRUE);
+    
+  gint response = gtk_dialog_run(GTK_DIALOG(dialog));
+  if (response == GTK_RESPONSE_ACCEPT)
+  {
+    GtkFileChooser* chooser = GTK_FILE_CHOOSER (dialog);
+    char* filename = gtk_file_chooser_get_filename (chooser);
+    GFile* file = g_file_new_for_path(filename);
+    marker_editor_window_save_file(window, file);
+        
+    g_free(filename);
+  }
+    
+gtk_widget_destroy(dialog);
+}
+
+static void
+save_cb(GtkWidget*          widget,
+        MarkerEditorWindow* window)
+{
+  if (G_IS_FILE(window->file))
+  {
+    marker_editor_window_save_file(window, window->file);
+  }
+  else
+  {
+    save_as_cb(widget, window);
   }
 }
 
@@ -147,6 +224,10 @@ init_ui(MarkerEditorWindow* window)
   scrolled_window = gtk_scrolled_window_new(NULL, NULL);
   gtk_container_add(GTK_CONTAINER(scrolled_window), web_view);
   gtk_paned_add2(paned, scrolled_window);
+  
+  gtk_builder_add_callback_symbol(builder, "open_cb", G_CALLBACK(open_cb));
+  gtk_builder_add_callback_symbol(builder, "save_cb", G_CALLBACK(save_cb));
+  gtk_builder_connect_signals(builder, window);
   
   g_object_unref(builder);
 }

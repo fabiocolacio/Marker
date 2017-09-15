@@ -26,7 +26,7 @@ marker_editor_window_open_file(MarkerEditorWindow* window,
                                
 void
 marker_editor_window_save_file(MarkerEditorWindow* window,
-                               char*               file);
+                               GFile*              file);
 
 gchar*
 marker_editor_window_get_markdown(MarkerEditorWindow* window);
