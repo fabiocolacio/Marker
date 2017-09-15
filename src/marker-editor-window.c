@@ -15,6 +15,7 @@ struct _MarkerEditorWindow
   
   MarkerSourceView* source_view;
   WebKitWebView* web_view;
+  GFile* file;
 };
 
 G_DEFINE_TYPE(MarkerEditorWindow, marker_editor_window, GTK_TYPE_APPLICATION_WINDOW)
@@ -22,26 +23,63 @@ G_DEFINE_TYPE(MarkerEditorWindow, marker_editor_window, GTK_TYPE_APPLICATION_WIN
 void
 marker_editor_window_refresh_preview(MarkerEditorWindow* window)
 {
-  if (WEBKIT_IS_WEB_VIEW(window->web_view))
+  WebKitWebView* web_view = window->web_view;
+  gchar* markdown = marker_editor_window_get_markdown(window);
+  char* html = marker_markdown_to_html(markdown, strlen(markdown));
+  
+  gchar* uri = NULL;
+  if (G_IS_FILE(window->file)) { uri = g_file_get_uri(window->file); }
+  
+  webkit_web_view_load_string(web_view,
+                              html,
+                              "text/html",
+                              "UTF-8",
+                              (uri) ? uri : "file://");
+  
+  if (uri) { g_free(uri); }
+  
+  free(html);
+  g_free(markdown);
+}
+
+void
+marker_editor_window_open_file(MarkerEditorWindow* window,
+                               GFile*              file)
+{
+  char* file_contents = NULL;
+  gsize file_size = 0;
+  GError* err = NULL;
+  
+  g_file_load_contents(file, NULL, &file_contents, &file_size, NULL, &err);
+  
+  if (err)
   {
-    WebKitWebView* web_view = window->web_view;
-    gchar* markdown = marker_editor_window_get_markdown(window);
-    char* html = marker_markdown_to_html(markdown, strlen(markdown));
-    webkit_web_view_load_string(web_view, html, "text/html", "UTF-8", "file://");
-    free(html);
-    g_free(markdown);
+    printf("There was a problem opening the file!\n\n%s\n", err->message);
+    g_error_free(err);
   }
+  else
+  {
+    window->file = file;
+    char* filepath = g_file_get_path(file);
+    gtk_window_set_title(GTK_WINDOW(window), filepath);
+    g_free(filepath);
+    
+    marker_source_view_set_text(window->source_view, file_contents, file_size);
+    g_free(file_contents);
+  }
+}
+                               
+void
+marker_editor_window_save_file(MarkerEditorWindow* window,
+                               GFile*              file)
+{
+
 }
 
 gchar*
 marker_editor_window_get_markdown(MarkerEditorWindow* window)
 {
-  if (MARKER_IS_EDITOR_WINDOW(window) &&
-      MARKER_IS_SOURCE_VIEW(window->source_view))
-  {
-    return marker_source_view_get_text(window->source_view);
-  }
-  return NULL;
+  return marker_source_view_get_text(window->source_view);
 }
 
 static void
@@ -67,11 +105,12 @@ init_ui(MarkerEditorWindow* window)
   // Tool Bar //
   GtkWidget* header_bar =
     GTK_WIDGET(gtk_builder_get_object(builder, "header_bar"));
+  
   gtk_box_pack_start(vbox, header_bar, FALSE, TRUE, 0);
   
   GtkMenuButton* menu_btn =
-    GTK_MENU_BUTTON(gtk_builder_get_object(builder, "menu_btn"));
-    
+    GTK_MENU_BUTTON(gtk_builder_get_object(builder, "menu_btn"));  
+  
   GMenuModel* gear_menu =
     G_MENU_MODEL(gtk_builder_get_object(builder, "gear_menu"));
     
@@ -128,6 +167,7 @@ marker_editor_window_new_from_file(GtkApplication* app,
                                    GFile*          file)
 {
   MarkerEditorWindow* window = marker_editor_window_new(app);
+  marker_editor_window_open_file(window, file);
   return window;
 }
 

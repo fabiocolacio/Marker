@@ -20,6 +20,14 @@ MarkerEditorWindow*
 marker_editor_window_new_from_file(GtkApplication* app,
                                    GFile*          file);
 
+void
+marker_editor_window_open_file(MarkerEditorWindow* window,
+                               GFile*              file);
+                               
+void
+marker_editor_window_save_file(MarkerEditorWindow* window,
+                               GFile*              file);
+
 gchar*
 marker_editor_window_get_markdown(MarkerEditorWindow* window);
 
