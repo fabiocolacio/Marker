@@ -7,6 +7,9 @@ void
 marker_create_new_window();
 
 void
+marker_create_new_window_from_file(GFile* file);
+
+void
 marker_quit();
 
 #endif

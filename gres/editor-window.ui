@@ -76,27 +76,5 @@
       </packing>
     </child>
   </object>
-  
-  <!-- Editor / Web Preview -->
-  <object class="GtkPaned" id="editor">
-    <property name="position">400</property>
-    <property name="wide-handle">True</property>
-    <child>
-      <object class="GtkScrolledWindow">
-        <child>
-          <object class="GtkSourceView" id="source_view">
-          </object>
-        </child>
-      </object>
-    </child>
-    <child>
-      <object class="GtkScrolledWindow" id="web_view_scroll">
-        <child>
-          <object class="WebkitWebView" id="web_view">
-          </object>
-        </child>
-      </object>
-    </child>
-  </object>
       
 </interface>
