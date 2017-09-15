@@ -4,13 +4,10 @@
 #include <gtk/gtk.h>
 
 void
-marker_open(GtkApplication* app,
-            GFile**         files,
-            gint            num_files,
-            const gchar*    hint);
+marker_create_new_window();
 
 void
-marker_quit(GtkApplication* app);
+marker_quit();
 
 #endif
 

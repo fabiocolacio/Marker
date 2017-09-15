@@ -40,8 +40,6 @@
   
   <!-- Header Bar -->
   <object class="GtkHeaderBar" id="header_bar">
-    <property name="title">Untitled.md</property>
-    <property name="show_close_button">True</property>
     <child>
       <object class="GtkButton">
         <property name="label">Open...</property>

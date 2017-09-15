@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gresources>
     <gresource prefix="/com/github/fabiocolacio/marker">
-        <file preprocess="xml-stripblanks">marker-editor-window.ui</file>
-        <file preprocess="xml-stripblanks">marker-export-dialog.ui</file>
-        <file preprocess="xml-stripblanks">marker-prefs-window.ui</file>
-        <file preprocess="xml-stripblanks">marker-app-menu.ui</file>
+        <file preprocess="xml-stripblanks">editor-window.ui</file>
     </gresource>
 </gresources>
