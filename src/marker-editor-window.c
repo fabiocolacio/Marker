@@ -71,9 +71,16 @@ marker_editor_window_open_file(MarkerEditorWindow* window,
                                
 void
 marker_editor_window_save_file(MarkerEditorWindow* window,
-                               GFile*              file)
+                               char*               filepath)
 {
-
+  FILE* file = NULL;
+  file = fopen(filepath, "w");
+  if (file)
+  {
+    char* contents = marker_editor_window_get_markdown(window);
+    fputs(contents, file);
+    fclose(file);
+  }
 }
 
 gchar*
