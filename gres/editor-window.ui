@@ -38,6 +38,39 @@
     </section>
   </menu>
   
+  <menu id="gear_menu_full">
+    <section>
+      <item>
+        <attribute name="label">Save As...</attribute>
+        <attribute name="action">win.saveas</attribute>
+      </item>
+      <item>
+        <attribute name="label">Export...</attribute>
+        <attribute name="action">win.export</attribute>
+      </item>
+      <item>
+        <attribute name="label">New</attribute>
+        <attribute name="action">win.new</attribute>
+      </item>
+    </section>
+    <section>
+      <item>
+        <attribute name="label">Preferences</attribute>
+        <attribute name="action">app.prefs</attribute>
+      </item>
+    </section>
+    <section>
+      <item>
+        <attribute name="label">About</attribute>
+        <attribute name="action">app.about</attribute>
+      </item>
+      <item>
+        <attribute name="label">Quit</attribute>
+        <attribute name="action">app.quit</attribute>
+      </item>
+    </section>
+  </menu>
+  
   <!-- Header Bar -->
   <object class="GtkHeaderBar" id="header_bar">
     <child>
@@ -61,15 +94,6 @@
     <child>
       <object class="GtkMenuButton" id="menu_btn">
         <property name="image">open-menu</property>
-      </object>
-      <packing>
-        <property name="pack_type">end</property>
-      </packing>
-    </child>
-    <child>
-      <object class="GtkButton" id="popout_btn">
-        <property name="image">page-view</property>
-        <signal name="clicked" handler="popout_cb" swapped="no"/>
       </object>
       <packing>
         <property name="pack_type">end</property>

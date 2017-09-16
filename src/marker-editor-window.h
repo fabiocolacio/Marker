@@ -34,6 +34,9 @@ marker_editor_window_get_markdown(MarkerEditorWindow* window);
 void
 marker_editor_window_refresh_preview(MarkerEditorWindow* window);
 
+void
+marker_editor_window_try_close(MarkerEditorWindow* window);
+
 G_END_DECLS
 
 #endif

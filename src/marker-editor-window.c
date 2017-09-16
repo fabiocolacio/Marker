@@ -21,6 +21,103 @@ struct _MarkerEditorWindow
 
 G_DEFINE_TYPE(MarkerEditorWindow, marker_editor_window, GTK_TYPE_APPLICATION_WINDOW)
 
+static void
+save_as_cb(GSimpleAction* action,
+           GVariant*      parameter,
+           gpointer       user_data)
+{
+  MarkerEditorWindow* window = MARKER_EDITOR_WINDOW(user_data);
+  GtkWidget* dialog = gtk_file_chooser_dialog_new("Open File",
+                                                  GTK_WINDOW(window),
+                                                  GTK_FILE_CHOOSER_ACTION_SAVE,
+                                                  "Cancel",
+                                                  GTK_RESPONSE_CANCEL,
+                                                  "Save",
+                                                  GTK_RESPONSE_ACCEPT,
+                                                  NULL);
+        
+  gtk_file_chooser_set_do_overwrite_confirmation(GTK_FILE_CHOOSER(dialog), TRUE);
+    
+  gint response = gtk_dialog_run(GTK_DIALOG(dialog));
+  if (response == GTK_RESPONSE_ACCEPT)
+  {
+    GtkFileChooser* chooser = GTK_FILE_CHOOSER (dialog);
+    char* filename = gtk_file_chooser_get_filename (chooser);
+    GFile* file = g_file_new_for_path(filename);
+    marker_editor_window_save_file(window, file);
+        
+    g_free(filename);
+  }
+    
+  gtk_widget_destroy(dialog);
+}
+
+static void
+export_cb(GSimpleAction* action,
+          GVariant*      parameter,
+          gpointer       user_data)
+{
+
+}
+
+static void
+new_cb(GSimpleAction* action,
+       GVariant*      parameter,
+       gpointer       user_data)
+{
+  marker_create_new_window();
+}
+
+static GActionEntry win_entries[] =
+{
+  { "saveas", save_as_cb, NULL, NULL, NULL },
+  { "export", export_cb, NULL, NULL, NULL },
+  { "new", new_cb, NULL, NULL, NULL }
+};
+
+static void
+show_unsaved_documents_warning(GtkWindow* window)
+{
+  GtkWidget* dialog =
+      gtk_message_dialog_new_with_markup(window,
+                                         GTK_DIALOG_MODAL,
+                                         GTK_MESSAGE_QUESTION,
+                                         GTK_BUTTONS_OK_CANCEL,
+                                         "<span weight='bold' size='larger'>"
+                                         "Discard changes to this document?"
+                                         "</span>\n\n"
+                                         "This document has unsaved changes "
+                                         "that will be lost if you quit.");
+                                           
+  gint response = gtk_dialog_run(GTK_DIALOG(dialog));
+  if (response == GTK_RESPONSE_OK)
+  {
+    gtk_widget_destroy(GTK_WIDGET(window));
+  }
+  gtk_widget_destroy(dialog);
+}
+
+void
+marker_editor_window_try_close(MarkerEditorWindow* window)
+{
+  if (marker_source_view_get_modified(window->source_view))
+  {
+    show_unsaved_documents_warning(GTK_WINDOW(window));
+  }
+  else
+  {
+    gtk_widget_destroy(GTK_WIDGET(window));
+  }
+}
+
+static gboolean
+close_btn_pressed(MarkerEditorWindow* window,
+                  gpointer*           user_data)
+{
+  marker_editor_window_try_close(window);
+  return TRUE;
+}
+
 void
 marker_editor_window_refresh_preview(MarkerEditorWindow* window)
 {
@@ -67,6 +164,8 @@ marker_editor_window_open_file(MarkerEditorWindow* window,
     
     marker_source_view_set_text(window->source_view, file_contents, file_size);
     g_free(file_contents);
+    
+    marker_source_view_set_modified(window->source_view, FALSE);
   }
 }
                                
@@ -85,6 +184,7 @@ marker_editor_window_save_file(MarkerEditorWindow* window,
     
     window->file = file;
     gtk_window_set_title(GTK_WINDOW(window), filepath);
+    marker_source_view_set_modified(window->source_view, FALSE);
   }
   g_free(filepath);
 }
@@ -118,35 +218,6 @@ open_cb(GtkWidget*          widget,
 }
 
 static void
-save_as_cb(GtkWidget*          widget,
-           MarkerEditorWindow* window)
-{
-  GtkWidget* dialog = gtk_file_chooser_dialog_new("Open File",
-                                                  GTK_WINDOW(window),
-                                                  GTK_FILE_CHOOSER_ACTION_SAVE,
-                                                  "Cancel",
-                                                  GTK_RESPONSE_CANCEL,
-                                                  "Save",
-                                                  GTK_RESPONSE_ACCEPT,
-                                                  NULL);
-        
-  gtk_file_chooser_set_do_overwrite_confirmation(GTK_FILE_CHOOSER(dialog), TRUE);
-    
-  gint response = gtk_dialog_run(GTK_DIALOG(dialog));
-  if (response == GTK_RESPONSE_ACCEPT)
-  {
-    GtkFileChooser* chooser = GTK_FILE_CHOOSER (dialog);
-    char* filename = gtk_file_chooser_get_filename (chooser);
-    GFile* file = g_file_new_for_path(filename);
-    marker_editor_window_save_file(window, file);
-        
-    g_free(filename);
-  }
-    
-gtk_widget_destroy(dialog);
-}
-
-static void
 save_cb(GtkWidget*          widget,
         MarkerEditorWindow* window)
 {
@@ -156,7 +227,7 @@ save_cb(GtkWidget*          widget,
   }
   else
   {
-    save_as_cb(widget, window);
+    save_as_cb(NULL, NULL, window);
   }
 }
 
@@ -179,6 +250,7 @@ init_ui(MarkerEditorWindow* window)
   gtk_window_set_default_size(GTK_WINDOW(window), 900, 600);
   gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
   gtk_window_set_title(GTK_WINDOW(window), "Untitled.md");
+  g_signal_connect(window, "delete-event", G_CALLBACK(close_btn_pressed), window);
   
   GtkBuilder* builder =
     gtk_builder_new_from_resource("/com/github/fabiocolacio/marker/editor-window.ui");
@@ -196,10 +268,19 @@ init_ui(MarkerEditorWindow* window)
     GTK_MENU_BUTTON(gtk_builder_get_object(builder, "menu_btn"));  
   
   GMenuModel* gear_menu =
-    G_MENU_MODEL(gtk_builder_get_object(builder, "gear_menu"));
+    G_MENU_MODEL(gtk_builder_get_object(builder, "gear_menu_full"));
     
   gtk_menu_button_set_use_popover(menu_btn, TRUE);
   gtk_menu_button_set_menu_model(menu_btn, gear_menu);
+  g_action_map_add_action_entries(G_ACTION_MAP(window),
+                                  win_entries,
+                                  G_N_ELEMENTS(win_entries),
+                                  window);
+  GtkApplication* app = marker_get_app();
+  g_action_map_add_action_entries(G_ACTION_MAP(app),
+                                  APP_MENU_ACTION_ENTRIES,
+                                  3,
+                                  window);
 
   // Paned Editor //
   GtkWidget* scrolled_window;

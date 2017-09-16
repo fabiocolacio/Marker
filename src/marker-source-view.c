@@ -8,6 +8,21 @@ struct _MarkerSourceView
 
 G_DEFINE_TYPE(MarkerSourceView, marker_source_view, GTK_SOURCE_TYPE_VIEW)
 
+gboolean
+marker_source_view_get_modified(MarkerSourceView* source_view)
+{
+  GtkTextBuffer* buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(source_view));
+  return gtk_text_buffer_get_modified(buffer);
+}
+
+gboolean
+marker_source_view_set_modified(MarkerSourceView* source_view,
+                                gboolean          modified)
+{
+  GtkTextBuffer* buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(source_view));
+  gtk_text_buffer_set_modified(buffer, modified);
+}
+
 gchar*
 marker_source_view_get_text(MarkerSourceView* source_view)
 {
