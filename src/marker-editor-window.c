@@ -127,7 +127,9 @@ marker_editor_window_refresh_preview(MarkerEditorWindow* window)
 {
   WebKitWebView* web_view = window->web_view;
   gchar* markdown = marker_editor_window_get_markdown(window);
-  char* html = marker_markdown_to_html(markdown, strlen(markdown));
+  char* html = (window->css_theme)
+    ? marker_markdown_to_html_with_css(markdown, strlen(markdown), window->css_theme)
+    : marker_markdown_to_html(markdown, strlen(markdown));
   
   gchar* uri = NULL;
   if (G_IS_FILE(window->file)) { uri = g_file_get_uri(window->file); }
@@ -249,6 +251,8 @@ marker_editor_window_set_css_theme(MarkerEditorWindow* window,
   {
     window->css_theme = NULL;
   }
+  
+  marker_editor_window_refresh_preview(window);
 }
 
 static void

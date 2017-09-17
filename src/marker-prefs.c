@@ -68,6 +68,7 @@ static void
 show_line_numbers_toggled(GtkToggleButton* button,
                           gpointer         user_data)
 {
+  gboolean state = gtk_toggle_button_get_active(button);
   GtkApplication* app = marker_get_app();
   GList* windows = gtk_application_get_windows(app);
   for (GList* item = windows; item != NULL; item = item->next)
@@ -75,7 +76,6 @@ show_line_numbers_toggled(GtkToggleButton* button,
     if (MARKER_IS_EDITOR_WINDOW(item->data))
     {
       MarkerEditorWindow* window = item->data;
-      gboolean state = gtk_toggle_button_get_active(button);
       marker_editor_window_set_show_line_numbers(window, state);
     }
   }
@@ -85,6 +85,7 @@ static void
 highlight_current_line_toggled(GtkToggleButton* button,
                                gpointer         user_data)
 {
+  gboolean state = gtk_toggle_button_get_active(button);
   GtkApplication* app = marker_get_app();
   GList* windows = gtk_application_get_windows(app);
   for (GList* item = windows; item != NULL; item = item->next)
@@ -92,7 +93,6 @@ highlight_current_line_toggled(GtkToggleButton* button,
     if (MARKER_IS_EDITOR_WINDOW(item->data))
     {
       MarkerEditorWindow* window = item->data;
-      gboolean state = gtk_toggle_button_get_active(button);
       marker_editor_window_set_highlight_current_line(window, state);
     }
   }
@@ -102,6 +102,7 @@ static void
 wrap_text_toggled(GtkToggleButton* button,
                   gpointer         user_data)
 {
+  gboolean state = gtk_toggle_button_get_active(button);
   GtkApplication* app = marker_get_app();
   GList* windows = gtk_application_get_windows(app);
   for (GList* item = windows; item != NULL; item = item->next)
@@ -109,7 +110,6 @@ wrap_text_toggled(GtkToggleButton* button,
     if (MARKER_IS_EDITOR_WINDOW(item->data))
     {
       MarkerEditorWindow* window = item->data;
-      gboolean state = gtk_toggle_button_get_active(button);
       marker_editor_window_set_wrap_text(window, state);
     }
   }
@@ -119,6 +119,7 @@ static void
 show_right_margin_toggled(GtkToggleButton* button,
                           gpointer         user_data)
 {
+  gboolean state = gtk_toggle_button_get_active(button);
   GtkApplication* app = marker_get_app();
   GList* windows = gtk_application_get_windows(app);
   for (GList* item = windows; item != NULL; item = item->next)
@@ -126,7 +127,6 @@ show_right_margin_toggled(GtkToggleButton* button,
     if (MARKER_IS_EDITOR_WINDOW(item->data))
     {
       MarkerEditorWindow* window = item->data;
-      gboolean state = gtk_toggle_button_get_active(button);
       marker_editor_window_set_show_right_margin(window, state);
     }
   }
@@ -136,6 +136,7 @@ static void
 syntax_chosen(GtkComboBox* combo_box,
               gpointer     user_data)
 {
+  char* choice = marker_widget_combo_box_get_active_str(combo_box);
   GtkApplication* app = marker_get_app();
   GList* windows = gtk_application_get_windows(app);
   for (GList* item = windows; item != NULL; item = item->next)
@@ -143,17 +144,22 @@ syntax_chosen(GtkComboBox* combo_box,
     if (MARKER_IS_EDITOR_WINDOW(item->data))
     {
       MarkerEditorWindow* window = item->data;
-      char* choice = marker_widget_combo_box_get_active_str(combo_box);
       marker_editor_window_set_syntax_theme(window, choice);
-      free(choice);
     }
   }
+  free(choice);
 }
 
 static void
 css_chosen(GtkComboBox* combo_box,
               gpointer     user_data)
 {
+  char* choice = marker_widget_combo_box_get_active_str(combo_box);
+  char* path = NULL;
+  if (strcmp(choice, "none") != 0)
+  {
+    path = marker_string_prepend(choice, STYLES_DIR);
+  }
   GtkApplication* app = marker_get_app();
   GList* windows = gtk_application_get_windows(app);
   for (GList* item = windows; item != NULL; item = item->next)
@@ -161,9 +167,11 @@ css_chosen(GtkComboBox* combo_box,
     if (MARKER_IS_EDITOR_WINDOW(item->data))
     {
       MarkerEditorWindow* window = item->data;
-      
+      marker_editor_window_set_css_theme(window, path);
     }
   }
+  free(path);
+  free(choice);
 }
 
 void

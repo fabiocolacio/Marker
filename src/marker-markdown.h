@@ -35,10 +35,10 @@ marker_markdown_to_html_file(char*  markdown,
                              char*  filepath);
                                
 void
-marker_markdown_render_to_html_file_with_css(char*  markdown,
-                                             size_t size,
-                                             char* filepath,
-                                             char* css_filepath);
+marker_markdown_to_html_file_with_css(char*  markdown,
+                                      size_t size,
+                                      char* filepath,
+                                      char* css_filepath);
 
 #endif
 
