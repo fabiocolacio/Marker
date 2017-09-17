@@ -25,3 +25,24 @@ marker_string_alloc(const char* str)
   return new_str;
 }
 
+char*
+marker_string_prepend(const char* str,
+                      const char* addition)
+{
+  size_t str_len = strlen(str);
+  size_t add_len = strlen(addition);
+  size_t len = str_len + add_len + 1;
+  char* new_str = malloc(len);
+  memset(new_str, 0, len);
+  strcat(new_str, addition);
+  strcat(new_str, str);
+  return new_str;
+}
+
+char*
+marker_string_append(const char* str,
+                     const char* addition)
+{
+  return marker_string_prepend(addition, str);
+}
+

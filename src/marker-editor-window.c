@@ -5,6 +5,7 @@
 #include <string.h>
 
 #include "marker.h"
+#include "marker-string.h"
 #include "marker-source-view.h"
 #include "marker-markdown.h"
 
@@ -158,14 +159,14 @@ marker_editor_window_open_file(MarkerEditorWindow* window,
   else
   {
     window->file = file;
-    char* filepath = g_file_get_path(file);
-    gtk_window_set_title(GTK_WINDOW(window), filepath);
-    g_free(filepath);
     
     marker_source_view_set_text(window->source_view, file_contents, file_size);
     g_free(file_contents);
     
     marker_source_view_set_modified(window->source_view, FALSE);
+    char* filepath = g_file_get_path(file);
+    gtk_window_set_title(GTK_WINDOW(window), filepath);
+    g_free(filepath);
   }
 }
                                
@@ -241,6 +242,18 @@ static void
 buffer_changed(GtkTextBuffer*      buffer,
                MarkerEditorWindow* window)
 {
+  if (G_IS_FILE(window->file))
+  {
+    char* filepath = g_file_get_path(window->file);
+    char* title_new = marker_string_prepend(filepath, "*");
+    gtk_window_set_title(GTK_WINDOW(window), title_new);
+    free(title_new);
+    g_free(filepath);
+  }
+  else
+  {
+    gtk_window_set_title(GTK_WINDOW(window), "*Untitled.md");
+  }
   marker_editor_window_refresh_preview(window);
 }
 
