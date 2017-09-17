@@ -1,5 +1,6 @@
 #include <gtk/gtk.h>
 
+#include "marker-prefs.h"
 #include "marker-editor-window.h"
 
 #include "marker.h"
@@ -33,34 +34,34 @@ marker_open(GtkApplication* app,
 }
 
 void
-prefs_cb(GSimpleAction* action,
-         GVariant*      parameter,
-         gpointer       user_data)
+marker_prefs_cb(GSimpleAction* action,
+                GVariant*      parameter,
+                gpointer       user_data)
+{
+  marker_prefs_show_window();
+}
+
+void
+marker_about_cb(GSimpleAction* action,
+                GVariant*      parameter,
+                gpointer       user_data)
 {
 
 }
 
 void
-about_cb(GSimpleAction* action,
-         GVariant*      parameter,
-         gpointer       user_data)
-{
-
-}
-
-void
-quit_cb(GSimpleAction*  action,
-        GVariant*      parameter,
-        gpointer       user_data)
+marker_quit_cb(GSimpleAction*  action,
+               GVariant*      parameter,
+               gpointer       user_data)
 {
   marker_quit();
 }
 
 GActionEntry APP_MENU_ACTION_ENTRIES[] =
 {
-  { "quit", quit_cb, NULL, NULL, NULL },
-  { "about", about_cb, NULL, NULL, NULL },
-  { "prefs", prefs_cb, NULL, NULL, NULL }
+  { "quit", marker_quit_cb, NULL, NULL, NULL },
+  { "about", marker_about_cb, NULL, NULL, NULL },
+  { "prefs", marker_prefs_cb, NULL, NULL, NULL }
 };
 
 void

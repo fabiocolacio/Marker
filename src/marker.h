@@ -16,22 +16,21 @@ void
 marker_quit();
 
 void
-prefs_cb(GSimpleAction* action,
-         GVariant*      parameter,
-         gpointer       user_data);
+marker_prefs_cb(GSimpleAction* action,
+                GVariant*      parameter,
+                gpointer       user_data);
          
 void
-about_cb(GSimpleAction* action,
-         GVariant*      parameter,
-         gpointer       user_data);
+marker_about_cb(GSimpleAction* action,
+                GVariant*      parameter,
+                gpointer       user_data);
 
 void
-quit_cb(GSimpleAction*  action,
-        GVariant*      parameter,
-        gpointer       user_data);
+marker_quit_cb(GSimpleAction*  action,
+               GVariant*      parameter,
+               gpointer       user_data);
         
 extern GActionEntry APP_MENU_ACTION_ENTRIES[];
-
 
 #endif
 
