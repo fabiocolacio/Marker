@@ -27,11 +27,43 @@ marker_string_alloc(const char* str)
 
 char*
 marker_string_prepend(const char* str,
-                      const char* addition)
+                      const char* addition,
+                      char*       buffer,
+                      size_t      buffer_size)
 {
   size_t str_len = strlen(str);
   size_t add_len = strlen(addition);
   size_t len = str_len + add_len + 1;
+  
+  
+  if (buffer)
+  {
+    size_t bf = buffer_size;
+    memset(buffer, 0, buffer_size);
+    
+    if (add_len <= bf)
+    {
+      memcpy(buffer, addition, add_len);
+      bf -= add_len;
+      
+      if (str_len <= bf)
+      {
+        memcpy(&buffer[add_len], str, str_len);
+      }
+      else
+      {
+        memcpy(&buffer[str_len], str, bf);
+        buffer[buffer_size - 1] = "\0";
+      }
+    }
+    else
+    {
+      memcpy(&buffer[str_len], str, bf);
+      buffer[buffer_size - 1] = "\0";
+    }
+    return NULL;
+  }
+ 
   char* new_str = malloc(len);
   memset(new_str, 0, len);
   strcat(new_str, addition);
@@ -41,8 +73,26 @@ marker_string_prepend(const char* str,
 
 char*
 marker_string_append(const char* str,
-                     const char* addition)
+                     const char* addition,
+                     char*       buffer,
+                     size_t      buffer_size)
 {
-  return marker_string_prepend(addition, str);
+  return marker_string_prepend(addition, str, buffer, buffer_size);
+}
+
+int
+marker_string_buffer_set(const char* str,
+                         char*       buffer,
+                         size_t      buffer_size)
+{
+  size_t str_len = strlen(str);
+  if (str_len >= buffer_size)
+  {
+    memcpy(buffer, str, buffer_size);
+    buffer[buffer_size - 1] = "\0";
+    return 1;
+  }
+  memcpy(buffer, str, str_len + 1);
+  return 0;
 }
 

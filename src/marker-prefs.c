@@ -141,6 +141,8 @@ show_line_numbers_toggled(GtkToggleButton* button,
       marker_editor_window_set_show_line_numbers(window, state);
     }
   }
+  
+  marker_prefs_save();
 }
 
 static void
@@ -160,6 +162,8 @@ highlight_current_line_toggled(GtkToggleButton* button,
       marker_editor_window_set_highlight_current_line(window, state);
     }
   }
+  
+  marker_prefs_save();
 }
 
 static void
@@ -179,6 +183,8 @@ wrap_text_toggled(GtkToggleButton* button,
       marker_editor_window_set_wrap_text(window, state);
     }
   }
+  
+  marker_prefs_save();
 }
 
 static void
@@ -198,6 +204,8 @@ show_right_margin_toggled(GtkToggleButton* button,
       marker_editor_window_set_show_right_margin(window, state);
     }
   }
+  
+  marker_prefs_save();
 }
 
 static void
@@ -205,7 +213,7 @@ syntax_chosen(GtkComboBox* combo_box,
               gpointer     user_data)
 {
   char* choice = marker_widget_combo_box_get_active_str(combo_box);
-  prefs.syntax_theme = choice;
+  marker_string_buffer_set(choice, prefs.syntax_theme, 256);
   
   GtkApplication* app = marker_get_app();
   GList* windows = gtk_application_get_windows(app);
@@ -217,20 +225,35 @@ syntax_chosen(GtkComboBox* combo_box,
       marker_editor_window_set_syntax_theme(window, choice);
     }
   }
+  
+  marker_prefs_save();
 }
 
 static void
 css_chosen(GtkComboBox* combo_box,
-              gpointer     user_data)
+           gpointer     user_data)
 {
   char* choice = marker_widget_combo_box_get_active_str(combo_box);
-  char* path = NULL;
+  char path[256];
   if (strcmp(choice, "none") != 0)
   {
-    path = marker_string_prepend(choice, STYLES_DIR);
+    marker_string_prepend(choice, STYLES_DIR, path, sizeof(path));
   }
-  prefs.css_theme = path;
+  memcpy(prefs.css_theme, path, 256);
   free(choice);
+  
+  GtkApplication* app = marker_get_app();
+  GList* windows = gtk_application_get_windows(app);
+  for (GList* item = windows; item != NULL; item = item->next)
+  {
+    if (MARKER_IS_EDITOR_WINDOW(item->data))
+    {
+      MarkerEditorWindow* window = item->data;
+      marker_editor_window_refresh_preview(window);
+    }
+  }
+  
+  marker_prefs_save();
 }
 
 void
@@ -287,12 +310,88 @@ marker_prefs_show_window()
 void
 marker_prefs_load()
 {
+  char key[256];
+  char val[256];
+  memset(key, 0, sizeof(key));
+  memset(val, 0, sizeof(val));
 
+  FILE* fp = NULL;
+  fp = fopen(CONF_FILE, "r");
+  if (fp)
+  {
+    while(fscanf(fp, "%s %s", key, val) == 2)
+    {
+      if (strcmp(key, "syntax_theme") == 0)
+      {
+        memcpy(prefs.syntax_theme, val, 256);
+      }
+      else
+      if (strcmp(key, "css_theme") == 0)
+      {
+        memcpy(prefs.css_theme, val, 256);
+      }
+      else
+      if (strcmp(key, "show_line_numbers") == 0)
+      {
+        prefs.show_line_numbers = atoi(val);
+      }
+      else
+      if (strcmp(key, "highlight_current_line") == 0)
+      {
+        prefs.highlight_current_line = atoi(val);
+      }
+      else
+      if (strcmp(key, "wrap_text") == 0)
+      {
+        prefs.wrap_text = atoi(val);
+      }
+      else
+      if (strcmp(key, "show_right_margin") == 0)
+      {
+        prefs.show_right_margin = atoi(val);
+      }
+      else
+      if (strcmp(key, "right_margin_position") == 0)
+      {
+        prefs.right_margin_position = (unsigned int) atoi(val);
+      }
+      if (strcmp(key, "single_view_mode") == 0)
+      {
+        prefs.single_view_mode = atoi(val);
+      }
+      if (strcmp(key, "client_side_decorations") == 0)
+      {
+        prefs.client_side_decorations = atoi(val);
+      }
+      if (strcmp(key, "gnome_app_menu") == 0)
+      {
+        prefs.gnome_appmenu = atoi(val);
+      }
+      
+      memset(key, 0, sizeof(key));
+      memset(val, 0, sizeof(val));
+    }
+    fclose(fp);
+  } 
 }
 
 void
 marker_prefs_save()
 {
-
+  FILE* fp = NULL;
+  fp = fopen(CONF_FILE, "w");
+  if(fp)
+  {
+    fprintf(fp, "syntax_theme %s\n", (prefs.syntax_theme) ? prefs.syntax_theme : "none");
+    fprintf(fp, "show_line_numbers %d\n", prefs.show_line_numbers);
+    fprintf(fp, "highlight_current_line %d\n", prefs.highlight_current_line);
+    fprintf(fp, "wrap_text %d\n", prefs.wrap_text);
+    fprintf(fp, "show_right_margin %d\n", prefs.show_right_margin);
+    fprintf(fp, "css_theme %s\n", (prefs.css_theme) ? prefs.css_theme : "none");
+    fprintf(fp, "single_view_mode %d\n", prefs.single_view_mode);
+    fprintf(fp, "client_side_decorations %d\n", prefs.client_side_decorations);
+    fprintf(fp, "gnome_appmenu %d\n", prefs.gnome_appmenu);
+    fclose(fp);
+  }
 }
 

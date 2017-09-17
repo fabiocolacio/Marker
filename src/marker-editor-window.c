@@ -289,9 +289,9 @@ buffer_changed(GtkTextBuffer*      buffer,
   if (G_IS_FILE(window->file))
   {
     char* filepath = g_file_get_path(window->file);
-    char* title_new = marker_string_prepend(filepath, "*");
+    char title_new[strlen(filepath + 1)];
+    marker_string_prepend(filepath, "*", title_new, sizeof(title_new));
     gtk_window_set_title(GTK_WINDOW(window), title_new);
-    free(title_new);
     g_free(filepath);
   }
   else

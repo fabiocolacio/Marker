@@ -3,7 +3,7 @@
 
 typedef struct {
   // Editor //
-  char* syntax_theme;
+  char syntax_theme[256];
   gboolean show_line_numbers;
   gboolean highlight_current_line;
   gboolean wrap_text;
@@ -11,7 +11,7 @@ typedef struct {
   guint right_margin_position;
   
   // Preview //
-  char* css_theme;
+  char css_theme[256];
   
   // Window //
   gboolean single_view_mode;

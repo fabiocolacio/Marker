@@ -10,11 +10,20 @@ marker_string_alloc(const char* str);
 
 char*
 marker_string_prepend(const char* str,
-                      const char* addition);
+                      const char* addition,
+                      char*       buffer,
+                      size_t      buffer_size);
 
 char*
 marker_string_append(const char* str, 
-                     const char* addition);
+                     const char* addition,
+                     char*       buffer,
+                     size_t      buffer_size);
+
+int
+marker_string_buffer_set(const char* str,
+                         char*  buffer,
+                         size_t buffer_size);
 
 #endif
 
