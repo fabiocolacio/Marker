@@ -190,6 +190,52 @@ marker_editor_window_save_file(MarkerEditorWindow* window,
   g_free(filepath);
 }
 
+void
+marker_editor_window_set_syntax_theme(MarkerEditorWindow* window,
+                                      const char*         theme)
+{
+  marker_source_view_set_syntax_theme(window->source_view, theme);
+}
+
+void
+marker_editor_window_set_show_line_numbers(MarkerEditorWindow* window,
+                                           gboolean            state)
+{
+  gtk_source_view_set_show_line_numbers(GTK_SOURCE_VIEW(window->source_view),
+                                        state);
+}
+                                           
+void
+marker_editor_window_set_highlight_current_line(MarkerEditorWindow* window,
+                                                gboolean            state)
+{
+  gtk_source_view_set_highlight_current_line(GTK_SOURCE_VIEW(window->source_view),
+                                             state);
+}
+
+void
+marker_editor_window_set_wrap_text(MarkerEditorWindow* window,
+                                   gboolean            state)
+{
+  gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(window->source_view),
+                              GTK_WRAP_WORD);
+}
+
+void
+marker_editor_window_set_show_right_margin(MarkerEditorWindow* window,
+                                           gboolean            state)
+{
+  gtk_source_view_set_show_right_margin(GTK_SOURCE_VIEW(window->source_view),
+                                        state);
+}
+
+void
+marker_editor_window_set_css_theme(MarkerEditorWindow* window,
+                                   const char*         theme)
+{
+
+}
+
 static void
 open_cb(GtkWidget*          widget,
         MarkerEditorWindow* window)

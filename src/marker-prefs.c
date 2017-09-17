@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "marker.h"
+#include "marker-editor-window.h"
 #include "marker-widget-utils.h"
 #include "marker-string.h"
 
@@ -62,6 +64,74 @@ marker_prefs_get_available_syntax_themes()
   return list;
 }
 
+static void
+show_line_numbers_toggled(GtkToggleButton* button,
+                          gpointer         user_data)
+{
+  GtkApplication* app = marker_get_app();
+  GList* windows = gtk_application_get_windows(app);
+  for (GList* item = windows; item != NULL; item = item->next)
+  {
+    if (MARKER_IS_EDITOR_WINDOW(item->data))
+    {
+      MarkerEditorWindow* window = item->data;
+      gboolean state = gtk_toggle_button_get_active(button);
+      marker_editor_window_set_show_line_numbers(window, state);
+    }
+  }
+}
+
+static void
+highlight_current_line_toggled(GtkToggleButton* button,
+                               gpointer         user_data)
+{
+  GtkApplication* app = marker_get_app();
+  GList* windows = gtk_application_get_windows(app);
+  for (GList* item = windows; item != NULL; item = item->next)
+  {
+    if (MARKER_IS_EDITOR_WINDOW(item->data))
+    {
+      MarkerEditorWindow* window = item->data;
+      gboolean state = gtk_toggle_button_get_active(button);
+      marker_editor_window_set_highlight_current_line(window, state);
+    }
+  }
+}
+
+static void
+wrap_text_toggled(GtkToggleButton* button,
+                  gpointer         user_data)
+{
+  GtkApplication* app = marker_get_app();
+  GList* windows = gtk_application_get_windows(app);
+  for (GList* item = windows; item != NULL; item = item->next)
+  {
+    if (MARKER_IS_EDITOR_WINDOW(item->data))
+    {
+      MarkerEditorWindow* window = item->data;
+      gboolean state = gtk_toggle_button_get_active(button);
+      marker_editor_window_set_wrap_text(window, state);
+    }
+  }
+}
+
+static void
+show_right_margin_toggled(GtkToggleButton* button,
+                          gpointer         user_data)
+{
+  GtkApplication* app = marker_get_app();
+  GList* windows = gtk_application_get_windows(app);
+  for (GList* item = windows; item != NULL; item = item->next)
+  {
+    if (MARKER_IS_EDITOR_WINDOW(item->data))
+    {
+      MarkerEditorWindow* window = item->data;
+      gboolean state = gtk_toggle_button_get_active(button);
+      marker_editor_window_set_show_right_margin(window, state);
+    }
+  }
+}
+
 void
 marker_prefs_show_window()
 {
@@ -70,18 +140,18 @@ marker_prefs_show_window()
       "/com/github/fabiocolacio/marker/prefs-window.ui");
  
   GList *list = NULL;
+  GtkComboBox* combo_box;
+  GtkCheckButton* check_button;
   
-  GtkComboBox* syntax_chooser =
-    GTK_COMBO_BOX(gtk_builder_get_object(builder, "syntax_chooser"));
+  combo_box = GTK_COMBO_BOX(gtk_builder_get_object(builder, "syntax_chooser"));
   list = marker_prefs_get_available_syntax_themes();
-  marker_widget_utils_populate_combo_box_with_strings(syntax_chooser, list);
+  marker_widget_utils_populate_combo_box_with_strings(combo_box, list);
   g_list_free_full(list, free);
   list = NULL;
  
-  GtkComboBox* css_chooser = 
-    GTK_COMBO_BOX(gtk_builder_get_object(builder, "css_chooser"));
+  combo_box = GTK_COMBO_BOX(gtk_builder_get_object(builder, "css_chooser"));
   list = marker_prefs_get_available_stylesheets();
-  marker_widget_utils_populate_combo_box_with_strings(css_chooser, list);
+  marker_widget_utils_populate_combo_box_with_strings(combo_box, list);
   g_list_free_full(list, free);
   list = NULL;
   
@@ -89,6 +159,20 @@ marker_prefs_show_window()
   gtk_window_set_position(window, GTK_WIN_POS_CENTER);
   gtk_window_set_keep_above(window, TRUE);
   gtk_widget_show_all(GTK_WIDGET(window));
+  
+  gtk_builder_add_callback_symbol(builder,
+                                  "show_line_numbers_toggled", 
+                                  G_CALLBACK(show_line_numbers_toggled));
+  gtk_builder_add_callback_symbol(builder,
+                                  "highlight_current_line_toggled", 
+                                  G_CALLBACK(highlight_current_line_toggled));
+  gtk_builder_add_callback_symbol(builder,
+                                  "wrap_text_toggled", 
+                                  G_CALLBACK(wrap_text_toggled));
+  gtk_builder_add_callback_symbol(builder,
+                                  "show_right_margin_toggled", 
+                                  G_CALLBACK(show_right_margin_toggled));
+  gtk_builder_connect_signals(builder, NULL);
   
   g_object_unref(builder);
 }

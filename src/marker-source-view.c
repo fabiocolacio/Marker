@@ -8,6 +8,18 @@ struct _MarkerSourceView
 
 G_DEFINE_TYPE(MarkerSourceView, marker_source_view, GTK_SOURCE_TYPE_VIEW)
 
+void
+marker_source_view_set_syntax_theme(MarkerSourceView* source_view,
+                                    const char*       theme)
+{
+  GtkTextBuffer* buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(source_view));
+  GtkSourceStyleSchemeManager* style_manager =
+    gtk_source_style_scheme_manager_get_default();
+  GtkSourceStyleScheme* scheme =
+    gtk_source_style_scheme_manager_get_scheme(style_manager, theme);
+  gtk_source_buffer_set_style_scheme(GTK_SOURCE_BUFFER(buffer), scheme);
+}
+
 gboolean
 marker_source_view_get_modified(MarkerSourceView* source_view)
 {

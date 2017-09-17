@@ -37,6 +37,30 @@ marker_editor_window_refresh_preview(MarkerEditorWindow* window);
 void
 marker_editor_window_try_close(MarkerEditorWindow* window);
 
+void
+marker_editor_window_set_syntax_theme(MarkerEditorWindow* window,
+                                      const char*         theme);
+
+void
+marker_editor_window_set_show_line_numbers(MarkerEditorWindow* window,
+                                           gboolean            state);
+                                           
+void
+marker_editor_window_set_highlight_current_line(MarkerEditorWindow* window,
+                                                gboolean            state);
+
+void
+marker_editor_window_set_wrap_text(MarkerEditorWindow* window,
+                                   gboolean            state);
+
+void
+marker_editor_window_set_show_right_margin(MarkerEditorWindow* window,
+                                           gboolean            state);
+
+void
+marker_editor_window_set_css_theme(MarkerEditorWindow* window,
+                                   const char*         theme);
+
 G_END_DECLS
 
 #endif

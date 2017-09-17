@@ -34,6 +34,10 @@ marker_source_view_set_text(MarkerSourceView* source_view,
 void
 marker_source_view_set_language(MarkerSourceView* source_view,
                                 const gchar*      language);
+                                
+void
+marker_source_view_set_syntax_theme(MarkerSourceView* source_view,
+                                    const char*       syntax_theme);
 
 G_END_DECLS
 
