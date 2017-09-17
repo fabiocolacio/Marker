@@ -14,8 +14,15 @@ marker_get_app()
 }
 
 static void
+marker_init(GtkApplication* app)
+{
+  marker_prefs_load();
+}
+
+static void
 activate(GtkApplication* app)
 {
+  marker_init(app);
   marker_create_new_window();
 }
 
@@ -25,6 +32,7 @@ marker_open(GtkApplication* app,
             gint            num_files,
             const gchar*    hint)
 {
+  marker_init(app);
   for (int i = 0; i < num_files; ++i)
   {
     GFile* file = files[i];

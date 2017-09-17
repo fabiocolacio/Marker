@@ -24,6 +24,10 @@ int
 marker_string_buffer_set(const char* str,
                          char*  buffer,
                          size_t buffer_size);
+                         
+const char*
+marker_string_rfind(const char* str,
+                    const char* sub);
 
 #endif
 

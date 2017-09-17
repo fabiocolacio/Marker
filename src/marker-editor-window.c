@@ -165,9 +165,9 @@ marker_editor_window_open_file(MarkerEditorWindow* window,
   {
     window->file = file;
     
-    marker_source_view_set_text(window->source_view, file_contents, file_size);
+    marker_source_view_set_text(window->source_view, file_contents, file_size);    
     g_free(file_contents);
-    
+
     marker_source_view_set_modified(window->source_view, FALSE);
     char* filepath = g_file_get_path(file);
     gtk_window_set_title(GTK_WINDOW(window), filepath);
@@ -234,6 +234,16 @@ marker_editor_window_set_show_right_margin(MarkerEditorWindow* window,
                                         state);
 }
 
+void
+marker_editor_window_apply_prefs(MarkerEditorWindow* window)
+{
+  marker_editor_window_set_syntax_theme(window, marker_prefs_get_syntax_theme());
+  marker_editor_window_set_show_right_margin(window, marker_prefs_get_show_right_margin());
+  marker_editor_window_set_wrap_text(window, marker_prefs_get_wrap_text());
+  marker_editor_window_set_highlight_current_line(window, marker_prefs_get_highlight_current_line());
+  marker_editor_window_set_show_line_numbers(window, marker_prefs_get_show_line_numbers());
+}
+
 static void
 open_cb(GtkWidget*          widget,
         MarkerEditorWindow* window)
@@ -289,7 +299,7 @@ buffer_changed(GtkTextBuffer*      buffer,
   if (G_IS_FILE(window->file))
   {
     char* filepath = g_file_get_path(window->file);
-    char title_new[strlen(filepath + 1)];
+    char title_new[strlen(filepath) + 1];
     marker_string_prepend(filepath, "*", title_new, sizeof(title_new));
     gtk_window_set_title(GTK_WINDOW(window), title_new);
     g_free(filepath);
@@ -374,6 +384,7 @@ static void
 marker_editor_window_init(MarkerEditorWindow* window)
 {
   init_ui(window);
+  marker_editor_window_apply_prefs(window);
 }
 
 static void

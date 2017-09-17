@@ -265,19 +265,38 @@ marker_prefs_show_window()
  
   GList *list = NULL;
   GtkComboBox* combo_box;
-  GtkCheckButton* check_button;
+  GtkToggleButton* check_button;
   
   combo_box = GTK_COMBO_BOX(gtk_builder_get_object(builder, "syntax_chooser"));
   list = marker_prefs_get_available_syntax_themes();
   marker_widget_populate_combo_box_with_strings(combo_box, list);
+  marker_widget_combo_box_set_active_str(combo_box,prefs.syntax_theme, g_list_length(list));
   g_list_free_full(list, free);
   list = NULL;
  
   combo_box = GTK_COMBO_BOX(gtk_builder_get_object(builder, "css_chooser"));
   list = marker_prefs_get_available_stylesheets();
   marker_widget_populate_combo_box_with_strings(combo_box, list);
+  const char* css = marker_string_rfind(prefs.css_theme, "/");
+  marker_widget_combo_box_set_active_str(combo_box, ++css, g_list_length(list));
   g_list_free_full(list, free);
   list = NULL;
+  
+  check_button =
+    GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "show_line_numbers_check_button"));
+  gtk_toggle_button_set_active(check_button, prefs.show_line_numbers);
+  
+  check_button =
+    GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "show_right_margin_check_button"));
+  gtk_toggle_button_set_active(check_button, prefs.show_right_margin);
+  
+  check_button =
+    GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "wrap_text_check_button"));
+  gtk_toggle_button_set_active(check_button, prefs.wrap_text);
+  
+  check_button =
+    GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "highlight_current_line_check_button"));
+  gtk_toggle_button_set_active(check_button, prefs.highlight_current_line);
   
   GtkWindow* window = GTK_WINDOW(gtk_builder_get_object(builder, "prefs_win"));
   gtk_window_set_position(window, GTK_WIN_POS_CENTER);

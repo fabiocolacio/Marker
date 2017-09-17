@@ -47,7 +47,7 @@ marker_source_view_get_text(MarkerSourceView* source_view)
 
 void
 marker_source_view_set_text(MarkerSourceView* source_view,
-                            char*             text,
+                            const char*       text,
                             size_t            size)
 {
   GtkTextBuffer* buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(source_view));

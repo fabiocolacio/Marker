@@ -1,5 +1,6 @@
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 #include "marker-string.h"
 
@@ -94,5 +95,24 @@ marker_string_buffer_set(const char* str,
   }
   memcpy(buffer, str, str_len + 1);
   return 0;
+}
+
+const char*
+marker_string_rfind(const char* str,
+                    const char* sub)
+{
+  size_t str_len = strlen(str);
+  size_t sub_len = strlen(sub);
+  const char* ptr;
+  
+  for (int i = str_len; i > 0; --i)
+  {
+    ptr = &str[i];
+    if (memcmp(ptr, sub, sub_len) == 0)
+    {
+      return ptr;
+    }
+  }
+  return "\0";
 }
 
