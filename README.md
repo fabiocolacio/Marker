@@ -41,11 +41,17 @@ Marker is a markdown editor for linux made with Gtk+-3.0
 
 ### Build Instructions
 
+**Warning:** If you want a relatively stable experience, use download a
+release tarball rather than cloning the repository! Breaking changes and
+unfinished/untested work is often pushed to the repository!
+
 ```
 $ git clone https://github.com/fabiocolacio/Marker.git
 $ cd Marker
 $ mkdir build && cd build
-$ cmake -DCMAKE_INSTALL_PREFIX=/usr ..
+# set -DWKHTMLTOX=OFF to disable wkhtmltox export options
+# set -DPANDOC=OFF to disable pandoc export options
+$ cmake -DCMAKE_INSTALL_PREFIX=/usr -DWKHTMLTOX=ON -DWKPANDOC=ON ..
 $ make
 $ sudo make install
 ```
