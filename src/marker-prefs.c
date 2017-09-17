@@ -7,7 +7,7 @@
 
 #include "marker.h"
 #include "marker-editor-window.h"
-#include "marker-widget-utils.h"
+#include "marker-widget.h"
 #include "marker-string.h"
 
 #include "marker-prefs.h"
@@ -132,6 +132,40 @@ show_right_margin_toggled(GtkToggleButton* button,
   }
 }
 
+static void
+syntax_chosen(GtkComboBox* combo_box,
+              gpointer     user_data)
+{
+  GtkApplication* app = marker_get_app();
+  GList* windows = gtk_application_get_windows(app);
+  for (GList* item = windows; item != NULL; item = item->next)
+  {
+    if (MARKER_IS_EDITOR_WINDOW(item->data))
+    {
+      MarkerEditorWindow* window = item->data;
+      char* choice = marker_widget_combo_box_get_active_str(combo_box);
+      marker_editor_window_set_syntax_theme(window, choice);
+      free(choice);
+    }
+  }
+}
+
+static void
+css_chosen(GtkComboBox* combo_box,
+              gpointer     user_data)
+{
+  GtkApplication* app = marker_get_app();
+  GList* windows = gtk_application_get_windows(app);
+  for (GList* item = windows; item != NULL; item = item->next)
+  {
+    if (MARKER_IS_EDITOR_WINDOW(item->data))
+    {
+      MarkerEditorWindow* window = item->data;
+      
+    }
+  }
+}
+
 void
 marker_prefs_show_window()
 {
@@ -145,13 +179,13 @@ marker_prefs_show_window()
   
   combo_box = GTK_COMBO_BOX(gtk_builder_get_object(builder, "syntax_chooser"));
   list = marker_prefs_get_available_syntax_themes();
-  marker_widget_utils_populate_combo_box_with_strings(combo_box, list);
+  marker_widget_populate_combo_box_with_strings(combo_box, list);
   g_list_free_full(list, free);
   list = NULL;
  
   combo_box = GTK_COMBO_BOX(gtk_builder_get_object(builder, "css_chooser"));
   list = marker_prefs_get_available_stylesheets();
-  marker_widget_utils_populate_combo_box_with_strings(combo_box, list);
+  marker_widget_populate_combo_box_with_strings(combo_box, list);
   g_list_free_full(list, free);
   list = NULL;
   
@@ -160,6 +194,12 @@ marker_prefs_show_window()
   gtk_window_set_keep_above(window, TRUE);
   gtk_widget_show_all(GTK_WIDGET(window));
   
+  gtk_builder_add_callback_symbol(builder,
+                                  "syntax_chosen",
+                                  G_CALLBACK(syntax_chosen));
+  gtk_builder_add_callback_symbol(builder,
+                                  "css_chosen",
+                                  G_CALLBACK(css_chosen));
   gtk_builder_add_callback_symbol(builder,
                                   "show_line_numbers_toggled", 
                                   G_CALLBACK(show_line_numbers_toggled));

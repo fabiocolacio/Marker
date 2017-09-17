@@ -17,7 +17,10 @@ struct _MarkerEditorWindow
   
   MarkerSourceView* source_view;
   WebKitWebView* web_view;
+  
   GFile* file;
+
+  char* css_theme;
 };
 
 G_DEFINE_TYPE(MarkerEditorWindow, marker_editor_window, GTK_TYPE_APPLICATION_WINDOW)
@@ -233,7 +236,19 @@ void
 marker_editor_window_set_css_theme(MarkerEditorWindow* window,
                                    const char*         theme)
 {
-
+  if (window->css_theme)
+  {
+    free(window->css_theme);
+  }
+  
+  if (theme)
+  {
+    window->css_theme = marker_string_alloc(theme);
+  }
+  else
+  {
+    window->css_theme = NULL;
+  }
 }
 
 static void
@@ -375,6 +390,7 @@ init_ui(MarkerEditorWindow* window)
 static void
 marker_editor_window_init(MarkerEditorWindow* window)
 {
+  window->css_theme = NULL;
   init_ui(window);
 }
 
