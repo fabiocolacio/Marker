@@ -5,6 +5,7 @@
 #include <string.h>
 
 #include "marker.h"
+#include "marker-prefs.h"
 #include "marker-string.h"
 #include "marker-source-view.h"
 #include "marker-markdown.h"
@@ -19,8 +20,6 @@ struct _MarkerEditorWindow
   WebKitWebView* web_view;
   
   GFile* file;
-
-  char* css_theme;
 };
 
 G_DEFINE_TYPE(MarkerEditorWindow, marker_editor_window, GTK_TYPE_APPLICATION_WINDOW)
@@ -127,8 +126,9 @@ marker_editor_window_refresh_preview(MarkerEditorWindow* window)
 {
   WebKitWebView* web_view = window->web_view;
   gchar* markdown = marker_editor_window_get_markdown(window);
-  char* html = (window->css_theme)
-    ? marker_markdown_to_html_with_css(markdown, strlen(markdown), window->css_theme)
+  const char* css_theme = marker_prefs_get_css_theme();
+  char* html = (css_theme)
+    ? marker_markdown_to_html_with_css(markdown, strlen(markdown), css_theme)
     : marker_markdown_to_html(markdown, strlen(markdown));
   
   gchar* uri = NULL;
@@ -232,27 +232,6 @@ marker_editor_window_set_show_right_margin(MarkerEditorWindow* window,
 {
   gtk_source_view_set_show_right_margin(GTK_SOURCE_VIEW(window->source_view),
                                         state);
-}
-
-void
-marker_editor_window_set_css_theme(MarkerEditorWindow* window,
-                                   const char*         theme)
-{
-  if (window->css_theme)
-  {
-    free(window->css_theme);
-  }
-  
-  if (theme)
-  {
-    window->css_theme = marker_string_alloc(theme);
-  }
-  else
-  {
-    window->css_theme = NULL;
-  }
-  
-  marker_editor_window_refresh_preview(window);
 }
 
 static void
@@ -394,7 +373,6 @@ init_ui(MarkerEditorWindow* window)
 static void
 marker_editor_window_init(MarkerEditorWindow* window)
 {
-  window->css_theme = NULL;
   init_ui(window);
 }
 

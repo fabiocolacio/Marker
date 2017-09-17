@@ -57,10 +57,6 @@ void
 marker_editor_window_set_show_right_margin(MarkerEditorWindow* window,
                                            gboolean            state);
 
-void
-marker_editor_window_set_css_theme(MarkerEditorWindow* window,
-                                   const char*         theme);
-
 G_END_DECLS
 
 #endif

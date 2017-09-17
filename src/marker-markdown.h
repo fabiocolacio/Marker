@@ -22,23 +22,23 @@ typedef struct
 } MarkerExportSettings;
 
 char*
-marker_markdown_to_html(char*  markdown,
+marker_markdown_to_html(const char*  markdown,
                         size_t size);
 char*
-marker_markdown_to_html_with_css(char*  markdown,
+marker_markdown_to_html_with_css(const char*  markdown,
                                  size_t size,
-                                 char*  href);
+                                 const char*  href);
 
 void
-marker_markdown_to_html_file(char*  markdown,
+marker_markdown_to_html_file(const char*  markdown,
                              size_t size,
-                             char*  filepath);
+                             const char*  filepath);
                                
 void
-marker_markdown_to_html_file_with_css(char*  markdown,
+marker_markdown_to_html_file_with_css(const char*  markdown,
                                       size_t size,
-                                      char* filepath,
-                                      char* css_filepath);
+                                      const char* filepath,
+                                      const char* css_filepath);
 
 #endif
 

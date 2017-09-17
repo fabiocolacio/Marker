@@ -14,6 +14,66 @@
 
 MarkerPrefs prefs;
 
+const char*
+marker_prefs_get_syntax_theme()
+{
+  return prefs.syntax_theme;
+}
+
+gboolean
+marker_prefs_get_show_line_numbers()
+{
+  return prefs.show_line_numbers;
+}
+
+gboolean
+marker_prefs_get_highlight_current_line()
+{
+  return prefs.highlight_current_line;
+}
+
+gboolean
+marker_prefs_get_wrap_text()
+{
+  return prefs.wrap_text;
+}
+
+gboolean
+marker_prefs_get_show_right_margin()
+{
+  return prefs.show_right_margin;
+}
+
+guint
+marker_prefs_get_right_margin_position()
+{
+  return prefs.right_margin_position;
+}
+
+const char*
+marker_prefs_get_css_theme()
+{
+  return prefs.css_theme;
+}
+
+gboolean
+marker_prefs_get_single_view_mode()
+{
+  return prefs.single_view_mode;
+}
+
+gboolean
+marker_prefs_get_client_side_decorations()
+{
+  return prefs.client_side_decorations;
+}
+
+gboolean
+marker_prefs_get_gnome_appmenu()
+{
+  return prefs.gnome_appmenu;
+}
+
 GList*
 marker_prefs_get_available_stylesheets()
 {
@@ -69,6 +129,8 @@ show_line_numbers_toggled(GtkToggleButton* button,
                           gpointer         user_data)
 {
   gboolean state = gtk_toggle_button_get_active(button);
+  prefs.show_line_numbers = state;
+  
   GtkApplication* app = marker_get_app();
   GList* windows = gtk_application_get_windows(app);
   for (GList* item = windows; item != NULL; item = item->next)
@@ -86,6 +148,8 @@ highlight_current_line_toggled(GtkToggleButton* button,
                                gpointer         user_data)
 {
   gboolean state = gtk_toggle_button_get_active(button);
+  prefs.highlight_current_line = state;
+  
   GtkApplication* app = marker_get_app();
   GList* windows = gtk_application_get_windows(app);
   for (GList* item = windows; item != NULL; item = item->next)
@@ -103,6 +167,8 @@ wrap_text_toggled(GtkToggleButton* button,
                   gpointer         user_data)
 {
   gboolean state = gtk_toggle_button_get_active(button);
+  prefs.wrap_text = state;
+  
   GtkApplication* app = marker_get_app();
   GList* windows = gtk_application_get_windows(app);
   for (GList* item = windows; item != NULL; item = item->next)
@@ -120,6 +186,8 @@ show_right_margin_toggled(GtkToggleButton* button,
                           gpointer         user_data)
 {
   gboolean state = gtk_toggle_button_get_active(button);
+  prefs.show_right_margin = state;
+  
   GtkApplication* app = marker_get_app();
   GList* windows = gtk_application_get_windows(app);
   for (GList* item = windows; item != NULL; item = item->next)
@@ -137,6 +205,8 @@ syntax_chosen(GtkComboBox* combo_box,
               gpointer     user_data)
 {
   char* choice = marker_widget_combo_box_get_active_str(combo_box);
+  prefs.syntax_theme = choice;
+  
   GtkApplication* app = marker_get_app();
   GList* windows = gtk_application_get_windows(app);
   for (GList* item = windows; item != NULL; item = item->next)
@@ -147,7 +217,6 @@ syntax_chosen(GtkComboBox* combo_box,
       marker_editor_window_set_syntax_theme(window, choice);
     }
   }
-  free(choice);
 }
 
 static void
@@ -160,17 +229,7 @@ css_chosen(GtkComboBox* combo_box,
   {
     path = marker_string_prepend(choice, STYLES_DIR);
   }
-  GtkApplication* app = marker_get_app();
-  GList* windows = gtk_application_get_windows(app);
-  for (GList* item = windows; item != NULL; item = item->next)
-  {
-    if (MARKER_IS_EDITOR_WINDOW(item->data))
-    {
-      MarkerEditorWindow* window = item->data;
-      marker_editor_window_set_css_theme(window, path);
-    }
-  }
-  free(path);
+  prefs.css_theme = path;
   free(choice);
 }
 
@@ -223,5 +282,17 @@ marker_prefs_show_window()
   gtk_builder_connect_signals(builder, NULL);
   
   g_object_unref(builder);
+}
+
+void
+marker_prefs_load()
+{
+
+}
+
+void
+marker_prefs_save()
+{
+
 }
 

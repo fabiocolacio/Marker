@@ -8,7 +8,7 @@
 #include "marker-markdown.h"
 
 char*
-marker_markdown_to_html(char*  markdown,
+marker_markdown_to_html(const char*  markdown,
                         size_t size)
 {
   hoedown_renderer* renderer;
@@ -48,9 +48,9 @@ marker_markdown_to_html(char*  markdown,
 }
 
 char*
-marker_markdown_to_html_with_css(char*  markdown,
+marker_markdown_to_html_with_css(const char*  markdown,
                                  size_t size,
-                                 char*  href)
+                                 const char*  href)
 {
   hoedown_renderer* renderer;
   hoedown_document* document;
@@ -91,9 +91,9 @@ marker_markdown_to_html_with_css(char*  markdown,
 }
 
 void
-marker_markdown_to_html_file(char*  markdown,
+marker_markdown_to_html_file(const char*  markdown,
                              size_t size,
-                             char*  filepath)
+                             const char*  filepath)
 {
   char* html = marker_markdown_to_html(markdown, size);
   FILE* fp = fopen(filepath, "w");
@@ -105,10 +105,10 @@ marker_markdown_to_html_file(char*  markdown,
 }
                                
 void
-marker_markdown_to_html_file_with_css(char*  markdown,
+marker_markdown_to_html_file_with_css(const char*  markdown,
                                       size_t size,
-                                      char* filepath,
-                                      char* css_filepath)
+                                      const char* filepath,
+                                      const char* css_filepath)
 {
   char* html = marker_markdown_to_html_with_css(markdown, size, css_filepath);
   FILE* fp = fopen(filepath, "w");
