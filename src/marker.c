@@ -17,6 +17,21 @@ static void
 marker_init(GtkApplication* app)
 {
   marker_prefs_load();
+  if (marker_prefs_get_gnome_appmenu())
+  {
+    GtkBuilder* builder =
+      gtk_builder_new_from_resource("/com/github/fabiocolacio/marker/editor-window.ui");
+      
+    GMenuModel* app_menu =
+      G_MENU_MODEL(gtk_builder_get_object(builder, "app_menu"));  
+    gtk_application_set_app_menu(app, app_menu);
+    g_action_map_add_action_entries(G_ACTION_MAP(app),
+                                    APP_MENU_ACTION_ENTRIES,
+                                    3,
+                                    app);
+    
+    g_object_unref(builder);
+  }
 }
 
 static void

@@ -398,21 +398,34 @@ init_ui(MarkerEditorWindow* window)
   GtkMenuButton* menu_btn =
     GTK_MENU_BUTTON(gtk_builder_get_object(builder, "menu_btn"));  
   
-  GMenuModel* gear_menu =
-    G_MENU_MODEL(gtk_builder_get_object(builder, "gear_menu_full"));
-    
-  gtk_menu_button_set_use_popover(menu_btn, TRUE);
-  gtk_menu_button_set_menu_model(menu_btn, gear_menu);
-  g_action_map_add_action_entries(G_ACTION_MAP(window),
-                                  win_entries,
-                                  G_N_ELEMENTS(win_entries),
-                                  window);
-  GtkApplication* app = marker_get_app();
-  g_action_map_add_action_entries(G_ACTION_MAP(app),
-                                  APP_MENU_ACTION_ENTRIES,
-                                  3,
-                                  window);
-
+  if (marker_prefs_get_gnome_appmenu())
+  {
+    GMenuModel* gear_menu =
+      G_MENU_MODEL(gtk_builder_get_object(builder, "gear_menu"));  
+    gtk_menu_button_set_use_popover(menu_btn, TRUE);
+    gtk_menu_button_set_menu_model(menu_btn, gear_menu);
+    g_action_map_add_action_entries(G_ACTION_MAP(window),
+                                    win_entries,
+                                    G_N_ELEMENTS(win_entries),
+                                    window);
+  }
+  else
+  {
+    GMenuModel* gear_menu =
+      G_MENU_MODEL(gtk_builder_get_object(builder, "gear_menu_full"));  
+    gtk_menu_button_set_use_popover(menu_btn, TRUE);
+    gtk_menu_button_set_menu_model(menu_btn, gear_menu);
+    g_action_map_add_action_entries(G_ACTION_MAP(window),
+                                    win_entries,
+                                    G_N_ELEMENTS(win_entries),
+                                    window);
+    GtkApplication* app = marker_get_app();
+    g_action_map_add_action_entries(G_ACTION_MAP(app),
+                                    APP_MENU_ACTION_ENTRIES,
+                                    3,
+                                    window);
+  }
+  
   // Paned Editor //
   GtkWidget* scrolled_window;
   GtkPaned* paned = GTK_PANED(gtk_paned_new(GTK_ORIENTATION_HORIZONTAL));

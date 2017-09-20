@@ -272,6 +272,7 @@ use_gnome_appmenu_toggled(GtkToggleButton* button,
   gboolean state = gtk_toggle_button_get_active(button);
   prefs.gnome_appmenu = state;
   marker_prefs_save();
+  prefs.gnome_appmenu = !state;
 }
 
 static void

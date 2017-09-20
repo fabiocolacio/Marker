@@ -71,6 +71,25 @@
     </section>
   </menu>
   
+  <menu id="app_menu">
+    <section>
+      <item>
+        <attribute name="label">Preferences</attribute>
+        <attribute name="action">app.prefs</attribute>
+      </item>
+    </section>
+    <section>
+      <item>
+        <attribute name="label">About</attribute>
+        <attribute name="action">app.about</attribute>
+      </item>
+      <item>
+        <attribute name="label">Quit</attribute>
+        <attribute name="action">app.quit</attribute>
+      </item>
+    </section>
+  </menu>
+  
   <!-- Header Bar -->
   <object class="GtkHeaderBar" id="header_bar">
     <child>
