@@ -54,13 +54,13 @@ marker_string_prepend(const char* str,
       else
       {
         memcpy(&buffer[str_len], str, bf);
-        buffer[buffer_size - 1] = "\0";
+        buffer[buffer_size - 1] = '\0';
       }
     }
     else
     {
       memcpy(&buffer[str_len], str, bf);
-      buffer[buffer_size - 1] = "\0";
+      buffer[buffer_size - 1] = '\0';
     }
     return NULL;
   }
@@ -90,7 +90,7 @@ marker_string_buffer_set(const char* str,
   if (str_len >= buffer_size)
   {
     memcpy(buffer, str, buffer_size);
-    buffer[buffer_size - 1] = "\0";
+    buffer[buffer_size - 1] = '\0';
     return 1;
   }
   memcpy(buffer, str, str_len + 1);
@@ -113,6 +113,6 @@ marker_string_rfind(const char* str,
       return ptr;
     }
   }
-  return "\0";
+  return '\0';
 }
 
