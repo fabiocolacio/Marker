@@ -203,7 +203,7 @@
         </child>
         <child>
           <object class="GtkCheckButton" id="use_client_side_decorations_check_button">
-            <property name="label" translatable="yes">Use client side window decorations</property>
+            <property name="label" translatable="yes">Use client side window decorations (requires app restart)</property>
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">False</property>

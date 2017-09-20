@@ -281,6 +281,7 @@ use_client_side_decorations_toggled(GtkToggleButton* button,
   gboolean state = gtk_toggle_button_get_active(button);
   prefs.client_side_decorations = state;
   marker_prefs_save();
+  prefs.client_side_decorations = !state;
 }
 
 void
