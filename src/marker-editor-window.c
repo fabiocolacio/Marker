@@ -32,7 +32,7 @@ save_as_cb(GSimpleAction* action,
            gpointer       user_data)
 {
   MarkerEditorWindow* window = MARKER_EDITOR_WINDOW(user_data);
-  GtkWidget* dialog = gtk_file_chooser_dialog_new("Open File",
+  GtkWidget* dialog = gtk_file_chooser_dialog_new("Save File",
                                                   GTK_WINDOW(window),
                                                   GTK_FILE_CHOOSER_ACTION_SAVE,
                                                   "Cancel",
@@ -372,6 +372,80 @@ buffer_changed(GtkTextBuffer*      buffer,
   marker_editor_window_refresh_preview(window);
 }
 
+static gboolean
+modifier_pressed(GdkEventKey     event,
+                 GdkModifierType modifier)
+{
+  return (event.state & modifier) == modifier;
+}
+                 
+static gboolean
+key_pressed(GtkWidget*   widget,
+            GdkEventKey* event,
+            gpointer     user_data)
+{
+  gboolean ctrl_pressed = modifier_pressed(*event, GDK_CONTROL_MASK);
+  MarkerEditorWindow* window = MARKER_EDITOR_WINDOW(widget);
+  if (ctrl_pressed)
+  {
+    switch (event->keyval)
+    {
+      case GDK_KEY_s:
+        save_cb(widget, window);
+        break;
+        
+      case GDK_KEY_o:
+        open_cb(widget, window);
+        break;
+        
+      case GDK_KEY_S:
+        save_as_cb(NULL, NULL, window);
+        break;
+        
+      case GDK_KEY_n:
+        new_cb(NULL, NULL, window);
+        break;
+        
+      case GDK_KEY_e:
+        export_cb(NULL, NULL, window);
+        break;
+        
+      case GDK_KEY_r:
+        marker_editor_window_refresh_preview(window);
+        break;
+      
+      /*
+      case GDK_KEY_b:
+      {
+        GtkTextBuffer* buffer;
+        buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(window->source_view));
+        marker_utils_surround_selection_with(buffer, "**");
+        break;
+      }
+       
+      case GDK_KEY_i:
+      {
+        GtkTextBuffer* buffer;
+        buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(window->source_view));
+        marker_utils_surround_selection_with(buffer, "*");
+        break;
+      }
+        
+      case GDK_KEY_m:
+      {
+        GtkTextBuffer* buffer;
+        buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(window->source_view));
+        marker_utils_surround_selection_with(buffer, "``");
+        break;
+      }
+      */
+    }
+  }
+  
+  marker_editor_window_refresh_preview(window);
+  return FALSE;
+}
+
 static void
 init_ui(MarkerEditorWindow* window)
 {
@@ -453,6 +527,7 @@ init_ui(MarkerEditorWindow* window)
   gtk_window_set_default_size(GTK_WINDOW(window), 900, 600);
   gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
   g_signal_connect(window, "delete-event", G_CALLBACK(close_btn_pressed), window);
+  g_signal_connect(window, "key-press-event", G_CALLBACK(key_pressed), NULL);
   marker_editor_window_set_title_filename(window);
   
   gtk_builder_add_callback_symbol(builder, "open_cb", G_CALLBACK(open_cb));
