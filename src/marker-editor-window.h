@@ -60,6 +60,12 @@ marker_editor_window_set_show_right_margin(MarkerEditorWindow* window,
 void
 marker_editor_window_apply_prefs(MarkerEditorWindow* window);
 
+void
+marker_editor_window_set_title_filename(MarkerEditorWindow* window);
+
+void
+marker_editor_window_set_title_filename_unsaved(MarkerEditorWindow* window);
+
 G_END_DECLS
 
 #endif

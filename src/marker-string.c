@@ -49,7 +49,7 @@ marker_string_prepend(const char* str,
       
       if (str_len <= bf)
       {
-        memcpy(&buffer[add_len], str, str_len);
+        memcpy(&buffer[add_len], str, str_len + 1);
       }
       else
       {
@@ -89,6 +89,7 @@ marker_string_buffer_set(const char* str,
   size_t str_len = strlen(str);
   if (str_len >= buffer_size)
   {
+    memset(buffer, 0, buffer_size);
     memcpy(buffer, str, buffer_size);
     buffer[buffer_size - 1] = '\0';
     return 1;
@@ -97,7 +98,7 @@ marker_string_buffer_set(const char* str,
   return 0;
 }
 
-const char*
+char*
 marker_string_rfind(const char* str,
                     const char* sub)
 {

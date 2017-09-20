@@ -19,6 +19,8 @@ struct _MarkerEditorWindow
   MarkerSourceView* source_view;
   WebKitWebView* web_view;
   
+  GtkHeaderBar* header_bar;
+  
   GFile* file;
 };
 
@@ -170,7 +172,7 @@ marker_editor_window_open_file(MarkerEditorWindow* window,
 
     marker_source_view_set_modified(window->source_view, FALSE);
     char* filepath = g_file_get_path(file);
-    gtk_window_set_title(GTK_WINDOW(window), filepath);
+    marker_editor_window_set_title_filename(window);
     g_free(filepath);
   }
 }
@@ -189,10 +191,80 @@ marker_editor_window_save_file(MarkerEditorWindow* window,
     fclose(fp);
     
     window->file = file;
-    gtk_window_set_title(GTK_WINDOW(window), filepath);
+    marker_editor_window_set_title_filename(window);
     marker_source_view_set_modified(window->source_view, FALSE);
   }
   g_free(filepath);
+}
+
+void
+marker_editor_window_set_title_filename(MarkerEditorWindow* window)
+{
+  if (G_IS_FILE(window->file))
+  {
+    char* filepath = g_file_get_path(window->file);
+    if (marker_prefs_get_client_side_decorations())
+    {
+      char* filename = marker_string_rfind(filepath, "/");
+      *filename = '\0'; ++filename;
+      gtk_header_bar_set_title(window->header_bar, filename);
+      gtk_header_bar_set_subtitle(window->header_bar, filepath);
+    }
+    else
+    {
+      gtk_window_set_title(GTK_WINDOW(window), filepath);
+    }
+    g_free(filepath);
+  }
+  else
+  {
+    if (marker_prefs_get_client_side_decorations())
+    {
+      gtk_header_bar_set_title(window->header_bar, "Untitled.md");
+      gtk_header_bar_set_has_subtitle(window->header_bar, FALSE);
+    }
+    else
+    {
+      gtk_window_set_title(GTK_WINDOW(window), "Untitled.md");
+    }
+  }
+}
+
+void
+marker_editor_window_set_title_filename_unsaved(MarkerEditorWindow* window)
+{
+  if (G_IS_FILE(window->file))
+  {
+    char* filepath = g_file_get_path(window->file);
+    if (marker_prefs_get_client_side_decorations())
+    {
+      char* filename = marker_string_rfind(filepath, "/");
+      *filename = '\0'; ++filename;
+      char buf[strlen(filename) + 1];
+      marker_string_prepend(filename, "*", buf, sizeof(buf));
+      gtk_header_bar_set_title(window->header_bar, buf);
+      gtk_header_bar_set_subtitle(window->header_bar, filepath);
+    }
+    else
+    {
+      char buf[strlen(filepath) + 1];
+      marker_string_prepend(filepath, "*", buf, sizeof(buf));
+      gtk_window_set_title(GTK_WINDOW(window), buf);
+    }
+    g_free(filepath);
+  }
+  else
+  {
+    if (marker_prefs_get_client_side_decorations())
+    {
+      gtk_header_bar_set_title(window->header_bar, "*Untitled.md");
+      gtk_header_bar_set_has_subtitle(window->header_bar, FALSE);
+    }
+    else
+    {
+      gtk_window_set_title(GTK_WINDOW(window), "*Untitled.md");
+    }
+  }
 }
 
 void
@@ -296,29 +368,13 @@ static void
 buffer_changed(GtkTextBuffer*      buffer,
                MarkerEditorWindow* window)
 {
-  if (G_IS_FILE(window->file))
-  {
-    char* filepath = g_file_get_path(window->file);
-    char title_new[strlen(filepath) + 1];
-    marker_string_prepend(filepath, "*", title_new, sizeof(title_new));
-    gtk_window_set_title(GTK_WINDOW(window), title_new);
-    g_free(filepath);
-  }
-  else
-  {
-    gtk_window_set_title(GTK_WINDOW(window), "*Untitled.md");
-  }
+  marker_editor_window_set_title_filename_unsaved(window);
   marker_editor_window_refresh_preview(window);
 }
 
 static void
 init_ui(MarkerEditorWindow* window)
 {
-  gtk_window_set_default_size(GTK_WINDOW(window), 900, 600);
-  gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
-  gtk_window_set_title(GTK_WINDOW(window), "Untitled.md");
-  g_signal_connect(window, "delete-event", G_CALLBACK(close_btn_pressed), window);
-  
   GtkBuilder* builder =
     gtk_builder_new_from_resource("/com/github/fabiocolacio/marker/editor-window.ui");
 
@@ -326,10 +382,18 @@ init_ui(MarkerEditorWindow* window)
   gtk_container_add(GTK_CONTAINER(window), GTK_WIDGET(vbox));
 
   // Tool Bar //
-  GtkWidget* header_bar =
-    GTK_WIDGET(gtk_builder_get_object(builder, "header_bar"));
-  
-  gtk_box_pack_start(vbox, header_bar, FALSE, TRUE, 0);
+  GtkHeaderBar* header_bar =
+    GTK_HEADER_BAR(gtk_builder_get_object(builder, "header_bar"));
+  window->header_bar = header_bar;
+  if (marker_prefs_get_client_side_decorations())
+  {
+    gtk_window_set_titlebar(GTK_WINDOW(window), GTK_WIDGET(header_bar));
+    gtk_header_bar_set_show_close_button(header_bar, TRUE);
+  }
+  else
+  {
+    gtk_box_pack_start(vbox, GTK_WIDGET(header_bar), FALSE, TRUE, 0);
+  }
   
   GtkMenuButton* menu_btn =
     GTK_MENU_BUTTON(gtk_builder_get_object(builder, "menu_btn"));  
@@ -372,6 +436,11 @@ init_ui(MarkerEditorWindow* window)
   scrolled_window = gtk_scrolled_window_new(NULL, NULL);
   gtk_container_add(GTK_CONTAINER(scrolled_window), web_view);
   gtk_paned_add2(paned, scrolled_window);
+  
+  gtk_window_set_default_size(GTK_WINDOW(window), 900, 600);
+  gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
+  g_signal_connect(window, "delete-event", G_CALLBACK(close_btn_pressed), window);
+  marker_editor_window_set_title_filename(window);
   
   gtk_builder_add_callback_symbol(builder, "open_cb", G_CALLBACK(open_cb));
   gtk_builder_add_callback_symbol(builder, "save_cb", G_CALLBACK(save_cb));
