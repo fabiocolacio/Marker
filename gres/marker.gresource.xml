@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<gresources>
-    <gresource prefix="/com/github/fabiocolacio/marker">
-        <file>editor-window.ui</file>
-        <file>prefs-window.ui</file>
-        <file>export-dialog.ui</file>
-    </gresource>
-</gresources>

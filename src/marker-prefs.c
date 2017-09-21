@@ -307,10 +307,13 @@ marker_prefs_show_window()
   list = marker_prefs_get_available_stylesheets();
   marker_widget_populate_combo_box_with_strings(combo_box, list);
   const char* css = marker_string_rfind(prefs.css_theme, "/");
-  marker_widget_combo_box_set_active_str(combo_box, ++css, g_list_length(list));
+  if (css)
+  {
+    marker_widget_combo_box_set_active_str(combo_box, ++css, g_list_length(list));
+  }
   g_list_free_full(list, free);
   list = NULL;
-  
+   
   check_button =
     GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "show_line_numbers_check_button"));
   gtk_toggle_button_set_active(check_button, prefs.show_line_numbers);
