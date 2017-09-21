@@ -2,6 +2,9 @@
 
 Marker is a markdown editor for linux made with Gtk+-3.0
 
+**Warning:** This app is still very early in development. There are many bugs and
+unfinished features.
+
 ## Features
 
 * Opening markdown documents
