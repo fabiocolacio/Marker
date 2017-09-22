@@ -2,6 +2,10 @@
 #define __MARKER_PREFS_H__
 
 typedef struct {
+  GSettings* editor_settings;
+  GSettings* preview_settings;
+  GSettings* window_settings;
+
   // Editor //
   char syntax_theme[256];
   gboolean show_line_numbers;

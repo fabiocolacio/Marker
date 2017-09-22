@@ -382,6 +382,13 @@ marker_prefs_show_window()
 void
 marker_prefs_load()
 {
+  prefs.editor_settings =
+    g_settings_new("com.github.fabiocolacio.marker.preferences.editor");
+  prefs.preview_settings =
+    g_settings_new("com.github.fabiocolacio.marker.preferences.preview");
+  prefs.window_settings = 
+    g_settings_new("com.github.fabiocolacio.marker.preferences.window");
+
   char key[256];
   char val[256];
   memset(key, 0, sizeof(key));
