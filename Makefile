@@ -10,8 +10,8 @@ MARKER_CFLAGS=-DSTYLES_DIR="\"/usr/share/com.github.fabiocolacio.marker"\" -DCON
 build: clean
 	mkdir -p build/objects
 	
-	cd src/resources \
-	glib-compile-resources marker.gresource.xml --target="../src/resources.c" --generate-source
+	cd src/resources ; \
+	glib-compile-resources marker.gresource.xml --target="../resources.c" --generate-source
 	
 	cc -c src/hoedown/autolink.c -o build/objects/hoedown_autolink.o
 	cc -c src/hoedown/buffer.c -o build/objects/hoedown_buffer.o

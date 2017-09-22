@@ -450,7 +450,7 @@ static void
 init_ui(MarkerEditorWindow* window)
 {
   GtkBuilder* builder =
-    gtk_builder_new_from_resource("/com/github/fabiocolacio/marker/editor-window.ui");
+    gtk_builder_new_from_resource("/com/github/fabiocolacio/marker/ui/editor-window.ui");
 
   GtkBox* vbox = GTK_BOX(gtk_box_new(GTK_ORIENTATION_VERTICAL, 0));
   gtk_container_add(GTK_CONTAINER(window), GTK_WIDGET(vbox));
