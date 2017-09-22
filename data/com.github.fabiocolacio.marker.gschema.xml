@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist>
-  <schema path="/com/github/fabiocolacio/marker/preferences" id="com.github.fabiocolacio.marker.preferences">
+  <schema path="/com/github/fabiocolacio/marker/preferences/" id="com.github.fabiocolacio.marker.preferences">
     <child name="editor" schema="com.github.fabiocolacio.marker.preferences.editor"/>
     <child name="preview" schema="com.github.fabiocolacio.marker.preferences.preview"/>
     <child name="window" schema="com.github.fabiocolacio.marker.preferences.window"/>
   </schema>
   
-  <schema path="/com/github/fabiocolacio/marker/preferences/editor" id="com.github.fabiocolacio.marker.preferences.editor">
+  <schema path="/com/github/fabiocolacio/marker/preferences/editor/" id="com.github.fabiocolacio.marker.preferences.editor">
     <key name="show-line-numbers" type="b">
       <default>true</default>
       <summary>Show Line Numbers</summary>
@@ -32,24 +32,24 @@
     </key>
   </schema>
   
-  <schema path="/com/github/fabiocolacio/marker/preferences/preview" id="com.github.fabiocolacio.marker.preferences.preview">
+  <schema path="/com/github/fabiocolacio/marker/preferences/preview/" id="com.github.fabiocolacio.marker.preferences.preview">
   
   </schema>
   
-  <schema path="/com/github/fabiocolacio/marker/preferences/window" id="com.github.fabiocolacio.marker.preferences.window">
+  <schema path="/com/github/fabiocolacio/marker/preferences/window/" id="com.github.fabiocolacio.marker.preferences.window">
     <key name="single-view-mode" type="b">
       <default>false</default>
       <summary>Single View Mode</summary>
       <description>If this is enabled, there is only one view, which can be toggled to show only the editor or only the preview.</description>
     </key>
     
-    <key name="client-side-decorations">
+    <key name="client-side-decorations" type="b">
       <default>true</default>
       <summary>Use Client Side Decoration</summary>
       <description>Whether to use client side window decorations, or window decorations provided by the window manager</description>
     </key>
     
-    <key name="gnome-appmenu">
+    <key name="gnome-appmenu" type="b">
       <default>true</default>
       <summary>Use GNOME Appmenu</summary>
       <description>

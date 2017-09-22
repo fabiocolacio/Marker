@@ -39,10 +39,17 @@ install:
 	mkdir -p $(APP_DIR)
 	cp -r data/styles $(APP_DIR)
 	cp data/marker.config $(APP_DIR)
+	
+	cp data/com.github.fabiocolacio.marker.gschema.xml /usr/share/glib-2.0/schemas
+	glib-compile-schemas /usr/share/glib-2.0/schemas
+	
 	cp data/com.github.fabiocolacio.marker.desktop $(INSTALL_PREFIX)/share/applications
+	
 	cp data/com.github.fabiocolacio.marker.svg $(INSTALL_PREFIX)/share/icons/hicolor/scalable/apps
 	cp data/com.github.fabiocolacio.marker-symbolic.svg $(INSTALL_PREFIX)/share/icons/hicolor/symbolic/apps
 	gtk-update-icon-cache -f -t $(INSTALL_PREFIX)/share/icons/hicolor
+	
+	
 	cp build/$(BIN_NAME) $(BIN_DIR)
 	
 clean:
