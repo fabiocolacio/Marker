@@ -59,21 +59,24 @@ marker_widget_combo_box_set_active_str(GtkComboBox* combo_box,
                                        const char*  str,
                                        int          model_len)
 {
-  gboolean found = FALSE;
-  char* active_str = NULL;
-  for (int i = 0; i < model_len; ++i)
+  if (str)
   {
-    gtk_combo_box_set_active(combo_box, i);
-    active_str = marker_widget_combo_box_get_active_str(combo_box);
-    if (strcmp(active_str, str) == 0 || active_str == NULL)
+    gboolean found = FALSE;
+    char* active_str = NULL;
+    for (int i = 0; i < model_len; ++i)
     {
-      found = TRUE;
-      break;
+      gtk_combo_box_set_active(combo_box, i);
+      active_str = marker_widget_combo_box_get_active_str(combo_box);
+      if (strcmp(active_str, str) == 0 || active_str == NULL)
+      {
+        found = TRUE;
+        break;
+      }
     }
-  }
-  if (!found)
-  {
-    gtk_combo_box_set_active(combo_box, 0);
+    if (!found)
+    {
+      gtk_combo_box_set_active(combo_box, 0);
+    }
   }
 }
 

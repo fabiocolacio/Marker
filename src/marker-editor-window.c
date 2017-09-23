@@ -530,6 +530,8 @@ init_ui(MarkerEditorWindow* window)
   g_signal_connect(window, "key-press-event", G_CALLBACK(key_pressed), NULL);
   marker_editor_window_set_title_filename(window);
   
+  marker_editor_window_refresh_preview(window);
+  
   gtk_builder_add_callback_symbol(builder, "open_cb", G_CALLBACK(open_cb));
   gtk_builder_add_callback_symbol(builder, "save_cb", G_CALLBACK(save_cb));
   gtk_builder_connect_signals(builder, window);

@@ -7,6 +7,12 @@
   </schema>
   
   <schema path="/com/github/fabiocolacio/marker/preferences/editor/" id="com.github.fabiocolacio.marker.preferences.editor">
+    <key name="syntax-theme" type="s">
+      <default>'tango'</default>
+      <summary>Syntax Theme</summary>
+      <description>The syntax theme to use for the editor.</description>
+    </key>
+  
     <key name="show-line-numbers" type="b">
       <default>true</default>
       <summary>Show Line Numbers</summary>
@@ -33,7 +39,11 @@
   </schema>
   
   <schema path="/com/github/fabiocolacio/marker/preferences/preview/" id="com.github.fabiocolacio.marker.preferences.preview">
-  
+    <key name="css-theme" type="s">
+      <default>'/usr/share/com.github.fabiocolacio.marker/styles/swiss.css'</default>
+      <summary>CSS Theme</summary>
+      <description>The css theme to use for the preview.</description>
+    </key>
   </schema>
   
   <schema path="/com/github/fabiocolacio/marker/preferences/window/" id="com.github.fabiocolacio.marker.preferences.window">

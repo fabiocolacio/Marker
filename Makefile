@@ -5,7 +5,7 @@ STYLES_DIR=$(APP_DIR)/styles
 
 BIN_NAME=com.github.fabiocolacio.marker
 
-MARKER_CFLAGS=-DSTYLES_DIR="\"/usr/share/com.github.fabiocolacio.marker"\" -DCONF_FILE="\"/usr/share/com.github.fabiocolacio.marker/marker.conf"\"
+MARKER_CFLAGS=-DSTYLES_DIR="\"$(STYLES_DIR)/"\"
 
 build: clean
 	mkdir -p build/objects
@@ -38,7 +38,6 @@ build: clean
 install:
 	mkdir -p $(APP_DIR)
 	cp -r data/styles $(APP_DIR)
-	cp data/marker.config $(APP_DIR)
 	
 	cp data/com.github.fabiocolacio.marker.gschema.xml /usr/share/glib-2.0/schemas
 	glib-compile-schemas /usr/share/glib-2.0/schemas

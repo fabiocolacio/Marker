@@ -5,59 +5,70 @@ typedef struct {
   GSettings* editor_settings;
   GSettings* preview_settings;
   GSettings* window_settings;
-
-  // Editor //
-  char syntax_theme[256];
-  gboolean show_line_numbers;
-  gboolean highlight_current_line;
-  gboolean wrap_text;
-  gboolean show_right_margin;
-  guint right_margin_position;
-  
-  // Preview //
-  char css_theme[256];
-  
-  // Window //
-  gboolean single_view_mode;
-  gboolean client_side_decorations;
-  gboolean gnome_appmenu;
 } MarkerPrefs;
 
-const char*
+char*
 marker_prefs_get_syntax_theme();
+
+void
+marker_prefs_set_syntax_theme(const char* theme);
 
 gboolean
 marker_prefs_get_show_line_numbers();
 
+void
+marker_prefs_set_show_line_numbers(gboolean state);
+
 gboolean
 marker_prefs_get_highlight_current_line();
+
+void
+marker_prefs_set_highlight_current_line(gboolean state);
 
 gboolean
 marker_prefs_get_wrap_text();
 
+void
+marker_prefs_set_wrap_text(gboolean state);
+
 gboolean
 marker_prefs_get_show_right_margin();
+
+void
+marker_prefs_set_show_right_margin(gboolean state);
 
 guint
 marker_prefs_get_right_margin_position();
 
-const char*
+void
+marker_prefs_set_right_margin_position(guint position);
+
+char*
 marker_prefs_get_css_theme();
+
+void
+marker_prefs_set_css_theme(const char* theme);
 
 gboolean
 marker_prefs_get_single_view_mode();
 
+void
+marker_prefs_set_single_view_mode(gboolean state);
+
 gboolean
 marker_prefs_get_client_side_decorations();
+
+void
+marker_prefs_set_client_side_decorations(gboolean state);
 
 gboolean
 marker_prefs_get_gnome_appmenu();
 
 void
-marker_prefs_load();
+marker_prefs_set_gnome_appmenu(gboolean state);
 
 void
-marker_prefs_save();
+marker_prefs_load();
 
 void
 marker_prefs_show_window();
