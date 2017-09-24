@@ -18,7 +18,7 @@ endif()
 option(WKHTMLTOX "Use wkhtmltox to export to pdf and image" OFF)
 if (WKHTMLTOX)
   add_definitions(-DWKHTMLTOX)
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -lwkhtmltox -lhoedown")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -lwkhtmltox")
 endif()
 
 add_definitions(-DRES_DIR="${DATA_DEST}/${EXEC_NAME}")
