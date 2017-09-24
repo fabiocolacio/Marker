@@ -87,6 +87,16 @@ GActionEntry APP_MENU_ACTION_ENTRIES[] =
   { "prefs", marker_prefs_cb, NULL, NULL, NULL }
 };
 
+gboolean
+marker_has_app_menu()
+{
+  if (gtk_application_get_app_menu(app))
+  {
+    return TRUE;
+  }
+  return FALSE;
+}
+
 void
 marker_create_new_window()
 {

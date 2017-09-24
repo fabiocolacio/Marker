@@ -29,7 +29,10 @@ void
 marker_quit_cb(GSimpleAction*  action,
                GVariant*      parameter,
                gpointer       user_data);
-        
+
+gboolean
+marker_has_app_menu();
+
 extern GActionEntry APP_MENU_ACTION_ENTRIES[];
 
 #endif

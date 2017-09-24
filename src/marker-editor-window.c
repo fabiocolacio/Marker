@@ -472,7 +472,7 @@ init_ui(MarkerEditorWindow* window)
   GtkMenuButton* menu_btn =
     GTK_MENU_BUTTON(gtk_builder_get_object(builder, "menu_btn"));  
   
-  if (marker_prefs_get_gnome_appmenu())
+  if (marker_has_app_menu())
   {
     GMenuModel* gear_menu =
       G_MENU_MODEL(gtk_builder_get_object(builder, "gear_menu"));  
