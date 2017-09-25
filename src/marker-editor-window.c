@@ -17,7 +17,12 @@ struct _MarkerEditorWindow
   GtkApplicationWindow parent_instance;
   
   MarkerSourceView* source_view;
+  GtkWidget* source_scroll;
+  
   WebKitWebView* web_view;
+  GtkWidget* web_scroll;
+  
+  MarkerEditorWindowViewMode view_mode;
   
   GtkHeaderBar* header_bar;
   
@@ -439,7 +444,7 @@ init_ui(MarkerEditorWindow* window)
   GtkBox* vbox = GTK_BOX(gtk_box_new(GTK_ORIENTATION_VERTICAL, 0));
   gtk_container_add(GTK_CONTAINER(window), GTK_WIDGET(vbox));
 
-  // Tool Bar //
+  // Header Bar //
   GtkHeaderBar* header_bar =
     GTK_HEADER_BAR(gtk_builder_get_object(builder, "header_bar"));
   window->header_bar = header_bar;
@@ -484,29 +489,30 @@ init_ui(MarkerEditorWindow* window)
                                     window);
   }
   
-  // Paned Editor //
-  GtkWidget* scrolled_window;
-  GtkPaned* paned = GTK_PANED(gtk_paned_new(GTK_ORIENTATION_HORIZONTAL));
-  gtk_paned_set_wide_handle(paned, TRUE);
-  gtk_paned_set_position(paned, 450);
-  gtk_box_pack_start(vbox, GTK_WIDGET(paned), TRUE, TRUE, 0);
-  
   // Source View //
   GtkWidget* source_view = GTK_WIDGET(marker_source_view_new());
   window->source_view = MARKER_SOURCE_VIEW(source_view);
-  scrolled_window = gtk_scrolled_window_new(NULL, NULL);
-  gtk_container_add(GTK_CONTAINER(scrolled_window), source_view);
-  gtk_paned_add1(paned, scrolled_window);
   gtk_widget_grab_focus(source_view);
   GtkTextBuffer* buf = gtk_text_view_get_buffer(GTK_TEXT_VIEW(source_view));
   g_signal_connect(buf, "changed", G_CALLBACK(buffer_changed), window);
+  GtkWidget* source_scroll = gtk_scrolled_window_new(NULL, NULL);
+  gtk_container_add(GTK_CONTAINER(source_scroll), source_view);
+  window->source_scroll = source_scroll;
   
   // Web View //
   GtkWidget* web_view = webkit_web_view_new();
   window->web_view = WEBKIT_WEB_VIEW(web_view);
-  scrolled_window = gtk_scrolled_window_new(NULL, NULL);
-  gtk_container_add(GTK_CONTAINER(scrolled_window), web_view);
-  gtk_paned_add2(paned, scrolled_window);
+  GtkWidget* web_scroll = gtk_scrolled_window_new(NULL, NULL);
+  gtk_container_add(GTK_CONTAINER(web_scroll), web_view);
+  window->web_scroll = web_scroll;
+  
+  // View Area //
+  GtkPaned* paned = GTK_PANED(gtk_paned_new(GTK_ORIENTATION_HORIZONTAL));
+  gtk_paned_add1(paned, source_scroll);
+  gtk_paned_add2(paned, web_scroll);
+  gtk_paned_set_wide_handle(paned, TRUE);
+  gtk_paned_set_position(paned, 450);
+  gtk_box_pack_start(vbox, GTK_WIDGET(paned), TRUE, TRUE, 0);
   
   gtk_window_set_default_size(GTK_WINDOW(window), 900, 600);
   gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);

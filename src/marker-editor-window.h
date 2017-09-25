@@ -13,6 +13,11 @@ G_DECLARE_FINAL_TYPE(MarkerEditorWindow,
                      EDITOR_WINDOW,
                      GtkApplicationWindow)
 
+typedef enum
+{
+  EDITOR_ONLY_MODE, PREIVIEW_ONLY_MODE, DUAL_PANE_MODE, DUAL_WINDOW_MODE
+} MarkerEditorWindowViewMode;
+
 MarkerEditorWindow*
 marker_editor_window_new(GtkApplication* app);
 

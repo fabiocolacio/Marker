@@ -99,18 +99,6 @@ marker_prefs_set_show_right_margin(gboolean state)
 }
 
 gboolean
-marker_prefs_get_single_view_mode()
-{
-  return g_settings_get_boolean(prefs.window_settings, "single-view-mode");
-}
-
-void
-marker_prefs_set_single_view_mode(gboolean state)
-{
-  g_settings_set_boolean(prefs.window_settings, "single-view-mode", state);
-}
-
-gboolean
 marker_prefs_get_client_side_decorations()
 {
   return g_settings_get_boolean(prefs.window_settings, "client-side-decorations");
@@ -312,14 +300,6 @@ css_chosen(GtkComboBox* combo_box,
 }
 
 static void
-use_single_view_mode_toggled(GtkToggleButton* button,
-                             gpointer         user_data)
-{
-  gboolean state = gtk_toggle_button_get_active(button);
-  marker_prefs_set_single_view_mode(state);
-}
-
-static void
 use_gnome_appmenu_toggled(GtkToggleButton* button,
                           gpointer         user_data)
 {
@@ -391,10 +371,6 @@ marker_prefs_show_window()
     GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "use_appmenu_check_button"));
   gtk_toggle_button_set_active(check_button, marker_prefs_get_gnome_appmenu());
   
-  check_button =
-    GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "use_single_view_mode_check_button"));
-  gtk_toggle_button_set_active(check_button, marker_prefs_get_single_view_mode());
-  
   GtkWindow* window = GTK_WINDOW(gtk_builder_get_object(builder, "prefs_win"));
   gtk_window_set_position(window, GTK_WIN_POS_CENTER);
   gtk_window_set_keep_above(window, TRUE);
@@ -424,9 +400,6 @@ marker_prefs_show_window()
   gtk_builder_add_callback_symbol(builder,
                                   "use_client_side_decorations_toggled",
                                   G_CALLBACK(use_client_side_decorations_toggled));
-  gtk_builder_add_callback_symbol(builder,
-                                  "use_single_view_mode_toggled",
-                                  G_CALLBACK(use_single_view_mode_toggled));
   gtk_builder_connect_signals(builder, NULL);
   
   g_object_unref(builder);

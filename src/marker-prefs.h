@@ -50,12 +50,6 @@ void
 marker_prefs_set_css_theme(const char* theme);
 
 gboolean
-marker_prefs_get_single_view_mode();
-
-void
-marker_prefs_set_single_view_mode(gboolean state);
-
-gboolean
 marker_prefs_get_client_side_decorations();
 
 void

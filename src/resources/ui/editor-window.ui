@@ -20,6 +20,10 @@
     <property name="icon_size">2</property>
   </object>
   
+  <menu id="view-menu">
+    
+  </menu>
+  
   <!-- Gear Popover Menu -->
   <menu id="gear_menu">
     <section>
@@ -35,6 +39,29 @@
         <attribute name="label">New</attribute>
         <attribute name="action">win.new</attribute>
       </item>
+    </section>
+    <section>
+      <submenu id="view-submenu">
+        <attribute name="label">View</attribute>
+        <section>
+          <item>
+            <attribute name="label">Editor Only Mode</attribute>
+            <attribute name="action">win.editoronlymode</attribute>
+          </item>
+          <item>
+            <attribute name="label">Preview Only Mode</attribute>
+            <attribute name="action">win.previewonlymode</attribute>
+          </item>
+          <item>
+            <attribute name="label">Dual Pane Mode</attribute>
+            <attribute name="action">win.dualpanemode</attribute>
+          </item>
+          <item>
+            <attribute name="label">Dual Window Mode</attribute>
+            <attribute name="action">win.dualwindowmode</attribute>
+          </item>
+        </section>
+      </submenu>
     </section>
   </menu>
   

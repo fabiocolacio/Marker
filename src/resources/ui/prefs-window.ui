@@ -187,21 +187,6 @@
           </packing>
         </child>
         <child>
-          <object class="GtkCheckButton" id="use_single_view_mode_check_button">
-            <property name="label" translatable="yes">Use single-view mode</property>
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="receives_default">False</property>
-            <property name="draw_indicator">True</property>
-            <signal name="toggled" handler="use_single_view_mode_toggled" swapped="no"/>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">9</property>
-          </packing>
-        </child>
-        <child>
           <object class="GtkCheckButton" id="use_client_side_decorations_check_button">
             <property name="label" translatable="yes">Use client side window decorations (only affects new windows)</property>
             <property name="visible">True</property>
