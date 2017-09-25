@@ -39,6 +39,10 @@ void
 marker_source_view_set_syntax_theme(MarkerSourceView* source_view,
                                     const char*       syntax_theme);
 
+void
+marker_source_view_surround_selection_with(MarkerSourceView* source_view,
+                                           const char*       insertion);
+
 G_END_DECLS
 
 #endif

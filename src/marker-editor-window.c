@@ -414,31 +414,17 @@ key_pressed(GtkWidget*   widget,
         marker_editor_window_refresh_preview(window);
         break;
       
-      /*
       case GDK_KEY_b:
-      {
-        GtkTextBuffer* buffer;
-        buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(window->source_view));
-        marker_utils_surround_selection_with(buffer, "**");
+        marker_source_view_surround_selection_with(window->source_view, "**");
         break;
-      }
        
       case GDK_KEY_i:
-      {
-        GtkTextBuffer* buffer;
-        buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(window->source_view));
-        marker_utils_surround_selection_with(buffer, "*");
+        marker_source_view_surround_selection_with(window->source_view, "*");
         break;
-      }
         
       case GDK_KEY_m:
-      {
-        GtkTextBuffer* buffer;
-        buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(window->source_view));
-        marker_utils_surround_selection_with(buffer, "``");
+        marker_source_view_surround_selection_with(window->source_view, "``");
         break;
-      }
-      */
     }
   }
   
