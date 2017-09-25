@@ -1,5 +1,5 @@
 #include <gtksourceview/gtksource.h>
-#include <webkit/webkitwebview.h>
+#include <webkit2/webkit2.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -136,11 +136,9 @@ marker_editor_window_refresh_preview(MarkerEditorWindow* window)
   gchar* uri = NULL;
   if (G_IS_FILE(window->file)) { uri = g_file_get_uri(window->file); }
   
-  webkit_web_view_load_string(web_view,
-                              html,
-                              "text/html",
-                              "UTF-8",
-                              (uri) ? uri : "file://");
+  webkit_web_view_load_html(web_view,
+                            html,
+                            (uri) ? uri : "file://");
   
   if (uri) { g_free(uri); }
   

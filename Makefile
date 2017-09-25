@@ -24,7 +24,7 @@ build: clean
 	cc -c src/hoedown/version.c -o build/objects/hoedown_version.o
 	
 	cc -c src/marker.c -o build/objects/marker.o `pkg-config --cflags gtk+-3.0` $(MARKER_CFLAGS)
-	cc -c src/marker-editor-window.c -o build/objects/marker-editor-window.o `pkg-config --cflags gtk+-3.0 gtksourceview-3.0 webkitgtk-3.0` $(MARKER_CFLAGS)
+	cc -c src/marker-editor-window.c -o build/objects/marker-editor-window.o `pkg-config --cflags gtk+-3.0 gtksourceview-3.0 webkit2gtk-4.0` $(MARKER_CFLAGS)
 	cc -c src/marker-markdown.c -o build/objects/marker-markdown.o $(MARKER_CFLAGS)
 	cc -c src/marker-prefs.c -o build/objects/marker-prefs.o `pkg-config --cflags gtk+-3.0 gtksourceview-3.0` $(MARKER_CFLAGS)
 	cc -c src/marker-source-view.c -o build/objects/marker-source-view.o `pkg-config --cflags gtksourceview-3.0` $(MARKER_CFLAGS)
@@ -33,7 +33,7 @@ build: clean
 	
 	cc -c src/resources.c -o build/objects/resources.o `pkg-config --cflags glib-2.0`
 	
-	cc build/objects/*.o -o build/$(BIN_NAME) `pkg-config --libs gtk+-3.0 glib-2.0 gtksourceview-3.0 webkitgtk-3.0`
+	cc build/objects/*.o -o build/$(BIN_NAME) `pkg-config --libs gtk+-3.0 glib-2.0 gtksourceview-3.0 webkit2gtk-4.0`
 	
 install:
 	mkdir -p $(APP_DIR)
