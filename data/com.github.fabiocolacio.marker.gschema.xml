@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist>
+  <enum id="com.github.fabiocolacio.marker.ViewMode">
+    <value nick="editor-only" value="0"/>
+    <value nick="preview-only" value="1"/>
+    <value nick="dual-pane" value="2"/>
+    <value nick="dual-window" value="3"/>
+  </enum>
+
   <schema path="/com/github/fabiocolacio/marker/preferences/" id="com.github.fabiocolacio.marker.preferences">
     <child name="editor" schema="com.github.fabiocolacio.marker.preferences.editor"/>
     <child name="preview" schema="com.github.fabiocolacio.marker.preferences.preview"/>
@@ -51,6 +58,12 @@
       <default>false</default>
       <summary>Single View Mode</summary>
       <description>If this is enabled, there is only one view, which can be toggled to show only the editor or only the preview.</description>
+    </key>
+    
+    <key name="view-mode" enum="com.github.fabiocolacio.marker.ViewMode">
+      <default>'dual-pane'</default>
+      <summary>View Mode</summary>
+      <description>Controls how to organize the editor and preview areas on the screen.</description>
     </key>
     
     <key name="client-side-decorations" type="b">

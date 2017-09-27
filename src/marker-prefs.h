@@ -1,6 +1,8 @@
 #ifndef __MARKER_PREFS_H__
 #define __MARKER_PREFS_H__
 
+#include "marker-editor-window.h"
+
 typedef struct {
   GSettings* editor_settings;
   GSettings* preview_settings;

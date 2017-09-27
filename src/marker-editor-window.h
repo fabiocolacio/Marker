@@ -15,7 +15,10 @@ G_DECLARE_FINAL_TYPE(MarkerEditorWindow,
 
 typedef enum
 {
-  EDITOR_ONLY_MODE, PREIVIEW_ONLY_MODE, DUAL_PANE_MODE, DUAL_WINDOW_MODE
+  EDITOR_ONLY_MODE = 0,
+  PREVIEW_ONLY_MODE = 1,
+  DUAL_PANE_MODE = 2,
+  DUAL_WINDOW_MODE = 3
 } MarkerEditorWindowViewMode;
 
 MarkerEditorWindow*
@@ -70,6 +73,10 @@ marker_editor_window_set_title_filename(MarkerEditorWindow* window);
 
 void
 marker_editor_window_set_title_filename_unsaved(MarkerEditorWindow* window);
+
+void
+marker_editor_window_set_view_mode(MarkerEditorWindow*        window,
+                                   MarkerEditorWindowViewMode mode);
 
 G_END_DECLS
 

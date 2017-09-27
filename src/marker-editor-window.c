@@ -16,16 +16,13 @@ struct _MarkerEditorWindow
 {
   GtkApplicationWindow parent_instance;
   
+  GtkHeaderBar* header_bar;
+  GtkPaned* paned;
   MarkerSourceView* source_view;
   GtkWidget* source_scroll;
-  
   WebKitWebView* web_view;
   GtkWidget* web_scroll;
-  
   MarkerEditorWindowViewMode view_mode;
-  
-  GtkHeaderBar* header_bar;
-  
   GFile* file;
 };
 
@@ -78,11 +75,51 @@ new_cb(GSimpleAction* action,
   marker_create_new_window();
 }
 
+static void
+editoronlymode_cb(GSimpleAction* action,
+                  GVariant*      parameter,
+                  gpointer       user_data)
+{
+  MarkerEditorWindow* window = user_data;
+  marker_editor_window_set_view_mode(window, EDITOR_ONLY_MODE);
+}
+
+static void
+previewonlymode_cb(GSimpleAction* action,
+                   GVariant*      parameter,
+                   gpointer       user_data)
+{
+  MarkerEditorWindow* window = user_data;
+  marker_editor_window_set_view_mode(window, PREVIEW_ONLY_MODE);
+}
+
+static void
+dualpanemode_cb(GSimpleAction* action,
+                GVariant*      parameter,
+                gpointer       user_data)
+{
+  MarkerEditorWindow* window = user_data;
+  marker_editor_window_set_view_mode(window, DUAL_PANE_MODE);
+}
+
+static void
+dualwindowmode_cb(GSimpleAction* action,
+                  GVariant*      parameter,
+                  gpointer       user_data)
+{
+  MarkerEditorWindow* window = user_data;
+  marker_editor_window_set_view_mode(window, DUAL_WINDOW_MODE);
+}
+
 static GActionEntry win_entries[] =
 {
   { "saveas", save_as_cb, NULL, NULL, NULL },
   { "export", export_cb, NULL, NULL, NULL },
-  { "new", new_cb, NULL, NULL, NULL }
+  { "new", new_cb, NULL, NULL, NULL },
+  { "editoronlymode", editoronlymode_cb, NULL, NULL, NULL },
+  { "previewonlymode", previewonlymode_cb, NULL, NULL, NULL },
+  { "dualpanemode", dualpanemode_cb, NULL, NULL, NULL },
+  { "dualwindowmode", dualwindowmode_cb, NULL, NULL, NULL }
 };
 
 static void
@@ -126,6 +163,61 @@ close_btn_pressed(MarkerEditorWindow* window,
 {
   marker_editor_window_try_close(window);
   return TRUE;
+}
+
+void
+marker_editor_window_set_view_mode(MarkerEditorWindow*        window,
+                                   MarkerEditorWindowViewMode mode)
+{
+  window->view_mode = mode;
+  
+  GtkWidget* const paned = GTK_WIDGET(window->paned);
+  GtkWidget* const source_scroll = window->source_scroll;
+  GtkWidget* const web_scroll = window->web_scroll;
+  
+  GtkContainer* source_parent = GTK_CONTAINER(gtk_widget_get_parent(source_scroll));
+  if (source_parent)
+  {
+    g_object_ref(source_scroll);
+    gtk_container_remove(source_parent, source_scroll);
+  }
+  
+  GtkContainer* web_parent = GTK_CONTAINER(gtk_widget_get_parent(web_scroll));
+  if (web_parent)
+  {
+    g_object_ref(web_scroll);
+    gtk_container_remove(web_parent, web_scroll);
+  }
+  
+  if (GTK_IS_WINDOW(web_parent))
+  {
+    gtk_widget_destroy(GTK_WIDGET(web_parent));
+  }
+  
+  switch (mode)
+  {
+    case EDITOR_ONLY_MODE:
+      gtk_paned_add1(GTK_PANED(paned), source_scroll);
+      break;
+      
+    case PREVIEW_ONLY_MODE:
+      gtk_paned_add2(GTK_PANED(paned), web_scroll);
+      break;
+    
+    case DUAL_PANE_MODE:
+      gtk_paned_add1(GTK_PANED(paned), source_scroll);
+      gtk_paned_add2(GTK_PANED(paned), web_scroll);
+      break;
+      
+    case DUAL_WINDOW_MODE:
+      gtk_paned_add1(GTK_PANED(paned), source_scroll);
+      GtkWindow* preview_window = GTK_WINDOW(gtk_window_new(GTK_WINDOW_TOPLEVEL));
+      gtk_container_add(GTK_CONTAINER(preview_window), web_scroll);
+      gtk_window_set_title(preview_window, "Preview");
+      gtk_window_set_default_size(preview_window, 500, 600);
+      gtk_widget_show_all(GTK_WIDGET(preview_window));
+      break;
+  }
 }
 
 void
@@ -508,6 +600,7 @@ init_ui(MarkerEditorWindow* window)
   
   // View Area //
   GtkPaned* paned = GTK_PANED(gtk_paned_new(GTK_ORIENTATION_HORIZONTAL));
+  window->paned = paned;
   gtk_paned_add1(paned, source_scroll);
   gtk_paned_add2(paned, web_scroll);
   gtk_paned_set_wide_handle(paned, TRUE);
