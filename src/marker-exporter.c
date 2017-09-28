@@ -1,5 +1,9 @@
+#define _GNU_SOURCE
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
+#include "marker-string.h"
 #include "marker-markdown.h"
 
 #include "marker-exporter.h"
@@ -51,6 +55,115 @@ marker_exporter_export(const char*        markdown,
                                                    strlen(markdown),
                                                    outfile,
                                                    stylesheet_path);
+      break;
+    }
+    
+    case RTF:
+    {
+      char* path = marker_string_filename_get_path(outfile);
+      if (chdir(path) == 0)
+      {
+        FILE* fp = NULL;
+        fp = fopen(ftmp, "w");
+        if (fp)
+        {
+          fputs(markdown, fp);
+          fclose(fp);
+          
+          char* command = NULL;
+          asprintf(&command,
+                   "pandoc -s -c %s -t rtf -f markdown -o %s %s",
+                   stylesheet_path,
+                   outfile,
+                   ftmp);
+          system(command);
+          
+          free(command);
+          remove(ftmp);
+        }
+      }
+      free(path);
+      break;
+    }
+    
+    case ODT:
+    {
+      char* path = marker_string_filename_get_path(outfile);
+      if (chdir(path) == 0)
+      {
+        FILE* fp = NULL;
+        fp = fopen(ftmp, "w");
+        if (fp)
+        {
+          fputs(markdown, fp);
+          fclose(fp);
+          
+          char* command = NULL;
+          asprintf(&command,
+                   "pandoc -s -t odt -f markdown -o %s %s",
+                   outfile,
+                   ftmp);
+          system(command);
+          
+          free(command);
+          remove(ftmp);
+        }
+      }
+      free(path);
+      break;
+    }
+    
+    case DOCX:
+    {
+      char* path = marker_string_filename_get_path(outfile);
+      if (chdir(path) == 0)
+      {
+        FILE* fp = NULL;
+        fp = fopen(ftmp, "w");
+        if (fp)
+        {
+          fputs(markdown, fp);
+          fclose(fp);
+          
+          char* command = NULL;
+          asprintf(&command,
+                   "pandoc -s -t docx -f markdown -o %s %s",
+                   outfile,
+                   ftmp);
+          system(command);
+          
+          free(command);
+          remove(ftmp);
+        }
+      }
+      free(path);
+      break;
+    }
+    
+    case LATEX:
+    {
+      char* path = marker_string_filename_get_path(outfile);
+      if (chdir(path) == 0)
+      {
+        FILE* fp = NULL;
+        fp = fopen(ftmp, "w");
+        if (fp)
+        {
+          fputs(markdown, fp);
+          fclose(fp);
+          
+          char* command = NULL;
+          asprintf(&command,
+                   "pandoc -s -t latex -f markdown -o %s %s",
+                   outfile,
+                   ftmp);
+          system(command);
+          
+          free(command);
+          remove(ftmp);
+        }
+      }
+      free(path);
       break;
     }
   }

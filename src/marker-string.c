@@ -99,7 +99,7 @@ marker_string_buffer_set(const char* str,
 }
 
 char*
-marker_string_rfind(char* str,
+marker_string_rfind(const char* str,
                     const char* sub)
 {
   size_t str_len = strlen(str);
@@ -115,5 +115,52 @@ marker_string_rfind(char* str,
     }
   }
   return '\0';
+}
+
+char*
+marker_string_escape(const char* str)
+{
+  size_t len = strlen(str);
+  
+  size_t tmplen = len * 2;
+  char* buffer = (char*) malloc(tmplen + 1);
+  memset(buffer, 0, tmplen + 1);
+  
+  for(int i = 0, j = 0; i < len; ++i)
+  {
+    char c = str[i];
+    if (c == ' ')
+    {
+      buffer[j++] = '\\';
+    }
+    buffer[j++] = c;
+  }
+  
+  size_t str_len = strlen(buffer);
+  if (str_len < tmplen)
+  {
+    buffer = (char*) realloc(buffer, str_len);
+  }
+  
+  return buffer;
+}
+
+char*
+marker_string_filename_get_path(const char* filename)
+{
+  size_t len = strlen(filename);
+  const char* last_slash = filename;
+  for (int i = 0; i < len; ++i)
+  {
+    if (filename[i] == '/')
+    {
+      last_slash = &filename[i];
+    }
+  }
+  len = last_slash - filename;
+  char* ret = (char*) malloc(len + 1);
+  memset(ret, 0, len + 1);
+  memcpy(ret, filename, len);
+  return ret;
 }
 
