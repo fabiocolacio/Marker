@@ -99,12 +99,12 @@ marker_string_buffer_set(const char* str,
 }
 
 char*
-marker_string_rfind(const char* str,
+marker_string_rfind(char* str,
                     const char* sub)
 {
   size_t str_len = strlen(str);
   size_t sub_len = strlen(sub);
-  const char* ptr;
+  char* ptr;
   
   for (int i = str_len; i > 0; --i)
   {

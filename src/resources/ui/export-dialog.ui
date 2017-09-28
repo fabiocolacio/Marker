@@ -48,10 +48,8 @@
               </packing>
             </child>
             <child>
-              <object class="GtkButton" id="export_location_btn">
+              <object class="GtkFileChooserWidget" id="export_location_btn">
                 <property name="visible">True</property>
-                <property name="label">None</property>
-                <signal name="clicked" handler="export_location_btn_pressed" swapped="no" />
               </object>
               <packing>
                 <property name="left_attach">1</property>

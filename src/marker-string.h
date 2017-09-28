@@ -26,7 +26,7 @@ marker_string_buffer_set(const char* str,
                          size_t buffer_size);
                          
 char*
-marker_string_rfind(const char* str,
+marker_string_rfind(char* str,
                     const char* sub);
 
 #endif

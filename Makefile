@@ -30,6 +30,7 @@ build: clean
 	cc -c src/marker-source-view.c -o build/objects/marker-source-view.o `pkg-config --cflags gtksourceview-3.0` $(MARKER_CFLAGS)
 	cc -c src/marker-string.c -o build/objects/marker-string.o $(MARKER_CFLAGS)
 	cc -c src/marker-widget.c -o build/objects/marker-widget.o `pkg-config --cflags gtk+-3.0` $(MARKER_CFLAGS)
+	cc -c src/marker-exporter.c -o build/objects/marker-exporter.o `pkg-config --cflags gtk+-3.0` $(MARKER_CFLAGS)
 	
 	cc -c src/resources.c -o build/objects/resources.o `pkg-config --cflags glib-2.0`
 	

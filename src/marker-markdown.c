@@ -64,13 +64,19 @@ marker_markdown_to_html_with_css(const char*  markdown,
                                   16);
   buffer = hoedown_buffer_new(500);
   
-  hoedown_buffer_printf(buffer,
+  hoedown_buffer_puts(buffer,
                       "<html>\n"
-                      "<head>\n"
-                      "<link rel=\"stylesheet\" href=\"%s\" type=\"text/css\"/>\n"
+                      "<head>\n");
+  
+  if(href)
+  {
+    hoedown_buffer_printf(buffer,
+                         "<link rel=\"stylesheet\" href=\"%s\" type=\"text/css\"/>\n",
+                         href);
+  }
+  hoedown_buffer_puts(buffer,
                       "</head>\n"
-                      "<body>\n",
-                      href);
+                      "<body>\n");
   hoedown_document_render(document, buffer, markdown, size);
   hoedown_buffer_puts(buffer,
                       "</body>\n"
