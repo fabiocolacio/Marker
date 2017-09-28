@@ -9,6 +9,11 @@ marker_markdown_to_html_with_css(const char*  markdown,
                                  size_t       size,
                                  const char*  href);
 
+char*
+marker_markdown_to_html_with_css_inline(const char* markdown,
+                                        size_t      size,
+                                        const char* href);
+
 void
 marker_markdown_to_html_file(const char*  markdown,
                              size_t       size,
@@ -19,6 +24,12 @@ marker_markdown_to_html_file_with_css(const char* markdown,
                                       size_t      size,
                                       const char* filepath,
                                       const char* href);
+
+char*
+marker_markdown_to_html_file_with_css_inline(const char* markdown,
+                                             size_t      size,
+                                             const char* filepath,
+                                             const char* href);
 
 #endif
 

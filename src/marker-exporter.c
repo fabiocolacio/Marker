@@ -47,10 +47,10 @@ marker_exporter_export(const char*        markdown,
   {
     case HTML:
     {
-      marker_markdown_to_html_file_with_css(markdown,
-                                            strlen(markdown),
-                                            outfile,
-                                            stylesheet_path);
+      marker_markdown_to_html_file_with_css_inline(markdown,
+                                                   strlen(markdown),
+                                                   outfile,
+                                                   stylesheet_path);
       break;
     }
   }
@@ -122,7 +122,5 @@ marker_exporter_show_export_dialog(GtkWindow*  parent,
   }
   
   gtk_widget_destroy(GTK_WIDGET(dialog));
-  dialog = NULL;
-  chooser = NULL;
 }
 
