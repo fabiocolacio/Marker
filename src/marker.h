@@ -3,14 +3,37 @@
 
 #include <gtk/gtk.h>
 
-void
-marker_open(GtkApplication* app,
-            GFile**         files,
-            gint            num_files,
-            const gchar*    hint);
+GtkApplication*
+marker_get_app();
 
 void
-marker_quit(GtkApplication* app);
+marker_create_new_window();
+
+void
+marker_create_new_window_from_file(GFile* file);
+
+void
+marker_quit();
+
+void
+marker_prefs_cb(GSimpleAction* action,
+                GVariant*      parameter,
+                gpointer       user_data);
+         
+void
+marker_about_cb(GSimpleAction* action,
+                GVariant*      parameter,
+                gpointer       user_data);
+
+void
+marker_quit_cb(GSimpleAction*  action,
+               GVariant*      parameter,
+               gpointer       user_data);
+
+gboolean
+marker_has_app_menu();
+
+extern GActionEntry APP_MENU_ACTION_ENTRIES[];
 
 #endif
 

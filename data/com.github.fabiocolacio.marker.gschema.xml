@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <enum id="com.github.fabiocolacio.marker.ViewMode">
+    <value nick="editor-only" value="0"/>
+    <value nick="preview-only" value="1"/>
+    <value nick="dual-pane" value="2"/>
+    <value nick="dual-window" value="3"/>
+  </enum>
+
+  <schema path="/com/github/fabiocolacio/marker/preferences/" id="com.github.fabiocolacio.marker.preferences">
+    <child name="editor" schema="com.github.fabiocolacio.marker.preferences.editor"/>
+    <child name="preview" schema="com.github.fabiocolacio.marker.preferences.preview"/>
+    <child name="window" schema="com.github.fabiocolacio.marker.preferences.window"/>
+  </schema>
+  
+  <schema path="/com/github/fabiocolacio/marker/preferences/editor/" id="com.github.fabiocolacio.marker.preferences.editor">
+    <key name="syntax-theme" type="s">
+      <default>'tango'</default>
+      <summary>Syntax Theme</summary>
+      <description>The syntax theme to use for the editor.</description>
+    </key>
+  
+    <key name="show-line-numbers" type="b">
+      <default>true</default>
+      <summary>Show Line Numbers</summary>
+      <description>Whether to show line numbers in the editor.</description>
+    </key>
+    
+    <key name="show-right-margin" type="b">
+      <default>true</default>
+      <summary>Show Right Margin</summary>
+      <description>Whether to show a margin on the right side of the editor.</description>
+    </key>
+    
+    <key name="wrap-text" type="b">
+      <default>false</default>
+      <summary>Wrap Text</summary>
+      <description>Whether to wrap text in the editor.</description>
+    </key>
+    
+    <key name="highlight-current-line" type="b">
+      <default>true</default>
+      <summary>Highlight Current Line</summary>
+      <description>Whether to highlight the line with the cursor in the editor.</description>
+    </key>
+  </schema>
+  
+  <schema path="/com/github/fabiocolacio/marker/preferences/preview/" id="com.github.fabiocolacio.marker.preferences.preview">
+    <key name="css-theme" type="s">
+      <default>'/usr/share/com.github.fabiocolacio.marker/styles/swiss.css'</default>
+      <summary>CSS Theme</summary>
+      <description>The css theme to use for the preview.</description>
+    </key>
+  </schema>
+  
+  <schema path="/com/github/fabiocolacio/marker/preferences/window/" id="com.github.fabiocolacio.marker.preferences.window">
+    <key name="single-view-mode" type="b">
+      <default>false</default>
+      <summary>Single View Mode</summary>
+      <description>If this is enabled, there is only one view, which can be toggled to show only the editor or only the preview.</description>
+    </key>
+    
+    <key name="view-mode" enum="com.github.fabiocolacio.marker.ViewMode">
+      <default>'dual-pane'</default>
+      <summary>View Mode</summary>
+      <description>Controls how to organize the editor and preview areas on the screen.</description>
+    </key>
+    
+    <key name="client-side-decorations" type="b">
+      <default>true</default>
+      <summary>Use Client Side Decoration</summary>
+      <description>Whether to use client side window decorations, or window decorations provided by the window manager</description>
+    </key>
+    
+    <key name="gnome-appmenu" type="b">
+      <default>true</default>
+      <summary>Use GNOME Appmenu</summary>
+      <description>
+        If this is enabled, various app-wide actions will be found in the GNOME appmenu.
+        If this is disabled, the actions will still be available in the menu button on each window.
+      </description>
+    </key>
+  </schema>
+</schemalist>

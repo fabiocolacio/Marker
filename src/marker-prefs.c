@@ -1,434 +1,418 @@
 #include <gtk/gtk.h>
 #include <gtksourceview/gtksource.h>
+
+#include <dirent.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
+
+#include "marker.h"
+#include "marker-editor-window.h"
+#include "marker-widget.h"
+#include "marker-string.h"
 
 #include "marker-prefs.h"
-#include "marker-editor-window.h"
-#include "marker-utils.h"
 
 MarkerPrefs prefs;
 
-static void
-css_chosen(GtkComboBox* combo_box,
-           gpointer     user_data)
+char*
+marker_prefs_get_css_theme()
 {
-  GtkApplication* app = user_data;
-  char* css_theme = marker_utils_combo_box_get_active_str(combo_box);
+  return g_settings_get_string(prefs.preview_settings, "css-theme");
+}
+
+void
+marker_prefs_set_css_theme(const char* theme)
+{
+  g_settings_set_string(prefs.preview_settings, "css-theme", theme);
+}
+
+char*
+marker_prefs_get_syntax_theme()
+{
+  return g_settings_get_string(prefs.editor_settings, "syntax-theme");
+}
+
+void
+marker_prefs_set_syntax_theme(const char* theme)
+{
+  g_settings_set_string(prefs.editor_settings, "syntax-theme", theme);
+}
+
+guint
+marker_prefs_get_right_margin_position()
+{
+  return 0;
+}
+
+void
+marker_prefs_set_right_margin_position(guint position)
+{
   
-  memset(prefs.css_theme, 0, 50);
-  size_t len = strlen(css_theme);
-  if (len <= 50)
-  {
-    strcpy(prefs.css_theme, css_theme);
-  }
-  else
-  {
-    memcpy(prefs.css_theme, css_theme, 49);
-  }
+}
+
+gboolean
+marker_prefs_get_show_line_numbers()
+{
+  return g_settings_get_boolean(prefs.editor_settings, "show-line-numbers");
+}
+
+void
+marker_prefs_set_show_line_numbers(gboolean state)
+{
+  g_settings_set_boolean(prefs.editor_settings, "show-line-numbers", state);
+}
+
+gboolean
+marker_prefs_get_highlight_current_line()
+{
+  return g_settings_get_boolean(prefs.editor_settings, "highlight-current-line");
+}
+
+void
+marker_prefs_set_highlight_current_line(gboolean state)
+{
+  g_settings_set_boolean(prefs.editor_settings, "highlight-current-line", state);
+}
+
+gboolean
+marker_prefs_get_wrap_text()
+{
+  return g_settings_get_boolean(prefs.editor_settings, "wrap-text");
+}
+
+void
+marker_prefs_set_wrap_text(gboolean state)
+{
+  g_settings_set_boolean(prefs.editor_settings, "wrap-text", state);
+}
+
+gboolean
+marker_prefs_get_show_right_margin()
+{
+  return g_settings_get_boolean(prefs.editor_settings, "show-right-margin");
+}
+
+void
+marker_prefs_set_show_right_margin(gboolean state)
+{
+  g_settings_set_boolean(prefs.editor_settings, "show-right-margin", state);
+}
+
+gboolean
+marker_prefs_get_client_side_decorations()
+{
+  return g_settings_get_boolean(prefs.window_settings, "client-side-decorations");
+}
+
+void
+marker_prefs_set_client_side_decorations(gboolean state)
+{
+  g_settings_set_boolean(prefs.window_settings, "client-side-decorations", state);
+}
+
+gboolean
+marker_prefs_get_gnome_appmenu()
+{
+  return g_settings_get_boolean(prefs.window_settings, "gnome-appmenu");
+}
+
+void
+marker_prefs_set_gnome_appmenu(gboolean state)
+{
+  g_settings_set_boolean(prefs.window_settings, "gnome-appmenu", state);
+}
+
+GList*
+marker_prefs_get_available_stylesheets()
+{
+  GList* list = NULL;
+  char* list_item;
   
-  GList* windows = gtk_application_get_windows(app);
-  if (windows)
+  DIR* dir;
+  struct dirent* ent;
+  char* filename;
+  if ((dir = opendir(STYLES_DIR)) != NULL)
   {
-    for (; windows != NULL; windows = windows->next)
+    while ((ent = readdir(dir)) != NULL)
     {
-      MarkerEditorWindow* window = MARKER_EDITOR_WINDOW(windows->data);
-      marker_editor_window_set_css_theme(window, css_theme);
+      filename = ent->d_name;
+      if (marker_string_ends_with(filename, ".css"))
+      {
+        list_item = marker_string_alloc(filename);
+        list = g_list_prepend(list, list_item);
+      }
     }
   }
+  closedir(dir);
   
-  free(css_theme);
+  list_item = marker_string_alloc("none");
+  list = g_list_prepend(list, list_item);
   
-  marker_prefs_save();
+  return list;
+}
+
+GList*
+marker_prefs_get_available_syntax_themes()
+{
+  GList* list = NULL;
+  
+  GtkSourceStyleSchemeManager* style_manager =
+    gtk_source_style_scheme_manager_get_default();
+  const gchar * const * ids =
+    gtk_source_style_scheme_manager_get_scheme_ids(style_manager);
+    
+  for (int i = 0; ids[i] != NULL; ++i)
+  {
+    const gchar* id = ids[i];
+    char* item = marker_string_alloc(id);
+    list = g_list_prepend(list, item);
+  }
+  
+  return list;
+}
+
+static void
+show_line_numbers_toggled(GtkToggleButton* button,
+                          gpointer         user_data)
+{
+  gboolean state = gtk_toggle_button_get_active(button);
+  marker_prefs_set_show_line_numbers(state);
+  
+  GtkApplication* app = marker_get_app();
+  GList* windows = gtk_application_get_windows(app);
+  for (GList* item = windows; item != NULL; item = item->next)
+  {
+    if (MARKER_IS_EDITOR_WINDOW(item->data))
+    {
+      MarkerEditorWindow* window = item->data;
+      marker_editor_window_set_show_line_numbers(window, state);
+    }
+  }
+}
+
+static void
+highlight_current_line_toggled(GtkToggleButton* button,
+                               gpointer         user_data)
+{
+  gboolean state = gtk_toggle_button_get_active(button);
+  marker_prefs_set_highlight_current_line(state);
+  
+  GtkApplication* app = marker_get_app();
+  GList* windows = gtk_application_get_windows(app);
+  for (GList* item = windows; item != NULL; item = item->next)
+  {
+    if (MARKER_IS_EDITOR_WINDOW(item->data))
+    {
+      MarkerEditorWindow* window = item->data;
+      marker_editor_window_set_highlight_current_line(window, state);
+    }
+  }
+}
+
+static void
+wrap_text_toggled(GtkToggleButton* button,
+                  gpointer         user_data)
+{
+  gboolean state = gtk_toggle_button_get_active(button);
+  marker_prefs_set_wrap_text(state);
+  
+  GtkApplication* app = marker_get_app();
+  GList* windows = gtk_application_get_windows(app);
+  for (GList* item = windows; item != NULL; item = item->next)
+  {
+    if (MARKER_IS_EDITOR_WINDOW(item->data))
+    {
+      MarkerEditorWindow* window = item->data;
+      marker_editor_window_set_wrap_text(window, state);
+    }
+  }
+}
+
+static void
+show_right_margin_toggled(GtkToggleButton* button,
+                          gpointer         user_data)
+{
+  gboolean state = gtk_toggle_button_get_active(button);
+  marker_prefs_set_show_right_margin(state);
+  
+  GtkApplication* app = marker_get_app();
+  GList* windows = gtk_application_get_windows(app);
+  for (GList* item = windows; item != NULL; item = item->next)
+  {
+    if (MARKER_IS_EDITOR_WINDOW(item->data))
+    {
+      MarkerEditorWindow* window = item->data;
+      marker_editor_window_set_show_right_margin(window, state);
+    }
+  }
 }
 
 static void
 syntax_chosen(GtkComboBox* combo_box,
               gpointer     user_data)
 {
-  GtkApplication* app = user_data;
-  char* syntax_theme = marker_utils_combo_box_get_active_str(combo_box);
+  char* choice = marker_widget_combo_box_get_active_str(combo_box);
+  marker_prefs_set_syntax_theme(choice);
   
-  memset(prefs.syntax_theme, 0, 50);
-  size_t len = strlen(syntax_theme);
-  if (len <= 50)
+  GtkApplication* app = marker_get_app();
+  GList* windows = gtk_application_get_windows(app);
+  for (GList* item = windows; item != NULL; item = item->next)
   {
-    strcpy(prefs.syntax_theme, syntax_theme);
+    if (MARKER_IS_EDITOR_WINDOW(item->data))
+    {
+      MarkerEditorWindow* window = item->data;
+      marker_editor_window_set_syntax_theme(window, choice);
+    }
+  }
+  
+  free(choice);
+}
+
+static void
+css_chosen(GtkComboBox* combo_box,
+           gpointer     user_data)
+{
+  char* choice = marker_widget_combo_box_get_active_str(combo_box);
+
+  char* path;
+  if (strcmp(choice, "none") != 0)
+  {
+    path = marker_string_prepend(choice, STYLES_DIR, NULL, 0);
+    marker_prefs_set_css_theme(path);
+    free(path);
   }
   else
   {
-    memcpy(prefs.syntax_theme, syntax_theme, 49);
+    marker_prefs_set_css_theme(choice);
   }
+  free(choice);
   
+  GtkApplication* app = marker_get_app();
   GList* windows = gtk_application_get_windows(app);
-  if (windows)
+  for (GList* item = windows; item != NULL; item = item->next)
   {
-    for (; windows != NULL; windows = windows->next)
+    if (MARKER_IS_EDITOR_WINDOW(item->data))
     {
-      MarkerEditorWindow* window = MARKER_EDITOR_WINDOW(windows->data);
-      marker_editor_window_set_syntax_theme(window, syntax_theme);
+      MarkerEditorWindow* window = item->data;
+      marker_editor_window_refresh_preview(window);
     }
   }
-    
-  free(syntax_theme);
-  
-  marker_prefs_save();
 }
 
 static void
-show_line_numbers_toggled(GtkToggleButton* toggler,
+use_gnome_appmenu_toggled(GtkToggleButton* button,
                           gpointer         user_data)
 {
-  GtkApplication* app = user_data;
-  gboolean toggled = gtk_toggle_button_get_active(toggler);
-  
-  prefs.show_line_numbers = toggled;
-  
-  GList* windows = gtk_application_get_windows(app);
-  if (windows)
-  {
-    for (; windows != NULL; windows = windows->next)
-    {
-      MarkerEditorWindow* window = MARKER_EDITOR_WINDOW(windows->data);
-      marker_editor_window_set_show_line_numbers(window, toggled);
-    }
-  }
-  
-  marker_prefs_save();
+  gboolean state = gtk_toggle_button_get_active(button);
+  marker_prefs_set_gnome_appmenu(state);
 }
 
 static void
-highlight_current_line_toggled(GtkToggleButton* toggler,
-                               gpointer         user_data)
+use_client_side_decorations_toggled(GtkToggleButton* button,
+                                    gpointer         user_data)
 {
-  GtkApplication* app = user_data;
-  gboolean toggled = gtk_toggle_button_get_active(toggler);
-  
-  prefs.highlight_current_line = toggled;
-  
-  GList* windows = gtk_application_get_windows(app);
-  if (windows)
-  {
-    for (; windows != NULL; windows = windows->next)
-    {
-      MarkerEditorWindow* window = MARKER_EDITOR_WINDOW(windows->data);
-      marker_editor_window_set_highlight_current_line(window, toggled);
-    }
-  }
-  
-  marker_prefs_save();
-}
-
-static void
-show_right_margin_toggled(GtkToggleButton* toggler,
-                          gpointer         user_data)
-{
-  GtkApplication* app = user_data;
-  gboolean toggled = gtk_toggle_button_get_active(toggler);
-  
-  prefs.show_right_margin = toggled;
-  
-  GList* windows = gtk_application_get_windows(app);
-  if (windows)
-  {
-    for (; windows != NULL; windows = windows->next)
-    {
-      MarkerEditorWindow* window = MARKER_EDITOR_WINDOW(windows->data);
-      marker_editor_window_set_show_right_margin(window, toggled);
-    }
-  }
-  
-  marker_prefs_save();
-}
-
-static void
-wrap_text_toggled(GtkToggleButton* toggler,
-                  gpointer         user_data)
-{
-  GtkApplication* app = user_data;
-  gboolean toggled = gtk_toggle_button_get_active(toggler);
-  
-  prefs.wrap_text = toggled;
-  
-  GList* windows = gtk_application_get_windows(app);
-  if (windows)
-  {
-    for (; windows != NULL; windows = windows->next)
-    {
-      MarkerEditorWindow* window = MARKER_EDITOR_WINDOW(windows->data);
-      marker_editor_window_set_wrap_text(window, toggled);
-    }
-  }
-  
-  marker_prefs_save();
+  gboolean state = gtk_toggle_button_get_active(button);
+  marker_prefs_set_client_side_decorations(state);
 }
 
 void
-marker_prefs_load(GtkApplication* app)
+marker_prefs_show_window()
 {
-  char key[50];
-  char val[50];
-  memset(key, 0, sizeof(key));
-  memset(val, 0, sizeof(val));
-  
-  FILE* fp = NULL;
-  fp = fopen(CONF_FILE, "r");
-  if (fp)
-  {
-    while (fscanf(fp, "%s %s", key, val) == 2)
-    {
-      if (marker_utils_str_starts_with(key, "syntax_theme"))
-      {
-        memcpy(prefs.syntax_theme, val, 50);
-      }
-      else
-      if (marker_utils_str_starts_with(key, "css_theme"))
-      {
-        memcpy(prefs.css_theme, val, 50);
-      }
-      else
-      if (marker_utils_str_starts_with(key, "show_line_numbers"))
-      {
-        if (strcmp(val, "TRUE") == 0)
-        {
-          prefs.show_line_numbers = TRUE;
-        }
-        else
-        {
-          prefs.show_line_numbers = FALSE;
-        }
-      }
-      else
-      if (marker_utils_str_starts_with(key, "highlight_current_line"))
-      {
-        if (strcmp(val, "TRUE") == 0)
-        {
-          prefs.highlight_current_line = TRUE;
-        }
-        else
-        {
-          prefs.highlight_current_line = FALSE;
-        }
-      }
-      else
-      if (marker_utils_str_starts_with(key, "wrap_text"))
-      {
-        if (strcmp(val, "TRUE") == 0)
-        {
-          prefs.wrap_text = TRUE;
-        }
-        else
-        {
-          prefs.wrap_text = FALSE;
-        }
-      }
-      else
-      if (marker_utils_str_starts_with(key, "show_right_margin"))
-      {
-        if (strcmp(val, "TRUE") == 0)
-        {
-          prefs.show_right_margin = TRUE;
-        }
-        else
-        {
-          prefs.show_right_margin = FALSE;
-        }
-      }
-      else
-      {
-        printf("'%s' is not a valid key.\n", key);
-      }
-      
-      memset(key, 0, sizeof(key));
-      memset(val, 0, sizeof(val));
-    }
-    fclose(fp);
-  }
-}
-
-void
-marker_prefs_save()
-{
-  FILE* fp = NULL;
-  fp = fopen(CONF_FILE, "w");
-  if (fp)
-  {
-    fprintf(fp, "syntax_theme: %s\n", prefs.syntax_theme);
-    fprintf(fp, "css_theme: %s\n", prefs.css_theme);
-    
-    if (prefs.show_line_numbers)
-    {
-      fputs("show_line_numbers: TRUE\n", fp);
-    }
-    else
-    {
-      fputs("show_line_numbers: FALSE\n", fp);
-    }
-    
-    if (prefs.highlight_current_line)
-    {
-      fputs("highlight_current_line: TRUE\n", fp);
-    }
-    else
-    {
-      fputs("show_line_numbers: FALSE\n", fp);
-    }
-    
-    if (prefs.wrap_text)
-    {
-      fputs("wrap_text: TRUE\n", fp);
-    }
-    else
-    {
-      fputs("wrap_text: FALSE\n", fp);
-    }
-    
-    if (prefs.show_right_margin)
-    {
-      fputs("show_right_margin: TRUE\n", fp);
-    }
-    else
-    {
-      fputs("show_right_margin: FALSE\n", fp);
-    }
-    
-    fclose(fp);
-  }
-}
-
-void
-marker_prefs_show_window(GtkApplication* app)
-{
-  GtkBuilder* builder = gtk_builder_new_from_resource("/com/github/fabiocolacio/marker/marker-prefs-window.ui");
-  GtkWindow* win = GTK_WINDOW(gtk_builder_get_object(builder, "prefs_win"));
-    
-  GtkTreeIter iter;
-  int model_len = 0;
-    
-  GtkListStore* syntax_list = gtk_list_store_new(1, G_TYPE_STRING);
-  GtkSourceStyleSchemeManager* style_manager = gtk_source_style_scheme_manager_get_default();
-  const gchar * const * ids = gtk_source_style_scheme_manager_get_scheme_ids(style_manager);
-  for (int i = 0; ids[i] != NULL; ++i)
-  {
-    gtk_list_store_append(syntax_list, &iter);
-    gtk_list_store_set(syntax_list, &iter, 0, ids[i], -1);
-    ++model_len;
-  }
-  GtkComboBox* syntax_chooser = GTK_COMBO_BOX(gtk_builder_get_object(builder, "syntax_chooser"));
-  marker_utils_combo_box_set_model(syntax_chooser, GTK_TREE_MODEL(syntax_list));
-  char* active_str = NULL;
-  for (int i = 0; i < model_len; ++i)
-  {
-    gtk_combo_box_set_active(syntax_chooser, i);
-    active_str = marker_utils_combo_box_get_active_str(syntax_chooser);
-    if (strcmp(active_str, prefs.syntax_theme) == 0 || active_str == NULL)
-    {
-      break;
-    }
-  }
-  model_len = 0;
-  
-  GtkListStore* css_list = gtk_list_store_new(1, G_TYPE_STRING);
-  DIR* dir;
-  struct dirent* ent;
-  char* filename;
-  
-  gtk_list_store_append(css_list, &iter);
-  gtk_list_store_set(css_list, &iter, 0, "none", -1);
-  ++model_len;
-  if ((dir = opendir(STYLES_DIR)) != NULL)
-  {
-    while ((ent = readdir(dir)) != NULL)
-    {
-      filename = ent->d_name;
-      if (marker_utils_str_ends_with(filename, ".css"))
-      {
-        gtk_list_store_append(css_list, &iter);
-        gtk_list_store_set(css_list, &iter, 0, filename, -1);
-        ++model_len;
-      }
-    }   
-  }
-  GtkComboBox* css_chooser = GTK_COMBO_BOX(gtk_builder_get_object(builder, "css_chooser"));
-  marker_utils_combo_box_set_model(css_chooser, GTK_TREE_MODEL(css_list));
-  active_str = NULL;
-  for (int i = 0; i < model_len; ++i)
-  {
-    gtk_combo_box_set_active(css_chooser, i);
-    active_str = marker_utils_combo_box_get_active_str(css_chooser);
-    if (strcmp(active_str, prefs.css_theme) == 0 || active_str == NULL)
-    {
-      break;
-    }
-  }
-  model_len = 0;
+  GtkBuilder* builder =
+    gtk_builder_new_from_resource(
+      "/com/github/fabiocolacio/marker/ui/prefs-window.ui");
+ 
+  GList *list = NULL;
+  GtkComboBox* combo_box;
+  GtkToggleButton* check_button;
   
   
-  GtkToggleButton* show_line_numbers_check_button =
+  combo_box = GTK_COMBO_BOX(gtk_builder_get_object(builder, "syntax_chooser"));
+  list = marker_prefs_get_available_syntax_themes();
+  marker_widget_populate_combo_box_with_strings(combo_box, list);
+  char* syntax = marker_prefs_get_syntax_theme();
+  marker_widget_combo_box_set_active_str(combo_box,syntax, g_list_length(list));
+  g_free(syntax);
+  g_list_free_full(list, free);
+  list = NULL;
+ 
+  
+  combo_box = GTK_COMBO_BOX(gtk_builder_get_object(builder, "css_chooser"));
+  list = marker_prefs_get_available_stylesheets();
+  marker_widget_populate_combo_box_with_strings(combo_box, list);
+  char* css = marker_prefs_get_css_theme();
+  char* css_filename = marker_string_rfind(css, "/");
+  marker_widget_combo_box_set_active_str(combo_box, ++css_filename, g_list_length(list));
+  g_free(css);
+  g_list_free_full(list, free);
+  list = NULL;
+   
+  check_button =
     GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "show_line_numbers_check_button"));
-  gtk_toggle_button_set_active(show_line_numbers_check_button,
-                               prefs.show_line_numbers);
+  gtk_toggle_button_set_active(check_button, marker_prefs_get_show_line_numbers());
   
-  GtkToggleButton* highlight_current_line_check_button =
-    GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "highlight_current_line_check_button"));
-  gtk_toggle_button_set_active(highlight_current_line_check_button,
-                               prefs.highlight_current_line);
-  
-  GtkToggleButton* wrap_text_check_button =
-    GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "wrap_text_check_button"));
-  gtk_toggle_button_set_active(wrap_text_check_button,
-                               prefs.wrap_text);
-  
-  GtkToggleButton* show_right_margin_check_button =
+  check_button =
     GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "show_right_margin_check_button"));
-  gtk_toggle_button_set_active(show_right_margin_check_button,
-                               prefs.show_right_margin);
+  gtk_toggle_button_set_active(check_button, marker_prefs_get_show_right_margin());
   
-  gtk_builder_add_callback_symbol(builder, "css_chosen", G_CALLBACK(css_chosen));
-  gtk_builder_add_callback_symbol(builder, "syntax_chosen", G_CALLBACK(syntax_chosen));
-  gtk_builder_add_callback_symbol(builder, "show_line_numbers_toggled", G_CALLBACK(show_line_numbers_toggled));
-  gtk_builder_add_callback_symbol(builder, "highlight_current_line_toggled", G_CALLBACK(highlight_current_line_toggled));
-  gtk_builder_add_callback_symbol(builder, "show_right_margin_toggled", G_CALLBACK(show_right_margin_toggled));
-  gtk_builder_add_callback_symbol(builder, "wrap_text_toggled", G_CALLBACK(wrap_text_toggled));
-  gtk_builder_connect_signals(builder, app);
+  check_button =
+    GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "wrap_text_check_button"));
+  gtk_toggle_button_set_active(check_button, marker_prefs_get_wrap_text());
+  
+  check_button =
+    GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "highlight_current_line_check_button"));
+  gtk_toggle_button_set_active(check_button, marker_prefs_get_highlight_current_line());
+  
+  check_button =
+    GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "use_client_side_decorations_check_button"));
+  gtk_toggle_button_set_active(check_button, marker_prefs_get_client_side_decorations());
+
+  check_button =
+    GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "use_appmenu_check_button"));
+  gtk_toggle_button_set_active(check_button, marker_prefs_get_gnome_appmenu());
+  
+  GtkWindow* window = GTK_WINDOW(gtk_builder_get_object(builder, "prefs_win"));
+  gtk_window_set_position(window, GTK_WIN_POS_CENTER);
+  gtk_window_set_keep_above(window, TRUE);
+  gtk_widget_show_all(GTK_WIDGET(window));
+  
+  gtk_builder_add_callback_symbol(builder,
+                                  "syntax_chosen",
+                                  G_CALLBACK(syntax_chosen));
+  gtk_builder_add_callback_symbol(builder,
+                                  "css_chosen",
+                                  G_CALLBACK(css_chosen));
+  gtk_builder_add_callback_symbol(builder,
+                                  "show_line_numbers_toggled", 
+                                  G_CALLBACK(show_line_numbers_toggled));
+  gtk_builder_add_callback_symbol(builder,
+                                  "highlight_current_line_toggled", 
+                                  G_CALLBACK(highlight_current_line_toggled));
+  gtk_builder_add_callback_symbol(builder,
+                                  "wrap_text_toggled", 
+                                  G_CALLBACK(wrap_text_toggled));
+  gtk_builder_add_callback_symbol(builder,
+                                  "show_right_margin_toggled", 
+                                  G_CALLBACK(show_right_margin_toggled));
+  gtk_builder_add_callback_symbol(builder,
+                                  "use_gnome_appmenu_toggled",
+                                  G_CALLBACK(use_gnome_appmenu_toggled));
+  gtk_builder_add_callback_symbol(builder,
+                                  "use_client_side_decorations_toggled",
+                                  G_CALLBACK(use_client_side_decorations_toggled));
+  gtk_builder_connect_signals(builder, NULL);
+  
   g_object_unref(builder);
-  gtk_widget_show_all(GTK_WIDGET(win));
 }
 
-char*
-marker_prefs_get_syntax_theme()
+void
+marker_prefs_load()
 {
-  return marker_utils_allocate_string(prefs.syntax_theme);
-}
-
-char*
-marker_prefs_get_css_theme()
-{
-  return marker_utils_allocate_string(prefs.css_theme);
-}
-
-gboolean
-marker_prefs_get_show_line_numbers()
-{
-  return prefs.show_line_numbers;
-}
-
-gboolean
-marker_prefs_get_highlight_current_line()
-{
-  return prefs.highlight_current_line;
-}
-
-gboolean
-marker_prefs_get_wrap_text()
-{
-  return prefs.wrap_text;
-}
-
-gboolean
-marker_prefs_get_show_right_margin()
-{
-  return prefs.show_right_margin;
+  prefs.editor_settings =
+    g_settings_new("com.github.fabiocolacio.marker.preferences.editor");
+  prefs.preview_settings =
+    g_settings_new("com.github.fabiocolacio.marker.preferences.preview");
+  prefs.window_settings = 
+    g_settings_new("com.github.fabiocolacio.marker.preferences.window");
 }
 

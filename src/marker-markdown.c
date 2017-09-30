@@ -5,12 +5,11 @@
 #include "hoedown/document.h"
 #include "hoedown/buffer.h"
 
-#include "marker-utils.h"
 #include "marker-markdown.h"
 
 char*
-marker_markdown_render(char*  markdown,
-                       size_t size)
+marker_markdown_to_html(const char*  markdown,
+                        size_t size)
 {
   hoedown_renderer* renderer;
   hoedown_document* document;
@@ -49,9 +48,9 @@ marker_markdown_render(char*  markdown,
 }
 
 char*
-marker_markdown_render_with_css(char*  markdown,
-                                size_t size,
-                                char*  href)
+marker_markdown_to_html_with_css(const char*  markdown,
+                                 size_t size,
+                                 const char*  href)
 {
   hoedown_renderer* renderer;
   hoedown_document* document;
@@ -65,13 +64,19 @@ marker_markdown_render_with_css(char*  markdown,
                                   16);
   buffer = hoedown_buffer_new(500);
   
-  hoedown_buffer_printf(buffer,
+  hoedown_buffer_puts(buffer,
                       "<html>\n"
-                      "<head>\n"
-                      "<link rel=\"stylesheet\" href=\"%s\" type=\"text/css\"/>\n"
+                      "<head>\n");
+  
+  if(href)
+  {
+    hoedown_buffer_printf(buffer,
+                         "<link rel=\"stylesheet\" href=\"%s\" type=\"text/css\"/>\n",
+                         href);
+  }
+  hoedown_buffer_puts(buffer,
                       "</head>\n"
-                      "<body>\n",
-                      href);
+                      "<body>\n");
   hoedown_document_render(document, buffer, markdown, size);
   hoedown_buffer_puts(buffer,
                       "</body>\n"
@@ -91,69 +96,119 @@ marker_markdown_render_with_css(char*  markdown,
   return html;
 }
 
-void
-marker_markdown_render_to_file(char*  markdown,
-                               size_t size,
-                               char*  filepath)
+char*
+marker_markdown_to_html_with_css_inline(const char* markdown,
+                                        size_t      size,
+                                        const char* href)
 {
-  char* html = marker_markdown_render(markdown, size);
+  char* html = NULL;
+  FILE* fp = NULL;
+  fp = fopen(href, "r");
+  if (fp)
+  {
+    char* inline_css = NULL;
+    
+    fseek(fp , 0 , SEEK_END);
+    long size = ftell(fp);
+    rewind(fp);
+
+    inline_css = (char*) malloc(sizeof(char) * size);
+    fread(inline_css, 1, size, fp);
+    
+    fclose(fp);
+    
+    hoedown_renderer* renderer;
+    hoedown_document* document;
+    hoedown_buffer* buffer;
+    
+    renderer = hoedown_html_renderer_new(0,0);
+    document = hoedown_document_new(renderer,
+                                    HOEDOWN_EXT_BLOCK |
+                                    HOEDOWN_EXT_SPAN  |
+                                    HOEDOWN_EXT_FLAGS,
+                                    16);
+    buffer = hoedown_buffer_new(500);
+    
+    hoedown_buffer_puts(buffer,
+                        "<html>\n"
+                        "<head>\n");
+    if(inline_css)
+    {
+      hoedown_buffer_printf(buffer,
+                           "<style>\n%s\n</style>\n",
+                           inline_css);
+      free(inline_css);
+      inline_css = NULL;
+    }
+    hoedown_buffer_puts(buffer,
+                        "</head>\n"
+                        "<body>\n");
+    hoedown_document_render(document, buffer, markdown, size);
+    hoedown_buffer_puts(buffer,
+                        "</body>\n"
+                        "</html>");
+    
+    const char* buf_cstr = hoedown_buffer_cstr(buffer);
+    size_t buf_cstr_len = strlen(buf_cstr) + 1;
+    
+    html = NULL;
+    html = malloc(buf_cstr_len);
+    memcpy(html, buf_cstr, buf_cstr_len);
+    
+    hoedown_html_renderer_free(renderer);
+    hoedown_document_free(document);
+    hoedown_buffer_free(buffer);
+  
+    
+  }
+  
+  return html;
+}
+
+void
+marker_markdown_to_html_file(const char*  markdown,
+                             size_t size,
+                             const char*  filepath)
+{
+  char* html = marker_markdown_to_html(markdown, size);
   FILE* fp = fopen(filepath, "w");
   if (fp && html)
   {
     fputs(html, fp);
     fclose(fp);
   }
+  free(html);
 }
                                
 void
-marker_markdown_render_to_file_with_css(char*  markdown,
-                                        size_t size,
-                                        char* filepath,
-                                        char* css_filepath)
+marker_markdown_to_html_file_with_css(const char*  markdown,
+                                      size_t size,
+                                      const char* filepath,
+                                      const char* css_filepath)
 {
-  char* html = marker_markdown_render_with_css(markdown, size, css_filepath);
+  char* html = marker_markdown_to_html_with_css(markdown, size, css_filepath);
   FILE* fp = fopen(filepath, "w");
   if (fp && html)
   {
     fputs(html, fp);
     fclose(fp);
   }
+  free(html);
 }
 
-#ifdef PANDOC
-void
-marker_markdown_pandoc_export(char*                markdown,
-                              MarkerExportSettings settings,
-                              char*                format,
-                              char*                out_file)
+char*
+marker_markdown_to_html_file_with_css_inline(const char* markdown,
+                                             size_t      size,
+                                             const char* filepath,
+                                             const char* href)
 {
-  char* filepath = marker_utils_escape_file_path(out_file);
-  int slash = marker_utils_rfind('/', out_file);
-  char loc[slash + 1];
-  memset(loc, 0, sizeof(loc));
-  memcpy(loc, out_file, slash);
-  int ret = chdir(loc);
-  if (ret == 0)
+  char* html = marker_markdown_to_html_with_css_inline(markdown, size, href);
+  FILE* fp = fopen(filepath, "w");
+  if (fp && html)
   {
-    FILE* fp = NULL;
-    fp = fopen(TMP_MD, "w");
-    if (fp)
-    {
-      fputs(markdown, fp);
-      fclose(fp);
-      char command[256] = "pandoc -s -c ";
-      strcat(command, settings.style_sheet);
-      strcat(command, " -o ");
-      strcat(command, filepath);
-      strcat(command, " ");
-      strcat(command, TMP_MD);
-      strcat(command, " -t ");
-      strcat(command, format);
-      system(command);
-      remove(TMP_MD);
-    }
+    fputs(html, fp);
+    fclose(fp);
   }
-  free(filepath);
+  free(html);
 }
-#endif
 

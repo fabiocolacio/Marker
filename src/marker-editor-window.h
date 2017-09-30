@@ -3,8 +3,6 @@
 
 #include <gtk/gtk.h>
 
-#include "marker-markdown.h"
-
 G_BEGIN_DECLS
 
 #define MARKER_TYPE_EDITOR_WINDOW (marker_editor_window_get_type ())
@@ -15,6 +13,14 @@ G_DECLARE_FINAL_TYPE(MarkerEditorWindow,
                      EDITOR_WINDOW,
                      GtkApplicationWindow)
 
+typedef enum
+{
+  EDITOR_ONLY_MODE = 0,
+  PREVIEW_ONLY_MODE = 1,
+  DUAL_PANE_MODE = 2,
+  DUAL_WINDOW_MODE = 3
+} MarkerEditorWindowViewMode;
+
 MarkerEditorWindow*
 marker_editor_window_new(GtkApplication* app);
 
@@ -23,50 +29,54 @@ marker_editor_window_new_from_file(GtkApplication* app,
                                    GFile*          file);
 
 void
-marker_editor_window_refresh_web_view(MarkerEditorWindow* window);
-
-void
 marker_editor_window_open_file(MarkerEditorWindow* window,
                                GFile*              file);
+                               
+void
+marker_editor_window_save_file(MarkerEditorWindow* window,
+                               GFile*              file);
+
+gchar*
+marker_editor_window_get_markdown(MarkerEditorWindow* window);
 
 void
-marker_editor_window_save_file_as(MarkerEditorWindow* window,
-                                  GFile*              file);
-                                  
-void
-marker_editor_window_export_file_as(MarkerEditorWindow*  window,
-                                    GFile*               file,
-                                    MarkerExportSettings settings);
+marker_editor_window_refresh_preview(MarkerEditorWindow* window);
 
-void
-marker_editor_window_set_css_theme(MarkerEditorWindow* window,
-                                      char*               theme);
-                                    
-void
-marker_editor_window_set_syntax_theme(MarkerEditorWindow* window,
-                                      char*               theme);
-                                      
 void
 marker_editor_window_try_close(MarkerEditorWindow* window);
 
 void
+marker_editor_window_set_syntax_theme(MarkerEditorWindow* window,
+                                      const char*         theme);
+
+void
 marker_editor_window_set_show_line_numbers(MarkerEditorWindow* window,
-                                           gboolean            line_nums);
-
-void                                           
+                                           gboolean            state);
+                                           
+void
 marker_editor_window_set_highlight_current_line(MarkerEditorWindow* window,
-                                                gboolean            highlight);
+                                                gboolean            state);
 
-void                                           
-marker_editor_window_set_show_right_margin(MarkerEditorWindow* window,
-                                           gboolean            margin);
-                                       
-void                                           
+void
 marker_editor_window_set_wrap_text(MarkerEditorWindow* window,
-                                   gboolean            wrap);
+                                   gboolean            state);
+
+void
+marker_editor_window_set_show_right_margin(MarkerEditorWindow* window,
+                                           gboolean            state);
 
 void
 marker_editor_window_apply_prefs(MarkerEditorWindow* window);
+
+void
+marker_editor_window_set_title_filename(MarkerEditorWindow* window);
+
+void
+marker_editor_window_set_title_filename_unsaved(MarkerEditorWindow* window);
+
+void
+marker_editor_window_set_view_mode(MarkerEditorWindow*        window,
+                                   MarkerEditorWindowViewMode mode);
 
 G_END_DECLS
 
