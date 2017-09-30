@@ -11,12 +11,12 @@ unfinished features.
 * HTML Preview of markdown documents
 * Editing markdown documents
 * Flexible export options through pandoc
-	* HTML
-	* PDF
-	* RTF
-	* ODT
-	* DOCX
-	* LaTeX
+  * HTML
+  * PDF
+  * RTF
+  * ODT
+  * DOCX
+  * LaTeX
 * Custom CSS themes
 * Custom syntax themes
 * Native Gtk3+ application with full theme support
@@ -31,31 +31,24 @@ unfinished features.
 
 ### Dependencies
 
-* gtk3-devel
+* meson >= 0.37.0 (install only)
+* gtk3-devel >= 3.20
 * gtksourceview3-devel
-* webkitgtk3-devel
+* webkitgtk4-devel
 * wkhtmltox c libraries
-    * It is recomended to download this dependency from the
-      [wkhtmltopdf website](https://wkhtmltopdf.org/downloads.html),
-      as the version provided in some distro repositories will not
-      work properly.
+  * It is recomended to download this dependency from the
+    [wkhtmltopdf website](https://wkhtmltopdf.org/downloads.html),
+    as the version provided in some distro repositories will not
+    work properly.
 * pandoc
-* cmake
 
 ### Build Instructions
-
-**Warning:** If you want a relatively stable experience, download a
-release tarball rather than cloning the repository! Breaking changes and
-unfinished/untested work is often pushed to the repository, as this is still
-very early in the project's lifespan!
 
 ```
 $ git clone https://github.com/fabiocolacio/Marker.git
 $ cd Marker
 $ mkdir build && cd build
-# set -DWKHTMLTOX=OFF to disable wkhtmltox export options
-# set -DPANDOC=OFF to disable pandoc export options
-$ cmake -DCMAKE_INSTALL_PREFIX=/usr -DWKHTMLTOX=ON -DWKPANDOC=ON ..
-$ make
-$ sudo make install
+$ meson ..
+$ ninja
+$ sudo ninja install
 ```
