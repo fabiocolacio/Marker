@@ -47,7 +47,7 @@ deps = [
 ]
 
 add_global_arguments(
-  '-DSTYLES_DIR="@0@"'.format(STYLES_DIR),
+  '-DSTYLES_DIR="@0@/"'.format(STYLES_DIR),
   language : 'c'
 )
 
