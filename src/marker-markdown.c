@@ -28,7 +28,7 @@ marker_markdown_to_html(const char*  markdown,
                       "<head>\n"
                       "</head>\n"
                       "<body>");
-  hoedown_document_render(document, buffer, markdown, size);
+  hoedown_document_render(document, buffer, (uint8_t*) markdown, size);
   hoedown_buffer_puts(buffer,
                       "</body>\n"
                       "</html>");
@@ -77,7 +77,7 @@ marker_markdown_to_html_with_css(const char*  markdown,
   hoedown_buffer_puts(buffer,
                       "</head>\n"
                       "<body>\n");
-  hoedown_document_render(document, buffer, markdown, size);
+  hoedown_document_render(document, buffer, (uint8_t*) markdown, size);
   hoedown_buffer_puts(buffer,
                       "</body>\n"
                       "</html>");
@@ -143,7 +143,7 @@ marker_markdown_to_html_with_css_inline(const char* markdown,
     hoedown_buffer_puts(buffer,
                         "</head>\n"
                         "<body>\n");
-    hoedown_document_render(document, buffer, markdown, size);
+    hoedown_document_render(document, buffer, (uint8_t*) markdown, size);
     hoedown_buffer_puts(buffer,
                         "</body>\n"
                         "</html>");
@@ -158,8 +158,6 @@ marker_markdown_to_html_with_css_inline(const char* markdown,
     hoedown_html_renderer_free(renderer);
     hoedown_document_free(document);
     hoedown_buffer_free(buffer);
-  
-    
   }
   
   return html;
@@ -196,7 +194,7 @@ marker_markdown_to_html_file_with_css(const char*  markdown,
   free(html);
 }
 
-char*
+void
 marker_markdown_to_html_file_with_css_inline(const char* markdown,
                                              size_t      size,
                                              const char* filepath,

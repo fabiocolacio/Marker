@@ -58,6 +58,11 @@ marker_exporter_export(const char*        markdown,
       break;
     }
     
+    case PDF:
+    {
+      break;
+    }
+    
     case RTF:
     {
       char* path = marker_string_filename_get_path(outfile);

@@ -25,7 +25,7 @@ marker_markdown_to_html_file_with_css(const char* markdown,
                                       const char* filepath,
                                       const char* href);
 
-char*
+void
 marker_markdown_to_html_file_with_css_inline(const char* markdown,
                                              size_t      size,
                                              const char* filepath,

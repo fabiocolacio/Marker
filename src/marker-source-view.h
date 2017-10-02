@@ -19,7 +19,7 @@ marker_source_view_new(void);
 gboolean
 marker_source_view_get_modified(MarkerSourceView* source_view);
 
-gboolean
+void
 marker_source_view_set_modified(MarkerSourceView* source_view,
                                 gboolean          modified);
 

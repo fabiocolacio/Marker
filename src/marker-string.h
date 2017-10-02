@@ -26,14 +26,13 @@ marker_string_buffer_set(const char* str,
                          size_t buffer_size);
                          
 char*
-marker_string_rfind(const char* str,
-                    const char* sub);
-
-char*
 marker_string_escape(const char* str);
 
 char*
 marker_string_filename_get_path(const char* filename);
+
+char*
+marker_string_filename_get_name(const char* filename);
 
 #endif
 

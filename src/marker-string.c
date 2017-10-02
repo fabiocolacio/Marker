@@ -99,25 +99,6 @@ marker_string_buffer_set(const char* str,
 }
 
 char*
-marker_string_rfind(const char* str,
-                    const char* sub)
-{
-  size_t str_len = strlen(str);
-  size_t sub_len = strlen(sub);
-  char* ptr;
-  
-  for (int i = str_len; i > 0; --i)
-  {
-    ptr = &str[i];
-    if (memcmp(ptr, sub, sub_len) == 0)
-    {
-      return ptr;
-    }
-  }
-  return '\0';
-}
-
-char*
 marker_string_escape(const char* str)
 {
   size_t len = strlen(str);
@@ -143,6 +124,25 @@ marker_string_escape(const char* str)
   }
   
   return buffer;
+}
+
+char*
+marker_string_filename_get_name(const char* filename)
+{
+  size_t len = strlen(filename);
+  const char* last_slash = filename;
+  for (int i = 0; i < len; ++i)
+  {
+    if (filename[i] == '/')
+    {
+      last_slash = &filename[i + 1];
+    }
+  }
+  len = &filename[len] - last_slash;
+  char* ret = (char*) malloc(len + 1);
+  memset(ret, 0, len + 1);
+  memcpy(ret, last_slash, len);
+  return ret;
 }
 
 char*

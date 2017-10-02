@@ -51,7 +51,7 @@ marker_source_view_get_modified(MarkerSourceView* source_view)
   return gtk_text_buffer_get_modified(buffer);
 }
 
-gboolean
+void
 marker_source_view_set_modified(MarkerSourceView* source_view,
                                 gboolean          modified)
 {

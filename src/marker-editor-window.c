@@ -306,10 +306,14 @@ marker_editor_window_set_title_filename(MarkerEditorWindow* window)
     char* filepath = g_file_get_path(window->file);
     if (marker_prefs_get_client_side_decorations())
     {
-      char* filename = marker_string_rfind(filepath, "/");
-      *filename = '\0'; ++filename;
-      gtk_header_bar_set_title(window->header_bar, filename);
-      gtk_header_bar_set_subtitle(window->header_bar, filepath);
+      char* name = marker_string_filename_get_name(filepath);
+      char* path = marker_string_filename_get_path(filepath);
+      
+      gtk_header_bar_set_title(window->header_bar, name);
+      gtk_header_bar_set_subtitle(window->header_bar, path);
+      
+      free(name);
+      free(path);
     }
     else
     {
@@ -339,8 +343,7 @@ marker_editor_window_set_title_filename_unsaved(MarkerEditorWindow* window)
     char* filepath = g_file_get_path(window->file);
     if (marker_prefs_get_client_side_decorations())
     {
-      char* filename = marker_string_rfind(filepath, "/");
-      *filename = '\0'; ++filename;
+      char* filename = marker_string_filename_get_name(filepath);
       char buf[strlen(filename) + 1];
       marker_string_prepend(filename, "*", buf, sizeof(buf));
       gtk_header_bar_set_title(window->header_bar, buf);

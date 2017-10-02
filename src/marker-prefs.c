@@ -341,8 +341,9 @@ marker_prefs_show_window()
   list = marker_prefs_get_available_stylesheets();
   marker_widget_populate_combo_box_with_strings(combo_box, list);
   char* css = marker_prefs_get_css_theme();
-  char* css_filename = marker_string_rfind(css, "/");
-  marker_widget_combo_box_set_active_str(combo_box, ++css_filename, g_list_length(list));
+  char* css_filename = marker_string_filename_get_name(css);
+  marker_widget_combo_box_set_active_str(combo_box, css_filename, g_list_length(list));
+  free(css_filename);
   g_free(css);
   g_list_free_full(list, free);
   list = NULL;
