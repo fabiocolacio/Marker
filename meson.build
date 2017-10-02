@@ -22,6 +22,7 @@ marker_sources = [
   'src/marker-markdown.c',
   'src/marker-prefs.c',
   'src/marker-source-view.c',
+  'src/marker-preview.c',
   'src/marker-string.c',
   'src/marker-widget.c',
   res

@@ -16,6 +16,12 @@ G_DECLARE_FINAL_TYPE(MarkerPreview,
 MarkerPreview*
 marker_preview_new(void);
 
+void
+marker_preview_render_markdown(MarkerPreview* preview,
+                               const char*    markdown,
+                               const char*    css_theme,
+                               const char*    base_uri);
+
 G_END_DECLS
 
 #endif

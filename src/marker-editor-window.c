@@ -8,6 +8,7 @@
 #include "marker-prefs.h"
 #include "marker-string.h"
 #include "marker-source-view.h"
+#include "marker-preview.h"
 #include "marker-markdown.h"
 #include "marker-exporter.h"
 
@@ -21,7 +22,7 @@ struct _MarkerEditorWindow
   GtkPaned* paned;
   MarkerSourceView* source_view;
   GtkWidget* source_scroll;
-  WebKitWebView* web_view;
+  MarkerPreview* web_view;
   GtkWidget* web_scroll;
   MarkerEditorWindowViewMode view_mode;
   GFile* file;
@@ -229,23 +230,15 @@ marker_editor_window_set_view_mode(MarkerEditorWindow*        window,
 void
 marker_editor_window_refresh_preview(MarkerEditorWindow* window)
 {
-  WebKitWebView* web_view = window->web_view;
   gchar* markdown = marker_editor_window_get_markdown(window);
   const char* css_theme = marker_prefs_get_css_theme();
-  char* html = (css_theme)
-    ? marker_markdown_to_html_with_css(markdown, strlen(markdown), css_theme)
-    : marker_markdown_to_html(markdown, strlen(markdown));
-  
+
   gchar* uri = NULL;
   if (G_IS_FILE(window->file)) { uri = g_file_get_uri(window->file); }
   
-  webkit_web_view_load_html(web_view,
-                            html,
-                            (uri) ? uri : "file://");
+  marker_preview_render_markdown(window->web_view, markdown, css_theme, uri);
   
   if (uri) { g_free(uri); }
-  
-  free(html);
   g_free(markdown);
 }
 
@@ -601,8 +594,8 @@ init_ui(MarkerEditorWindow* window)
   window->source_scroll = source_scroll;
   
   // Web View //
-  GtkWidget* web_view = webkit_web_view_new();
-  window->web_view = WEBKIT_WEB_VIEW(web_view);
+  GtkWidget* web_view = GTK_WIDGET(marker_preview_new());
+  window->web_view = MARKER_PREVIEW(web_view);
   GtkWidget* web_scroll = gtk_scrolled_window_new(NULL, NULL);
   gtk_container_add(GTK_CONTAINER(web_scroll), web_view);
   window->web_scroll = web_scroll;

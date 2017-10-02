@@ -1,6 +1,8 @@
 #ifndef __MARKER_MARKDOWN_H__
 #define __MARKER_MARKDOWN_H__
 
+#include <stddef.h>
+
 char*
 marker_markdown_to_html(const char*  markdown,
                         size_t       size);
