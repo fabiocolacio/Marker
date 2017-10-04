@@ -110,6 +110,18 @@ marker_prefs_set_gnome_appmenu(gboolean state)
   g_settings_set_boolean(prefs.window_settings, "gnome-appmenu", state);
 }
 
+MarkerEditorWindowViewMode
+marker_prefs_get_view_mode()
+{
+  return g_settings_get_enum(prefs.window_settings, "view-mode");
+}
+
+void
+marker_prefs_set_view_mode(MarkerEditorWindowViewMode view_mode)
+{
+  g_settings_set_enum(prefs.window_settings, "view-mode", view_mode);
+}
+
 GList*
 marker_prefs_get_available_stylesheets()
 {
@@ -325,6 +337,15 @@ marker_prefs_show_window()
   g_free(css);
   g_list_free_full(list, free);
   list = NULL;
+   
+  combo_box = GTK_COMBO_BOX(gtk_builder_get_object(builder, "view_mode_chooser"));
+  GtkCellRenderer* cell_renderer = gtk_cell_renderer_text_new();
+  gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(combo_box), cell_renderer, TRUE);
+  gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(combo_box),
+                                 cell_renderer,
+                                 "text", 0,
+                                 NULL);
+  gtk_combo_box_set_active(combo_box, marker_prefs_get_view_mode());
    
   check_button =
     GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "show_line_numbers_check_button"));

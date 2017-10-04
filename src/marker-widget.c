@@ -8,7 +8,7 @@
 
 void
 marker_widget_combo_box_set_string_model(GtkComboBox*  combo_box,
-                                               GtkTreeModel* model)
+                                         GtkTreeModel* model)
 {
   gtk_combo_box_set_model(combo_box, model);
   GtkCellRenderer* cell_renderer = gtk_cell_renderer_text_new();

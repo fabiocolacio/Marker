@@ -52,16 +52,16 @@ void
 marker_prefs_set_css_theme(const char* theme);
 
 gboolean
-marker_prefs_get_client_side_decorations();
-
-void
-marker_prefs_set_client_side_decorations(gboolean state);
-
-gboolean
 marker_prefs_get_gnome_appmenu();
 
 void
 marker_prefs_set_gnome_appmenu(gboolean state);
+
+MarkerEditorWindowViewMode
+marker_prefs_get_view_mode();
+
+void
+marker_prefs_set_view_mode(MarkerEditorWindowViewMode view_mode);
 
 void
 marker_prefs_load();

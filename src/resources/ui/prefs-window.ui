@@ -255,7 +255,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkComboBox">
+                  <object class="GtkComboBox" id="view_mode_chooser">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="model">view_modes</property>
