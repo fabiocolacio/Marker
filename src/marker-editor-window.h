@@ -15,10 +15,10 @@ G_DECLARE_FINAL_TYPE(MarkerEditorWindow,
 
 typedef enum
 {
-  EDITOR_ONLY_MODE = 0,
-  PREVIEW_ONLY_MODE = 1,
-  DUAL_PANE_MODE = 2,
-  DUAL_WINDOW_MODE = 3
+  EDITOR_ONLY_MODE,
+  PREVIEW_ONLY_MODE,
+  DUAL_PANE_MODE,
+  DUAL_WINDOW_MODE
 } MarkerEditorWindowViewMode;
 
 MarkerEditorWindow*

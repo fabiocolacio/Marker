@@ -2,26 +2,6 @@
 <!-- Generated with glade 3.20.0 -->
 <interface>
   <requires lib="gtk+" version="3.16"/>
-  <object class="GtkListStore" id="view_modes">
-    <columns>
-      <!-- column-name ViewMode -->
-      <column type="gchararray"/>
-    </columns>
-    <data>
-      <row>
-        <col id="0" translatable="yes">Editor Only</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes">Preview Only</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes">Dual Pane</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes">Dual Window</col>
-      </row>
-    </data>
-  </object>
   <object class="GtkWindow" id="prefs_win">
     <property name="can_focus">False</property>
     <property name="title">Preferences</property>
@@ -258,9 +238,6 @@
                   <object class="GtkComboBox">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="model">view_modes</property>
-                    <property name="active">2</property>
-                    <property name="id_column">0</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>

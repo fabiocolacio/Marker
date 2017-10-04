@@ -297,34 +297,20 @@ marker_editor_window_set_title_filename(MarkerEditorWindow* window)
   if (G_IS_FILE(window->file))
   {
     char* filepath = g_file_get_path(window->file);
-    if (marker_prefs_get_client_side_decorations())
-    {
-      char* name = marker_string_filename_get_name(filepath);
-      char* path = marker_string_filename_get_path(filepath);
-      
-      gtk_header_bar_set_title(window->header_bar, name);
-      gtk_header_bar_set_subtitle(window->header_bar, path);
-      
-      free(name);
-      free(path);
-    }
-    else
-    {
-      gtk_window_set_title(GTK_WINDOW(window), filepath);
-    }
+    char* name = marker_string_filename_get_name(filepath);
+    char* path = marker_string_filename_get_path(filepath);
+    
+    gtk_header_bar_set_title(window->header_bar, name);
+    gtk_header_bar_set_subtitle(window->header_bar, path);
+    
+    free(name);
+    free(path);
     g_free(filepath);
   }
   else
   {
-    if (marker_prefs_get_client_side_decorations())
-    {
-      gtk_header_bar_set_title(window->header_bar, "Untitled.md");
-      gtk_header_bar_set_has_subtitle(window->header_bar, FALSE);
-    }
-    else
-    {
-      gtk_window_set_title(GTK_WINDOW(window), "Untitled.md");
-    }
+    gtk_header_bar_set_title(window->header_bar, "Untitled.md");
+    gtk_header_bar_set_has_subtitle(window->header_bar, FALSE);
   }
 }
 
@@ -334,33 +320,17 @@ marker_editor_window_set_title_filename_unsaved(MarkerEditorWindow* window)
   if (G_IS_FILE(window->file))
   {
     char* filepath = g_file_get_path(window->file);
-    if (marker_prefs_get_client_side_decorations())
-    {
-      char* filename = marker_string_filename_get_name(filepath);
-      char buf[strlen(filename) + 1];
-      marker_string_prepend(filename, "*", buf, sizeof(buf));
-      gtk_header_bar_set_title(window->header_bar, buf);
-      gtk_header_bar_set_subtitle(window->header_bar, filepath);
-    }
-    else
-    {
-      char buf[strlen(filepath) + 1];
-      marker_string_prepend(filepath, "*", buf, sizeof(buf));
-      gtk_window_set_title(GTK_WINDOW(window), buf);
-    }
+    char* filename = marker_string_filename_get_name(filepath);
+    char buf[strlen(filename) + 1];
+    marker_string_prepend(filename, "*", buf, sizeof(buf));
+    gtk_header_bar_set_title(window->header_bar, buf);
+    gtk_header_bar_set_subtitle(window->header_bar, filepath);
     g_free(filepath);
   }
   else
   {
-    if (marker_prefs_get_client_side_decorations())
-    {
-      gtk_header_bar_set_title(window->header_bar, "*Untitled.md");
-      gtk_header_bar_set_has_subtitle(window->header_bar, FALSE);
-    }
-    else
-    {
-      gtk_window_set_title(GTK_WINDOW(window), "*Untitled.md");
-    }
+    gtk_header_bar_set_title(window->header_bar, "*Untitled.md");
+    gtk_header_bar_set_has_subtitle(window->header_bar, FALSE);
   }
 }
 
@@ -542,15 +512,9 @@ init_ui(MarkerEditorWindow* window)
   GtkHeaderBar* header_bar =
     GTK_HEADER_BAR(gtk_builder_get_object(builder, "header_bar"));
   window->header_bar = header_bar;
-  if (marker_prefs_get_client_side_decorations())
-  {
-    gtk_window_set_titlebar(GTK_WINDOW(window), GTK_WIDGET(header_bar));
-    gtk_header_bar_set_show_close_button(header_bar, TRUE);
-  }
-  else
-  {
-    gtk_box_pack_start(vbox, GTK_WIDGET(header_bar), FALSE, TRUE, 0);
-  }
+  gtk_window_set_titlebar(GTK_WINDOW(window), GTK_WIDGET(header_bar));
+  gtk_header_bar_set_show_close_button(header_bar, TRUE);
+  
   
   GtkMenuButton* menu_btn =
     GTK_MENU_BUTTON(gtk_builder_get_object(builder, "menu_btn"));  
@@ -605,7 +569,6 @@ init_ui(MarkerEditorWindow* window)
   window->paned = paned;
   gtk_paned_add1(paned, source_scroll);
   gtk_paned_add2(paned, web_scroll);
-  gtk_paned_set_wide_handle(paned, TRUE);
   gtk_paned_set_position(paned, 450);
   gtk_box_pack_start(vbox, GTK_WIDGET(paned), TRUE, TRUE, 0);
   

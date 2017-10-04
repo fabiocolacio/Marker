@@ -66,12 +66,6 @@
       <description>Controls how to organize the editor and preview areas on the screen.</description>
     </key>
     
-    <key name="client-side-decorations" type="b">
-      <default>true</default>
-      <summary>Use Client Side Decoration</summary>
-      <description>Whether to use client side window decorations, or window decorations provided by the window manager</description>
-    </key>
-    
     <key name="gnome-appmenu" type="b">
       <default>true</default>
       <summary>Use GNOME Appmenu</summary>

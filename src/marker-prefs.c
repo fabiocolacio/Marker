@@ -99,18 +99,6 @@ marker_prefs_set_show_right_margin(gboolean state)
 }
 
 gboolean
-marker_prefs_get_client_side_decorations()
-{
-  return g_settings_get_boolean(prefs.window_settings, "client-side-decorations");
-}
-
-void
-marker_prefs_set_client_side_decorations(gboolean state)
-{
-  g_settings_set_boolean(prefs.window_settings, "client-side-decorations", state);
-}
-
-gboolean
 marker_prefs_get_gnome_appmenu()
 {
   return g_settings_get_boolean(prefs.window_settings, "gnome-appmenu");
@@ -307,14 +295,6 @@ use_gnome_appmenu_toggled(GtkToggleButton* button,
   marker_prefs_set_gnome_appmenu(state);
 }
 
-static void
-use_client_side_decorations_toggled(GtkToggleButton* button,
-                                    gpointer         user_data)
-{
-  gboolean state = gtk_toggle_button_get_active(button);
-  marker_prefs_set_client_side_decorations(state);
-}
-
 void
 marker_prefs_show_window()
 {
@@ -326,7 +306,6 @@ marker_prefs_show_window()
   GtkComboBox* combo_box;
   GtkToggleButton* check_button;
   
-  
   combo_box = GTK_COMBO_BOX(gtk_builder_get_object(builder, "syntax_chooser"));
   list = marker_prefs_get_available_syntax_themes();
   marker_widget_populate_combo_box_with_strings(combo_box, list);
@@ -335,7 +314,6 @@ marker_prefs_show_window()
   g_free(syntax);
   g_list_free_full(list, free);
   list = NULL;
- 
   
   combo_box = GTK_COMBO_BOX(gtk_builder_get_object(builder, "css_chooser"));
   list = marker_prefs_get_available_stylesheets();
@@ -363,10 +341,6 @@ marker_prefs_show_window()
   check_button =
     GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "highlight_current_line_check_button"));
   gtk_toggle_button_set_active(check_button, marker_prefs_get_highlight_current_line());
-  
-  check_button =
-    GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "use_client_side_decorations_check_button"));
-  gtk_toggle_button_set_active(check_button, marker_prefs_get_client_side_decorations());
 
   check_button =
     GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "use_appmenu_check_button"));
@@ -374,7 +348,6 @@ marker_prefs_show_window()
   
   GtkWindow* window = GTK_WINDOW(gtk_builder_get_object(builder, "prefs_win"));
   gtk_window_set_position(window, GTK_WIN_POS_CENTER);
-  gtk_window_set_keep_above(window, TRUE);
   gtk_widget_show_all(GTK_WIDGET(window));
   
   gtk_builder_add_callback_symbol(builder,
@@ -398,9 +371,6 @@ marker_prefs_show_window()
   gtk_builder_add_callback_symbol(builder,
                                   "use_gnome_appmenu_toggled",
                                   G_CALLBACK(use_gnome_appmenu_toggled));
-  gtk_builder_add_callback_symbol(builder,
-                                  "use_client_side_decorations_toggled",
-                                  G_CALLBACK(use_client_side_decorations_toggled));
   gtk_builder_connect_signals(builder, NULL);
   
   g_object_unref(builder);
