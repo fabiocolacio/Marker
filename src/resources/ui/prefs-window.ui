@@ -261,6 +261,7 @@
                     <property name="model">view_modes</property>
                     <property name="active">2</property>
                     <property name="id_column">0</property>
+                    <signal name="changed" handler="default_view_mode_chosen" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>

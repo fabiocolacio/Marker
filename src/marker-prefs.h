@@ -58,10 +58,10 @@ void
 marker_prefs_set_gnome_appmenu(gboolean state);
 
 MarkerEditorWindowViewMode
-marker_prefs_get_view_mode();
+marker_prefs_get_default_view_mode();
 
 void
-marker_prefs_set_view_mode(MarkerEditorWindowViewMode view_mode);
+marker_prefs_set_default_view_mode(MarkerEditorWindowViewMode view_mode);
 
 void
 marker_prefs_load();

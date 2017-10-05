@@ -175,8 +175,10 @@ marker_markdown_to_html_file_with_css_inline(const char* markdown,
 {
   char* html = marker_markdown_to_html_with_css_inline(markdown, size, stylesheet_location);
   FILE* fp = fopen(filepath, "w");
+  printf("fp: %p\nfilepath: %s\n", fp, filepath);
   if (fp && html)
   {
+    puts("two");
     fputs(html, fp);
     fclose(fp);
   }

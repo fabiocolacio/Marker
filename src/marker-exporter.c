@@ -40,21 +40,83 @@ marker_exporter_str_to_fmt(const char* str)
 }
 
 void
+marker_exporter_export_pandoc(const char*        markdown,
+                              const char*        stylesheet_path,
+                              const char*        outfile,
+                              MarkerExportFormat format)
+{
+  const char* ftmp = ".marker_tmp_markdown.md";
+  char* path = marker_string_filename_get_path(outfile);
+  if (chdir(path) == 0)
+  {
+    FILE* fp = NULL;
+    fp = fopen(ftmp, "w");
+    if (fp)
+    {
+      fputs(markdown, fp);
+      fclose(fp);
+      
+      const char* format_s = "rtf";
+      switch (format)
+      {
+        case RTF:
+          format_s = "rtf";
+          break;
+          
+        case DOCX:
+          format_s = "docx";
+          break;
+          
+        case ODT:
+          format_s = "odt";
+          break;
+          
+        case LATEX:
+          format_s = "latex";
+          break;
+          
+        case HTML:
+        case PDF:
+        default:
+          break;
+      }
+      
+      char* command = NULL;
+      
+      asprintf(&command,
+               "pandoc -s -c %s -t %s -f markdown -o %s %s",
+               stylesheet_path,
+               format_s,
+               outfile,
+               ftmp);
+      
+      if (command)
+      {
+        system(command);
+      }
+      
+      free(command);
+      remove(ftmp);
+    }
+  }
+  free(path);
+}
+
+void
 marker_exporter_export(const char*        markdown,
                        const char*        stylesheet_path,
                        const char*        outfile,
                        MarkerExportFormat format)
 {
-  const char* ftmp = ".marker_tmp_markdown.md";
-
   switch (format)
   {
     case HTML:
     {
+      puts("test");
       marker_markdown_to_html_file_with_css_inline(markdown,
                                                    strlen(markdown),
-                                                   outfile,
-                                                   stylesheet_path);
+                                                   stylesheet_path,
+                                                   outfile);
       break;
     }
     
@@ -64,113 +126,12 @@ marker_exporter_export(const char*        markdown,
     }
     
     case RTF:
-    {
-      char* path = marker_string_filename_get_path(outfile);
-      if (chdir(path) == 0)
-      {
-        FILE* fp = NULL;
-        fp = fopen(ftmp, "w");
-        if (fp)
-        {
-          fputs(markdown, fp);
-          fclose(fp);
-          
-          char* command = NULL;
-          asprintf(&command,
-                   "pandoc -s -c %s -t rtf -f markdown -o %s %s",
-                   stylesheet_path,
-                   outfile,
-                   ftmp);
-          system(command);
-          
-          free(command);
-          remove(ftmp);
-        }
-      }
-      free(path);
-      break;
-    }
-    
-    case ODT:
-    {
-      char* path = marker_string_filename_get_path(outfile);
-      if (chdir(path) == 0)
-      {
-        FILE* fp = NULL;
-        fp = fopen(ftmp, "w");
-        if (fp)
-        {
-          fputs(markdown, fp);
-          fclose(fp);
-          
-          char* command = NULL;
-          asprintf(&command,
-                   "pandoc -s -t odt -f markdown -o %s %s",
-                   outfile,
-                   ftmp);
-          system(command);
-          
-          free(command);
-          remove(ftmp);
-        }
-      }
-      free(path);
-      break;
-    }
-    
     case DOCX:
-    {
-      char* path = marker_string_filename_get_path(outfile);
-      if (chdir(path) == 0)
-      {
-        FILE* fp = NULL;
-        fp = fopen(ftmp, "w");
-        if (fp)
-        {
-          fputs(markdown, fp);
-          fclose(fp);
-          
-          char* command = NULL;
-          asprintf(&command,
-                   "pandoc -s -t docx -f markdown -o %s %s",
-                   outfile,
-                   ftmp);
-          system(command);
-          
-          free(command);
-          remove(ftmp);
-        }
-      }
-      free(path);
-      break;
-    }
-    
+    case ODT:
     case LATEX:
-    {
-      char* path = marker_string_filename_get_path(outfile);
-      if (chdir(path) == 0)
-      {
-        FILE* fp = NULL;
-        fp = fopen(ftmp, "w");
-        if (fp)
-        {
-          fputs(markdown, fp);
-          fclose(fp);
-          
-          char* command = NULL;
-          asprintf(&command,
-                   "pandoc -s -t latex -f markdown -o %s %s",
-                   outfile,
-                   ftmp);
-          system(command);
-          
-          free(command);
-          remove(ftmp);
-        }
-      }
-      free(path);
+    default:
+      marker_exporter_export_pandoc(markdown, stylesheet_path, outfile, format);
       break;
-    }
   }
 }
 

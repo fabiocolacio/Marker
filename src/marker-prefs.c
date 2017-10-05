@@ -111,13 +111,13 @@ marker_prefs_set_gnome_appmenu(gboolean state)
 }
 
 MarkerEditorWindowViewMode
-marker_prefs_get_view_mode()
+marker_prefs_get_default_view_mode()
 {
   return g_settings_get_enum(prefs.window_settings, "view-mode");
 }
 
 void
-marker_prefs_set_view_mode(MarkerEditorWindowViewMode view_mode)
+marker_prefs_set_default_view_mode(MarkerEditorWindowViewMode view_mode)
 {
   g_settings_set_enum(prefs.window_settings, "view-mode", view_mode);
 }
@@ -300,6 +300,14 @@ css_chosen(GtkComboBox* combo_box,
 }
 
 static void
+default_view_mode_chosen(GtkComboBox* combo_box,
+                         gpointer     user_data)
+{
+  MarkerEditorWindowViewMode mode = gtk_combo_box_get_active(combo_box);
+  marker_prefs_set_default_view_mode(mode);
+}
+
+static void
 use_gnome_appmenu_toggled(GtkToggleButton* button,
                           gpointer         user_data)
 {
@@ -345,7 +353,7 @@ marker_prefs_show_window()
                                  cell_renderer,
                                  "text", 0,
                                  NULL);
-  gtk_combo_box_set_active(combo_box, marker_prefs_get_view_mode());
+  gtk_combo_box_set_active(combo_box, marker_prefs_get_default_view_mode());
    
   check_button =
     GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "show_line_numbers_check_button"));
@@ -377,6 +385,9 @@ marker_prefs_show_window()
   gtk_builder_add_callback_symbol(builder,
                                   "css_chosen",
                                   G_CALLBACK(css_chosen));
+  gtk_builder_add_callback_symbol(builder,
+                                  "default_view_mode_chosen",
+                                  G_CALLBACK(default_view_mode_chosen));
   gtk_builder_add_callback_symbol(builder,
                                   "show_line_numbers_toggled", 
                                   G_CALLBACK(show_line_numbers_toggled));

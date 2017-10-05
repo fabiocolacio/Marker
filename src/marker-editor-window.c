@@ -166,9 +166,21 @@ marker_editor_window_try_close(MarkerEditorWindow* window)
 
 static gboolean
 close_btn_pressed(MarkerEditorWindow* window,
-                  gpointer*           user_data)
+                  gpointer            user_data)
 {
   marker_editor_window_try_close(window);
+  return TRUE;
+}
+
+static gboolean
+preview_window_closed(GtkWindow* preview_window,
+                      GdkEvent*  event,
+                      gpointer   user_data)
+{
+  GtkWidget* web_scroll = (GtkWidget*) user_data;
+  g_object_ref(web_scroll);
+  gtk_container_remove(GTK_CONTAINER(preview_window), web_scroll);
+  gtk_widget_destroy(GTK_WIDGET(preview_window));
   return TRUE;
 }
 
@@ -219,6 +231,7 @@ marker_editor_window_set_view_mode(MarkerEditorWindow*        window,
     case DUAL_WINDOW_MODE:
       gtk_paned_add1(GTK_PANED(paned), source_scroll);
       GtkWindow* preview_window = GTK_WINDOW(gtk_window_new(GTK_WINDOW_TOPLEVEL));
+      g_signal_connect(preview_window, "delete-event", G_CALLBACK(preview_window_closed), web_scroll);
       gtk_container_add(GTK_CONTAINER(preview_window), web_scroll);
       gtk_window_set_title(preview_window, "Preview");
       gtk_window_set_default_size(preview_window, 500, 600);
