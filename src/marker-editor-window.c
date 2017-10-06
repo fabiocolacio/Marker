@@ -239,8 +239,6 @@ marker_editor_window_set_view_mode(MarkerEditorWindow*        window,
       gtk_widget_show_all(GTK_WIDGET(preview_window));
       break;
   }
-  
-  gtk_widget_show_all(GTK_WIDGET(window));
 }
 
 void
@@ -572,6 +570,7 @@ init_ui(MarkerEditorWindow* window)
   GtkWidget* source_scroll = gtk_scrolled_window_new(NULL, NULL);
   gtk_container_add(GTK_CONTAINER(source_scroll), source_view);
   window->source_scroll = source_scroll;
+  gtk_widget_show_all(GTK_WIDGET(source_scroll));
   
   // Web View //
   GtkWidget* web_view = GTK_WIDGET(marker_preview_new());
@@ -579,12 +578,14 @@ init_ui(MarkerEditorWindow* window)
   GtkWidget* web_scroll = gtk_scrolled_window_new(NULL, NULL);
   gtk_container_add(GTK_CONTAINER(web_scroll), web_view);
   window->web_scroll = web_scroll;
+  gtk_widget_show_all(GTK_WIDGET(web_scroll));
   
   // View Area //
   GtkPaned* paned = GTK_PANED(gtk_paned_new(GTK_ORIENTATION_HORIZONTAL));
   window->paned = paned;
   gtk_paned_set_position(paned, 450);
   gtk_box_pack_start(vbox, GTK_WIDGET(paned), TRUE, TRUE, 0);
+  gtk_widget_show_all(GTK_WIDGET(vbox));
   
   gtk_window_set_default_size(GTK_WINDOW(window), 900, 600);
   gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
