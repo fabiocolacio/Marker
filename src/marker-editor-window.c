@@ -23,7 +23,6 @@ struct _MarkerEditorWindow
   MarkerSourceView* source_view;
   GtkWidget* source_scroll;
   MarkerPreview* web_view;
-  GtkWidget* web_scroll;
   MarkerEditorWindowViewMode view_mode;
   GFile* file;
 };
@@ -177,9 +176,9 @@ preview_window_closed(GtkWindow* preview_window,
                       GdkEvent*  event,
                       gpointer   user_data)
 {
-  GtkWidget* web_scroll = (GtkWidget*) user_data;
-  g_object_ref(web_scroll);
-  gtk_container_remove(GTK_CONTAINER(preview_window), web_scroll);
+  GtkWidget* web_view = (GtkWidget*) user_data;
+  g_object_ref(web_view);
+  gtk_container_remove(GTK_CONTAINER(preview_window), web_view);
   gtk_widget_destroy(GTK_WIDGET(preview_window));
   return TRUE;
 }
@@ -192,7 +191,7 @@ marker_editor_window_set_view_mode(MarkerEditorWindow*        window,
   
   GtkWidget* const paned = GTK_WIDGET(window->paned);
   GtkWidget* const source_scroll = window->source_scroll;
-  GtkWidget* const web_scroll = window->web_scroll;
+  GtkWidget* const web_view = GTK_WIDGET(window->web_view);
   
   GtkContainer* source_parent = GTK_CONTAINER(gtk_widget_get_parent(source_scroll));
   if (source_parent)
@@ -201,11 +200,11 @@ marker_editor_window_set_view_mode(MarkerEditorWindow*        window,
     gtk_container_remove(source_parent, source_scroll);
   }
   
-  GtkContainer* web_parent = GTK_CONTAINER(gtk_widget_get_parent(web_scroll));
+  GtkContainer* web_parent = GTK_CONTAINER(gtk_widget_get_parent(web_view));
   if (web_parent)
   {
-    g_object_ref(web_scroll);
-    gtk_container_remove(web_parent, web_scroll);
+    g_object_ref(web_view);
+    gtk_container_remove(web_parent, web_view);
   }
   
   if (GTK_IS_WINDOW(web_parent))
@@ -220,20 +219,20 @@ marker_editor_window_set_view_mode(MarkerEditorWindow*        window,
       break;
       
     case PREVIEW_ONLY_MODE:
-      gtk_paned_add2(GTK_PANED(paned), web_scroll);
+      gtk_paned_add2(GTK_PANED(paned), web_view);
       break;
     
     case DUAL_PANE_MODE:
       gtk_paned_add1(GTK_PANED(paned), source_scroll);
-      gtk_paned_add2(GTK_PANED(paned), web_scroll);
+      gtk_paned_add2(GTK_PANED(paned), web_view);
       break;
       
     case DUAL_WINDOW_MODE:
       gtk_paned_add1(GTK_PANED(paned), source_scroll);
       
       GtkWindow* preview_window = GTK_WINDOW(gtk_window_new(GTK_WINDOW_TOPLEVEL));
-      g_signal_connect(preview_window, "delete-event", G_CALLBACK(preview_window_closed), web_scroll);
-      gtk_container_add(GTK_CONTAINER(preview_window), web_scroll);
+      g_signal_connect(preview_window, "delete-event", G_CALLBACK(preview_window_closed), web_view);
+      gtk_container_add(GTK_CONTAINER(preview_window), web_view);
       gtk_window_set_title(preview_window, "Preview");
       gtk_window_set_default_size(preview_window, 500, 600);
       gtk_widget_show_all(GTK_WIDGET(preview_window));
@@ -575,10 +574,7 @@ init_ui(MarkerEditorWindow* window)
   // Web View //
   GtkWidget* web_view = GTK_WIDGET(marker_preview_new());
   window->web_view = MARKER_PREVIEW(web_view);
-  GtkWidget* web_scroll = gtk_scrolled_window_new(NULL, NULL);
-  gtk_container_add(GTK_CONTAINER(web_scroll), web_view);
-  window->web_scroll = web_scroll;
-  gtk_widget_show_all(GTK_WIDGET(web_scroll));
+  gtk_widget_show_all(web_view);
   
   // View Area //
   GtkPaned* paned = GTK_PANED(gtk_paned_new(GTK_ORIENTATION_HORIZONTAL));
