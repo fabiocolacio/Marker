@@ -162,10 +162,12 @@ marker_exporter_show_export_dialog(GtkWindow*  parent,
   gtk_file_filter_add_pattern(filter, "*.html");
   gtk_file_chooser_add_filter(chooser, filter);
   
+  /*
   filter = gtk_file_filter_new();
   gtk_file_filter_set_name(filter, "PDF");
   gtk_file_filter_add_pattern(filter, "*.pdf");
   gtk_file_chooser_add_filter(chooser, filter);
+  */
   
   filter = gtk_file_filter_new();
   gtk_file_filter_set_name(filter, "RTF");
