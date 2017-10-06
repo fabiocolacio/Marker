@@ -1,4 +1,7 @@
-project('Marker', 'c')
+project('Marker', 'c',
+  version : '2017.10.05',
+  license : 'GPL3'
+)
 
 PREFIX = get_option('prefix')
 DATA_DIR = join_paths(PREFIX, 'share')
@@ -49,6 +52,7 @@ deps = [
 
 add_global_arguments(
   '-DSTYLES_DIR="@0@/"'.format(STYLES_DIR),
+  '-DMARKER_VERSION="@0@"'.format(meson.project_version()),
   language : 'c'
 )
 
