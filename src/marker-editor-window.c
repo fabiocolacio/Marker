@@ -230,6 +230,7 @@ marker_editor_window_set_view_mode(MarkerEditorWindow*        window,
       
     case DUAL_WINDOW_MODE:
       gtk_paned_add1(GTK_PANED(paned), source_scroll);
+      
       GtkWindow* preview_window = GTK_WINDOW(gtk_window_new(GTK_WINDOW_TOPLEVEL));
       g_signal_connect(preview_window, "delete-event", G_CALLBACK(preview_window_closed), web_scroll);
       gtk_container_add(GTK_CONTAINER(preview_window), web_scroll);
@@ -238,6 +239,8 @@ marker_editor_window_set_view_mode(MarkerEditorWindow*        window,
       gtk_widget_show_all(GTK_WIDGET(preview_window));
       break;
   }
+  
+  gtk_widget_show_all(GTK_WIDGET(window));
 }
 
 void
@@ -580,8 +583,6 @@ init_ui(MarkerEditorWindow* window)
   // View Area //
   GtkPaned* paned = GTK_PANED(gtk_paned_new(GTK_ORIENTATION_HORIZONTAL));
   window->paned = paned;
-  gtk_paned_add1(paned, source_scroll);
-  gtk_paned_add2(paned, web_scroll);
   gtk_paned_set_position(paned, 450);
   gtk_box_pack_start(vbox, GTK_WIDGET(paned), TRUE, TRUE, 0);
   
@@ -590,7 +591,7 @@ init_ui(MarkerEditorWindow* window)
   g_signal_connect(window, "delete-event", G_CALLBACK(close_btn_pressed), window);
   g_signal_connect(window, "key-press-event", G_CALLBACK(key_pressed), NULL);
   marker_editor_window_set_title_filename(window);
-  
+  marker_editor_window_set_view_mode (window, marker_prefs_get_default_view_mode());
   marker_editor_window_refresh_preview(window);
   
   gtk_builder_add_callback_symbol(builder, "open_cb", G_CALLBACK(open_cb));
