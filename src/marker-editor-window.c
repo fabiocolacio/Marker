@@ -466,6 +466,9 @@ key_pressed(GtkWidget*   widget,
 {
   gboolean ctrl_pressed = modifier_pressed(*event, GDK_CONTROL_MASK);
   MarkerEditorWindow* window = MARKER_EDITOR_WINDOW(widget);
+  
+  marker_preview_update_scroll_pos(window->web_view);
+  
   if (ctrl_pressed)
   {
     switch (event->keyval)
@@ -508,7 +511,6 @@ key_pressed(GtkWidget*   widget,
     }
   }
   
-  marker_editor_window_refresh_preview(window);
   return FALSE;
 }
 
