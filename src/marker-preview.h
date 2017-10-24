@@ -22,12 +22,6 @@ marker_preview_render_markdown(MarkerPreview* preview,
                                const char*    css_theme,
                                const char*    base_uri);
 
-void
-marker_preview_update_scroll_pos(MarkerPreview* web_view);
-
-void
-marker_preview_scroll_to_pos(MarkerPreview* preview, gdouble x, gdouble y);
-
 G_END_DECLS
 
 #endif

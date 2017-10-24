@@ -5,6 +5,7 @@
 struct _MarkerSourceView
 {
   GtkSourceView parent_instance;
+  GSettings* settings;
 };
 
 G_DEFINE_TYPE(MarkerSourceView, marker_source_view, GTK_SOURCE_TYPE_VIEW)
@@ -100,10 +101,29 @@ marker_source_view_set_language(MarkerSourceView* source_view,
 }
 
 static void
+default_font_changed(GSettings*   settings,
+                     const gchar* key,
+                     gpointer     user_data)
+{
+  MarkerSourceView* source_view = (MarkerSourceView*) user_data;
+  gchar* fontname = g_settings_get_string(settings, key);
+  PangoFontDescription* font = pango_font_description_from_string(fontname);
+  gtk_widget_modify_font(GTK_WIDGET(source_view), font);
+  pango_font_description_free(font);
+  g_free(fontname);
+}
+
+static void
 marker_source_view_init(MarkerSourceView* source_view)
 {
   marker_source_view_set_language(source_view, "markdown");
-  gtk_text_view_set_monospace(GTK_TEXT_VIEW(source_view), TRUE);
+  source_view->settings = g_settings_new("org.gnome.desktop.interface");
+  g_signal_connect(source_view->settings, "changed::monospace-font-name", G_CALLBACK(default_font_changed), source_view);
+  gchar* fontname = g_settings_get_string(source_view->settings, "monospace-font-name");
+  PangoFontDescription* font = pango_font_description_from_string(fontname);
+  gtk_widget_modify_font(GTK_WIDGET(source_view), font);
+  pango_font_description_free(font);
+  g_free(fontname);
 }
 
 static void
