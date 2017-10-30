@@ -61,5 +61,5 @@ $ sudo ninja install
 
 If you like Marker and would like to support the development of this project, please donate below!
 
-[!<img height="30" src="donate.png" alt="PayPal"/>](https://www.paypal.me/fabiocolacio)
+[<img height="30" src="donate.png" alt="PayPal"/>](https://www.paypal.me/fabiocolacio)
 
