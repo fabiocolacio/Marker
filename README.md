@@ -27,6 +27,10 @@ unfinished features.
 
 ![scrot1.png](scrot1.png)
 
+## Packages
+
+* [Arch Linux](https://aur.archlinux.org/packages/marker-git/) thanks to @mmetak
+
 ## Installation From Source
 
 ### Dependencies
