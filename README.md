@@ -29,7 +29,7 @@ unfinished features.
 
 ## Packages
 
-* [Arch Linux](https://aur.archlinux.org/packages/marker-git/) thanks to @mmetak
+* [Arch Linux (thanks to @mmetak)](https://aur.archlinux.org/packages/marker-git/)
 
 ## Installation From Source
 
