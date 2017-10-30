@@ -12,7 +12,7 @@ unfinished features.
 * Editing markdown documents
 * Flexible export options through pandoc
   * HTML
-  * PDF
+  * ~~PDF~~ (pdf coming soon)
   * RTF
   * ODT
   * DOCX
@@ -56,3 +56,10 @@ $ meson ..
 $ ninja
 $ sudo ninja install
 ```
+
+## Donations/Tips
+
+If you like Marker and would like to support the development of this project, please donate below!
+
+[!<img height="30" src="donate.png" alt="PayPal"/>](https://www.paypal.me/fabiocolacio)
+
