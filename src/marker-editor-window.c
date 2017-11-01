@@ -563,7 +563,6 @@ init_ui(MarkerEditorWindow* window)
   // Source View //
   GtkWidget* source_view = GTK_WIDGET(marker_source_view_new());
   window->source_view = MARKER_SOURCE_VIEW(source_view);
-  gtk_widget_grab_focus(source_view);
   GtkTextBuffer* buf = gtk_text_view_get_buffer(GTK_TEXT_VIEW(source_view));
   g_signal_connect(buf, "changed", G_CALLBACK(buffer_changed), window);
   GtkWidget* source_scroll = gtk_scrolled_window_new(NULL, NULL);
@@ -590,6 +589,8 @@ init_ui(MarkerEditorWindow* window)
   marker_editor_window_set_title_filename(window);
   marker_editor_window_set_view_mode (window, marker_prefs_get_default_view_mode());
   marker_editor_window_refresh_preview(window);
+  
+  gtk_widget_grab_focus(source_view);
   
   gtk_builder_add_callback_symbol(builder, "open_cb", G_CALLBACK(open_cb));
   gtk_builder_add_callback_symbol(builder, "save_cb", G_CALLBACK(save_cb));
