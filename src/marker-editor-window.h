@@ -3,6 +3,8 @@
 
 #include <gtk/gtk.h>
 
+#include "marker-preview.h"
+
 G_BEGIN_DECLS
 
 #define MARKER_TYPE_EDITOR_WINDOW (marker_editor_window_get_type ())
@@ -77,6 +79,9 @@ marker_editor_window_set_title_filename_unsaved(MarkerEditorWindow* window);
 void
 marker_editor_window_set_view_mode(MarkerEditorWindow*        window,
                                    MarkerEditorWindowViewMode mode);
+
+MarkerPreview*
+marker_editor_window_get_preview(MarkerEditorWindow* window);
 
 G_END_DECLS
 

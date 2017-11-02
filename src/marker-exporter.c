@@ -5,6 +5,8 @@
 
 #include "marker-string.h"
 #include "marker-markdown.h"
+#include "marker-prefs.h"
+#include "marker-preview.h"
 
 #include "marker-exporter.h"
 
@@ -75,8 +77,6 @@ marker_exporter_export_pandoc(const char*        markdown,
           format_s = "latex";
           break;
           
-        case HTML:
-        case PDF:
         default:
           break;
       }
@@ -103,46 +103,11 @@ marker_exporter_export_pandoc(const char*        markdown,
 }
 
 void
-marker_exporter_export(const char*        markdown,
-                       const char*        stylesheet_path,
-                       const char*        outfile,
-                       MarkerExportFormat format)
-{
-  switch (format)
-  {
-    case HTML:
-    {
-      puts("test");
-      marker_markdown_to_html_file_with_css_inline(markdown,
-                                                   strlen(markdown),
-                                                   stylesheet_path,
-                                                   outfile);
-      break;
-    }
-    
-    case PDF:
-    {
-      break;
-    }
-    
-    case RTF:
-    case DOCX:
-    case ODT:
-    case LATEX:
-    default:
-      marker_exporter_export_pandoc(markdown, stylesheet_path, outfile, format);
-      break;
-  }
-}
-
-void
-marker_exporter_show_export_dialog(GtkWindow*  parent,
-                                   const char* markdown,
-                                   const char* stylesheet_path)
+marker_exporter_show_export_dialog(MarkerEditorWindow* window)
 {
   GtkDialog* dialog;
   dialog = GTK_DIALOG(gtk_file_chooser_dialog_new("Export",
-                                                  parent,
+                                                  GTK_WINDOW(window),
                                                   GTK_FILE_CHOOSER_ACTION_SAVE,
                                                   "Cancel",
                                                   GTK_RESPONSE_CANCEL,
@@ -162,12 +127,10 @@ marker_exporter_show_export_dialog(GtkWindow*  parent,
   gtk_file_filter_add_pattern(filter, "*.html");
   gtk_file_chooser_add_filter(chooser, filter);
   
-  /*
   filter = gtk_file_filter_new();
   gtk_file_filter_set_name(filter, "PDF");
   gtk_file_filter_add_pattern(filter, "*.pdf");
   gtk_file_chooser_add_filter(chooser, filter);
-  */
   
   filter = gtk_file_filter_new();
   gtk_file_filter_set_name(filter, "RTF");
@@ -195,11 +158,38 @@ marker_exporter_show_export_dialog(GtkWindow*  parent,
   if (ret == GTK_RESPONSE_ACCEPT)
   {
     gchar* filename = gtk_file_chooser_get_filename(chooser);
+    
     filter = gtk_file_chooser_get_filter(chooser);
     const gchar* file_type = gtk_file_filter_get_name(filter);
     MarkerExportFormat fmt = marker_exporter_str_to_fmt(file_type);
-    marker_exporter_export(markdown, stylesheet_path, filename, fmt);
+    
+    char* stylesheet_path = marker_prefs_get_css_theme();
+    
+    char* markdown = marker_editor_window_get_markdown(window);
+    
+    MarkerPreview* preview = marker_editor_window_get_preview(window);
+    
+    switch (fmt)
+    {
+      case HTML:
+        marker_markdown_to_html_file_with_css_inline(markdown,
+                                                     strlen(markdown),
+                                                     stylesheet_path,
+                                                     filename);
+        break;
+        
+      case PDF:
+        marker_preview_print_pdf(preview, filename);
+        break;
+        
+      default:
+        marker_exporter_export_pandoc(markdown, stylesheet_path, filename, fmt);
+        break;
+    }
+    
     g_free(filename);
+    g_free(markdown);
+    g_free(stylesheet_path);
   }
   
   gtk_widget_destroy(GTK_WIDGET(dialog));

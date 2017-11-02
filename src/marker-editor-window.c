@@ -66,11 +66,7 @@ export_cb(GSimpleAction* action,
           gpointer       user_data)
 {
   MarkerEditorWindow* window = user_data;
-  gchar* markdown = marker_editor_window_get_markdown(window);
-  marker_exporter_show_export_dialog(GTK_WINDOW(window),
-                                     markdown,
-                                     marker_prefs_get_css_theme());
-  g_free(markdown);
+  marker_exporter_show_export_dialog(window);
 }
 
 static void
@@ -510,6 +506,12 @@ key_pressed(GtkWidget*   widget,
   }
   
   return FALSE;
+}
+
+MarkerPreview*
+marker_editor_window_get_preview(MarkerEditorWindow* window)
+{
+  return window->web_view;
 }
 
 static void

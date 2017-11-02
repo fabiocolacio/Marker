@@ -22,6 +22,10 @@ marker_preview_render_markdown(MarkerPreview* preview,
                                const char*    css_theme,
                                const char*    base_uri);
 
+void
+marker_preview_print_pdf(MarkerPreview* preview,
+                         const char*    outfile);
+
 G_END_DECLS
 
 #endif
