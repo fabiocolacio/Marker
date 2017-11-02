@@ -12,7 +12,7 @@ unfinished features.
 * Editing markdown documents
 * Flexible export options through pandoc
   * HTML
-  * ~~PDF~~ (pdf coming soon)
+  * PDF
   * RTF
   * ODT
   * DOCX
@@ -39,11 +39,6 @@ unfinished features.
 * gtk3-devel >= 3.20
 * gtksourceview3-devel
 * webkitgtk4-devel
-* wkhtmltox c libraries
-  * It is recomended to download this dependency from the
-    [wkhtmltopdf website](https://wkhtmltopdf.org/downloads.html),
-    as the version provided in some distro repositories will not
-    work properly.
 * pandoc
 
 ### Build Instructions
