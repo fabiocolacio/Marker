@@ -28,8 +28,10 @@ marker_markdown_to_html(const char* markdown,
   renderer = hoedown_html_renderer_new(0,0);
   
   document = hoedown_document_new(renderer,
-                                  HOEDOWN_EXT_BLOCK |
-                                  HOEDOWN_EXT_SPAN  |
+                                  HOEDOWN_EXT_BLOCK         |
+                                  HOEDOWN_EXT_SPAN          |
+                                  HOEDOWN_EXT_MATH          |
+                                  HOEDOWN_EXT_MATH_EXPLICIT |
                                   HOEDOWN_EXT_FLAGS,
                                   16);
                                   
@@ -39,8 +41,9 @@ marker_markdown_to_html(const char* markdown,
                       "<!doctype html>"
                       "<html>\n"
                       "<head>\n"
+                      "<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML'></script>\n"
                       "<meta charset=\"utf-8\">\n");
-                      
+
   if (stylesheet_location)
   {
     hoedown_buffer_printf(buffer, "<link rel=\"stylesheet\" type=\"text/css\" href=\"%s\">\n", stylesheet_location);
@@ -102,8 +105,10 @@ marker_markdown_to_html_with_css_inline(const char* markdown,
   renderer = hoedown_html_renderer_new(0,0);
   
   document = hoedown_document_new(renderer,
-                                  HOEDOWN_EXT_BLOCK |
-                                  HOEDOWN_EXT_SPAN  |
+                                  HOEDOWN_EXT_BLOCK         |
+                                  HOEDOWN_EXT_SPAN          |
+                                  HOEDOWN_EXT_MATH          |
+                                  HOEDOWN_EXT_MATH_EXPLICIT |
                                   HOEDOWN_EXT_FLAGS,
                                   16);
                                   
@@ -113,6 +118,7 @@ marker_markdown_to_html_with_css_inline(const char* markdown,
                       "<!doctype html>\n"
                       "<html>\n"
                       "<head>\n"
+                      "<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML'></script>\n"
                       "<meta charset=\"utf-8\">\n");
                       
   if(inline_css)
