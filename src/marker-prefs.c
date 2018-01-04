@@ -26,6 +26,18 @@ marker_prefs_set_css_theme(const char* theme)
   g_settings_set_string(prefs.preview_settings, "css-theme", theme);
 }
 
+gboolean
+marker_prefs_get_use_mathjax()
+{
+  return g_settings_get_boolean(prefs.preview_settings, "mathjax-toggle");
+}
+
+void
+marker_prefs_set_use_mathjax(gboolean state)
+{
+  g_settings_set_boolean(prefs.preview_settings, "mathjax-toggle", state);
+}
+
 char*
 marker_prefs_get_syntax_theme()
 {

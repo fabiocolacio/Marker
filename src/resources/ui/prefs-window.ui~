@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.20.0 -->
+<!-- Generated with glade 3.20.2 -->
 <interface>
   <requires lib="gtk+" version="3.16"/>
   <object class="GtkListStore" id="view_modes">
@@ -197,6 +197,20 @@
                 <property name="position">0</property>
               </packing>
             </child>
+            <child>
+              <object class="GtkCheckButton">
+                <property name="label" translatable="yes">Enable MathJax</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">False</property>
+                <property name="draw_indicator">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
           </object>
           <packing>
             <property name="position">1</property>
@@ -261,6 +275,7 @@
                     <property name="model">view_modes</property>
                     <property name="active">2</property>
                     <property name="id_column">0</property>
+                    <signal name="changed" handler="default_view_mode_chosen" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -292,6 +307,9 @@
           </packing>
         </child>
       </object>
+    </child>
+    <child type="titlebar">
+      <placeholder/>
     </child>
   </object>
 </interface>
