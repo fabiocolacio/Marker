@@ -10,6 +10,7 @@ unfinished features.
 * Opening markdown documents
 * HTML Preview of markdown documents
 * Editing markdown documents
+* Mathjax Support
 * Flexible export options through pandoc
   * HTML
   * PDF

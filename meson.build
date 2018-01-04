@@ -7,6 +7,7 @@ PREFIX = get_option('prefix')
 DATA_DIR = join_paths(PREFIX, 'share')
 APP_DIR = join_paths(DATA_DIR, 'com.github.fabiocolacio.marker')
 STYLES_DIR = join_paths(APP_DIR, 'styles')
+SCRIPTS_DIR = join_paths(APP_DIR, 'scripts')
 
 EXECUTABLE_NAME = 'com.github.fabiocolacio.marker'
 
@@ -52,6 +53,7 @@ deps = [
 
 add_global_arguments(
   '-DSTYLES_DIR="@0@/"'.format(STYLES_DIR),
+  '-DSCRIPTS_DIR="@0@/"'.format(SCRIPTS_DIR),
   '-DMARKER_VERSION="@0@"'.format(meson.project_version()),
   language : 'c'
 )
@@ -88,5 +90,9 @@ install_subdir(
   install_dir : APP_DIR
 )
 
-meson.add_install_script('post-install.sh')
+install_subdir(
+    'data/scripts',
+    install_dir : APP_DIR
+)
 
+meson.add_install_script('post-install.sh')
