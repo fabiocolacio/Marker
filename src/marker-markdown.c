@@ -1,6 +1,5 @@
 #include <string.h>
 #include <stdio.h>
-#include <string.h>
 
 #include "hoedown/html.h"
 #include "hoedown/document.h"
@@ -37,12 +36,13 @@ marker_markdown_to_html(const char* markdown,
                                   
   buffer = hoedown_buffer_new(500);
   
-  hoedown_buffer_puts(buffer,
-                      "<!doctype html>"
-                      "<html>\n"
-                      "<head>\n"
-                      "<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML'></script>\n"
-                      "<meta charset=\"utf-8\">\n");
+  hoedown_buffer_printf(buffer,
+                        "<!doctype html>"
+                        "<html>\n"
+                        "<head>\n"
+                        "<script src=\"%sMathJax/MathJax.js?config=TeX-MML-AM_CHTML\"></script>\n"
+                        "<meta charset=\"utf-8\">\n",
+                        SCRIPTS_DIR);
 
   if (stylesheet_location)
   {
@@ -111,16 +111,17 @@ marker_markdown_to_html_with_css_inline(const char* markdown,
                                   HOEDOWN_EXT_MATH_EXPLICIT |
                                   HOEDOWN_EXT_FLAGS,
                                   16);
-                                  
+ 
   buffer = hoedown_buffer_new(500);
   
-  hoedown_buffer_puts(buffer,
-                      "<!doctype html>\n"
-                      "<html>\n"
-                      "<head>\n"
-                      "<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML'></script>\n"
-                      "<meta charset=\"utf-8\">\n");
-                      
+  hoedown_buffer_printf(buffer,
+                        "<!doctype html>\n"
+                        "<html>\n"
+                        "<head>\n"
+                        "<script src=\"%sMathJax/MathJax.js?config=TeX-MML-AM_CHTML\"></script>\n"
+                        "<meta charset=\"utf-8\">\n",
+                        SCRIPTS_DIR);
+
   if(inline_css)
   {
     hoedown_buffer_printf(buffer,
@@ -190,4 +191,3 @@ marker_markdown_to_html_file_with_css_inline(const char* markdown,
   }
   free(html);
 }
-
