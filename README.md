@@ -9,7 +9,8 @@ unfinished features.
 
 * View and edit markdown documents
 * HTML Preview of markdown documents
-* Mathjax Support
+* KaTeX Support
+* Code highlight support trought [highlight.js](https://highlightjs.org/)
 * Flexible export options
   * HTML
   * PDF

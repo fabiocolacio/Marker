@@ -198,13 +198,28 @@
               </packing>
             </child>
             <child>
-              <object class="GtkCheckButton" id="mathjax_check_button">
-                <property name="label" translatable="yes">Enable MathJax</property>
+              <object class="GtkCheckButton" id="katex_check_button">
+                <property name="label" translatable="yes">Enable KaTeX</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
                 <property name="draw_indicator">True</property>
-                <signal name="toggled" handler="enable_mathjax_toggled" swapped="no"/>
+                <signal name="toggled" handler="enable_katex_toggled" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkCheckButton" id="highlight_check_button">
+                <property name="label" translatable="yes">Enable Highlight</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">False</property>
+                <property name="draw_indicator">True</property>
+                <signal name="toggled" handler="enable_highlight_toggled" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>

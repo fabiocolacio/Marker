@@ -1,2 +1,4 @@
 build
 resources.c
+*~
+.vscode

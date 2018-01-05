@@ -10,14 +10,111 @@
 
 #include "marker-markdown.h"
 
+char* 
+html_header(MarkerKaTeXMode     katex_mode,
+          MarkerHighlightMode highlight_mode)
+{
+  char* katex_script;
+  char* katex_auto;
+  char* katex_css;
+
+  char* highlight_css;
+  char* highlight_script;
+
+  switch (katex_mode) {
+    case KATEX_OFF:
+      katex_script = g_strdup(" ");
+      katex_css = g_strdup(" ");
+      katex_auto = g_strdup(" ");
+      break;
+    case KATEX_NET:
+      katex_css = g_strdup("<link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.9.0-alpha2/katex.min.css\" crossorigin=\"anonymous\">");
+      katex_script = g_strdup("<script src=\"https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.9.0-alpha2/katex.min.js\" crossorigin=\"anonymous\"></script>");
+      katex_auto = g_strdup("<script src=\"https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.9.0-alpha2/contrib/auto-render.min.js\" crossorigin=\"anonymous\"></script>");
+      break;
+    case KATEX_LOCAL:
+   	  katex_css = g_strdup_printf("<link rel=\"stylesheet\" href=\"%skatex/katex.min.css\">", SCRIPTS_DIR);
+      katex_script = g_strdup_printf("<script src=\"%skatex/katex.min.js\"></script>", SCRIPTS_DIR);
+      katex_auto = g_strdup_printf("<script src=\"%skatex/contrib/auto-render.min.js\"></script>", SCRIPTS_DIR);
+      break;
+  }
+
+ switch (highlight_mode){
+    case HIGHLIGHT_OFF:
+      highlight_css = g_strdup(" ");
+      highlight_script = g_strdup(" ");
+      break;
+    case HIGHLIGHT_NET:
+      highlight_css = g_strdup("<link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css\">");
+      highlight_script = g_strdup("<script src=\"https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js\"></script>");
+      break;
+    case HIGHLIGHT_LOCAL:
+      highlight_css = g_strdup_printf("<link rel=\"stylesheet\" href=\"%shighlight/styles/default.css\">", SCRIPTS_DIR);
+      highlight_script = g_strdup_printf("<script src=\"%shighlight/highlight.pack.js\"></script>", SCRIPTS_DIR);
+      break;
+  }
+  
+  char * buffer = g_strdup_printf("<!doctype html>"
+                                  "<html>\n"
+                                  "<head>\n"
+                                  "%s\n%s\n%s\n%s\n%s\n"
+                                  "<meta charset=\"utf-8\">\n",
+                                  katex_css, highlight_css, katex_script, katex_auto, highlight_script);
+
+  g_free(katex_script);
+  g_free(katex_auto);
+  g_free(katex_css);
+
+  g_free(highlight_css);
+  g_free(highlight_script);
+
+  return buffer;
+}
+
+
 char*
-marker_markdown_to_html(const char*       markdown,
-                        size_t            size,
-                        MarkerMathJaxMode mathjax_mode,
-                        const char*       stylesheet_location)
+html_footer(MarkerKaTeXMode     katex_mode,
+            MarkerHighlightMode highlight_mode)
+{
+  char * katex_render;
+  char * highlight_render;
+
+  switch(katex_mode){
+    case KATEX_OFF:
+      katex_render = g_strdup(" ");
+      break;
+    default:
+      katex_render = g_strdup("<script>renderMathInElement(document.body);</script>");
+      break;
+  }
+
+  switch(highlight_mode)
+  {
+    case HIGHLIGHT_OFF:
+      highlight_render = g_strdup(" ");
+      break;
+    default:
+      highlight_render = g_strdup("<script>hljs.initHighlightingOnLoad();</script>");
+      break;
+  }
+  char* buffer = g_strdup_printf("%s\n%s\n"
+                                 "</body>\n"
+                                 "</html>",
+                                 katex_render, highlight_render);
+  g_free(highlight_render);
+  g_free(katex_render);
+  return buffer;
+}
+
+
+char*
+marker_markdown_to_html(const char*         markdown,
+                        size_t              size,
+                        MarkerKaTeXMode     katex_mode,
+                        MarkerHighlightMode highlight_mode,
+                        const char*         stylesheet_location)
 {
   char* html = NULL;
-  char* mathjax_script;
 
   hoedown_renderer* renderer;
   hoedown_document* document;
@@ -34,30 +131,14 @@ marker_markdown_to_html(const char*       markdown,
                                   16);
                                   
   buffer = hoedown_buffer_new(500); 
+
+  char * header = html_header(katex_mode, highlight_mode);
   
-  switch (mathjax_mode) {
-    case MATHJAX_OFF:
-      mathjax_script = g_strdup(" ");
-      break;
-    
-    case MATHJAX_NET:
-      mathjax_script = g_strdup("<script src=\"https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML\"></script>");
-      break;
-    
-    case MATHJAX_LOCAL:
-      mathjax_script = g_strdup_printf("<script src=\"%sMathJax/MathJax.js?config=TeX-MML-AM_CHTML\"></script>", SCRIPTS_DIR);
-      break;
-  }
   
   hoedown_buffer_printf(buffer,
-                        "<!doctype html>"
-                        "<html>\n"
-                        "<head>\n"
-                        "%s\n"
-                        "<meta charset=\"utf-8\">\n",
-                        mathjax_script);
-
-  g_free(mathjax_script);
+                        "%s",
+                        header);
+  g_free(header);
 
   if (stylesheet_location)
   {
@@ -70,10 +151,12 @@ marker_markdown_to_html(const char*       markdown,
                       
   hoedown_document_render(document, buffer, (uint8_t*) markdown, size);
   
-  hoedown_buffer_puts(buffer,
-                      "</body>\n"
-                      "</html>");
-  
+  char * footer = html_footer(katex_mode, highlight_mode);
+  hoedown_buffer_printf(buffer,
+  					          "%s\n",
+                      footer);
+  g_free(footer);
+                      
   const char* buf_cstr = hoedown_buffer_cstr(buffer);
   
   html = strdup(buf_cstr);
@@ -86,13 +169,14 @@ marker_markdown_to_html(const char*       markdown,
 }
 
 char*
-marker_markdown_to_html_with_css_inline(const char*       markdown,
-                                        size_t            size,
-                                        MarkerMathJaxMode mathjax_mode,
-                                        const char*       stylesheet_location)
+marker_markdown_to_html_with_css_inline(const char*         markdown,
+                                        size_t              size,
+                                        MarkerKaTeXMode     katex_mode,
+                                        MarkerHighlightMode highlight_mode,
+                                        const char*         stylesheet_location)
 {
   char* html = NULL;
-  char* mathjax_script;
+
   
   FILE* fp = NULL;
   fp = fopen(stylesheet_location, "r");
@@ -127,30 +211,14 @@ marker_markdown_to_html_with_css_inline(const char*       markdown,
  
   buffer = hoedown_buffer_new(500);
   
-  switch (mathjax_mode) {
-    case MATHJAX_OFF:
-      mathjax_script = g_strdup(" ");
-      break;
-    
-    case MATHJAX_NET:
-      mathjax_script = g_strdup("<script src=\"https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML\"></script>");
-      break;
-    
-    case MATHJAX_LOCAL:
-      mathjax_script = g_strdup_printf("<script src=\"%sMathJax/MathJax.js?config=TeX-MML-AM_CHTML\"></script>", SCRIPTS_DIR);
-      break;
-  }
-  
+  char * header = html_header(katex_mode, highlight_mode);
+
   hoedown_buffer_printf(buffer,
-                        "<!doctype html>\n"
-                        "<html>\n"
-                        "<head>\n"
-                        "%s\n"
-                        "<meta charset=\"utf-8\">\n",
-                        mathjax_script);
+                        "%s\n",
+                        header);
 
-  g_free(mathjax_script);
-
+  g_free(header);
+  
   if(inline_css)
   {
     hoedown_buffer_printf(buffer,
@@ -166,10 +234,12 @@ marker_markdown_to_html_with_css_inline(const char*       markdown,
                       
   hoedown_document_render(document, buffer, (uint8_t*) markdown, size);
   
-  hoedown_buffer_puts(buffer,
-                      "</body>\n"
-                      "</html>");
-  
+  char * footer = html_footer(katex_mode, highlight_mode);
+  hoedown_buffer_printf(buffer,
+  					          "%s\n",
+                      footer);
+  g_free(footer);
+ 
   const char* buf_cstr = hoedown_buffer_cstr(buffer);
   html = strdup(buf_cstr);
   
@@ -182,13 +252,14 @@ marker_markdown_to_html_with_css_inline(const char*       markdown,
 }
 
 void
-marker_markdown_to_html_file(const char*       markdown,
-                             size_t            size,
-                             MarkerMathJaxMode mathjax_mode,
-                             const char*       stylesheet_location,
-                             const char*       filepath)
+marker_markdown_to_html_file(const char*         markdown,
+                             size_t              size,
+                             MarkerKaTeXMode     katex_mode,
+                             MarkerHighlightMode highlight_mode,
+                             const char*         stylesheet_location,
+                             const char*         filepath)
 {
-  char* html = marker_markdown_to_html(markdown, size, mathjax_mode, stylesheet_location);
+  char* html = marker_markdown_to_html(markdown, size, katex_mode, highlight_mode, stylesheet_location);
   FILE* fp = fopen(filepath, "w");
   if (fp && html)
   {
@@ -199,13 +270,14 @@ marker_markdown_to_html_file(const char*       markdown,
 }
 
 void
-marker_markdown_to_html_file_with_css_inline(const char*       markdown,
-                                             size_t            size,
-                                             MarkerMathJaxMode mathjax_mode,
-                                             const char*       stylesheet_location,
-                                             const char*       filepath)
+marker_markdown_to_html_file_with_css_inline(const char*         markdown,
+                                             size_t              size,
+                                             MarkerKaTeXMode     katex_mode,
+                                             MarkerHighlightMode highlight_mode,
+                                             const char*         stylesheet_location,
+                                             const char*         filepath)
 {
-  char* html = marker_markdown_to_html_with_css_inline(markdown, size, mathjax_mode, stylesheet_location);
+  char* html = marker_markdown_to_html_with_css_inline(markdown, size, katex_mode, highlight_mode, stylesheet_location);
   FILE* fp = fopen(filepath, "w");
   printf("fp: %p\nfilepath: %s\n", fp, filepath);
   if (fp && html)

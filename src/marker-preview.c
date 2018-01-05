@@ -59,11 +59,16 @@ marker_preview_render_markdown(MarkerPreview* preview,
                                const char*    css_theme,
                                const char*    base_uri)
 {
-  MarkerMathJaxMode mathjax_mode = MATHJAX_OFF;
-  if (marker_prefs_get_use_mathjax()) {
-    mathjax_mode = MATHJAX_LOCAL;
+  MarkerKaTeXMode katex_mode = KATEX_OFF;
+  if (marker_prefs_get_use_katex()) {
+    katex_mode = KATEX_LOCAL;
   }
-  char* html = marker_markdown_to_html(markdown, strlen(markdown), mathjax_mode, css_theme);
+  MarkerHighlightMode highlight_mode = HIGHLIGHT_OFF;
+  if (marker_prefs_get_use_highlight()){
+    highlight_mode = HIGHLIGHT_LOCAL;
+  }
+
+  char* html = marker_markdown_to_html(markdown, strlen(markdown), katex_mode, highlight_mode, css_theme);
   const char* uri = (base_uri) ? base_uri : "file://";
   WebKitWebView* web_view = WEBKIT_WEB_VIEW(preview);
   webkit_web_view_load_html(web_view, html, uri);

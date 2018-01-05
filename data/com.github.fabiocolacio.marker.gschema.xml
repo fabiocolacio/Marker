@@ -52,10 +52,16 @@
       <description>The css theme to use for the preview.</description>
     </key>
     
-    <key name="mathjax-toggle" type="b">
+    <key name="katex-toggle" type="b">
       <default>true</default>
-      <summary>Enable MathJax in Preview</summary>
-      <description>Use MathJax in the live preview.</description>
+      <summary>Enable KaTeX in Preview</summary>
+      <description>Use KaTeX in the live preview.</description>
+    </key>
+    
+    <key name="highlight-toggle" type="b">
+      <default>true</default>
+      <summary>Enable highlight.js in Preview</summary>
+      <description>Use highlight.js in the live preview.</description>
     </key>
   </schema>
   

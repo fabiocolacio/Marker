@@ -52,10 +52,16 @@ void
 marker_prefs_set_css_theme(const char* theme);
 
 gboolean
-marker_prefs_get_use_mathjax();
+marker_prefs_get_use_katex();
 
 void
-marker_prefs_set_use_mathjax(gboolean state);
+marker_prefs_set_use_katex(gboolean state);
+
+gboolean
+marker_prefs_get_use_highlight();
+
+void
+marker_prefs_set_use_highlight(gboolean state);
 
 gboolean
 marker_prefs_get_gnome_appmenu();

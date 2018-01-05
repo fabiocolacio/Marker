@@ -27,15 +27,27 @@ marker_prefs_set_css_theme(const char* theme)
 }
 
 gboolean
-marker_prefs_get_use_mathjax()
+marker_prefs_get_use_katex()
 {
-  return g_settings_get_boolean(prefs.preview_settings, "mathjax-toggle");
+  return g_settings_get_boolean(prefs.preview_settings, "katex-toggle");
 }
 
 void
-marker_prefs_set_use_mathjax(gboolean state)
+marker_prefs_set_use_katex(gboolean state)
 {
-  g_settings_set_boolean(prefs.preview_settings, "mathjax-toggle", state);
+  g_settings_set_boolean(prefs.preview_settings, "katex-toggle", state);
+}
+
+gboolean
+marker_prefs_get_use_highlight()
+{
+  return g_settings_get_boolean(prefs.preview_settings, "highlight-toggle");
+}
+
+void
+marker_prefs_set_use_highlight(gboolean state)
+{
+  g_settings_set_boolean(prefs.preview_settings, "highlight-toggle", state);
 }
 
 char*
@@ -222,11 +234,19 @@ highlight_current_line_toggled(GtkToggleButton* button,
 }
 
 static void
-enable_mathjax_toggled(GtkToggleButton* button,
+enable_katex_toggled(GtkToggleButton* button,
                        gpointer         user_data)
 {
   gboolean state = gtk_toggle_button_get_active(button);
-  marker_prefs_set_use_mathjax(state);
+  marker_prefs_set_use_katex(state);
+}
+
+static void
+enable_highlight_toggled(GtkToggleButton* button,
+                          gpointer        user_data)
+{
+  gboolean state = gtk_toggle_button_get_active(button);
+  marker_prefs_set_use_highlight(state);  
 }
 
 static void
@@ -376,8 +396,12 @@ marker_prefs_show_window()
   gtk_combo_box_set_active(combo_box, marker_prefs_get_default_view_mode());
   
   check_button =
-    GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "mathjax_check_button"));
-  gtk_toggle_button_set_active(check_button, marker_prefs_get_use_mathjax());
+    GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "katex_check_button"));
+  gtk_toggle_button_set_active(check_button, marker_prefs_get_use_katex());
+
+  check_button = 
+    GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "highlight_check_button"));
+  gtk_toggle_button_set_active(check_button, marker_prefs_get_use_highlight());
   
   check_button =
     GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "show_line_numbers_check_button"));
@@ -419,8 +443,11 @@ marker_prefs_show_window()
                                   "highlight_current_line_toggled", 
                                   G_CALLBACK(highlight_current_line_toggled));
   gtk_builder_add_callback_symbol(builder,
-                                  "enable_mathjax_toggled",
-                                  G_CALLBACK(enable_mathjax_toggled));
+                                  "enable_katex_toggled",
+                                  G_CALLBACK(enable_katex_toggled));
+  gtk_builder_add_callback_symbol(builder,
+                                  "enable_highlight_toggled",
+                                  G_CALLBACK(enable_highlight_toggled));
   gtk_builder_add_callback_symbol(builder,
                                   "wrap_text_toggled", 
                                   G_CALLBACK(wrap_text_toggled));
