@@ -24,7 +24,7 @@ marker_markdown_to_html(const char* markdown,
   hoedown_document* document;
   hoedown_buffer* buffer;
   
-  renderer = hoedown_html_renderer_new(0,0);
+  renderer = hoedown_html_renderer_new(HOEDOWN_HTML_MATHML, 0);
   
   document = hoedown_document_new(renderer,
                                   HOEDOWN_EXT_BLOCK         |
@@ -40,7 +40,6 @@ marker_markdown_to_html(const char* markdown,
                         "<!doctype html>"
                         "<html>\n"
                         "<head>\n"
-                        "<script src=\"%sMathJax/MathJax.js?config=TeX-MML-AM_CHTML\"></script>\n"
                         "<meta charset=\"utf-8\">\n",
                         SCRIPTS_DIR);
 
@@ -102,7 +101,7 @@ marker_markdown_to_html_with_css_inline(const char* markdown,
   hoedown_document* document;
   hoedown_buffer* buffer;
   
-  renderer = hoedown_html_renderer_new(0,0);
+  renderer = hoedown_html_renderer_new(HOEDOWN_HTML_MATHML,0);
   
   document = hoedown_document_new(renderer,
                                   HOEDOWN_EXT_BLOCK         |
@@ -118,7 +117,6 @@ marker_markdown_to_html_with_css_inline(const char* markdown,
                         "<!doctype html>\n"
                         "<html>\n"
                         "<head>\n"
-                        "<script src=\"%sMathJax/MathJax.js?config=TeX-MML-AM_CHTML\"></script>\n"
                         "<meta charset=\"utf-8\">\n",
                         SCRIPTS_DIR);
 

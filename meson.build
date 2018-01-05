@@ -12,6 +12,22 @@ SCRIPTS_DIR = join_paths(APP_DIR, 'scripts')
 EXECUTABLE_NAME = 'com.github.fabiocolacio.marker'
 
 gnome = import('gnome')
+flex = find_program('flex')
+bison = find_program('bison')
+
+pgen = generator(bison,
+output : '@BASENAME@.c',
+arguments : ['-y', '-v', '-p', 'mtex2MML_yy', '-d', '-o','@OUTPUT@', '@INPUT@'])
+
+pfiles = pgen.process('src/hoedown/mtex2MLL/parser.y')
+
+lgen = generator(flex,
+output : '@BASENAME@.c',
+arguments : ['-P','mtex2MML_yy', '-o','@OUTPUT@', '@INPUT@'])
+
+lfiles = lgen.process('src/hoedown/mtex2MLL/lexer.l')
+
+
 
 res = gnome.compile_resources(
   'marker_resources',
@@ -41,7 +57,12 @@ hoedown_sources = [
   'src/hoedown/html_blocks.c',
   'src/hoedown/html_smartypants.c',
   'src/hoedown/stack.c',
-  'src/hoedown/version.c'
+  'src/hoedown/version.c',
+  'src/hoedown/mtex2MLL/colors.c',
+  'src/hoedown/mtex2MLL/em.c',
+  'src/hoedown/mtex2MLL/string_dup.c',
+  'src/hoedown/mtex2MLL/environment.c',
+  'src/hoedown/mtex2MLL/string_extras.c'
 ]
 
 deps = [
@@ -60,7 +81,8 @@ add_global_arguments(
 
 executable(
   EXECUTABLE_NAME,
-  sources : [marker_sources, hoedown_sources],
+  include_directories: include_directories('src/hoedown/mtex2MLL/'),
+  sources : [marker_sources, hoedown_sources,  pfiles, lfiles],
   dependencies : deps,
   install : true
 )

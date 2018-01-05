@@ -1,0 +1,27 @@
+{
+  "description": "C macros for hash tables and more",
+
+  "keywords": [
+    "array",
+    "data",
+    "hash",
+    "list",
+    "macro",
+    "string",
+    "structure",
+    "uthash"
+  ],
+
+  "name": "uthash",
+  "repo": "troydhanson/uthash",
+
+  "src": [
+    "src/utarray.h",
+    "src/uthash.h",
+    "src/utlist.h",
+    "src/utringbuffer.h",
+    "src/utstring.h"
+  ],
+
+  "version": "2.0.1"
+}
