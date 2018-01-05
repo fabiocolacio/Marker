@@ -58,6 +58,12 @@ void
 marker_prefs_set_use_katex(gboolean state);
 
 gboolean
+marker_prefs_get_use_highlight();
+
+void
+marker_prefs_set_use_highlight(gboolean state);
+
+gboolean
 marker_prefs_get_gnome_appmenu();
 
 void
