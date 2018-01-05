@@ -11,4 +11,3 @@ gtk-update-icon-cache -f -t $datadir"/icons/hicolor"
 
 echo "Updating desktop database..."
 update-desktop-database -q $datadir"/applications"
-
