@@ -9,7 +9,7 @@ unfinished features.
 
 * View and edit markdown documents
 * HTML Preview of markdown documents
-* Mathjax Support
+* KaTeX Support
 * Flexible export options
   * HTML
   * PDF
