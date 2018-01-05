@@ -43,6 +43,10 @@ unfinished features.
 
 ### Build Instructions
 
+**Note:** For a more stable experience, users are recommended download
+[release tarball](https://github.com/fabiocolacio/Marker/releases) rather
+than cloning from master.
+
 ```
 $ git clone https://github.com/fabiocolacio/Marker.git
 $ cd Marker
