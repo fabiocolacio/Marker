@@ -174,7 +174,9 @@ marker_exporter_show_export_dialog(MarkerEditorWindow* window)
       case HTML:
         marker_markdown_to_html_file_with_css_inline(markdown,
                                                      strlen(markdown),
-                                                     MATHJAX_NET,
+                                                     (marker_prefs_get_use_mathjax())
+                                                       ? MATHJAX_NET
+                                                       : MATHJAX_OFF,
                                                      stylesheet_path,
                                                      filename);
         break;
