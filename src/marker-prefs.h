@@ -52,6 +52,12 @@ void
 marker_prefs_set_css_theme(const char* theme);
 
 gboolean
+marker_prefs_get_use_katex();
+
+void
+marker_prefs_set_use_katex(gboolean state);
+
+gboolean
 marker_prefs_get_gnome_appmenu();
 
 void

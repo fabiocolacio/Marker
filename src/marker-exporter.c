@@ -174,6 +174,9 @@ marker_exporter_show_export_dialog(MarkerEditorWindow* window)
       case HTML:
         marker_markdown_to_html_file_with_css_inline(markdown,
                                                      strlen(markdown),
+                                                     (marker_prefs_get_use_katex())
+                                                       ? KATEX_NET
+                                                       : KATEX_OFF,
                                                      stylesheet_path,
                                                      filename);
         break;

@@ -26,6 +26,18 @@ marker_prefs_set_css_theme(const char* theme)
   g_settings_set_string(prefs.preview_settings, "css-theme", theme);
 }
 
+gboolean
+marker_prefs_get_use_katex()
+{
+  return g_settings_get_boolean(prefs.preview_settings, "katex-toggle");
+}
+
+void
+marker_prefs_set_use_katex(gboolean state)
+{
+  g_settings_set_boolean(prefs.preview_settings, "katex-toggle", state);
+}
+
 char*
 marker_prefs_get_syntax_theme()
 {
@@ -210,6 +222,14 @@ highlight_current_line_toggled(GtkToggleButton* button,
 }
 
 static void
+enable_katex_toggled(GtkToggleButton* button,
+                       gpointer         user_data)
+{
+  gboolean state = gtk_toggle_button_get_active(button);
+  marker_prefs_set_use_katex(state);
+}
+
+static void
 wrap_text_toggled(GtkToggleButton* button,
                   gpointer         user_data)
 {
@@ -354,7 +374,11 @@ marker_prefs_show_window()
                                  "text", 0,
                                  NULL);
   gtk_combo_box_set_active(combo_box, marker_prefs_get_default_view_mode());
-   
+  
+  check_button =
+    GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "katex_check_button"));
+  gtk_toggle_button_set_active(check_button, marker_prefs_get_use_katex());
+  
   check_button =
     GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "show_line_numbers_check_button"));
   gtk_toggle_button_set_active(check_button, marker_prefs_get_show_line_numbers());
@@ -394,6 +418,9 @@ marker_prefs_show_window()
   gtk_builder_add_callback_symbol(builder,
                                   "highlight_current_line_toggled", 
                                   G_CALLBACK(highlight_current_line_toggled));
+  gtk_builder_add_callback_symbol(builder,
+                                  "enable_katex_toggled",
+                                  G_CALLBACK(enable_katex_toggled));
   gtk_builder_add_callback_symbol(builder,
                                   "wrap_text_toggled", 
                                   G_CALLBACK(wrap_text_toggled));
