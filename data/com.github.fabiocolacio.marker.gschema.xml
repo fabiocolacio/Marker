@@ -57,6 +57,12 @@
       <summary>Enable KaTeX in Preview</summary>
       <description>Use KaTeX in the live preview.</description>
     </key>
+    
+    <key name="highlight-toggle" type="b">
+      <default>true</default>
+      <summary>Enable highlight.js in Preview</summary>
+      <description>Use highlight.js in the live preview.</description>
+    </key>
   </schema>
   
   <schema path="/com/github/fabiocolacio/marker/preferences/window/" id="com.github.fabiocolacio.marker.preferences.window">
