@@ -7,11 +7,10 @@ unfinished features.
 
 ## Features
 
-* Opening markdown documents
+* View and edit markdown documents
 * HTML Preview of markdown documents
-* Editing markdown documents
 * Mathjax Support
-* Flexible export options through pandoc
+* Flexible export options
   * HTML
   * PDF
   * RTF
@@ -20,7 +19,7 @@ unfinished features.
   * LaTeX
 * Custom CSS themes
 * Custom syntax themes
-* Native Gtk3+ application with full theme support
+* Native Gtk+3 application with full theme support
 
 ## Screenshots
 
