@@ -1,24 +1,23 @@
 #include <string.h>
 #include <stdio.h>
 
+#include <glib.h>
+#include <glib/gprintf.h>
+
 #include "hoedown/html.h"
 #include "hoedown/document.h"
 #include "hoedown/buffer.h"
 
 #include "marker-markdown.h"
 
-/*
- * Generates HTML output for given markdown input.
- *
- * Optionally pass the filepath to a css stylesheet to link from
- * the HTML doc or NULL.
- */
 char*
-marker_markdown_to_html(const char* markdown,
-                        size_t      size,
-                        const char* stylesheet_location)
+marker_markdown_to_html(const char*       markdown,
+                        size_t            size,
+                        MarkerMathJaxMode mathjax_mode,
+                        const char*       stylesheet_location)
 {
   char* html = NULL;
+  char* mathjax_script;
 
   hoedown_renderer* renderer;
   hoedown_document* document;
@@ -34,15 +33,31 @@ marker_markdown_to_html(const char* markdown,
                                   HOEDOWN_EXT_FLAGS,
                                   16);
                                   
-  buffer = hoedown_buffer_new(500);
+  buffer = hoedown_buffer_new(500); 
+  
+  switch (mathjax_mode) {
+    case MATHJAX_OFF:
+      mathjax_script = g_strdup(" ");
+      break;
+    
+    case MATHJAX_NET:
+      mathjax_script = g_strdup("<script src=\"https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML\"></script>");
+      break;
+    
+    case MATHJAX_LOCAL:
+      mathjax_script = g_strdup_printf("<script src=\"%sMathJax/MathJax.js?config=TeX-MML-AM_CHTML\"></script>", SCRIPTS_DIR);
+      break;
+  }
   
   hoedown_buffer_printf(buffer,
                         "<!doctype html>"
                         "<html>\n"
                         "<head>\n"
-                        "<script src=\"%sMathJax/MathJax.js?config=TeX-MML-AM_CHTML\"></script>\n"
+                        "%s\n"
                         "<meta charset=\"utf-8\">\n",
-                        SCRIPTS_DIR);
+                        mathjax_script);
+
+  g_free(mathjax_script);
 
   if (stylesheet_location)
   {
@@ -70,16 +85,14 @@ marker_markdown_to_html(const char* markdown,
   return html;
 }
 
-/*
- * Similar to marker_markdown_to_html(), but the stylesheet is implemented
- * as inline css, rather than a <link> tag.
- */
 char*
-marker_markdown_to_html_with_css_inline(const char* markdown,
-                                        size_t      size,
-                                        const char* stylesheet_location)
+marker_markdown_to_html_with_css_inline(const char*       markdown,
+                                        size_t            size,
+                                        MarkerMathJaxMode mathjax_mode,
+                                        const char*       stylesheet_location)
 {
   char* html = NULL;
+  char* mathjax_script;
   
   FILE* fp = NULL;
   fp = fopen(stylesheet_location, "r");
@@ -114,13 +127,29 @@ marker_markdown_to_html_with_css_inline(const char* markdown,
  
   buffer = hoedown_buffer_new(500);
   
+  switch (mathjax_mode) {
+    case MATHJAX_OFF:
+      mathjax_script = g_strdup(" ");
+      break;
+    
+    case MATHJAX_NET:
+      mathjax_script = g_strdup("<script src=\"https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML\"></script>");
+      break;
+    
+    case MATHJAX_LOCAL:
+      mathjax_script = g_strdup_printf("<script src=\"%sMathJax/MathJax.js?config=TeX-MML-AM_CHTML\"></script>", SCRIPTS_DIR);
+      break;
+  }
+  
   hoedown_buffer_printf(buffer,
                         "<!doctype html>\n"
                         "<html>\n"
                         "<head>\n"
-                        "<script src=\"%sMathJax/MathJax.js?config=TeX-MML-AM_CHTML\"></script>\n"
+                        "%s\n"
                         "<meta charset=\"utf-8\">\n",
-                        SCRIPTS_DIR);
+                        mathjax_script);
+
+  g_free(mathjax_script);
 
   if(inline_css)
   {
@@ -152,16 +181,14 @@ marker_markdown_to_html_with_css_inline(const char* markdown,
   return html;
 }
 
-/*
- * Similar marker_markdown_to_html(), but the html is written to a file.
- */
 void
-marker_markdown_to_html_file(const char*  markdown,
-                             size_t       size,
-                             const char*  stylesheet_location,
-                             const char*  filepath)
+marker_markdown_to_html_file(const char*       markdown,
+                             size_t            size,
+                             MarkerMathJaxMode mathjax_mode,
+                             const char*       stylesheet_location,
+                             const char*       filepath)
 {
-  char* html = marker_markdown_to_html(markdown, size, stylesheet_location);
+  char* html = marker_markdown_to_html(markdown, size, mathjax_mode, stylesheet_location);
   FILE* fp = fopen(filepath, "w");
   if (fp && html)
   {
@@ -171,16 +198,14 @@ marker_markdown_to_html_file(const char*  markdown,
   free(html);
 }
 
-/*
- * Similar marker_markdown_to_html_with_css_inline(), but the html is written to a file.
- */
 void
-marker_markdown_to_html_file_with_css_inline(const char* markdown,
-                                             size_t      size,
-                                             const char* stylesheet_location,
-                                             const char* filepath)
+marker_markdown_to_html_file_with_css_inline(const char*       markdown,
+                                             size_t            size,
+                                             MarkerMathJaxMode mathjax_mode,
+                                             const char*       stylesheet_location,
+                                             const char*       filepath)
 {
-  char* html = marker_markdown_to_html_with_css_inline(markdown, size, stylesheet_location);
+  char* html = marker_markdown_to_html_with_css_inline(markdown, size, mathjax_mode, stylesheet_location);
   FILE* fp = fopen(filepath, "w");
   printf("fp: %p\nfilepath: %s\n", fp, filepath);
   if (fp && html)

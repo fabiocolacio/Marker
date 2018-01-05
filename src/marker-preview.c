@@ -4,6 +4,7 @@
 #include <glib.h>
 
 #include "marker-markdown.h"
+#include "marker-prefs.h"
 
 #include "marker-preview.h"
 
@@ -58,7 +59,11 @@ marker_preview_render_markdown(MarkerPreview* preview,
                                const char*    css_theme,
                                const char*    base_uri)
 {
-  char* html = marker_markdown_to_html(markdown, strlen(markdown), css_theme);
+  MarkerMathJaxMode mathjax_mode = MATHJAX_OFF;
+  if (marker_prefs_get_use_mathjax()) {
+    mathjax_mode = MATHJAX_LOCAL;
+  }
+  char* html = marker_markdown_to_html(markdown, strlen(markdown), mathjax_mode, css_theme);
   const char* uri = (base_uri) ? base_uri : "file://";
   WebKitWebView* web_view = WEBKIT_WEB_VIEW(preview);
   webkit_web_view_load_html(web_view, html, uri);
