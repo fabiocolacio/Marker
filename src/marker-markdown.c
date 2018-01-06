@@ -9,9 +9,9 @@
 #include "hoedown/buffer.h"
 
 #include "marker-markdown.h"
+#include "marker-prefs.h"
 
-char* 
-html_header(MarkerKaTeXMode     katex_mode,
+char* html_header(MarkerKaTeXMode     katex_mode,
           MarkerHighlightMode highlight_mode)
 {
   char* katex_script;
@@ -20,6 +20,8 @@ html_header(MarkerKaTeXMode     katex_mode,
 
   char* highlight_css;
   char* highlight_script;
+
+  char * local_highlight_css = marker_prefs_get_highlight_theme();
 
   switch (katex_mode) {
     case KATEX_OFF:
@@ -45,11 +47,12 @@ html_header(MarkerKaTeXMode     katex_mode,
       highlight_script = g_strdup(" ");
       break;
     case HIGHLIGHT_NET:
-      highlight_css = g_strdup("<link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css\">");
+      highlight_css = g_strdup_printf("<link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/%s.min.css\">",
+                                      local_highlight_css);
       highlight_script = g_strdup("<script src=\"https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js\"></script>");
       break;
     case HIGHLIGHT_LOCAL:
-      highlight_css = g_strdup_printf("<link rel=\"stylesheet\" href=\"%shighlight/styles/default.css\">", SCRIPTS_DIR);
+      highlight_css = g_strdup_printf("<link rel=\"stylesheet\" href=\"%shighlight/styles/%s.css\">", SCRIPTS_DIR, local_highlight_css);
       highlight_script = g_strdup_printf("<script src=\"%shighlight/highlight.pack.js\"></script>", SCRIPTS_DIR);
       break;
   }
@@ -58,6 +61,7 @@ html_header(MarkerKaTeXMode     katex_mode,
                                   "<html>\n"
                                   "<head>\n"
                                   "%s\n%s\n%s\n%s\n%s\n"
+			          "<script src=\"https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js\"></script>"
                                   "<meta charset=\"utf-8\">\n",
                                   katex_css, highlight_css, katex_script, katex_auto, highlight_script);
 
@@ -67,6 +71,7 @@ html_header(MarkerKaTeXMode     katex_mode,
 
   g_free(highlight_css);
   g_free(highlight_script);
+  g_free(local_highlight_css);
 
   return buffer;
 }
@@ -119,8 +124,8 @@ marker_markdown_to_html(const char*         markdown,
   hoedown_renderer* renderer;
   hoedown_document* document;
   hoedown_buffer* buffer;
-  
-  renderer = hoedown_html_renderer_new(0,0);
+
+  renderer = hoedown_html_renderer_new(HOEDOWN_HTML_CHART,0);
   
   document = hoedown_document_new(renderer,
                                   HOEDOWN_EXT_BLOCK         |
@@ -191,15 +196,15 @@ marker_markdown_to_html_with_css_inline(const char*         markdown,
 
     inline_css = (char*) malloc(sizeof(char) * size);
     fread(inline_css, 1, size, fp);
-    
+
     fclose(fp);
   }
-    
+
   hoedown_renderer* renderer;
   hoedown_document* document;
   hoedown_buffer* buffer;
-  
-  renderer = hoedown_html_renderer_new(0,0);
+
+  renderer = hoedown_html_renderer_new(HOEDOWN_HTML_CHART,0);
   
   document = hoedown_document_new(renderer,
                                   HOEDOWN_EXT_BLOCK         |

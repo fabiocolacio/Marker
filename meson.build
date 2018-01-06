@@ -8,6 +8,7 @@ DATA_DIR = join_paths(PREFIX, 'share')
 APP_DIR = join_paths(DATA_DIR, 'com.github.fabiocolacio.marker')
 STYLES_DIR = join_paths(APP_DIR, 'styles')
 SCRIPTS_DIR = join_paths(APP_DIR, 'scripts')
+HIGHLIGHT_STYLES_DIR = join_paths(join_paths(SCRIPTS_DIR, 'highlight'),'styles')
 
 EXECUTABLE_NAME = 'com.github.fabiocolacio.marker'
 
@@ -54,6 +55,7 @@ deps = [
 add_global_arguments(
   '-DSTYLES_DIR="@0@/"'.format(STYLES_DIR),
   '-DSCRIPTS_DIR="@0@/"'.format(SCRIPTS_DIR),
+  '-DHIGHLIGHT_STYLES_DIR="@0@/"'.format(HIGHLIGHT_STYLES_DIR),
   '-DMARKER_VERSION="@0@"'.format(meson.project_version()),
   language : 'c'
 )
