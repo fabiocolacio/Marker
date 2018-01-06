@@ -192,7 +192,6 @@ GList*
 marker_prefs_get_available_highlight_themes()
 {
   GList* list = NULL;
-  char* list_item;
 
   DIR* dir;
   struct dirent* ent;
@@ -206,8 +205,7 @@ marker_prefs_get_available_highlight_themes()
 
       if (marker_string_ends_with(filename, ".css"))
       {
-        char * clean_name= marker_string_filename_get_name_noext(filename);
-        list_item = marker_string_alloc(clean_name);
+        char * list_item = marker_string_filename_get_name_noext(filename);
         list = g_list_prepend(list, list_item);
       }
     }
@@ -388,7 +386,7 @@ css_chosen(GtkComboBox* combo_box,
 
 static void
 highlight_css_chosen(GtkComboBox* combo_box,
-           gpointer     user_data)
+                     gpointer     user_data)
 {
   char* choice = marker_widget_combo_box_get_active_str(combo_box);
   marker_prefs_set_highlight_theme(choice);
@@ -453,7 +451,7 @@ marker_prefs_show_window()
   g_free(theme);
   g_list_free_full(list, free);
   list = NULL;
-   
+  
   combo_box = GTK_COMBO_BOX(gtk_builder_get_object(builder, "view_mode_chooser"));
   GtkCellRenderer* cell_renderer = gtk_cell_renderer_text_new();
   gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(combo_box), cell_renderer, TRUE);
