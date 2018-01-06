@@ -61,7 +61,6 @@ char* html_header(MarkerKaTeXMode     katex_mode,
                                   "<html>\n"
                                   "<head>\n"
                                   "%s\n%s\n%s\n%s\n%s\n"
-			          "<script src=\"https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js\"></script>"
                                   "<meta charset=\"utf-8\">\n",
                                   katex_css, highlight_css, katex_script, katex_auto, highlight_script);
 
