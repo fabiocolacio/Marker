@@ -242,9 +242,10 @@ marker_editor_window_refresh_preview(MarkerEditorWindow* window)
   gchar* markdown = marker_editor_window_get_markdown(window);
   const char* css_theme = marker_prefs_get_css_theme();
 
+
   gchar* uri = NULL;
   if (G_IS_FILE(window->file)) { uri = g_file_get_uri(window->file); }
-  
+
   marker_preview_render_markdown(window->web_view, markdown, css_theme, uri);
   
   if (uri) { g_free(uri); }

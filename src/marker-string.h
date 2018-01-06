@@ -34,5 +34,7 @@ marker_string_filename_get_path(const char* filename);
 char*
 marker_string_filename_get_name(const char* filename);
 
+char*
+marker_string_filename_get_name_noext(const char* filename);
 #endif
 

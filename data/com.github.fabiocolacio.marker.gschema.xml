@@ -63,6 +63,12 @@
       <summary>Enable highlight.js in Preview</summary>
       <description>Use highlight.js in the live preview.</description>
     </key>
+
+    <key name="highlight-theme" type="s">
+      <default>'default'</default>
+      <summary>Highlight.js CSS theme.</summary>
+      <description>The css theme to use for the synthax highlight.</description>
+    </key>
   </schema>
   
   <schema path="/com/github/fabiocolacio/marker/preferences/window/" id="com.github.fabiocolacio.marker.preferences.window">
