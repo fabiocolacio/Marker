@@ -47,6 +47,17 @@ decide_policy_cb (WebKitWebView *web_view,
     return TRUE;
 }
 
+
+static gboolean
+disable_menu  (WebKitWebView       *web_view,
+               WebKitContextMenu   *context_menu,
+               GdkEvent            *event,
+               WebKitHitTestResult *hit_test_result,
+               gpointer             user_data)
+{
+  return TRUE;
+}
+
 G_DEFINE_TYPE(MarkerPreview, marker_preview, WEBKIT_TYPE_WEB_VIEW)
 
 MarkerPreview*
@@ -105,9 +116,14 @@ marker_preview_render_markdown(MarkerPreview* preview,
   char* html = marker_markdown_to_html(markdown, strlen(markdown), katex_mode, highlight_mode, css_theme);
   const char* uri = (base_uri) ? base_uri : "file://";
   WebKitWebView* web_view = WEBKIT_WEB_VIEW(preview);
+
   g_signal_connect(web_view,
                    "decide-policy",
                    G_CALLBACK(decide_policy_cb),
+                   NULL);
+  g_signal_connect(web_view,
+                   "context-menu",
+                   G_CALLBACK(disable_menu),
                    NULL);
 
   webkit_web_view_load_html(web_view, html, uri);
