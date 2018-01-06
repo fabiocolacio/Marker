@@ -6,7 +6,6 @@
 #include <ctype.h>
 
 #include "escape.h"
-#include "mtex2MLL/mtex2MML.h"
 
 #define USE_XHTML(opt) (opt->flags & HOEDOWN_HTML_USE_XHTML)
 
@@ -97,7 +96,18 @@ static void
 rndr_blockcode(hoedown_buffer *ob, const hoedown_buffer *text, const hoedown_buffer *lang, const hoedown_renderer_data *data)
 {
 	if (ob->size) hoedown_buffer_putc(ob, '\n');
+	hoedown_html_renderer_state *state = data->opaque;
 
+	if (lang && (state->flags & HOEDOWN_HTML_CHART) != 0 && hoedown_buffer_eq(lang, "chart", 5)){
+		if (text){
+			HOEDOWN_BUFPUTSL(ob, "<canvas id=\"chart_0\" width=\"400\" height=\"400\"></canvas><script>");
+			HOEDOWN_BUFPUTSL(ob, "var ctx =  document.getElementById(\"chart_0\");");
+			HOEDOWN_BUFPUTSL(ob, "var chart = new Chart(ctx, {");
+			hoedown_buffer_put(ob, text->data, text->size);
+			HOEDOWN_BUFPUTSL(ob, "});</script>");
+		}
+		return;
+	}
 	if (lang) {
 		HOEDOWN_BUFPUTSL(ob, "<pre><code class=\"language-");
 		escape_html(ob, lang->data, lang->size);
@@ -551,41 +561,9 @@ rndr_footnote_ref(hoedown_buffer *ob, unsigned int num, const hoedown_renderer_d
 static int
 rndr_math(hoedown_buffer *ob, const hoedown_buffer *text, int displaymode, const hoedown_renderer_data *data)
 {
-    hoedown_html_renderer_state *state = data->opaque;
-    if ((state->flags & HOEDOWN_HTML_MATHML) != 0 )
-    {	
-
-		
-	
-		unsigned long size = text->size;
-
-		char * clean = malloc(sizeof(char)*(size+(displaymode ? 2 : 1)*2));
-		
-		memcpy(clean, (displaymode ? "$$" : "$"), (displaymode ? 2 : 1));
-		memcpy(clean+(displaymode ? 2 : 1), text->data, size);
-		memcpy(clean+(displaymode ? 2 : 1)+size, (displaymode ? "$$" : "$"), (displaymode ? 2 : 1));
-		
-		size += (displaymode ? 2 : 1)*2;
-		
-   		static char *result;
-   		
-   		mtex2MML_text_filter (clean, size, MTEX2MML_DELIMITER_DEFAULT);
-    	result = mtex2MML_output();
-
-        if (result)
-        {
-			size = strlen(result);
-    	    hoedown_buffer_put(ob, (const uint8_t *)result, size);
-    	
-			return 2;
-    	}
-    }
-    else
-    {
-        hoedown_buffer_put(ob, (const uint8_t *)(displaymode ? "\\[" : "\\("), 2);
-	    escape_html(ob, text->data, text->size);
-    	hoedown_buffer_put(ob, (const uint8_t *)(displaymode ? "\\]" : "\\)"), 2);
-	}
+	hoedown_buffer_put(ob, (const uint8_t *)(displaymode ? "\\[" : "\\("), 2);
+	escape_html(ob, text->data, text->size);
+	hoedown_buffer_put(ob, (const uint8_t *)(displaymode ? "\\]" : "\\)"), 2);
 	return 1;
 }
 

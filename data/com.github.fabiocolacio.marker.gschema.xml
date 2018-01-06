@@ -51,9 +51,27 @@
       <summary>CSS Theme</summary>
       <description>The css theme to use for the preview.</description>
     </key>
+    
+    <key name="katex-toggle" type="b">
+      <default>true</default>
+      <summary>Enable KaTeX in Preview</summary>
+      <description>Use KaTeX in the live preview.</description>
+    </key>
+    
+    <key name="highlight-toggle" type="b">
+      <default>true</default>
+      <summary>Enable highlight.js in Preview</summary>
+      <description>Use highlight.js in the live preview.</description>
+    </key>
+
+    <key name="highlight-theme" type="s">
+      <default>'default'</default>
+      <summary>Highlight.js CSS theme.</summary>
+      <description>The css theme to use for the synthax highlight.</description>
+    </key>
   </schema>
   
-  <schema path="/com/github/fabiocolacio/marker/preferences/window/" id="com.github.fabiocolacio.marker.preferences.window">    
+  <schema path="/com/github/fabiocolacio/marker/preferences/window/" id="com.github.fabiocolacio.marker.preferences.window">
     <key name="view-mode" enum="com.github.fabiocolacio.marker.ViewMode">
       <default>'dual-pane'</default>
       <summary>View Mode</summary>

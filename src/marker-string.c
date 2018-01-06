@@ -146,6 +146,23 @@ marker_string_filename_get_name(const char* filename)
 }
 
 char*
+marker_string_filename_get_name_noext(const char* filename)
+{
+  char* name = marker_string_filename_get_name(filename);
+  size_t len = strlen(name);
+  for (int i = len; i > 0; --i){
+    if (filename[i] == '.')
+    {
+      char *ret = (char*) malloc(i+1);
+      memset(ret, 0, i+1);
+      memcpy(ret, filename, i);
+      return ret;
+    }
+  }
+  return name;
+}
+
+char*
 marker_string_filename_get_path(const char* filename)
 {
   size_t len = strlen(filename);

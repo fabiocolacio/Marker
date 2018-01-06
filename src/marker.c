@@ -71,6 +71,7 @@ marker_about_cb(GSimpleAction* action,
 {
   const gchar* authors[] = {
     "Fabio Colacio",
+    "Martino Ferrari",
     NULL
   };
 
@@ -87,7 +88,7 @@ marker_about_cb(GSimpleAction* action,
   gtk_about_dialog_set_comments(dialog, "A markdown editor for GNOME");
   gtk_about_dialog_set_website(dialog, "https://github.com/fabiocolacio/Marker");
   gtk_about_dialog_set_website_label(dialog, "Marker on Github");
-  gtk_about_dialog_set_copyright(dialog, "Copyright 2017 Fabio Colacio");
+  gtk_about_dialog_set_copyright(dialog, "Copyright 2017-2018 Fabio Colacio");
   gtk_about_dialog_set_license_type(dialog, GTK_LICENSE_GPL_3_0);
   gtk_about_dialog_set_authors(dialog, authors);
   gtk_about_dialog_set_artists(dialog, artists);

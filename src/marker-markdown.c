@@ -1,30 +1,130 @@
 #include <string.h>
 #include <stdio.h>
 
+#include <glib.h>
+#include <glib/gprintf.h>
+
 #include "hoedown/html.h"
 #include "hoedown/document.h"
 #include "hoedown/buffer.h"
 
 #include "marker-markdown.h"
+#include "marker-prefs.h"
 
-/*
- * Generates HTML output for given markdown input.
- *
- * Optionally pass the filepath to a css stylesheet to link from
- * the HTML doc or NULL.
- */
+char* html_header(MarkerKaTeXMode     katex_mode,
+          MarkerHighlightMode highlight_mode)
+{
+  char* katex_script;
+  char* katex_auto;
+  char* katex_css;
+
+  char* highlight_css;
+  char* highlight_script;
+
+  char * local_highlight_css = marker_prefs_get_highlight_theme();
+
+  switch (katex_mode) {
+    case KATEX_OFF:
+      katex_script = g_strdup(" ");
+      katex_css = g_strdup(" ");
+      katex_auto = g_strdup(" ");
+      break;
+    case KATEX_NET:
+      katex_css = g_strdup("<link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.9.0-alpha2/katex.min.css\" crossorigin=\"anonymous\">");
+      katex_script = g_strdup("<script src=\"https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.9.0-alpha2/katex.min.js\" crossorigin=\"anonymous\"></script>");
+      katex_auto = g_strdup("<script src=\"https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.9.0-alpha2/contrib/auto-render.min.js\" crossorigin=\"anonymous\"></script>");
+      break;
+    case KATEX_LOCAL:
+   	  katex_css = g_strdup_printf("<link rel=\"stylesheet\" href=\"%skatex/katex.min.css\">", SCRIPTS_DIR);
+      katex_script = g_strdup_printf("<script src=\"%skatex/katex.min.js\"></script>", SCRIPTS_DIR);
+      katex_auto = g_strdup_printf("<script src=\"%skatex/contrib/auto-render.min.js\"></script>", SCRIPTS_DIR);
+      break;
+  }
+
+ switch (highlight_mode){
+    case HIGHLIGHT_OFF:
+      highlight_css = g_strdup(" ");
+      highlight_script = g_strdup(" ");
+      break;
+    case HIGHLIGHT_NET:
+      highlight_css = g_strdup_printf("<link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/%s.min.css\">",
+                                      local_highlight_css);
+      highlight_script = g_strdup("<script src=\"https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js\"></script>");
+      break;
+    case HIGHLIGHT_LOCAL:
+      highlight_css = g_strdup_printf("<link rel=\"stylesheet\" href=\"%shighlight/styles/%s.css\">", SCRIPTS_DIR, local_highlight_css);
+      highlight_script = g_strdup_printf("<script src=\"%shighlight/highlight.pack.js\"></script>", SCRIPTS_DIR);
+      break;
+  }
+  
+  char * buffer = g_strdup_printf("<!doctype html>"
+                                  "<html>\n"
+                                  "<head>\n"
+                                  "%s\n%s\n%s\n%s\n%s\n"
+                                  "<meta charset=\"utf-8\">\n",
+                                  katex_css, highlight_css, katex_script, katex_auto, highlight_script);
+
+  g_free(katex_script);
+  g_free(katex_auto);
+  g_free(katex_css);
+
+  g_free(highlight_css);
+  g_free(highlight_script);
+  g_free(local_highlight_css);
+
+  return buffer;
+}
+
+
 char*
-marker_markdown_to_html(const char* markdown,
-                        size_t      size,
-                        const char* stylesheet_location)
+html_footer(MarkerKaTeXMode     katex_mode,
+            MarkerHighlightMode highlight_mode)
+{
+  char * katex_render;
+  char * highlight_render;
+
+  switch(katex_mode){
+    case KATEX_OFF:
+      katex_render = g_strdup(" ");
+      break;
+    default:
+      katex_render = g_strdup("<script>renderMathInElement(document.body);</script>");
+      break;
+  }
+
+  switch(highlight_mode)
+  {
+    case HIGHLIGHT_OFF:
+      highlight_render = g_strdup(" ");
+      break;
+    default:
+      highlight_render = g_strdup("<script>hljs.initHighlightingOnLoad();</script>");
+      break;
+  }
+  char* buffer = g_strdup_printf("%s\n%s\n"
+                                 "</body>\n"
+                                 "</html>",
+                                 katex_render, highlight_render);
+  g_free(highlight_render);
+  g_free(katex_render);
+  return buffer;
+}
+
+
+char*
+marker_markdown_to_html(const char*         markdown,
+                        size_t              size,
+                        MarkerKaTeXMode     katex_mode,
+                        MarkerHighlightMode highlight_mode,
+                        const char*         stylesheet_location)
 {
   char* html = NULL;
 
   hoedown_renderer* renderer;
   hoedown_document* document;
   hoedown_buffer* buffer;
-  
-  renderer = hoedown_html_renderer_new(HOEDOWN_HTML_MATHML, 0);
+
+  renderer = hoedown_html_renderer_new(HOEDOWN_HTML_CHART,0);
   
   document = hoedown_document_new(renderer,
                                   HOEDOWN_EXT_BLOCK         |
@@ -34,14 +134,15 @@ marker_markdown_to_html(const char* markdown,
                                   HOEDOWN_EXT_FLAGS,
                                   16);
                                   
-  buffer = hoedown_buffer_new(500);
+  buffer = hoedown_buffer_new(500); 
+
+  char * header = html_header(katex_mode, highlight_mode);
+  
   
   hoedown_buffer_printf(buffer,
-                        "<!doctype html>"
-                        "<html>\n"
-                        "<head>\n"
-                        "<meta charset=\"utf-8\">\n",
-                        SCRIPTS_DIR);
+                        "%s",
+                        header);
+  g_free(header);
 
   if (stylesheet_location)
   {
@@ -54,10 +155,12 @@ marker_markdown_to_html(const char* markdown,
                       
   hoedown_document_render(document, buffer, (uint8_t*) markdown, size);
   
-  hoedown_buffer_puts(buffer,
-                      "</body>\n"
-                      "</html>");
-  
+  char * footer = html_footer(katex_mode, highlight_mode);
+  hoedown_buffer_printf(buffer,
+  					          "%s\n",
+                      footer);
+  g_free(footer);
+                      
   const char* buf_cstr = hoedown_buffer_cstr(buffer);
   
   html = strdup(buf_cstr);
@@ -69,16 +172,15 @@ marker_markdown_to_html(const char* markdown,
   return html;
 }
 
-/*
- * Similar to marker_markdown_to_html(), but the stylesheet is implemented
- * as inline css, rather than a <link> tag.
- */
 char*
-marker_markdown_to_html_with_css_inline(const char* markdown,
-                                        size_t      size,
-                                        const char* stylesheet_location)
+marker_markdown_to_html_with_css_inline(const char*         markdown,
+                                        size_t              size,
+                                        MarkerKaTeXMode     katex_mode,
+                                        MarkerHighlightMode highlight_mode,
+                                        const char*         stylesheet_location)
 {
   char* html = NULL;
+
   
   FILE* fp = NULL;
   fp = fopen(stylesheet_location, "r");
@@ -93,15 +195,15 @@ marker_markdown_to_html_with_css_inline(const char* markdown,
 
     inline_css = (char*) malloc(sizeof(char) * size);
     fread(inline_css, 1, size, fp);
-    
+
     fclose(fp);
   }
-    
+
   hoedown_renderer* renderer;
   hoedown_document* document;
   hoedown_buffer* buffer;
-  
-  renderer = hoedown_html_renderer_new(HOEDOWN_HTML_MATHML,0);
+
+  renderer = hoedown_html_renderer_new(HOEDOWN_HTML_CHART,0);
   
   document = hoedown_document_new(renderer,
                                   HOEDOWN_EXT_BLOCK         |
@@ -113,13 +215,14 @@ marker_markdown_to_html_with_css_inline(const char* markdown,
  
   buffer = hoedown_buffer_new(500);
   
-  hoedown_buffer_printf(buffer,
-                        "<!doctype html>\n"
-                        "<html>\n"
-                        "<head>\n"
-                        "<meta charset=\"utf-8\">\n",
-                        SCRIPTS_DIR);
+  char * header = html_header(katex_mode, highlight_mode);
 
+  hoedown_buffer_printf(buffer,
+                        "%s\n",
+                        header);
+
+  g_free(header);
+  
   if(inline_css)
   {
     hoedown_buffer_printf(buffer,
@@ -135,10 +238,12 @@ marker_markdown_to_html_with_css_inline(const char* markdown,
                       
   hoedown_document_render(document, buffer, (uint8_t*) markdown, size);
   
-  hoedown_buffer_puts(buffer,
-                      "</body>\n"
-                      "</html>");
-  
+  char * footer = html_footer(katex_mode, highlight_mode);
+  hoedown_buffer_printf(buffer,
+  					          "%s\n",
+                      footer);
+  g_free(footer);
+ 
   const char* buf_cstr = hoedown_buffer_cstr(buffer);
   html = strdup(buf_cstr);
   
@@ -150,16 +255,15 @@ marker_markdown_to_html_with_css_inline(const char* markdown,
   return html;
 }
 
-/*
- * Similar marker_markdown_to_html(), but the html is written to a file.
- */
 void
-marker_markdown_to_html_file(const char*  markdown,
-                             size_t       size,
-                             const char*  stylesheet_location,
-                             const char*  filepath)
+marker_markdown_to_html_file(const char*         markdown,
+                             size_t              size,
+                             MarkerKaTeXMode     katex_mode,
+                             MarkerHighlightMode highlight_mode,
+                             const char*         stylesheet_location,
+                             const char*         filepath)
 {
-  char* html = marker_markdown_to_html(markdown, size, stylesheet_location);
+  char* html = marker_markdown_to_html(markdown, size, katex_mode, highlight_mode, stylesheet_location);
   FILE* fp = fopen(filepath, "w");
   if (fp && html)
   {
@@ -169,16 +273,15 @@ marker_markdown_to_html_file(const char*  markdown,
   free(html);
 }
 
-/*
- * Similar marker_markdown_to_html_with_css_inline(), but the html is written to a file.
- */
 void
-marker_markdown_to_html_file_with_css_inline(const char* markdown,
-                                             size_t      size,
-                                             const char* stylesheet_location,
-                                             const char* filepath)
+marker_markdown_to_html_file_with_css_inline(const char*         markdown,
+                                             size_t              size,
+                                             MarkerKaTeXMode     katex_mode,
+                                             MarkerHighlightMode highlight_mode,
+                                             const char*         stylesheet_location,
+                                             const char*         filepath)
 {
-  char* html = marker_markdown_to_html_with_css_inline(markdown, size, stylesheet_location);
+  char* html = marker_markdown_to_html_with_css_inline(markdown, size, katex_mode, highlight_mode, stylesheet_location);
   FILE* fp = fopen(filepath, "w");
   printf("fp: %p\nfilepath: %s\n", fp, filepath);
   if (fp && html)

@@ -23,38 +23,101 @@ typedef enum
   DUAL_WINDOW_MODE
 } MarkerEditorWindowViewMode;
 
+/**
+ * Constructs a new MarkerEditorWindow for the given GtkApplication
+ *
+ * @param app The parent application for this window
+ *
+ * @return A newly constructed MarkerEditorWindow
+ */
 MarkerEditorWindow*
 marker_editor_window_new(GtkApplication* app);
 
+/**
+ * Constructs a new MarkerEditorWindow for the given GtkApplication, with
+ * the given file open.
+ *
+ * @param app The parent application for this window
+ * @param file The file to open in the new window
+ *
+ * @return A newly constructed MarkerEditorWindow with the contents of file
+ */
 MarkerEditorWindow*
 marker_editor_window_new_from_file(GtkApplication* app,
                                    GFile*          file);
 
+/**
+ * Opens a file in a an existing MarkerEditorWindow
+ *
+ * @param window The window to open the file into
+ * @param file The file to open into the window
+ */
 void
 marker_editor_window_open_file(MarkerEditorWindow* window,
                                GFile*              file);
-                               
+
+/**
+ * Saves the file being edited in an existing MarkerEditorWindow
+ *
+ * @param window The window from which to save
+ * @param file The file to save to
+ */
 void
 marker_editor_window_save_file(MarkerEditorWindow* window,
                                GFile*              file);
 
+/**
+ * Get the markdown from the editor pane of a MarkerEditorWindow
+ *
+ * @param window The window from which to retrieve the markdown
+ *
+ * @return An allocated, null-terminated, UTF-8 encoded string of Markdown text
+ */
 gchar*
 marker_editor_window_get_markdown(MarkerEditorWindow* window);
 
+/**
+ * Refresh the HTML preview of a MarkerEditorWindow
+ *
+ * @param window The window to refresh the preview for
+ */
 void
 marker_editor_window_refresh_preview(MarkerEditorWindow* window);
 
+/**
+ * Attempt to close a MarkerEditorWindow. If there are unsaved changes in the
+ * document, a confirmation dialog will appear.
+ *
+ * @param window The window to close
+ */
 void
 marker_editor_window_try_close(MarkerEditorWindow* window);
 
+/**
+ * Set the syntax theme for a MarkerEditorWindow
+ *
+ * @param window The window to set the syntax theme for
+ * @param theme The name of the theme to set
+ */
 void
 marker_editor_window_set_syntax_theme(MarkerEditorWindow* window,
                                       const char*         theme);
 
+/**
+ * Enable or disable line numbers for a MarkerEditorWindow
+ *
+ * @param window The window to set line numbers for
+ * @param state The state to set line numbers to
+ */
 void
 marker_editor_window_set_show_line_numbers(MarkerEditorWindow* window,
                                            gboolean            state);
-                                           
+
+/**
+ * Enable or disable highlighting the current line for a MarkerEditorWindow
+ *
+ * @param window The window to set the 
+ */
 void
 marker_editor_window_set_highlight_current_line(MarkerEditorWindow* window,
                                                 gboolean            state);
@@ -66,7 +129,7 @@ marker_editor_window_set_wrap_text(MarkerEditorWindow* window,
 void
 marker_editor_window_set_show_right_margin(MarkerEditorWindow* window,
                                            gboolean            state);
-
+  
 void
 marker_editor_window_apply_prefs(MarkerEditorWindow* window);
 

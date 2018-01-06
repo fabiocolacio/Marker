@@ -7,12 +7,11 @@ unfinished features.
 
 ## Features
 
-* Opening markdown documents
-* HTML Preview of markdown documents
-* Editing markdown documents
-* Mathjax Support
-* Flexible export options through pandoc
-  * HTML
+* View and edit markdown documents
+* HTML conversion of markdown documents with [hoedown](https://github.com/hoedown/hoedown)
+* TeX math rendering with [KaTeX](https://khan.github.io/KaTeX/)
+* Syntax highlighting for code blocks with [highlight.js](https://highlightjs.org/)
+* Flexible export options with [pandoc](https://pandoc.org/)
   * PDF
   * RTF
   * ODT
@@ -20,7 +19,7 @@ unfinished features.
   * LaTeX
 * Custom CSS themes
 * Custom syntax themes
-* Native Gtk3+ application with full theme support
+* Native Gtk+3 application
 
 ## Screenshots
 
@@ -44,6 +43,10 @@ unfinished features.
 
 ### Build Instructions
 
+**Note:** For a more stable experience, users are recommended download
+[release tarball](https://github.com/fabiocolacio/Marker/releases) rather
+than cloning from master.
+
 ```
 $ git clone https://github.com/fabiocolacio/Marker.git
 $ cd Marker
@@ -58,4 +61,3 @@ $ sudo ninja install
 If you like Marker and would like to support the development of this project, please donate below!
 
 [<img height="30" src="donate.png" alt="PayPal"/>](https://www.paypal.me/fabiocolacio)
-

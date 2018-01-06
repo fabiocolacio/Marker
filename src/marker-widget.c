@@ -75,6 +75,7 @@ marker_widget_combo_box_set_active_str(GtkComboBox* combo_box,
     }
     if (!found)
     {
+      printf("not found: %s\n", str);
       gtk_combo_box_set_active(combo_box, 0);
     }
   }

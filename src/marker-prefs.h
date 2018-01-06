@@ -51,6 +51,24 @@ marker_prefs_get_css_theme();
 void
 marker_prefs_set_css_theme(const char* theme);
 
+char*
+marker_prefs_get_highlight_theme();
+
+void
+marker_prefs_set_highlight_theme(const char* theme);
+
+gboolean
+marker_prefs_get_use_katex();
+
+void
+marker_prefs_set_use_katex(gboolean state);
+
+gboolean
+marker_prefs_get_use_highlight();
+
+void
+marker_prefs_set_use_highlight(gboolean state);
+
 gboolean
 marker_prefs_get_gnome_appmenu();
 

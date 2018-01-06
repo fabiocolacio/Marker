@@ -27,6 +27,43 @@ marker_prefs_set_css_theme(const char* theme)
 }
 
 char*
+marker_prefs_get_highlight_theme()
+{
+  return g_settings_get_string(prefs.preview_settings, "highlight-theme");
+}
+
+
+void
+marker_prefs_set_highlight_theme(const char* theme)
+{
+  g_settings_set_string(prefs.preview_settings, "highlight-theme", theme);
+}
+
+gboolean
+marker_prefs_get_use_katex()
+{
+  return g_settings_get_boolean(prefs.preview_settings, "katex-toggle");
+}
+
+void
+marker_prefs_set_use_katex(gboolean state)
+{
+  g_settings_set_boolean(prefs.preview_settings, "katex-toggle", state);
+}
+
+gboolean
+marker_prefs_get_use_highlight()
+{
+  return g_settings_get_boolean(prefs.preview_settings, "highlight-toggle");
+}
+
+void
+marker_prefs_set_use_highlight(gboolean state)
+{
+  g_settings_set_boolean(prefs.preview_settings, "highlight-toggle", state);
+}
+
+char*
 marker_prefs_get_syntax_theme()
 {
   return g_settings_get_string(prefs.editor_settings, "syntax-theme");
@@ -152,6 +189,37 @@ marker_prefs_get_available_stylesheets()
 }
 
 GList*
+marker_prefs_get_available_highlight_themes()
+{
+  GList* list = NULL;
+  char* list_item;
+
+  DIR* dir;
+  struct dirent* ent;
+  char* filename;
+
+  if ((dir = opendir(HIGHLIGHT_STYLES_DIR)) != NULL)
+  {
+    while ((ent = readdir(dir)) != NULL)
+    {
+      filename = ent->d_name;
+
+      if (marker_string_ends_with(filename, ".css"))
+      {
+        list_item = marker_string_filename_get_name_noext(filename);
+        list = g_list_prepend(list, list_item);
+      }
+    }
+  }
+  closedir(dir);
+  
+  list_item = marker_string_alloc("none");
+  list = g_list_prepend(list, list_item);
+  
+  return list;
+}
+
+GList*
 marker_prefs_get_available_syntax_themes()
 {
   GList* list = NULL;
@@ -209,6 +277,28 @@ highlight_current_line_toggled(GtkToggleButton* button,
   }
 }
 
+static void refresh_preview(){
+  GtkApplication* app = marker_get_app();
+  GList* windows = gtk_application_get_windows(app);
+  for (GList* item = windows; item != NULL; item = item->next)
+  {
+    if (MARKER_IS_EDITOR_WINDOW(item->data))
+    {
+      MarkerEditorWindow* window = item->data;
+      marker_editor_window_refresh_preview(window);
+    }
+  }
+}
+
+static void
+enable_katex_toggled(GtkToggleButton* button,
+                       gpointer         user_data)
+{
+  gboolean state = gtk_toggle_button_get_active(button);
+  marker_prefs_set_use_katex(state);
+  refresh_preview();
+}
+
 static void
 wrap_text_toggled(GtkToggleButton* button,
                   gpointer         user_data)
@@ -234,7 +324,7 @@ show_right_margin_toggled(GtkToggleButton* button,
 {
   gboolean state = gtk_toggle_button_get_active(button);
   marker_prefs_set_show_right_margin(state);
-  
+
   GtkApplication* app = marker_get_app();
   GList* windows = gtk_application_get_windows(app);
   for (GList* item = windows; item != NULL; item = item->next)
@@ -252,7 +342,16 @@ syntax_chosen(GtkComboBox* combo_box,
               gpointer     user_data)
 {
   char* choice = marker_widget_combo_box_get_active_str(combo_box);
-  marker_prefs_set_syntax_theme(choice);
+  
+  if (strcmp(choice, "none") != 0)
+  {
+    marker_prefs_set_use_highlight(FALSE);
+  }
+  else
+  {
+    marker_prefs_set_use_highlight(TRUE);
+    marker_prefs_set_syntax_theme(choice);
+  }
   
   GtkApplication* app = marker_get_app();
   GList* windows = gtk_application_get_windows(app);
@@ -287,16 +386,19 @@ css_chosen(GtkComboBox* combo_box,
   }
   free(choice);
   
-  GtkApplication* app = marker_get_app();
-  GList* windows = gtk_application_get_windows(app);
-  for (GList* item = windows; item != NULL; item = item->next)
-  {
-    if (MARKER_IS_EDITOR_WINDOW(item->data))
-    {
-      MarkerEditorWindow* window = item->data;
-      marker_editor_window_refresh_preview(window);
-    }
-  }
+  refresh_preview();
+}
+
+static void
+highlight_css_chosen(GtkComboBox* combo_box,
+                     gpointer     user_data)
+{
+  char* choice = marker_widget_combo_box_get_active_str(combo_box);
+  marker_prefs_set_highlight_theme(choice);
+
+  free(choice);
+
+  refresh_preview();
 }
 
 static void
@@ -345,7 +447,16 @@ marker_prefs_show_window()
   g_free(css);
   g_list_free_full(list, free);
   list = NULL;
-   
+
+  combo_box = GTK_COMBO_BOX(gtk_builder_get_object(builder, "highlight_css_chooser"));
+  list = marker_prefs_get_available_highlight_themes();
+  marker_widget_populate_combo_box_with_strings(combo_box, list);
+  char* theme = marker_prefs_get_highlight_theme();
+  marker_widget_combo_box_set_active_str(combo_box, theme, g_list_length(list));
+  g_free(theme);
+  g_list_free_full(list, free);
+  list = NULL;
+  
   combo_box = GTK_COMBO_BOX(gtk_builder_get_object(builder, "view_mode_chooser"));
   GtkCellRenderer* cell_renderer = gtk_cell_renderer_text_new();
   gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(combo_box), cell_renderer, TRUE);
@@ -354,7 +465,11 @@ marker_prefs_show_window()
                                  "text", 0,
                                  NULL);
   gtk_combo_box_set_active(combo_box, marker_prefs_get_default_view_mode());
-   
+  
+  check_button =
+    GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "katex_check_button"));
+  gtk_toggle_button_set_active(check_button, marker_prefs_get_use_katex());
+  
   check_button =
     GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "show_line_numbers_check_button"));
   gtk_toggle_button_set_active(check_button, marker_prefs_get_show_line_numbers());
@@ -386,6 +501,9 @@ marker_prefs_show_window()
                                   "css_chosen",
                                   G_CALLBACK(css_chosen));
   gtk_builder_add_callback_symbol(builder,
+                                  "highlight_css_chosen",
+                                  G_CALLBACK(highlight_css_chosen));
+  gtk_builder_add_callback_symbol(builder,
                                   "default_view_mode_chosen",
                                   G_CALLBACK(default_view_mode_chosen));
   gtk_builder_add_callback_symbol(builder,
@@ -394,6 +512,9 @@ marker_prefs_show_window()
   gtk_builder_add_callback_symbol(builder,
                                   "highlight_current_line_toggled", 
                                   G_CALLBACK(highlight_current_line_toggled));
+  gtk_builder_add_callback_symbol(builder,
+                                  "enable_katex_toggled",
+                                  G_CALLBACK(enable_katex_toggled));
   gtk_builder_add_callback_symbol(builder,
                                   "wrap_text_toggled", 
                                   G_CALLBACK(wrap_text_toggled));
