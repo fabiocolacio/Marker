@@ -350,9 +350,9 @@ syntax_chosen(GtkComboBox* combo_box,
   else
   {
     marker_prefs_set_use_highlight(TRUE);
-    marker_prefs_set_syntax_theme(choice);
   }
-  
+  marker_prefs_set_syntax_theme(choice);
+    
   GtkApplication* app = marker_get_app();
   GList* windows = gtk_application_get_windows(app);
   for (GList* item = windows; item != NULL; item = item->next)
