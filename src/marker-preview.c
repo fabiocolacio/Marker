@@ -16,20 +16,6 @@ struct _MarkerPreview
   WebKitWebView parent_instance;
 };
 
-static void
-initialize_web_extensions (WebKitWebContext *context,
-                           gpointer          user_data)
-{
-  /* Web Extensions get a different ID for each Web Process */
-  static guint32 unique_id = 0;
-
-  webkit_web_context_set_web_extensions_directory (
-     context, WEB_EXTENSIONS_DIRECTORY);
-  /* webkit_web_context_set_web_extensions_initialization_user_data (
-     context, g_variant_new_uint32 (unique_id++));*/
-}
-
-
 /* Open uri in default browser.
  */
 static
@@ -127,11 +113,6 @@ marker_preview_render_markdown(MarkerPreview* preview,
   if (marker_prefs_get_use_highlight()){
     highlight_mode = HIGHLIGHT_LOCAL;
   }
-
-  g_signal_connect (webkit_web_context_get_default (),
-                   "initialize-web-extensions",
-                    G_CALLBACK (initialize_web_extensions),
-                    NULL);
 
   char* html = marker_markdown_to_html(markdown, strlen(markdown), katex_mode, highlight_mode, css_theme);
   const char* uri = (base_uri) ? base_uri : "file://";
