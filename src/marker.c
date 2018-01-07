@@ -13,6 +13,14 @@ marker_get_app()
   return app;
 }
 
+static gboolean preview_mode = FALSE;
+
+static const GOptionEntry CLI_OPTIONS[] =
+{
+  { "preview", 'p', 0, G_OPTION_ARG_NONE, &preview_mode, "Open in preview mode", NULL },
+  { NULL }
+};
+
 static void
 marker_init(GtkApplication* app)
 {
@@ -138,6 +146,8 @@ marker_create_new_window_from_file(GFile* file)
 {
   MarkerEditorWindow* window = marker_editor_window_new_from_file(app, file);
   gtk_widget_show_all(GTK_WIDGET(window));
+  if (preview_mode)
+    marker_editor_window_set_view_mode(window, PREVIEW_ONLY_MODE);
 }
 
 void
@@ -169,7 +179,9 @@ main(int    argc,
   
   g_signal_connect(app, "activate", G_CALLBACK(activate), NULL);
   g_signal_connect(app, "open", G_CALLBACK(marker_open), NULL);
-    
+  
+  g_application_add_main_option_entries (G_APPLICATION(app), CLI_OPTIONS);
+  
   int status = g_application_run(G_APPLICATION(app), argc, argv);
   
   g_object_unref(app);
