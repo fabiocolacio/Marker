@@ -1,6 +1,4 @@
 #include "scroll-extension.h"
-static glong old_scroll = 0;
-
 
 static void
 document_loaded(WebKitWebPage   *web_page,
@@ -8,8 +6,12 @@ document_loaded(WebKitWebPage   *web_page,
 {
     WebKitDOMDocument * document = webkit_web_page_get_dom_document (web_page);
     WebKitDOMElement* body = webkit_dom_document_get_body (document);
-    webkit_dom_element_set_scroll_top(body, old_scroll);
+    if (body){
+        glong *pos = user_data;
+        webkit_dom_element_set_scroll_top(body, *pos);
+    }
 }
+
 static gboolean 
 web_page_send_request(WebKitWebPage     *web_page,
                        WebKitURIRequest  *request,
@@ -19,7 +21,8 @@ web_page_send_request(WebKitWebPage     *web_page,
     WebKitDOMDocument * document = webkit_web_page_get_dom_document (web_page);
     WebKitDOMElement* body = webkit_dom_document_get_body (document);
     if (body){
-        old_scroll = webkit_dom_element_get_scroll_top(body); 
+        glong *pos = user_data;
+        *pos = webkit_dom_element_get_scroll_top(body); 
     }
     return FALSE;
 }
@@ -30,10 +33,16 @@ simple_callback (WebKitWebExtension *extension,
                            WebKitWebPage      *web_page,
                            gpointer            user_data)
 {
-    g_signal_connect(web_page, "document-loaded", G_CALLBACK(document_loaded), NULL);
-    g_signal_connect_object (web_page, "send-request",
+    /** create a new position index for each thread.**/
+    glong * pos = malloc(sizeof(glong));
+    *pos = 0;
+
+    g_signal_connect(web_page, "document-loaded",
+                     G_CALLBACK(document_loaded), 
+                     pos);
+    g_signal_connect (web_page, "send-request",
                              G_CALLBACK (web_page_send_request),
-                             NULL, 0);
+                             pos);
 }
 
 
