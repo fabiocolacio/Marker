@@ -114,6 +114,26 @@ marker_editor_window_set_show_line_numbers(MarkerEditorWindow* window,
                                            gboolean            state);
 
 /**
+ * Enable or disable the replacement of the the tabs by spaces.
+ * 
+ * @param window The window to change the setting for
+ * @param state The state of the setting to
+ **/
+void marker_editor_window_set_replace_tabs(MarkerEditorWindow*  window,
+                                           gboolean             state);
+
+/**
+ * Enable or disable the auto indentation.
+ * 
+ * @param window The window to change the setting for
+ * @param state The state of the setting to
+ **/
+void marker_editor_window_set_auto_indent(MarkerEditorWindow*  window,
+                                           gboolean             state);
+                                           
+void marker_editor_window_set_tab_width(MarkerEditorWindow*   window,
+                                        guint                 value);
+/**
  * Enable or disable highlighting the current line for a MarkerEditorWindow
  *
  * @param window The window to set the 

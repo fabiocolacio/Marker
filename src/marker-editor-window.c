@@ -354,6 +354,24 @@ marker_editor_window_set_title_filename_unsaved(MarkerEditorWindow* window)
   }
 }
 
+void marker_editor_window_set_replace_tabs(MarkerEditorWindow*  window,
+                                           gboolean             state)
+{
+  gtk_source_view_set_insert_spaces_instead_of_tabs(window->source_view, state);
+}
+
+void marker_editor_window_set_auto_indent(MarkerEditorWindow*  window,
+                                           gboolean             state)
+{
+  gtk_source_view_set_auto_indent(window->source_view, state);
+}
+
+void marker_editor_window_set_tab_width(MarkerEditorWindow*   window,
+                                        guint                 value)
+{
+  gtk_source_view_set_tab_width(window->source_view, value);
+}
+
 void
 marker_editor_window_set_syntax_theme(MarkerEditorWindow* window,
                                       const char*         theme)

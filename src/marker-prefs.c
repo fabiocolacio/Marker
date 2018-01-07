@@ -88,6 +88,42 @@ marker_prefs_set_right_margin_position(guint position)
 }
 
 gboolean
+marker_prefs_get_replace_tabs()
+{
+  return  g_settings_get_boolean(prefs.editor_settings, "replace-tabs");
+}
+
+void
+marker_prefs_set_replace_tabs(gboolean state)
+{
+   g_settings_set_boolean(prefs.editor_settings, "replace-tabs", state);
+}
+
+guint
+marker_prefs_get_tab_width()
+{
+  return g_settings_get_uint(prefs.editor_settings, "tab-width");
+}
+
+void
+marker_prefs_set_tab_width(guint width)
+{
+  g_settings_set_uint(prefs.editor_settings, "tab-width", width);
+}
+
+gboolean
+marker_prefs_get_auto_indent()
+{
+  return g_settings_get_boolean(prefs.editor_settings, "auto-indent");
+}
+
+void
+marker_prefs_set_auto_indent(gboolean state)
+{
+  return g_settings_set_boolean(prefs.editor_settings, "auto-indent", state);
+}
+
+gboolean
 marker_prefs_get_show_line_numbers()
 {
   return g_settings_get_boolean(prefs.editor_settings, "show-line-numbers");
@@ -319,6 +355,63 @@ wrap_text_toggled(GtkToggleButton* button,
 }
 
 static void
+auto_indent_toggled(GtkToggleButton* button,
+                     gpointer         user_data)
+{
+  gboolean state = gtk_toggle_button_get_active(button);
+  marker_prefs_set_auto_indent(state);
+
+  GtkApplication* app = marker_get_app();
+  GList* windows = gtk_application_get_windows(app);
+  for (GList* item = windows; item != NULL; item = item->next)
+  {
+    if (MARKER_IS_EDITOR_WINDOW(item->data))
+    {
+      MarkerEditorWindow* window = item->data;
+      marker_editor_window_set_auto_indent(window, state);
+    }
+  }
+}
+
+static void
+replace_tabs_toggled(GtkToggleButton* button,
+                     gpointer         user_data)
+{
+  gboolean state = gtk_toggle_button_get_active(button);
+  marker_prefs_set_replace_tabs(state);
+
+  GtkApplication* app = marker_get_app();
+  GList* windows = gtk_application_get_windows(app);
+  for (GList* item = windows; item != NULL; item = item->next)
+  {
+    if (MARKER_IS_EDITOR_WINDOW(item->data))
+    {
+      MarkerEditorWindow* window = item->data;
+      marker_editor_window_set_replace_tabs(window, state);
+    }
+  }
+}
+
+static void
+tab_width_value_changed(GtkSpinButton *spin_button,
+                        gpointer       user_data)
+{
+  guint value = gtk_spin_button_get_value_as_int (spin_button);
+  marker_prefs_set_tab_width(value);
+
+  GtkApplication* app = marker_get_app();
+  GList* windows = gtk_application_get_windows(app);
+  for (GList* item = windows; item != NULL; item = item->next)
+  {
+    if (MARKER_IS_EDITOR_WINDOW(item->data))
+    {
+      MarkerEditorWindow* window = item->data;
+      marker_editor_window_set_tab_width(window, value);
+    }
+  }
+}
+
+static void
 show_right_margin_toggled(GtkToggleButton* button,
                           gpointer         user_data)
 {
@@ -427,6 +520,7 @@ marker_prefs_show_window()
   GList *list = NULL;
   GtkComboBox* combo_box;
   GtkToggleButton* check_button;
+  GtkSpinButton* spin_button;
   
   combo_box = GTK_COMBO_BOX(gtk_builder_get_object(builder, "syntax_chooser"));
   list = marker_prefs_get_available_syntax_themes();
@@ -487,8 +581,22 @@ marker_prefs_show_window()
   gtk_toggle_button_set_active(check_button, marker_prefs_get_highlight_current_line());
 
   check_button =
+    GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "auto_indent_check_button"));
+  gtk_toggle_button_set_active(check_button, marker_prefs_get_auto_indent());
+
+  check_button =
+    GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "replace_tabs_check_button"));
+  gtk_toggle_button_set_active(check_button, marker_prefs_get_replace_tabs());
+
+  check_button =
     GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "use_appmenu_check_button"));
   gtk_toggle_button_set_active(check_button, marker_prefs_get_gnome_appmenu());
+
+  spin_button =
+    GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "tab_width_spin_button"));
+  gtk_spin_button_set_range(spin_button, 1, 12);
+  gtk_spin_button_set_increments(spin_button, 1, 0);
+  gtk_spin_button_set_value(spin_button, marker_prefs_get_tab_width());
   
   GtkWindow* window = GTK_WINDOW(gtk_builder_get_object(builder, "prefs_win"));
   gtk_window_set_position(window, GTK_WIN_POS_CENTER);
@@ -512,6 +620,15 @@ marker_prefs_show_window()
   gtk_builder_add_callback_symbol(builder,
                                   "highlight_current_line_toggled", 
                                   G_CALLBACK(highlight_current_line_toggled));
+  gtk_builder_add_callback_symbol(builder,
+                                  "replace_tabs_toggled",
+                                  G_CALLBACK(replace_tabs_toggled));
+  gtk_builder_add_callback_symbol(builder,
+                                  "auto_indent_toggled",
+                                  G_CALLBACK(auto_indent_toggled));
+  gtk_builder_add_callback_symbol(builder,
+                                  "tab_width_value_changed",
+                                  G_CALLBACK(tab_width_value_changed));
   gtk_builder_add_callback_symbol(builder,
                                   "enable_katex_toggled",
                                   G_CALLBACK(enable_katex_toggled));
