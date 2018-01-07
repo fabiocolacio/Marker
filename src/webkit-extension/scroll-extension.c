@@ -1,4 +1,8 @@
 #include "scroll-extension.h"
+/** 
+ * FIX: Clear user_data when closing window. 
+ * I did not found any signal to connect to a cleaning function!
+**/
 
 static void
 restore_scroll_position(WebKitWebPage   *web_page,
