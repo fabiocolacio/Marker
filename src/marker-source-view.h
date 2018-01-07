@@ -43,6 +43,14 @@ void
 marker_source_view_surround_selection_with(MarkerSourceView* source_view,
                                            const char*       insertion);
 
+void
+marker_source_view_set_spell_check(MarkerSourceView*    source_view,
+                                   gboolean             state);
+
+void
+marker_source_view_set_spell_check_lang(MarkerSourceView*   source_view,
+                                        const gchar*        lang);
+
 G_END_DECLS
 
 #endif
