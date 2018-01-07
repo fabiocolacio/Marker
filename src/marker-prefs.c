@@ -243,9 +243,6 @@ marker_prefs_get_available_stylesheets()
   }
   closedir(dir);
   
-  list_item = marker_string_alloc("none");
-  list = g_list_prepend(list, list_item);
-  
   return list;
 }
 
@@ -273,9 +270,6 @@ marker_prefs_get_available_highlight_themes()
     }
   }
   closedir(dir);
-  
-  list_item = marker_string_alloc("none");
-  list = g_list_prepend(list, list_item);
   
   return list;
 }
@@ -431,6 +425,11 @@ spell_check_toggled(GtkToggleButton* button,
   gboolean state = gtk_toggle_button_get_active(button);
   marker_prefs_set_spell_check(state);
 
+  if (user_data)
+  {
+    gtk_widget_set_sensitive(GTK_WIDGET(user_data), state);
+  }
+
   GtkApplication* app = marker_get_app();
   GList* windows = gtk_application_get_windows(app);
   for (GList* item = windows; item != NULL; item = item->next)
@@ -505,15 +504,6 @@ syntax_chosen(GtkComboBox* combo_box,
               gpointer     user_data)
 {
   char* choice = marker_widget_combo_box_get_active_str(combo_box);
-  
-  if (strcmp(choice, "none") != 0)
-  {
-    marker_prefs_set_use_highlight(FALSE);
-  }
-  else
-  {
-    marker_prefs_set_use_highlight(TRUE);
-  }
   marker_prefs_set_syntax_theme(choice);
     
   GtkApplication* app = marker_get_app();
@@ -528,6 +518,21 @@ syntax_chosen(GtkComboBox* combo_box,
   }
   
   free(choice);
+}
+
+static void
+editor_syntax_toggled(GtkToggleButton* button, 
+                      gpointer user_data)
+{
+  gboolean state = gtk_toggle_button_get_active(button);
+
+  marker_prefs_set_use_highlight(state);
+  if (user_data)
+  {
+    gtk_widget_set_sensitive(GTK_WIDGET(user_data), state);
+  }
+
+  /* TODO: update editor */
 }
 
 static void
@@ -564,6 +569,20 @@ highlight_css_chosen(GtkComboBox* combo_box,
   refresh_preview();
 }
 
+static void 
+code_highlight_toggled(GtkToggleButton* button, 
+                       gpointer user_data)
+{
+  gboolean state = gtk_toggle_button_get_active(button);
+  marker_prefs_set_use_highlight(state);
+
+  if (user_data)
+  {
+    gtk_widget_set_sensitive(GTK_WIDGET(user_data), state);
+  }
+  refresh_preview();
+}
+
 static void
 default_view_mode_chosen(GtkComboBox* combo_box,
                          gpointer     user_data)
@@ -597,6 +616,7 @@ marker_prefs_show_window()
   marker_widget_populate_combo_box_with_strings(combo_box, list);
   char* syntax = marker_prefs_get_syntax_theme();
   marker_widget_combo_box_set_active_str(combo_box,syntax, g_list_length(list));
+  gtk_widget_set_sensitive(combo_box, marker_prefs_get_use_highlight());
   g_free(syntax);
   g_list_free_full(list, free);
   list = NULL;
@@ -617,6 +637,7 @@ marker_prefs_show_window()
   marker_widget_populate_combo_box_with_strings(combo_box, list);
   char* theme = marker_prefs_get_highlight_theme();
   marker_widget_combo_box_set_active_str(combo_box, theme, g_list_length(list));
+  gtk_widget_set_sensitive(combo_box, marker_prefs_get_use_highlight());
   g_free(theme);
   g_list_free_full(list, free);
   list = NULL;
@@ -635,13 +656,22 @@ marker_prefs_show_window()
   marker_widget_populate_combo_box_with_strings(combo_box, list);
   char* lang = marker_prefs_get_spell_check_langauge();
   marker_widget_combo_box_set_active_str(combo_box, lang, g_list_length(list));
+  gtk_widget_set_sensitive(combo_box, marker_prefs_get_spell_check());
   g_free(lang);
   g_list_free_full(list, free);
   list = NULL;
   
   check_button =
+    GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "editor_syntax_check_button"));
+  gtk_toggle_button_set_active(check_button, marker_prefs_get_use_highlight());
+
+  check_button =
     GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "katex_check_button"));
   gtk_toggle_button_set_active(check_button, marker_prefs_get_use_katex());
+
+  check_button = 
+    GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "code_highlight_check_button"));
+  gtk_toggle_button_set_active(check_button, marker_prefs_get_use_highlight());
   
   check_button =
     GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "show_line_numbers_check_button"));
@@ -695,6 +725,9 @@ marker_prefs_show_window()
                                   "highlight_css_chosen",
                                   G_CALLBACK(highlight_css_chosen));
   gtk_builder_add_callback_symbol(builder,
+                                  "code_highlight_toggled",
+                                  G_CALLBACK(code_highlight_toggled));
+  gtk_builder_add_callback_symbol(builder,
                                   "default_view_mode_chosen",
                                   G_CALLBACK(default_view_mode_chosen));
   gtk_builder_add_callback_symbol(builder,
@@ -730,6 +763,9 @@ marker_prefs_show_window()
   gtk_builder_add_callback_symbol(builder,
                                   "use_gnome_appmenu_toggled",
                                   G_CALLBACK(use_gnome_appmenu_toggled));
+  gtk_builder_add_callback_symbol(builder,
+                                  "editor_syntax_toggled",
+                                  G_CALLBACK(editor_syntax_toggled));
   gtk_builder_connect_signals(builder, NULL);
   
   g_object_unref(builder);
