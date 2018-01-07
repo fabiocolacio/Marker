@@ -16,6 +16,24 @@ void
 marker_prefs_set_syntax_theme(const char* theme);
 
 gboolean
+marker_prefs_get_replace_tabs();
+
+void
+marker_prefs_set_replace_tabs(gboolean state);
+
+guint
+marker_prefs_get_tab_width();
+
+void
+marker_prefs_set_tab_width(guint width);
+
+gboolean
+marker_prefs_get_auto_indent();
+
+void
+marker_prefs_set_auto_indent(gboolean state);
+
+gboolean
 marker_prefs_get_show_line_numbers();
 
 void
