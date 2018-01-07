@@ -9,6 +9,7 @@ APP_DIR = join_paths(DATA_DIR, 'com.github.fabiocolacio.marker')
 STYLES_DIR = join_paths(APP_DIR, 'styles')
 SCRIPTS_DIR = join_paths(APP_DIR, 'scripts')
 HIGHLIGHT_STYLES_DIR = join_paths(join_paths(SCRIPTS_DIR, 'highlight'),'styles')
+WEB_EXTENSIONS_DIRECTORY = join_paths(APP_DIR, 'extensions')
 
 EXECUTABLE_NAME = 'com.github.fabiocolacio.marker'
 
@@ -33,6 +34,10 @@ marker_sources = [
   res
 ]
 
+webkit_extension = [
+  'src/webkit-extension/scroll-extension.c'
+]
+
 hoedown_sources = [
   'src/hoedown/autolink.c',
   'src/hoedown/buffer.c',
@@ -53,12 +58,26 @@ deps = [
   dependency('gtkspell3-3.0')
 ]
 
+ext_deps =[  
+  dependency('webkit2gtk-4.0')
+]
+
+
 add_global_arguments(
   '-DSTYLES_DIR="@0@/"'.format(STYLES_DIR),
   '-DSCRIPTS_DIR="@0@/"'.format(SCRIPTS_DIR),
   '-DHIGHLIGHT_STYLES_DIR="@0@/"'.format(HIGHLIGHT_STYLES_DIR),
   '-DMARKER_VERSION="@0@"'.format(meson.project_version()),
+  '-DWEB_EXTENSIONS_DIRECTORY="@0@"'.format(WEB_EXTENSIONS_DIRECTORY),
   language : 'c'
+)
+
+shared_library(
+  'scroll-extension',
+  sources : [webkit_extension],
+  dependencies : ext_deps,
+  install : true,
+  install_dir: WEB_EXTENSIONS_DIRECTORY
 )
 
 executable(
