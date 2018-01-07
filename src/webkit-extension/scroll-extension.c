@@ -2,6 +2,13 @@
 /** 
  * FIX: Clear user_data when closing window. 
  * I did not found any signal to connect to a cleaning function!
+ * 
+ * BUG|FIX: There is a SIGSEGV after closing the app (after the return in the main)
+ * Is not due to the pos pointer as it did it as well using a static glong but is probably
+ * due to some missing unreferences (or wrong initialization point).
+ * 
+ *  - The crash appear to happen even with an empty extension (with just the extension initialize with a print).
+ *  - The crash appear to happen as well with a static library instead of a shared one.
 **/
 
 static void
