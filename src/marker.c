@@ -1,5 +1,4 @@
 #include <gtk/gtk.h>
-#include <webkit2/webkit2.h>
 
 #include "marker-prefs.h"
 #include "marker-editor-window.h"
@@ -161,34 +160,12 @@ marker_quit()
   }
 }
 
-/**
- * Initialize custom web extensions.
- **/
-static void
-initialize_web_extensions (WebKitWebContext *context,
-                           gpointer          user_data)
-{
-  /* Web Extensions get a different ID for each Web Process */
-  static guint32 unique_id = 0;
-
-  webkit_web_context_set_web_extensions_directory (
-     context, WEB_EXTENSIONS_DIRECTORY);
-  webkit_web_context_set_web_extensions_initialization_user_data (
-     context, g_variant_new_uint32 (unique_id++));
-}
-
-
 int
 main(int    argc,
      char** argv)
 {
   app = gtk_application_new("com.github.fabiocolacio.marker",
                             G_APPLICATION_HANDLES_OPEN);
- 
-  g_signal_connect (webkit_web_context_get_default (),
-                  "initialize-web-extensions",
-                  G_CALLBACK (initialize_web_extensions),
-                  NULL);
 
   g_signal_connect(app, "activate", G_CALLBACK(activate), NULL);
   g_signal_connect(app, "open", G_CALLBACK(marker_open), NULL);

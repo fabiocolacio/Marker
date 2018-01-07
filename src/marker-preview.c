@@ -67,10 +67,29 @@ marker_preview_new(void)
   return g_object_new(MARKER_TYPE_PREVIEW, NULL);
 }
 
+/**
+ * Initialize custom web extensions.
+ **/
+static void
+initialize_web_extensions (WebKitWebContext *context,
+                           gpointer          user_data)
+{
+  /* Web Extensions get a different ID for each Web Process */
+  static guint32 unique_id = 0;
+
+  webkit_web_context_set_web_extensions_directory (
+     context, WEB_EXTENSIONS_DIRECTORY);
+  webkit_web_context_set_web_extensions_initialization_user_data (
+     context, g_variant_new_uint32 (unique_id++));
+}
+
 static void
 marker_preview_init(MarkerPreview* preview)
 {
-
+  g_signal_connect (webkit_web_context_get_default (),
+                   "initialize-web-extensions",
+                   G_CALLBACK (initialize_web_extensions),
+                   NULL);
 }
 
 static void
