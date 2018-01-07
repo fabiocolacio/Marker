@@ -491,8 +491,9 @@ marker_prefs_show_window()
   gtk_toggle_button_set_active(check_button, marker_prefs_get_gnome_appmenu());
   
   GtkWindow* window = GTK_WINDOW(gtk_builder_get_object(builder, "prefs_win"));
-  gtk_window_set_position(window, GTK_WIN_POS_CENTER);
-  gtk_widget_show_all(GTK_WIDGET(window));
+	gtk_widget_show_all(GTK_WIDGET(window));
+  gtk_window_present(window);
+  
   
   gtk_builder_add_callback_symbol(builder,
                                   "syntax_chosen",

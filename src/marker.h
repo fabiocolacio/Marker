@@ -56,8 +56,17 @@ marker_about_cb(GSimpleAction* action,
  */
 void
 marker_quit_cb(GSimpleAction*  action,
-               GVariant*      parameter,
-               gpointer       user_data);
+               GVariant*       parameter,
+               gpointer        user_data);
+
+/**
+ * A callback that is called whenever the shortcuts button in the appmenu
+ * is pressed.
+ */
+void
+marker_shortcuts_cb(GSimpleAction* action,
+                    GVariant*      parameter,
+                    gpointer       user_data);
 
 /**
  * Indicates whether the appmenu exists or not.

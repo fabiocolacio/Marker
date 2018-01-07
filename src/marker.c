@@ -21,6 +21,16 @@ static const GOptionEntry CLI_OPTIONS[] =
   { NULL }
 };
 
+const int APP_MENU_ACTION_ENTRIES_LEN = 4;
+
+GActionEntry APP_MENU_ACTION_ENTRIES[] =
+{
+  { "quit", marker_quit_cb, NULL, NULL, NULL },
+  { "about", marker_about_cb, NULL, NULL, NULL },
+  { "prefs", marker_prefs_cb, NULL, NULL, NULL },
+  { "shortcuts", marker_shortcuts_cb, NULL, NULL, NULL }
+};
+
 static void
 marker_init(GtkApplication* app)
 {
@@ -35,7 +45,7 @@ marker_init(GtkApplication* app)
     gtk_application_set_app_menu(app, app_menu);
     g_action_map_add_action_entries(G_ACTION_MAP(app),
                                     APP_MENU_ACTION_ENTRIES,
-                                    3,
+                                    APP_MENU_ACTION_ENTRIES_LEN,
                                     app);
     
     g_object_unref(builder);
@@ -111,18 +121,34 @@ marker_about_cb(GSimpleAction* action,
 
 void
 marker_quit_cb(GSimpleAction*  action,
-               GVariant*      parameter,
-               gpointer       user_data)
+               GVariant*       parameter,
+               gpointer        user_data)
 {
   marker_quit();
 }
 
-GActionEntry APP_MENU_ACTION_ENTRIES[] =
+void
+marker_shortcuts_cb(GSimpleAction* action,
+                    GVariant*      parameter,
+                    gpointer       user_data)
 {
-  { "quit", marker_quit_cb, NULL, NULL, NULL },
-  { "about", marker_about_cb, NULL, NULL, NULL },
-  { "prefs", marker_prefs_cb, NULL, NULL, NULL }
-};
+  GtkBuilder* builder =
+    gtk_builder_new_from_resource("/com/github/fabiocolacio/marker/ui/shortcuts-window.ui");
+  
+  GtkWidget* dialog = GTK_WIDGET(gtk_builder_get_object(builder, "shortcuts"));
+  
+  GtkWindow* parent = gtk_application_get_active_window(app);
+  
+	if (GTK_WINDOW(parent) != gtk_window_get_transient_for(GTK_WINDOW(dialog)))
+	{
+		gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(parent));
+	}
+
+	gtk_widget_show_all(dialog);
+  gtk_window_present(GTK_WINDOW(dialog));
+  
+  g_object_unref(builder);
+}
 
 gboolean
 marker_has_app_menu()
@@ -188,4 +214,3 @@ main(int    argc,
     
   return status;
 }
-
