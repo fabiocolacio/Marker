@@ -1,7 +1,7 @@
 #include "scroll-extension.h"
 
 static void
-document_loaded(WebKitWebPage   *web_page,
+restore_scroll_position(WebKitWebPage   *web_page,
                 gpointer        user_data)
 {
     WebKitDOMDocument * document = webkit_web_page_get_dom_document (web_page);
@@ -13,7 +13,7 @@ document_loaded(WebKitWebPage   *web_page,
 }
 
 static gboolean 
-web_page_send_request(WebKitWebPage     *web_page,
+store_scroll_position(WebKitWebPage     *web_page,
                        WebKitURIRequest  *request,
                        WebKitURIResponse *redirected_response,
                        gpointer           user_data)
@@ -27,7 +27,6 @@ web_page_send_request(WebKitWebPage     *web_page,
     return FALSE;
 }
 
-
 static void
 simple_callback (WebKitWebExtension *extension,
                            WebKitWebPage      *web_page,
@@ -38,10 +37,10 @@ simple_callback (WebKitWebExtension *extension,
     *pos = 0;
 
     g_signal_connect(web_page, "document-loaded",
-                     G_CALLBACK(document_loaded), 
+                     G_CALLBACK(restore_scroll_position), 
                      pos);
     g_signal_connect (web_page, "send-request",
-                             G_CALLBACK (web_page_send_request),
+                             G_CALLBACK (store_scroll_position),
                              pos);
 }
 
