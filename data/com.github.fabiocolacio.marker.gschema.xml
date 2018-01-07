@@ -61,6 +61,19 @@
       <summary>Auto-indent code</summary>
       <description>Auto-indent code in the editor.</description>
     </key>
+
+    <key name="spell-check" type="b">
+      <default>false</default>
+      <summary>Spell Check</summary>
+      <description>Spell check using gtkspell.</description>
+    </key>
+
+    <key name="spell-check-lang" type="s">
+      <default>'en_US'</default>
+      <summary>Language for spell check</summary>
+      <description>Selected language for spell check.</description>
+    </key>
+    
   </schema>
   
   <schema path="/com/github/fabiocolacio/marker/preferences/preview/" id="com.github.fabiocolacio.marker.preferences.preview">

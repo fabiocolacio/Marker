@@ -1,5 +1,6 @@
 #include <gtk/gtk.h>
 #include <gtksourceview/gtksource.h>
+#include <gtkspell/gtkspell.h>
 
 #include <dirent.h>
 #include <stdlib.h>
@@ -121,6 +122,30 @@ void
 marker_prefs_set_auto_indent(gboolean state)
 {
   return g_settings_set_boolean(prefs.editor_settings, "auto-indent", state);
+}
+
+gboolean
+marker_prefs_get_spell_check()
+{
+  return g_settings_get_boolean(prefs.editor_settings, "spell-check");
+}
+
+void
+marker_prefs_set_spell_check(gboolean state)
+{
+  g_settings_set_boolean(prefs.editor_settings, "spell-check", state);
+}
+
+gchar*
+marker_prefs_get_spell_check_langauge()
+{
+  return g_settings_get_string(prefs.editor_settings, "spell-check-lang"); 
+}
+
+void
+marker_prefs_set_spell_check_language(const char* lang)
+{
+  g_settings_set_string(prefs.editor_settings, "spell-check-lang", lang);
 }
 
 gboolean
@@ -256,6 +281,13 @@ marker_prefs_get_available_highlight_themes()
 }
 
 GList*
+marker_prefs_get_available_languages()
+{
+  GList* list = gtk_spell_checker_get_language_list ();  
+  return list;
+}
+
+GList*
 marker_prefs_get_available_syntax_themes()
 {
   GList* list = NULL;
@@ -369,6 +401,44 @@ auto_indent_toggled(GtkToggleButton* button,
     {
       MarkerEditorWindow* window = item->data;
       marker_editor_window_set_auto_indent(window, state);
+    }
+  }
+}
+
+static void
+spell_lang_chosen(GtkComboBox* combo_box,
+              gpointer     user_data)
+{
+  char* choice = marker_widget_combo_box_get_active_str(combo_box);
+  marker_prefs_set_spell_check_language(choice);
+
+  GtkApplication* app = marker_get_app();
+  GList* windows = gtk_application_get_windows(app);
+  for (GList* item = windows; item != NULL; item = item->next)
+  {
+    if (MARKER_IS_EDITOR_WINDOW(item->data))
+    {
+      MarkerEditorWindow* window = item->data;
+      marker_editor_window_set_spell_lang(window, choice);
+    }
+  }
+}
+
+static void
+spell_check_toggled(GtkToggleButton* button,
+                     gpointer         user_data)
+{
+  gboolean state = gtk_toggle_button_get_active(button);
+  marker_prefs_set_spell_check(state);
+
+  GtkApplication* app = marker_get_app();
+  GList* windows = gtk_application_get_windows(app);
+  for (GList* item = windows; item != NULL; item = item->next)
+  {
+    if (MARKER_IS_EDITOR_WINDOW(item->data))
+    {
+      MarkerEditorWindow* window = item->data;
+      marker_editor_window_set_spell_check(window, state);
     }
   }
 }
@@ -559,6 +629,15 @@ marker_prefs_show_window()
                                  "text", 0,
                                  NULL);
   gtk_combo_box_set_active(combo_box, marker_prefs_get_default_view_mode());
+
+  combo_box = GTK_COMBO_BOX(gtk_builder_get_object(builder, "spell_lang_chooser"));
+  list = marker_prefs_get_available_languages();
+  marker_widget_populate_combo_box_with_strings(combo_box, list);
+  char* lang = marker_prefs_get_spell_check_langauge();
+  marker_widget_combo_box_set_active_str(combo_box, lang, g_list_length(list));
+  g_free(lang);
+  g_list_free_full(list, free);
+  list = NULL;
   
   check_button =
     GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "katex_check_button"));
@@ -587,6 +666,10 @@ marker_prefs_show_window()
   check_button =
     GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "replace_tabs_check_button"));
   gtk_toggle_button_set_active(check_button, marker_prefs_get_replace_tabs());
+
+  check_button = 
+    GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "spell_check_check_button"));
+  gtk_toggle_button_set_active(check_button, marker_prefs_get_spell_check());
 
   check_button =
     GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "use_appmenu_check_button"));
@@ -626,6 +709,12 @@ marker_prefs_show_window()
   gtk_builder_add_callback_symbol(builder,
                                   "auto_indent_toggled",
                                   G_CALLBACK(auto_indent_toggled));
+  gtk_builder_add_callback_symbol(builder,
+                                  "spell_check_toggled",
+                                  G_CALLBACK(spell_check_toggled));
+  gtk_builder_add_callback_symbol(builder,
+                                  "spell_lang_chosen",
+                                  G_CALLBACK(spell_lang_chosen));
   gtk_builder_add_callback_symbol(builder,
                                   "tab_width_value_changed",
                                   G_CALLBACK(tab_width_value_changed));

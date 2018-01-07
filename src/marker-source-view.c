@@ -1,11 +1,15 @@
 #include <string.h>
 
 #include "marker-source-view.h"
+#include "marker-prefs.h"
+
+#include <gtkspell/gtkspell.h>
 
 struct _MarkerSourceView
 {
   GtkSourceView parent_instance;
   GSettings* settings;
+  GtkSpellChecker* spell;
 };
 
 G_DEFINE_TYPE(MarkerSourceView, marker_source_view, GTK_SOURCE_TYPE_VIEW)
@@ -31,6 +35,27 @@ marker_source_view_surround_selection_with(MarkerSourceView* source_view,
     gtk_text_iter_forward_chars(&start, selection_len);
     gtk_text_buffer_insert(buffer, &start, insertion, len);
   }
+}
+
+void
+marker_source_view_set_spell_check(MarkerSourceView*    source_view,
+                                   gboolean             state)
+{
+  if (state)
+  {
+    gtk_spell_checker_attach(source_view->spell, GTK_TEXT_VIEW(source_view));
+  }
+  else
+  {
+    gtk_spell_checker_detach(source_view->spell);
+  }
+}
+
+void
+marker_source_view_set_spell_check_lang(MarkerSourceView*   source_view,
+                                        const gchar*        lang)
+{
+  gtk_spell_checker_set_language (source_view->spell, lang, NULL);
 }
 
 void
@@ -124,9 +149,17 @@ marker_source_view_init(MarkerSourceView* source_view)
   gtk_widget_modify_font(GTK_WIDGET(source_view), font);
   pango_font_description_free(font);
   g_free(fontname);
+
   gtk_source_view_set_insert_spaces_instead_of_tabs(source_view, marker_prefs_get_replace_tabs());
   gtk_source_view_set_tab_width(source_view, marker_prefs_get_tab_width());
   gtk_source_view_set_auto_indent(source_view, marker_prefs_get_auto_indent());
+
+  source_view->spell = gtk_spell_checker_new ();
+  gchar* lang = marker_prefs_get_spell_check_langauge();
+  gtk_spell_checker_set_language (source_view->spell, lang, NULL);
+  if (marker_prefs_get_spell_check()){
+    gtk_spell_checker_attach (source_view->spell, GTK_TEXT_VIEW (source_view));
+  }
 }
 
 static void
