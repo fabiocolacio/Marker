@@ -67,7 +67,7 @@ add_global_arguments(
   '-DSCRIPTS_DIR="@0@/"'.format(SCRIPTS_DIR),
   '-DHIGHLIGHT_STYLES_DIR="@0@/"'.format(HIGHLIGHT_STYLES_DIR),
   '-DMARKER_VERSION="@0@"'.format(meson.project_version()),
-  '-DWEB_EXTENSIONS_DIRECTORY="@O@"'.format(WEB_EXTENSIONS_DIRECTORY),
+  '-DWEB_EXTENSIONS_DIRECTORY="@0@"'.format(WEB_EXTENSIONS_DIRECTORY),
   language : 'c'
 )
 
