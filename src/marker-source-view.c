@@ -43,11 +43,13 @@ marker_source_view_set_spell_check(MarkerSourceView*    source_view,
 {
   if (state)
   {
-    gtk_spell_checker_attach(source_view->spell, GTK_TEXT_VIEW(source_view));
+    gtk_spell_checker_attach((GtkSpellChecker*)source_view->spell, GTK_TEXT_VIEW(source_view));
+    g_object_unref (source_view->spell);
   }
   else
   {
-    gtk_spell_checker_detach(source_view->spell);
+    g_object_ref (source_view->spell);
+    gtk_spell_checker_detach((GtkSpellChecker*)source_view->spell);
   }
 }
 
