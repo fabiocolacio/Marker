@@ -71,7 +71,7 @@ add_global_arguments(
   language : 'c'
 )
 
-lib = shared_library(
+shared_library(
   'scroll-extension',
   sources : [webkit_extension],
   dependencies : ext_deps,
