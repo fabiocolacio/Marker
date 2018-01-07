@@ -30,6 +30,15 @@ struct _MarkerEditorWindow
 G_DEFINE_TYPE(MarkerEditorWindow, marker_editor_window, GTK_TYPE_APPLICATION_WINDOW)
 
 static void
+print_cb(GSimpleAction* action,
+         GVariant*      parameter,
+         gpointer       user_data)
+{
+  MarkerEditorWindow* window = MARKER_EDITOR_WINDOW(user_data);
+  marker_preview_run_print_dialog(window->web_view, GTK_WINDOW(window));
+}
+
+static void
 save_as_cb(GSimpleAction* action,
            GVariant*      parameter,
            gpointer       user_data)
@@ -117,6 +126,7 @@ static GActionEntry win_entries[] =
 {
   { "saveas", save_as_cb, NULL, NULL, NULL },
   { "export", export_cb, NULL, NULL, NULL },
+  { "print", print_cb, NULL, NULL, NULL },
   { "new", new_cb, NULL, NULL, NULL },
   { "editoronlymode", editoronlymode_cb, NULL, NULL, NULL },
   { "previewonlymode", previewonlymode_cb, NULL, NULL, NULL },
@@ -502,6 +512,10 @@ key_pressed(GtkWidget*   widget,
         
       case GDK_KEY_m:
         marker_source_view_surround_selection_with(window->source_view, "``");
+        break;
+      
+      case GDK_KEY_p:
+        marker_preview_run_print_dialog(window->web_view, GTK_WINDOW(window));
         break;
     }
   }

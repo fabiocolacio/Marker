@@ -144,6 +144,19 @@ print_finished()
 
 }
 
+WebKitPrintOperationResponse
+marker_preview_run_print_dialog(MarkerPreview* preview,
+                                GtkWindow*     parent)
+{
+  WebKitPrintOperation* print_op =
+    webkit_print_operation_new(WEBKIT_WEB_VIEW(preview));
+  
+  g_signal_connect(print_op, "failed", G_CALLBACK(print_failed), NULL);
+  g_signal_connect(print_op, "finished", G_CALLBACK(print_finished), NULL);
+  
+  return webkit_print_operation_run_dialog(print_op, parent);
+}
+
 void
 marker_preview_print_pdf(MarkerPreview* preview,
                          const char*    outfile)
