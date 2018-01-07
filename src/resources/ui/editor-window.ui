@@ -36,6 +36,10 @@
         <attribute name="action">win.export</attribute>
       </item>
       <item>
+        <attribute name="label">Print...</attribute>
+        <attribute name="action">win.print</attribute>
+      </item>
+      <item>
         <attribute name="label">New</attribute>
         <attribute name="action">win.new</attribute>
       </item>
@@ -74,6 +78,10 @@
       <item>
         <attribute name="label">Export...</attribute>
         <attribute name="action">win.export</attribute>
+      </item>
+      <item>
+        <attribute name="label">Print...</attribute>
+        <attribute name="action">win.print</attribute>
       </item>
       <item>
         <attribute name="label">New</attribute>

@@ -22,6 +22,10 @@ marker_preview_render_markdown(MarkerPreview* preview,
                                const char*    css_theme,
                                const char*    base_uri);
 
+WebKitPrintOperationResponse
+marker_preview_run_print_dialog(MarkerPreview* preview,
+                                GtkWindow*     parent);
+
 void
 marker_preview_print_pdf(MarkerPreview* preview,
                          const char*    outfile);
@@ -29,4 +33,3 @@ marker_preview_print_pdf(MarkerPreview* preview,
 G_END_DECLS
 
 #endif
-
