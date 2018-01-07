@@ -124,6 +124,9 @@ marker_source_view_init(MarkerSourceView* source_view)
   gtk_widget_modify_font(GTK_WIDGET(source_view), font);
   pango_font_description_free(font);
   g_free(fontname);
+  gtk_source_view_set_insert_spaces_instead_of_tabs(source_view, marker_prefs_get_replace_tabs());
+  gtk_source_view_set_tab_width(source_view, marker_prefs_get_tab_width());
+  gtk_source_view_set_auto_indent(source_view, marker_prefs_get_auto_indent());
 }
 
 static void
