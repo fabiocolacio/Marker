@@ -30,21 +30,22 @@ store_scroll_position(WebKitWebPage      *web_page,
                        WebKitURIResponse *redirected_response,
                        gpointer           user_data)
 {
-    WebKitDOMDocument * document = webkit_web_page_get_dom_document (web_page);
-    WebKitDOMElement* body = WEBKIT_DOM_ELEMENT(webkit_dom_document_get_body (document));
-    glong * pos = user_data;
-    
-    g_print("store_scroll_position()\n");
-    
-    if (body){
-        *pos = webkit_dom_element_get_scroll_top(body);        
-    } else {
-      g_print("  couldn't get body!\n");
+    gchar * uri = webkit_uri_request_get_uri(request);
+    if (strcmp(uri, "file:///") == 0){
+        WebKitDOMDocument * document = webkit_web_page_get_dom_document (web_page);
+        WebKitDOMElement* body = WEBKIT_DOM_ELEMENT(webkit_dom_document_get_body (document));
+        glong * pos = user_data;
+        
+        g_print("store_scroll_position()\n");
+        if (body){
+            *pos = webkit_dom_element_get_scroll_top(body);        
+        } else {
+        g_print("  couldn't get body!\n");
+        }
+        
+        
+        g_print("  scroll position: %d\n", *pos);
     }
-    
-    
-    g_print("  scroll position: %d\n", *pos);
-    
     return FALSE;
 }
 
