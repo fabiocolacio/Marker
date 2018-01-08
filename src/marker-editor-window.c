@@ -412,8 +412,14 @@ void
 marker_editor_window_set_wrap_text(MarkerEditorWindow* window,
                                    gboolean            state)
 {
-  gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(window->source_view),
-                              GTK_WRAP_WORD);
+  if (state)
+  {
+    gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(window->source_view), GTK_WRAP_WORD);
+  }
+  else
+  {
+    gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(window->source_view), GTK_WRAP_NONE);
+  }
 }
 
 void
