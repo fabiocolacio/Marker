@@ -15,6 +15,18 @@
 
 MarkerPrefs prefs;
 
+gboolean
+marker_prefs_get_use_syntax_theme()
+{
+  return g_settings_get_boolean(prefs.editor_settings, "enable-syntax-theme");
+}
+
+void
+marker_prefs_set_use_syntax_theme(gboolean state)
+{
+  g_settings_set_boolean(prefs.editor_settings, "enable-syntax-theme", state);
+}
+
 char*
 marker_prefs_get_css_theme()
 {
@@ -133,7 +145,7 @@ marker_prefs_get_auto_indent()
 void
 marker_prefs_set_auto_indent(gboolean state)
 {
-  return g_settings_set_boolean(prefs.editor_settings, "auto-indent", state);
+  g_settings_set_boolean(prefs.editor_settings, "auto-indent", state);
 }
 
 gboolean
@@ -328,6 +340,31 @@ show_line_numbers_toggled(GtkToggleButton* button,
     {
       MarkerEditorWindow* window = item->data;
       marker_editor_window_set_show_line_numbers(window, state);
+    }
+  }
+}
+
+static void
+editor_syntax_toggled(GtkToggleButton* button,
+                      gpointer         user_data)
+{
+  gboolean state = gtk_toggle_button_get_active(button);
+  marker_prefs_set_use_syntax_theme(state);
+  
+  marker_prefs_set_use_highlight(state);
+  if (user_data)
+  {
+    gtk_widget_set_sensitive(GTK_WIDGET(user_data), state);
+  }
+  
+  GtkApplication* app = marker_get_app();
+  GList* windows = gtk_application_get_windows(app);
+  for (GList* item = windows; item != NULL; item = item->next)
+  {
+    if (MARKER_IS_EDITOR_WINDOW(item->data))
+    {
+      MarkerEditorWindow* window = item->data;
+      marker_editor_window_set_use_syntax_theme(window, state);
     }
   }
 }
@@ -541,21 +578,6 @@ syntax_chosen(GtkComboBox* combo_box,
 }
 
 static void
-editor_syntax_toggled(GtkToggleButton* button, 
-                      gpointer user_data)
-{
-  gboolean state = gtk_toggle_button_get_active(button);
-
-  marker_prefs_set_use_highlight(state);
-  if (user_data)
-  {
-    gtk_widget_set_sensitive(GTK_WIDGET(user_data), state);
-  }
-
-  /* TODO: update editor */
-}
-
-static void
 css_chosen(GtkComboBox* combo_box,
            gpointer     user_data)
 {
@@ -688,6 +710,10 @@ marker_prefs_show_window()
   check_button =
     GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "css_check_button"));
   gtk_toggle_button_set_active(check_button, marker_prefs_get_use_css_theme());
+  
+  check_button =
+    GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "editor_syntax_check_button"));
+  gtk_toggle_button_set_active(check_button, marker_prefs_get_use_syntax_theme());
 
   check_button =
     GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "katex_check_button"));
@@ -743,6 +769,9 @@ marker_prefs_show_window()
   gtk_builder_add_callback_symbol(builder,
                                   "syntax_chosen",
                                   G_CALLBACK(syntax_chosen));
+  gtk_builder_add_callback_symbol(builder,
+                                  "editor_syntax_toggled",
+                                  G_CALLBACK(editor_syntax_toggled));
   gtk_builder_add_callback_symbol(builder,
                                   "css_chosen",
                                   G_CALLBACK(css_chosen));

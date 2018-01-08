@@ -16,6 +16,12 @@ void
 marker_prefs_set_syntax_theme(const char* theme);
 
 gboolean
+marker_prefs_get_use_syntax_theme();
+
+void
+marker_prefs_set_use_syntax_theme(gboolean state);
+
+gboolean
 marker_prefs_get_replace_tabs();
 
 void

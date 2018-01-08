@@ -19,6 +19,12 @@
       <summary>Syntax Theme</summary>
       <description>The syntax theme to use for the editor.</description>
     </key>
+    
+    <key name="enable-syntax-theme" type="b">
+      <default>false</default>
+      <summary>Enable Syntax Theme</summary>
+      <description>Whether to use a syntax theme in the editor.</description>
+    </key>
   
     <key name="show-line-numbers" type="b">
       <default>true</default>
@@ -73,7 +79,6 @@
       <summary>Language for spell check</summary>
       <description>Selected language for spell check.</description>
     </key>
-    
   </schema>
   
   <schema path="/com/github/fabiocolacio/marker/preferences/preview/" id="com.github.fabiocolacio.marker.preferences.preview">

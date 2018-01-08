@@ -248,6 +248,15 @@ marker_editor_window_set_view_mode(MarkerEditorWindow*        window,
 }
 
 void
+marker_editor_window_set_use_syntax_theme(MarkerEditorWindow* window,
+                                          gboolean            state)
+{
+  GtkSourceBuffer* buffer =
+    GTK_SOURCE_BUFFER(gtk_text_view_get_buffer(window->source_view));
+  gtk_source_buffer_set_highlight_syntax(buffer, state);
+}
+
+void
 marker_editor_window_refresh_preview(MarkerEditorWindow* window)
 {
   gchar* markdown = marker_editor_window_get_markdown(window);
@@ -440,7 +449,15 @@ marker_editor_window_set_show_right_margin(MarkerEditorWindow* window,
 void
 marker_editor_window_apply_prefs(MarkerEditorWindow* window)
 {
-  marker_editor_window_set_syntax_theme(window, marker_prefs_get_syntax_theme());
+  if (marker_prefs_get_use_syntax_theme())
+  {
+    marker_editor_window_set_syntax_theme(window, marker_prefs_get_syntax_theme());
+  }
+  else
+  {
+    marker_editor_window_set_use_syntax_theme(window, false);
+  }
+  
   marker_editor_window_set_show_right_margin(window, marker_prefs_get_show_right_margin());
   marker_editor_window_set_wrap_text(window, marker_prefs_get_wrap_text());
   marker_editor_window_set_highlight_current_line(window, marker_prefs_get_highlight_current_line());
