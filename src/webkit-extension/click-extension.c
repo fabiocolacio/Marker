@@ -7,7 +7,9 @@ on_click(WebKitDOMEventTarget * target,
     WebKitDOMElement* body =  target;
     if (body)
     {    
-        g_print("clicked: %s\n", webkit_dom_element_get_tag_name(body));
+        g_print("clicked: %s\n=====\n%s\n=====\n", 
+                webkit_dom_element_get_tag_name(body), 
+                webkit_dom_element_get_inner_html(body));
     }
 }
 
@@ -20,11 +22,7 @@ enable_click_callback(WebKitDOMElement * element)
     {
         return;
     }
-    webkit_dom_event_target_add_event_listener(element, "click", 
-                                                click_callback,
-                                                FALSE,
-                                                NULL);
-
+   
     WebKitDOMHTMLCollection* children = webkit_dom_element_get_children (element);
     if (children)
     {
@@ -32,7 +30,13 @@ enable_click_callback(WebKitDOMElement * element)
         gulong i = 0;
         for (;i<n;i++)
         {
-            enable_click_callback(webkit_dom_html_collection_item(children, i));
+            WebKitDOMElement * child = webkit_dom_html_collection_item(children, i);
+            webkit_dom_event_target_add_event_listener(child, "click", 
+                                                        click_callback,
+                                                        TRUE,
+                                                        NULL);
+
+            enable_click_callback(child);
         }
     }
 }
@@ -44,11 +48,7 @@ disable_click_callback(WebKitDOMElement * element)
     {
         return;
     }
-
-    webkit_dom_event_target_remove_event_listener(element,
-                                                    "click",
-                                                    click_callback,
-                                                    FALSE);
+   
     WebKitDOMHTMLCollection* children = webkit_dom_element_get_children (element);
     if (children)
     {
@@ -56,7 +56,12 @@ disable_click_callback(WebKitDOMElement * element)
         gulong i = 0;
         for (;i<n;i++)
         {
-            enable_click_callback(webkit_dom_html_collection_item(children, i));
+            WebKitDOMElement * child = webkit_dom_html_collection_item(children, i);
+            webkit_dom_event_target_remove_event_listener(child,
+                                                            "click",
+                                                            click_callback,
+                                                            TRUE);
+            enable_click_callback(child);
         }
     }
 }
