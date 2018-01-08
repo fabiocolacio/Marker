@@ -34,8 +34,12 @@ marker_sources = [
   res
 ]
 
-webkit_extension = [
+scroll_extension = [
   'src/webkit-extension/scroll-extension.c'
+]
+
+click_extension = [
+  'src/webkit-extension/click-extension.c'
 ]
 
 hoedown_sources = [
@@ -74,7 +78,15 @@ add_global_arguments(
 
 shared_library(
   'scroll-extension',
-  sources : [webkit_extension],
+  sources : [scroll_extension],
+  dependencies : ext_deps,
+  install : true,
+  install_dir: WEB_EXTENSIONS_DIRECTORY
+)
+
+shared_library(
+  'click-extension',
+  sources : [click_extension],
   dependencies : ext_deps,
   install : true,
   install_dir: WEB_EXTENSIONS_DIRECTORY
