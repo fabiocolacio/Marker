@@ -15,6 +15,18 @@
 
 MarkerPrefs prefs;
 
+gboolean
+marker_prefs_get_use_syntax_theme()
+{
+  return g_settings_get_boolean(prefs.editor_settings, "enable-syntax-theme");
+}
+
+void
+marker_prefs_set_use_syntax_theme(gboolean state)
+{
+  g_settings_set_boolean(prefs.editor_settings, "enable-syntax-theme", state);
+}
+
 char*
 marker_prefs_get_css_theme()
 {
@@ -25,6 +37,18 @@ void
 marker_prefs_set_css_theme(const char* theme)
 {
   g_settings_set_string(prefs.preview_settings, "css-theme", theme);
+}
+
+gboolean
+marker_prefs_get_use_css_theme()
+{
+  return g_settings_get_boolean(prefs.preview_settings, "css-toggle");
+}
+
+void
+marker_prefs_set_use_css_theme(gboolean state)
+{
+  g_settings_set_boolean(prefs.preview_settings, "css-toggle", state);
 }
 
 char*
@@ -79,13 +103,13 @@ marker_prefs_set_syntax_theme(const char* theme)
 guint
 marker_prefs_get_right_margin_position()
 {
-  return 0;
+  return g_settings_get_uint(prefs.editor_settings, "show-right-margin-position");
 }
 
 void
 marker_prefs_set_right_margin_position(guint position)
 {
-  
+  g_settings_set_uint(prefs.editor_settings, "show-right-margin-position", position);
 }
 
 gboolean
@@ -121,7 +145,7 @@ marker_prefs_get_auto_indent()
 void
 marker_prefs_set_auto_indent(gboolean state)
 {
-  return g_settings_set_boolean(prefs.editor_settings, "auto-indent", state);
+  g_settings_set_boolean(prefs.editor_settings, "auto-indent", state);
 }
 
 gboolean
@@ -302,6 +326,20 @@ marker_prefs_get_available_syntax_themes()
 }
 
 static void
+refresh_preview(){
+  GtkApplication* app = marker_get_app();
+  GList* windows = gtk_application_get_windows(app);
+  for (GList* item = windows; item != NULL; item = item->next)
+  {
+    if (MARKER_IS_EDITOR_WINDOW(item->data))
+    {
+      MarkerEditorWindow* window = item->data;
+      marker_editor_window_refresh_preview(window);
+    }
+  }
+}
+
+static void
 show_line_numbers_toggled(GtkToggleButton* button,
                           gpointer         user_data)
 {
@@ -321,6 +359,46 @@ show_line_numbers_toggled(GtkToggleButton* button,
 }
 
 static void
+editor_syntax_toggled(GtkToggleButton* button,
+                      gpointer         user_data)
+{
+  gboolean state = gtk_toggle_button_get_active(button);
+  marker_prefs_set_use_syntax_theme(state);
+  
+  marker_prefs_set_use_highlight(state);
+  if (user_data)
+  {
+    gtk_widget_set_sensitive(GTK_WIDGET(user_data), state);
+  }
+  
+  GtkApplication* app = marker_get_app();
+  GList* windows = gtk_application_get_windows(app);
+  for (GList* item = windows; item != NULL; item = item->next)
+  {
+    if (MARKER_IS_EDITOR_WINDOW(item->data))
+    {
+      MarkerEditorWindow* window = item->data;
+      marker_editor_window_set_use_syntax_theme(window, state);
+    }
+  }
+}
+
+static void
+css_toggled(GtkToggleButton* button,
+            gpointer         user_data)
+{
+  gboolean state = gtk_toggle_button_get_active(button);
+  marker_prefs_set_use_css_theme(state);
+  
+  if (user_data)
+  {
+    gtk_widget_set_sensitive(GTK_WIDGET(user_data), state);
+  }
+  
+  refresh_preview();
+}
+
+static void
 highlight_current_line_toggled(GtkToggleButton* button,
                                gpointer         user_data)
 {
@@ -335,19 +413,6 @@ highlight_current_line_toggled(GtkToggleButton* button,
     {
       MarkerEditorWindow* window = item->data;
       marker_editor_window_set_highlight_current_line(window, state);
-    }
-  }
-}
-
-static void refresh_preview(){
-  GtkApplication* app = marker_get_app();
-  GList* windows = gtk_application_get_windows(app);
-  for (GList* item = windows; item != NULL; item = item->next)
-  {
-    if (MARKER_IS_EDITOR_WINDOW(item->data))
-    {
-      MarkerEditorWindow* window = item->data;
-      marker_editor_window_refresh_preview(window);
     }
   }
 }
@@ -481,11 +546,35 @@ tab_width_value_changed(GtkSpinButton *spin_button,
 }
 
 static void
+right_margin_position_value_changed(GtkSpinButton* spin_button,
+                                    gpointer       user_data)
+{
+  guint value = gtk_spin_button_get_value_as_int(spin_button);
+  marker_prefs_set_right_margin_position(value);
+  
+  GtkApplication* app = marker_get_app();
+  GList* windows = gtk_application_get_windows(app);
+  for (GList* item = windows; item != NULL; item = item->next)
+  {
+    if (MARKER_IS_EDITOR_WINDOW(item->data))
+    {
+      MarkerEditorWindow* window = item->data;
+      marker_editor_window_set_right_margin_position(window, value);
+    }
+  }
+}
+
+static void
 show_right_margin_toggled(GtkToggleButton* button,
                           gpointer         user_data)
 {
   gboolean state = gtk_toggle_button_get_active(button);
   marker_prefs_set_show_right_margin(state);
+
+  if (user_data)
+  {
+    gtk_widget_set_sensitive(GTK_WIDGET(user_data), state);
+  }
 
   GtkApplication* app = marker_get_app();
   GList* windows = gtk_application_get_windows(app);
@@ -518,21 +607,6 @@ syntax_chosen(GtkComboBox* combo_box,
   }
   
   free(choice);
-}
-
-static void
-editor_syntax_toggled(GtkToggleButton* button, 
-                      gpointer user_data)
-{
-  gboolean state = gtk_toggle_button_get_active(button);
-
-  marker_prefs_set_use_highlight(state);
-  if (user_data)
-  {
-    gtk_widget_set_sensitive(GTK_WIDGET(user_data), state);
-  }
-
-  /* TODO: update editor */
 }
 
 static void
@@ -580,6 +654,7 @@ code_highlight_toggled(GtkToggleButton* button,
   {
     gtk_widget_set_sensitive(GTK_WIDGET(user_data), state);
   }
+  
   refresh_preview();
 }
 
@@ -616,7 +691,7 @@ marker_prefs_show_window()
   marker_widget_populate_combo_box_with_strings(combo_box, list);
   char* syntax = marker_prefs_get_syntax_theme();
   marker_widget_combo_box_set_active_str(combo_box,syntax, g_list_length(list));
-  gtk_widget_set_sensitive(combo_box, marker_prefs_get_use_highlight());
+  gtk_widget_set_sensitive(GTK_WIDGET(combo_box), marker_prefs_get_use_highlight());
   g_free(syntax);
   g_list_free_full(list, free);
   list = NULL;
@@ -627,6 +702,7 @@ marker_prefs_show_window()
   char* css = marker_prefs_get_css_theme();
   char* css_filename = marker_string_filename_get_name(css);
   marker_widget_combo_box_set_active_str(combo_box, css_filename, g_list_length(list));
+  gtk_widget_set_sensitive(GTK_WIDGET(combo_box), marker_prefs_get_use_css_theme());
   free(css_filename);
   g_free(css);
   g_list_free_full(list, free);
@@ -637,7 +713,7 @@ marker_prefs_show_window()
   marker_widget_populate_combo_box_with_strings(combo_box, list);
   char* theme = marker_prefs_get_highlight_theme();
   marker_widget_combo_box_set_active_str(combo_box, theme, g_list_length(list));
-  gtk_widget_set_sensitive(combo_box, marker_prefs_get_use_highlight());
+  gtk_widget_set_sensitive(GTK_WIDGET(combo_box), marker_prefs_get_use_highlight());
   g_free(theme);
   g_list_free_full(list, free);
   list = NULL;
@@ -656,7 +732,7 @@ marker_prefs_show_window()
   marker_widget_populate_combo_box_with_strings(combo_box, list);
   char* lang = marker_prefs_get_spell_check_langauge();
   marker_widget_combo_box_set_active_str(combo_box, lang, g_list_length(list));
-  gtk_widget_set_sensitive(combo_box, marker_prefs_get_spell_check());
+  gtk_widget_set_sensitive(GTK_WIDGET(combo_box), marker_prefs_get_spell_check());
   g_free(lang);
   g_list_free_full(list, free);
   list = NULL;
@@ -664,6 +740,14 @@ marker_prefs_show_window()
   check_button =
     GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "editor_syntax_check_button"));
   gtk_toggle_button_set_active(check_button, marker_prefs_get_use_highlight());
+
+  check_button =
+    GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "css_check_button"));
+  gtk_toggle_button_set_active(check_button, marker_prefs_get_use_css_theme());
+  
+  check_button =
+    GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "editor_syntax_check_button"));
+  gtk_toggle_button_set_active(check_button, marker_prefs_get_use_syntax_theme());
 
   check_button =
     GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "katex_check_button"));
@@ -706,6 +790,13 @@ marker_prefs_show_window()
   gtk_toggle_button_set_active(check_button, marker_prefs_get_gnome_appmenu());
 
   spin_button =
+    GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "right_margin_position_spin_button"));
+  gtk_widget_set_sensitive(GTK_WIDGET(spin_button), marker_prefs_get_show_right_margin());
+  gtk_spin_button_set_range(spin_button, 1, 1000);
+  gtk_spin_button_set_increments(spin_button, 1, 0);
+  gtk_spin_button_set_value(spin_button, marker_prefs_get_right_margin_position());
+
+  spin_button =
     GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "tab_width_spin_button"));
   gtk_spin_button_set_range(spin_button, 1, 12);
   gtk_spin_button_set_increments(spin_button, 1, 0);
@@ -720,8 +811,14 @@ marker_prefs_show_window()
                                   "syntax_chosen",
                                   G_CALLBACK(syntax_chosen));
   gtk_builder_add_callback_symbol(builder,
+                                  "editor_syntax_toggled",
+                                  G_CALLBACK(editor_syntax_toggled));
+  gtk_builder_add_callback_symbol(builder,
                                   "css_chosen",
                                   G_CALLBACK(css_chosen));
+  gtk_builder_add_callback_symbol(builder,
+                                  "css_toggled",
+                                  G_CALLBACK(css_toggled));
   gtk_builder_add_callback_symbol(builder,
                                   "highlight_css_chosen",
                                   G_CALLBACK(highlight_css_chosen));
@@ -752,6 +849,9 @@ marker_prefs_show_window()
   gtk_builder_add_callback_symbol(builder,
                                   "tab_width_value_changed",
                                   G_CALLBACK(tab_width_value_changed));
+  gtk_builder_add_callback_symbol(builder,
+                                  "right_margin_position_value_changed",
+                                  G_CALLBACK(right_margin_position_value_changed));
   gtk_builder_add_callback_symbol(builder,
                                   "enable_katex_toggled",
                                   G_CALLBACK(enable_katex_toggled));
