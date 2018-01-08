@@ -104,6 +104,16 @@ marker_editor_window_set_syntax_theme(MarkerEditorWindow* window,
                                       const char*         theme);
 
 /**
+ * Enable or disable syntax theme for a MarkerEditorWindow
+ *
+ * @param window The window to set the syntax theme for
+ * @param state TRUE if the syntax theme should be enabled, FALSE otherwise
+ */
+void
+marker_editor_window_set_use_syntax_theme(MarkerEditorWindow* window,
+                                          gboolean            state);
+
+/**
  * Enable or disable line numbers for a MarkerEditorWindow
  *
  * @param window The window to set line numbers for
@@ -168,7 +178,11 @@ marker_editor_window_set_wrap_text(MarkerEditorWindow* window,
 void
 marker_editor_window_set_show_right_margin(MarkerEditorWindow* window,
                                            gboolean            state);
-  
+
+void
+marker_editor_window_set_right_margin_position(MarkerEditorWindow* window,
+                                               guint               value);
+
 void
 marker_editor_window_apply_prefs(MarkerEditorWindow* window);
 

@@ -248,18 +248,34 @@ marker_editor_window_set_view_mode(MarkerEditorWindow*        window,
 }
 
 void
+marker_editor_window_set_use_syntax_theme(MarkerEditorWindow* window,
+                                          gboolean            state)
+{
+  GtkSourceBuffer* buffer =
+    GTK_SOURCE_BUFFER(gtk_text_view_get_buffer(GTK_TEXT_VIEW(window->source_view)));
+  gtk_source_buffer_set_highlight_syntax(buffer, state);
+}
+
+void
 marker_editor_window_refresh_preview(MarkerEditorWindow* window)
 {
   gchar* markdown = marker_editor_window_get_markdown(window);
-  const char* css_theme = marker_prefs_get_css_theme();
+  const char* css_theme = (marker_prefs_get_use_css_theme())
+                          ? marker_prefs_get_css_theme()
+                          : NULL;
 
 
-  gchar* uri = NULL;
-  if (G_IS_FILE(window->file)) { uri = g_file_get_uri(window->file); }
+  gchar* uri = (G_IS_FILE(window->file))
+               ? g_file_get_uri(window->file)
+               : NULL;
 
   marker_preview_render_markdown(window->web_view, markdown, css_theme, uri);
   
-  if (uri) { g_free(uri); }
+  if (uri)
+  {
+    g_free(uri);
+  }
+  
   g_free(markdown);
 }
 
@@ -358,23 +374,23 @@ marker_editor_window_set_title_filename_unsaved(MarkerEditorWindow* window)
 void marker_editor_window_set_replace_tabs(MarkerEditorWindow*  window,
                                            gboolean             state)
 {
-  gtk_source_view_set_insert_spaces_instead_of_tabs(window->source_view, state);
+  gtk_source_view_set_insert_spaces_instead_of_tabs(GTK_SOURCE_VIEW(window->source_view), state);
 }
 
 void marker_editor_window_set_auto_indent(MarkerEditorWindow*  window,
                                            gboolean             state)
 {
-  gtk_source_view_set_auto_indent(window->source_view, state);
+  gtk_source_view_set_auto_indent(GTK_SOURCE_VIEW(window->source_view), state);
 }
 
 void marker_editor_window_set_tab_width(MarkerEditorWindow*   window,
                                         guint                 value)
 {
-  gtk_source_view_set_tab_width(window->source_view, value);
+  gtk_source_view_set_tab_width(GTK_SOURCE_VIEW(window->source_view), value);
 }
 
 void marker_editor_window_set_spell_check(MarkerEditorWindow* window,
-                                    gboolean            state)
+                                          gboolean            state)
 {
   marker_source_view_set_spell_check(window->source_view, state);
 }
@@ -412,8 +428,14 @@ void
 marker_editor_window_set_wrap_text(MarkerEditorWindow* window,
                                    gboolean            state)
 {
-  gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(window->source_view),
-                              GTK_WRAP_WORD);
+  if (state)
+  {
+    gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(window->source_view), GTK_WRAP_WORD);
+  }
+  else
+  {
+    gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(window->source_view), GTK_WRAP_NONE);
+  }
 }
 
 void
@@ -425,10 +447,26 @@ marker_editor_window_set_show_right_margin(MarkerEditorWindow* window,
 }
 
 void
+marker_editor_window_set_right_margin_position(MarkerEditorWindow* window,
+                                               guint               value)
+{
+  gtk_source_view_set_right_margin_position(GTK_SOURCE_VIEW(window->source_view), value);
+}
+
+void
 marker_editor_window_apply_prefs(MarkerEditorWindow* window)
 {
-  marker_editor_window_set_syntax_theme(window, marker_prefs_get_syntax_theme());
+  if (marker_prefs_get_use_syntax_theme())
+  {
+    marker_editor_window_set_syntax_theme(window, marker_prefs_get_syntax_theme());
+  }
+  else
+  {
+    marker_editor_window_set_use_syntax_theme(window, false);
+  }
+  
   marker_editor_window_set_show_right_margin(window, marker_prefs_get_show_right_margin());
+  marker_editor_window_set_right_margin_position(window, marker_prefs_get_right_margin_position());
   marker_editor_window_set_wrap_text(window, marker_prefs_get_wrap_text());
   marker_editor_window_set_highlight_current_line(window, marker_prefs_get_highlight_current_line());
   marker_editor_window_set_show_line_numbers(window, marker_prefs_get_show_line_numbers());

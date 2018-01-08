@@ -4,5 +4,6 @@
     <file>ui/editor-window.ui</file>
     <file>ui/prefs-window.ui</file>
     <file>ui/export-dialog.ui</file>
+    <file>ui/shortcuts-window.ui</file>
   </gresource>
 </gresources>

@@ -54,4 +54,3 @@ marker_source_view_set_spell_check_lang(MarkerSourceView*   source_view,
 G_END_DECLS
 
 #endif
-

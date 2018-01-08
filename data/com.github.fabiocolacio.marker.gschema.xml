@@ -19,6 +19,12 @@
       <summary>Syntax Theme</summary>
       <description>The syntax theme to use for the editor.</description>
     </key>
+    
+    <key name="enable-syntax-theme" type="b">
+      <default>false</default>
+      <summary>Enable Syntax Theme</summary>
+      <description>Whether to use a syntax theme in the editor.</description>
+    </key>
   
     <key name="show-line-numbers" type="b">
       <default>true</default>
@@ -30,6 +36,12 @@
       <default>true</default>
       <summary>Show Right Margin</summary>
       <description>Whether to show a margin on the right side of the editor.</description>
+    </key>
+    
+    <key name="show-right-margin-position" type="u">
+      <default>80</default>
+      <summary>The column at which the right margin should be shown</summary>
+      <description>Sets the column where the right margin will appear when 'show-right-margin' is enabled</description>
     </key>
     
     <key name="wrap-text" type="b">
@@ -52,7 +64,7 @@
 
     <key name="tab-width" type="u">
       <default>4</default>
-      <summary>width of tabulation in characters.</summary>
+      <summary>Width of tabulation in characters.</summary>
       <description>Set the width of tabulation in characters in the editor.</description>
     </key>
 
@@ -73,7 +85,6 @@
       <summary>Language for spell check</summary>
       <description>Selected language for spell check.</description>
     </key>
-    
   </schema>
   
   <schema path="/com/github/fabiocolacio/marker/preferences/preview/" id="com.github.fabiocolacio.marker.preferences.preview">
@@ -81,6 +92,12 @@
       <default>'/usr/share/com.github.fabiocolacio.marker/styles/swiss.css'</default>
       <summary>CSS Theme</summary>
       <description>The css theme to use for the preview.</description>
+    </key>
+    
+    <key name="css-toggle" type="b">
+      <default>true</default>
+      <summary>Enable CSS theme in Preview</summary>
+      <summary>Use a CSS theme in the live preview</summary>
     </key>
     
     <key name="katex-toggle" type="b">
