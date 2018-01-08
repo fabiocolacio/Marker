@@ -83,6 +83,12 @@
       <description>The css theme to use for the preview.</description>
     </key>
     
+    <key name="css-toggle" type="b">
+      <default>true</default>
+      <summary>Enable CSS theme in Preview</summary>
+      <summary>Use a CSS theme in the live preview</summary>
+    </key>
+    
     <key name="katex-toggle" type="b">
       <default>true</default>
       <summary>Enable KaTeX in Preview</summary>

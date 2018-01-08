@@ -81,6 +81,12 @@ marker_prefs_get_css_theme();
 void
 marker_prefs_set_css_theme(const char* theme);
 
+gboolean
+marker_prefs_get_use_css_theme();
+
+void
+marker_prefs_set_use_css_theme(gboolean state);
+
 char*
 marker_prefs_get_highlight_theme();
 

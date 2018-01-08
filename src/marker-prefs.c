@@ -27,6 +27,18 @@ marker_prefs_set_css_theme(const char* theme)
   g_settings_set_string(prefs.preview_settings, "css-theme", theme);
 }
 
+gboolean
+marker_prefs_get_use_css_theme()
+{
+  g_settings_get_boolean(prefs.preview_settings, "css-toggle");
+}
+
+void
+marker_prefs_set_use_css_theme(gboolean state)
+{
+  g_settings_set_boolean(prefs.preview_settings, "css-toggle", state);
+}
+
 char*
 marker_prefs_get_highlight_theme()
 {
@@ -318,6 +330,14 @@ show_line_numbers_toggled(GtkToggleButton* button,
       marker_editor_window_set_show_line_numbers(window, state);
     }
   }
+}
+
+static void
+css_toggled(GtkToggleButton* button,
+            gpointer         user_data)
+{
+  gboolean state = gtk_toggle_button_get_active(button);
+  marker_prefs_set_use_css_theme(state);
 }
 
 static void
@@ -666,6 +686,10 @@ marker_prefs_show_window()
   gtk_toggle_button_set_active(check_button, marker_prefs_get_use_highlight());
 
   check_button =
+    GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "css_check_button"));
+  gtk_toggle_button_set_active(check_button, marker_prefs_get_use_css_theme());
+
+  check_button =
     GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "katex_check_button"));
   gtk_toggle_button_set_active(check_button, marker_prefs_get_use_katex());
 
@@ -722,6 +746,9 @@ marker_prefs_show_window()
   gtk_builder_add_callback_symbol(builder,
                                   "css_chosen",
                                   G_CALLBACK(css_chosen));
+  gtk_builder_add_callback_symbol(builder,
+                                  "css_toggled",
+                                  G_CALLBACK(css_toggled));
   gtk_builder_add_callback_symbol(builder,
                                   "highlight_css_chosen",
                                   G_CALLBACK(highlight_css_chosen));
