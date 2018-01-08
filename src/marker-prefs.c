@@ -103,13 +103,13 @@ marker_prefs_set_syntax_theme(const char* theme)
 guint
 marker_prefs_get_right_margin_position()
 {
-  return 0;
+  return g_settings_get_uint(prefs.editor_settings, "show-right-margin-position");
 }
 
 void
 marker_prefs_set_right_margin_position(guint position)
 {
-  
+  g_settings_set_uint(prefs.editor_settings, "show-right-margin-position", position);
 }
 
 gboolean
@@ -546,11 +546,35 @@ tab_width_value_changed(GtkSpinButton *spin_button,
 }
 
 static void
+right_margin_position_value_changed(GtkSpinButton* spin_button,
+                                    gpointer       user_data)
+{
+  guint value = gtk_spin_button_get_value_as_int(spin_button);
+  marker_prefs_set_right_margin_position(value);
+  
+  GtkApplication* app = marker_get_app();
+  GList* windows = gtk_application_get_windows(app);
+  for (GList* item = windows; item != NULL; item = item->next)
+  {
+    if (MARKER_IS_EDITOR_WINDOW(item->data))
+    {
+      MarkerEditorWindow* window = item->data;
+      marker_editor_window_set_right_margin_position(window, value);
+    }
+  }
+}
+
+static void
 show_right_margin_toggled(GtkToggleButton* button,
                           gpointer         user_data)
 {
   gboolean state = gtk_toggle_button_get_active(button);
   marker_prefs_set_show_right_margin(state);
+
+  if (user_data)
+  {
+    gtk_widget_set_sensitive(GTK_WIDGET(user_data), state);
+  }
 
   GtkApplication* app = marker_get_app();
   GList* windows = gtk_application_get_windows(app);
@@ -630,6 +654,7 @@ code_highlight_toggled(GtkToggleButton* button,
   {
     gtk_widget_set_sensitive(GTK_WIDGET(user_data), state);
   }
+  
   refresh_preview();
 }
 
@@ -765,6 +790,13 @@ marker_prefs_show_window()
   gtk_toggle_button_set_active(check_button, marker_prefs_get_gnome_appmenu());
 
   spin_button =
+    GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "right_margin_position_spin_button"));
+  gtk_widget_set_sensitive(GTK_WIDGET(spin_button), marker_prefs_get_show_right_margin());
+  gtk_spin_button_set_range(spin_button, 1, 1000);
+  gtk_spin_button_set_increments(spin_button, 1, 0);
+  gtk_spin_button_set_value(spin_button, marker_prefs_get_right_margin_position());
+
+  spin_button =
     GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "tab_width_spin_button"));
   gtk_spin_button_set_range(spin_button, 1, 12);
   gtk_spin_button_set_increments(spin_button, 1, 0);
@@ -817,6 +849,9 @@ marker_prefs_show_window()
   gtk_builder_add_callback_symbol(builder,
                                   "tab_width_value_changed",
                                   G_CALLBACK(tab_width_value_changed));
+  gtk_builder_add_callback_symbol(builder,
+                                  "right_margin_position_value_changed",
+                                  G_CALLBACK(right_margin_position_value_changed));
   gtk_builder_add_callback_symbol(builder,
                                   "enable_katex_toggled",
                                   G_CALLBACK(enable_katex_toggled));

@@ -38,6 +38,12 @@
       <description>Whether to show a margin on the right side of the editor.</description>
     </key>
     
+    <key name="show-right-margin-position" type="u">
+      <default>80</default>
+      <summary>The column at which the right margin should be shown</summary>
+      <description>Sets the column where the right margin will appear when 'show-right-margin' is enabled</description>
+    </key>
+    
     <key name="wrap-text" type="b">
       <default>false</default>
       <summary>Wrap Text</summary>
@@ -58,7 +64,7 @@
 
     <key name="tab-width" type="u">
       <default>4</default>
-      <summary>width of tabulation in characters.</summary>
+      <summary>Width of tabulation in characters.</summary>
       <description>Set the width of tabulation in characters in the editor.</description>
     </key>
 

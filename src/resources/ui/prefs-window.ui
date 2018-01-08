@@ -89,7 +89,7 @@
                     <property name="can_focus">True</property>
                     <property name="receives_default">False</property>
                     <property name="draw_indicator">True</property>
-                    <signal name="toggled" handler="show_right_margin_toggled" swapped="no"/>
+                    <signal name="toggled" handler="show_right_margin_toggled" object="right_margin_position_spin_button" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -101,7 +101,7 @@
                   <object class="GtkSpinButton" id="right_margin_position_spin_button">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <signal name="change-value" handler="right_margin_position_value_changed" swapped="no"/>
+                    <signal name="value-changed" handler="right_margin_position_value_changed" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
