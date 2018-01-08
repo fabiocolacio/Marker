@@ -42,7 +42,7 @@ marker_prefs_set_css_theme(const char* theme)
 gboolean
 marker_prefs_get_use_css_theme()
 {
-  g_settings_get_boolean(prefs.preview_settings, "css-toggle");
+  return g_settings_get_boolean(prefs.preview_settings, "css-toggle");
 }
 
 void
@@ -326,6 +326,20 @@ marker_prefs_get_available_syntax_themes()
 }
 
 static void
+refresh_preview(){
+  GtkApplication* app = marker_get_app();
+  GList* windows = gtk_application_get_windows(app);
+  for (GList* item = windows; item != NULL; item = item->next)
+  {
+    if (MARKER_IS_EDITOR_WINDOW(item->data))
+    {
+      MarkerEditorWindow* window = item->data;
+      marker_editor_window_refresh_preview(window);
+    }
+  }
+}
+
+static void
 show_line_numbers_toggled(GtkToggleButton* button,
                           gpointer         user_data)
 {
@@ -375,6 +389,13 @@ css_toggled(GtkToggleButton* button,
 {
   gboolean state = gtk_toggle_button_get_active(button);
   marker_prefs_set_use_css_theme(state);
+  
+  if (user_data)
+  {
+    gtk_widget_set_sensitive(GTK_WIDGET(user_data), state);
+  }
+  
+  refresh_preview();
 }
 
 static void
@@ -392,19 +413,6 @@ highlight_current_line_toggled(GtkToggleButton* button,
     {
       MarkerEditorWindow* window = item->data;
       marker_editor_window_set_highlight_current_line(window, state);
-    }
-  }
-}
-
-static void refresh_preview(){
-  GtkApplication* app = marker_get_app();
-  GList* windows = gtk_application_get_windows(app);
-  for (GList* item = windows; item != NULL; item = item->next)
-  {
-    if (MARKER_IS_EDITOR_WINDOW(item->data))
-    {
-      MarkerEditorWindow* window = item->data;
-      marker_editor_window_refresh_preview(window);
     }
   }
 }
@@ -658,7 +666,7 @@ marker_prefs_show_window()
   marker_widget_populate_combo_box_with_strings(combo_box, list);
   char* syntax = marker_prefs_get_syntax_theme();
   marker_widget_combo_box_set_active_str(combo_box,syntax, g_list_length(list));
-  gtk_widget_set_sensitive(combo_box, marker_prefs_get_use_highlight());
+  gtk_widget_set_sensitive(GTK_WIDGET(combo_box), marker_prefs_get_use_highlight());
   g_free(syntax);
   g_list_free_full(list, free);
   list = NULL;
@@ -669,6 +677,7 @@ marker_prefs_show_window()
   char* css = marker_prefs_get_css_theme();
   char* css_filename = marker_string_filename_get_name(css);
   marker_widget_combo_box_set_active_str(combo_box, css_filename, g_list_length(list));
+  gtk_widget_set_sensitive(GTK_WIDGET(combo_box), marker_prefs_get_use_css_theme());
   free(css_filename);
   g_free(css);
   g_list_free_full(list, free);
@@ -679,7 +688,7 @@ marker_prefs_show_window()
   marker_widget_populate_combo_box_with_strings(combo_box, list);
   char* theme = marker_prefs_get_highlight_theme();
   marker_widget_combo_box_set_active_str(combo_box, theme, g_list_length(list));
-  gtk_widget_set_sensitive(combo_box, marker_prefs_get_use_highlight());
+  gtk_widget_set_sensitive(GTK_WIDGET(combo_box), marker_prefs_get_use_highlight());
   g_free(theme);
   g_list_free_full(list, free);
   list = NULL;
@@ -698,7 +707,7 @@ marker_prefs_show_window()
   marker_widget_populate_combo_box_with_strings(combo_box, list);
   char* lang = marker_prefs_get_spell_check_langauge();
   marker_widget_combo_box_set_active_str(combo_box, lang, g_list_length(list));
-  gtk_widget_set_sensitive(combo_box, marker_prefs_get_spell_check());
+  gtk_widget_set_sensitive(GTK_WIDGET(combo_box), marker_prefs_get_spell_check());
   g_free(lang);
   g_list_free_full(list, free);
   list = NULL;
