@@ -1,5 +1,6 @@
 #include <gtksourceview/gtksource.h>
 #include <webkit2/webkit2.h>
+#include <gtkspell/gtkspell.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -352,6 +353,36 @@ marker_editor_window_set_title_filename_unsaved(MarkerEditorWindow* window)
     gtk_header_bar_set_title(window->header_bar, "*Untitled.md");
     gtk_header_bar_set_has_subtitle(window->header_bar, FALSE);
   }
+}
+
+void marker_editor_window_set_replace_tabs(MarkerEditorWindow*  window,
+                                           gboolean             state)
+{
+  gtk_source_view_set_insert_spaces_instead_of_tabs(window->source_view, state);
+}
+
+void marker_editor_window_set_auto_indent(MarkerEditorWindow*  window,
+                                           gboolean             state)
+{
+  gtk_source_view_set_auto_indent(window->source_view, state);
+}
+
+void marker_editor_window_set_tab_width(MarkerEditorWindow*   window,
+                                        guint                 value)
+{
+  gtk_source_view_set_tab_width(window->source_view, value);
+}
+
+void marker_editor_window_set_spell_check(MarkerEditorWindow* window,
+                                    gboolean            state)
+{
+  marker_source_view_set_spell_check(window->source_view, state);
+}
+
+void marker_editor_window_set_spell_lang(MarkerEditorWindow* window,
+                                    gchar*            lang)
+{
+  marker_source_view_set_spell_check_lang(window->source_view, lang);
 }
 
 void

@@ -43,6 +43,37 @@
       <summary>Highlight Current Line</summary>
       <description>Whether to highlight the line with the cursor in the editor.</description>
     </key>
+
+    <key name="replace-tabs" type="b">
+      <default>false</default>
+      <summary>Use spaces instead of tabs</summary>
+      <description>Use spaces instead of tabs in the editor.</description>
+    </key>
+
+    <key name="tab-width" type="u">
+      <default>4</default>
+      <summary>width of tabulation in characters.</summary>
+      <description>Set the width of tabulation in characters in the editor.</description>
+    </key>
+
+    <key name="auto-indent" type="b">
+      <default>false</default>
+      <summary>Auto-indent code</summary>
+      <description>Auto-indent code in the editor.</description>
+    </key>
+
+    <key name="spell-check" type="b">
+      <default>false</default>
+      <summary>Spell Check</summary>
+      <description>Spell check using gtkspell.</description>
+    </key>
+
+    <key name="spell-check-lang" type="s">
+      <default>'en_US'</default>
+      <summary>Language for spell check</summary>
+      <description>Selected language for spell check.</description>
+    </key>
+    
   </schema>
   
   <schema path="/com/github/fabiocolacio/marker/preferences/preview/" id="com.github.fabiocolacio.marker.preferences.preview">

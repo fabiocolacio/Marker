@@ -114,6 +114,45 @@ marker_editor_window_set_show_line_numbers(MarkerEditorWindow* window,
                                            gboolean            state);
 
 /**
+ * Enable or disable spell check a MarkerEditorWindow
+ *
+ * @param window The window to set line numbers for
+ * @param state The state to set the spell checker to
+ */
+void
+marker_editor_window_set_spell_check(MarkerEditorWindow* window,
+                                     gboolean            state);
+
+/**
+ * Set spell check language a MarkerEditorWindow
+ *
+ * @param window The window to set line numbers for
+ * @param lang The language to set the spell checker to
+ */
+void marker_editor_window_set_spell_lang(MarkerEditorWindow* window,
+                                    gchar*            lang);
+
+/**
+ * Enable or disable the replacement of the the tabs by spaces.
+ * 
+ * @param window The window to change the setting for
+ * @param state The state of the setting to
+ **/
+void marker_editor_window_set_replace_tabs(MarkerEditorWindow*  window,
+                                           gboolean             state);
+
+/**
+ * Enable or disable the auto indentation.
+ * 
+ * @param window The window to change the setting for
+ * @param state The state of the setting to
+ **/
+void marker_editor_window_set_auto_indent(MarkerEditorWindow*  window,
+                                           gboolean             state);
+                                           
+void marker_editor_window_set_tab_width(MarkerEditorWindow*   window,
+                                        guint                 value);
+/**
  * Enable or disable highlighting the current line for a MarkerEditorWindow
  *
  * @param window The window to set the 
