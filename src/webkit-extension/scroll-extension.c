@@ -9,11 +9,19 @@ restore_scroll_position(WebKitWebPage   *web_page,
                         gpointer         user_data)
 {
     WebKitDOMDocument * document = webkit_web_page_get_dom_document (web_page);
-    WebKitDOMElement* body = webkit_dom_document_get_body (document);
+    WebKitDOMElement* body = WEBKIT_DOM_ELEMENT(webkit_dom_document_get_body (document));
+    
+    const glong *pos = user_data;
+    
+    g_print("restore_scroll_position()\n");
+    
     if (body){
-        glong *pos = user_data;
         webkit_dom_element_set_scroll_top(body, *pos);     
+    } else {
+      g_print("  couldn't get body!\n");
     }
+    
+    g_print("  scroll position: %d\n", *pos);
 }
 
 static gboolean 
@@ -23,11 +31,20 @@ store_scroll_position(WebKitWebPage      *web_page,
                        gpointer           user_data)
 {
     WebKitDOMDocument * document = webkit_web_page_get_dom_document (web_page);
-    WebKitDOMElement* body = webkit_dom_document_get_body (document);
+    WebKitDOMElement* body = WEBKIT_DOM_ELEMENT(webkit_dom_document_get_body (document));
+    glong * pos = user_data;
+    
+    g_print("store_scroll_position()\n");
+    
     if (body){
-        glong *pos = user_data;
         *pos = webkit_dom_element_get_scroll_top(body);        
+    } else {
+      g_print("  couldn't get body!\n");
     }
+    
+    
+    g_print("  scroll position: %d\n", *pos);
+    
     return FALSE;
 }
 
@@ -37,7 +54,7 @@ initialize (WebKitWebExtension                *extension,
                            gpointer            user_data)
 {
     /** create a new position index for each thread.**/
-    glong * pos = malloc(sizeof(glong));
+    glong * pos = g_malloc(sizeof(glong));
     *pos = 0;
 
     g_signal_connect(web_page, "document-loaded",
@@ -46,6 +63,8 @@ initialize (WebKitWebExtension                *extension,
     g_signal_connect(web_page, "send-request",
                      G_CALLBACK(store_scroll_position),
                      pos);
+    
+    g_print("initialize()\n");
 }
 
 
@@ -55,4 +74,5 @@ webkit_web_extension_initialize (WebKitWebExtension *extension)
     g_signal_connect (extension, "page-created",
                       G_CALLBACK (initialize),
                       NULL);
+    g_print("webkit_web_extension_initialize()\n");
 }

@@ -87,9 +87,9 @@ static void
 marker_preview_init(MarkerPreview* preview)
 {
   g_signal_connect (webkit_web_context_get_default (),
-                   "initialize-web-extensions",
-                   G_CALLBACK (initialize_web_extensions),
-                   NULL);
+                    "initialize-web-extensions",
+                    G_CALLBACK (initialize_web_extensions),
+                    NULL);
 }
 
 static void
