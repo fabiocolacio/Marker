@@ -112,6 +112,24 @@ void
 marker_prefs_set_use_highlight(gboolean state);
 
 gboolean
+marker_prefs_get_use_mermaid();
+
+void
+marker_prefs_set_use_mermaid(gboolean state);
+
+gboolean
+marker_prefs_get_use_figure_caption();
+
+void
+marker_prefs_set_use_figure_caption(gboolean state);
+
+gboolean
+marker_prefs_get_use_figure_numbering();
+
+void
+marker_prefs_set_use_figure_numbering(gboolean state);
+
+gboolean
 marker_prefs_get_gnome_appmenu();
 
 void
