@@ -1,6 +1,8 @@
 #ifndef __MARKER_STRING_H__
 #define __MARKER_STRING_H__
 
+#include <string.h>
+
 int
 marker_string_ends_with(const char* str,
                         const char* sub_str);
