@@ -76,6 +76,17 @@ marker_prefs_set_use_katex(gboolean state)
   g_settings_set_boolean(prefs.preview_settings, "katex-toggle", state);
 }
 
+gboolean
+marker_prefs_get_use_equation_numbering()
+{
+  return g_settings_get_boolean(prefs.preview_settings, "equation-numbering-toggle");
+}
+
+void
+marker_prefs_set_use_equation_numbering(gboolean state)
+{
+  g_settings_set_boolean(prefs.preview_settings, "equation-numbering-toggle", state);
+}
 
 gboolean
 marker_prefs_get_use_mermaid()
@@ -460,6 +471,16 @@ enable_katex_toggled(GtkToggleButton* button,
 {
   gboolean state = gtk_toggle_button_get_active(button);
   marker_prefs_set_use_katex(state);
+  gtk_widget_set_sensitive(GTK_WIDGET(user_data), state);
+  refresh_preview();
+}
+
+static void
+equation_numbering_toggled(GtkToggleButton* button,
+                       gpointer         user_data)
+{
+  gboolean state = gtk_toggle_button_get_active(button);
+  marker_prefs_set_use_equation_numbering(state);
   refresh_preview();
 }
 
@@ -819,6 +840,11 @@ marker_prefs_show_window()
   gtk_toggle_button_set_active(check_button, marker_prefs_get_use_katex());
 
   check_button =
+    GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "equation_numbering_check_button"));
+  gtk_toggle_button_set_active(check_button, marker_prefs_get_use_equation_numbering());
+  gtk_widget_set_sensitive(GTK_WIDGET(check_button), marker_prefs_get_use_katex());
+
+  check_button =
     GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "mermaid_check_button"));
   gtk_toggle_button_set_active(check_button, marker_prefs_get_use_mermaid());
 
@@ -933,6 +959,9 @@ marker_prefs_show_window()
   gtk_builder_add_callback_symbol(builder,
                                   "enable_katex_toggled",
                                   G_CALLBACK(enable_katex_toggled));
+  gtk_builder_add_callback_symbol(builder,
+                                  "equation_numbering_toggled",
+                                  G_CALLBACK(equation_numbering_toggled));
   gtk_builder_add_callback_symbol(builder,
                                   "enable_mermaid_toggled",
                                   G_CALLBACK(enable_mermaid_toggled));

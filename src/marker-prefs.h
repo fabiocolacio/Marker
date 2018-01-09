@@ -106,6 +106,12 @@ void
 marker_prefs_set_use_katex(gboolean state);
 
 gboolean
+marker_prefs_get_use_equation_numbering();
+
+void
+marker_prefs_set_use_equation_numbering(gboolean state);
+
+gboolean
 marker_prefs_get_use_highlight();
 
 void
