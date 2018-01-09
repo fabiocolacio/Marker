@@ -132,8 +132,20 @@ marker_preview_render_markdown(MarkerPreview* preview,
   if (marker_prefs_get_use_highlight()){
     highlight_mode = HIGHLIGHT_LOCAL;
   }
+  MarkerMermaidMode mermaid_mode = MERMAID_OFF;
+  if (marker_prefs_get_use_mermaid())
+  {
+    mermaid_mode = MERMAID_LOCAL;
+  }
 
-  char* html = marker_markdown_to_html(markdown, strlen(markdown), katex_mode, highlight_mode, css_theme);
+
+  char* html = marker_markdown_to_html(markdown, 
+                                       strlen(markdown), 
+                                       katex_mode, 
+                                       highlight_mode,
+                                       mermaid_mode,
+                                       css_theme);
+                                       
   const char* uri = (base_uri) ? base_uri : "file://";
   WebKitWebView* web_view = WEBKIT_WEB_VIEW(preview);
 
