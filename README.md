@@ -10,6 +10,7 @@ unfinished features.
 * View and edit markdown documents
 * HTML conversion of markdown documents with [hoedown](https://github.com/hoedown/hoedown)
 * TeX math rendering with [KaTeX](https://khan.github.io/KaTeX/)
+* Support for [mermaid](https://mermaidjs.github.io/) diagrams
 * Syntax highlighting for code blocks with [highlight.js](https://highlightjs.org/)
 * Flexible export options with [pandoc](https://pandoc.org/)
   * PDF
