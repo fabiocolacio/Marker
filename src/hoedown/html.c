@@ -406,8 +406,16 @@ rndr_image(hoedown_buffer *ob, const hoedown_buffer *link, const hoedown_buffer 
 		{
 			char * buffer = malloc(sizeof(char)*50);
 			memset(buffer,0, 50);
-			sprintf(buffer, "<b id=\"figure_%u\">Figure %u:</b> ", 
-					state->figure_counter, state->figure_counter);
+			if ((title && title->size) || (alt && alt->size))
+			{
+				sprintf(buffer, "<b id=\"figure_%u\">%s %u:</b> ", 
+						state->figure_counter, state->figure_tag, state->figure_counter);
+			}
+			else
+			{
+				sprintf(buffer, "<b id=\"figure_%u\">%s %u</b>", 
+						state->figure_counter, state->figure_tag, state->figure_counter);
+			}
 			hoedown_buffer_printf(ob, buffer, 50);
 			free(buffer);
 			state->figure_counter ++;
@@ -654,7 +662,7 @@ toc_finalize(hoedown_buffer *ob, int inline_render, const hoedown_renderer_data 
 }
 
 hoedown_renderer *
-hoedown_html_toc_renderer_new(int nesting_level)
+hoedown_html_toc_renderer_new(int nesting_level, char* figure_tag)
 {
 	static const hoedown_renderer cb_default = {
 		NULL,
@@ -708,6 +716,7 @@ hoedown_html_toc_renderer_new(int nesting_level)
 
 	state->toc_data.nesting_level = nesting_level;
 	state->figure_counter = 1;
+	state->figure_tag = figure_tag;
 
 	/* Prepare the renderer */
 	renderer = hoedown_malloc(sizeof(hoedown_renderer));
@@ -718,7 +727,7 @@ hoedown_html_toc_renderer_new(int nesting_level)
 }
 
 hoedown_renderer *
-hoedown_html_renderer_new(hoedown_html_flags render_flags, int nesting_level)
+hoedown_html_renderer_new(hoedown_html_flags render_flags, int nesting_level, char* figure_tag)
 {
 	static const hoedown_renderer cb_default = {
 		NULL,
@@ -772,6 +781,7 @@ hoedown_html_renderer_new(hoedown_html_flags render_flags, int nesting_level)
 
 	state->flags = render_flags;
 	state->figure_counter = 1;
+	state->figure_tag = figure_tag;
 	state->toc_data.nesting_level = nesting_level;
 
 	/* Prepare the renderer */

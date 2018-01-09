@@ -181,7 +181,7 @@ marker_markdown_to_html(const char*         markdown,
   hoedown_buffer* buffer;
   hoedown_html_flags html_mode = get_html_mode(mermaid_mode);
 
-  renderer = hoedown_html_renderer_new(html_mode, 0);
+  renderer = hoedown_html_renderer_new(html_mode, 0, "Figure");
   
   document = hoedown_document_new(renderer,
                                   HOEDOWN_EXT_BLOCK         |
@@ -262,7 +262,7 @@ marker_markdown_to_html_with_css_inline(const char*         markdown,
   hoedown_buffer* buffer;
   hoedown_html_flags html_mode = get_html_mode(mermaid_mode); 
 
-  renderer = hoedown_html_renderer_new(html_mode, 0);
+  renderer = hoedown_html_renderer_new(html_mode, 0, "Figure");
   
   document = hoedown_document_new(renderer,
                                   HOEDOWN_EXT_BLOCK         |

@@ -49,6 +49,7 @@ struct hoedown_html_renderer_state {
 
 	hoedown_html_flags flags;
 	unsigned int figure_counter;
+	char* figure_tag;
 
 	/* extra callbacks */
 	void (*link_attributes)(hoedown_buffer *ob, const hoedown_buffer *url, const hoedown_renderer_data *data);
@@ -70,12 +71,14 @@ hoedown_html_tag hoedown_html_is_tag(const uint8_t *data, size_t size, const cha
 /* hoedown_html_renderer_new: allocates a regular HTML renderer */
 hoedown_renderer *hoedown_html_renderer_new(
 	hoedown_html_flags render_flags,
-	int nesting_level
+	int nesting_level,
+	char* figure_tag
 ) __attribute__ ((malloc));
 
 /* hoedown_html_toc_renderer_new: like hoedown_html_renderer_new, but the returned renderer produces the Table of Contents */
 hoedown_renderer *hoedown_html_toc_renderer_new(
-	int nesting_level
+	int nesting_level,
+	char* figure_tag
 ) __attribute__ ((malloc));
 
 /* hoedown_html_renderer_free: deallocate an HTML renderer */
