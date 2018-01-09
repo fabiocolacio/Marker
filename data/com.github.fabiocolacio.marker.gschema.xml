@@ -133,6 +133,11 @@
       <summary>Enable figure numbering in Preview</summary>
       <description>Enable and display figure numbering in the live preview (when figure-caption-toggle is enabled).</description>
     </key>
+    <key name="equation-numbering-toggle" type="b">
+      <default>false</default>
+      <summary>Enable numbering of equation in Preview</summary>
+      <description>Enable automatic numbering of equations in the live preview.</description>
+    </key>
   </schema>
   
   <schema path="/com/github/fabiocolacio/marker/preferences/window/" id="com.github.fabiocolacio.marker.preferences.window">
