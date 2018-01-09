@@ -97,7 +97,7 @@ rndr_blockcode(hoedown_buffer *ob, const hoedown_buffer *text, const hoedown_buf
 {
 	if (ob->size) hoedown_buffer_putc(ob, '\n');
 	hoedown_html_renderer_state *state = data->opaque;
-	if (lang && (state->flags & HOEDOWN_HTML_MERMAID) != 0 && hoedown_buffer_eq(lang, "mermaid", 7) != 0){
+	if (lang && (state->flags & HOEDOWN_HTML_MERMAID) != 0 && hoedown_buffer_eqs(lang, "mermaid") != 0){
 		if (text){
 	        HOEDOWN_BUFPUTSL(ob, "<div class=\"mermaid\">");
 			hoedown_buffer_put(ob, text->data, text->size);
