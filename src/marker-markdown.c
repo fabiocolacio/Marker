@@ -142,6 +142,29 @@ html_footer(MarkerKaTeXMode     katex_mode,
   return buffer;
 }
 
+hoedown_html_flags 
+get_html_mode(MarkerMermaidMode mermaid_mode)
+{
+  hoedown_html_flags mode = 0;
+  
+  if (mermaid_mode != MERMAID_OFF)
+  {
+    mode |= HOEDOWN_HTML_MERMAID;
+  }
+
+  if (marker_prefs_get_use_figure_caption())
+  {
+    mode |= HOEDOWN_HTML_FIGCAPTION;
+  }
+
+  if (marker_prefs_get_use_figure_numbering())
+  {
+    mode |= HOEDOWN_HTML_FIGCOUNTER;
+  }
+
+  return mode;
+}
+
 
 char*
 marker_markdown_to_html(const char*         markdown,
@@ -156,8 +179,9 @@ marker_markdown_to_html(const char*         markdown,
   hoedown_renderer* renderer;
   hoedown_document* document;
   hoedown_buffer* buffer;
-   
-  renderer = hoedown_html_renderer_new(mermaid_mode == MERMAID_OFF ? 0 : HOEDOWN_HTML_MERMAID,0);
+  hoedown_html_flags html_mode = get_html_mode(mermaid_mode);
+
+  renderer = hoedown_html_renderer_new(html_mode, 0);
   
   document = hoedown_document_new(renderer,
                                   HOEDOWN_EXT_BLOCK         |
@@ -236,8 +260,9 @@ marker_markdown_to_html_with_css_inline(const char*         markdown,
   hoedown_renderer* renderer;
   hoedown_document* document;
   hoedown_buffer* buffer;
+  hoedown_html_flags html_mode = get_html_mode(mermaid_mode); 
 
-  renderer = hoedown_html_renderer_new(mermaid_mode == MERMAID_OFF ? 0 : HOEDOWN_HTML_MERMAID,0);
+  renderer = hoedown_html_renderer_new(html_mode, 0);
   
   document = hoedown_document_new(renderer,
                                   HOEDOWN_EXT_BLOCK         |
