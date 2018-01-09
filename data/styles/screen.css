@@ -100,3 +100,8 @@ pre code {
     float:left;
     margin: 10px;
 }
+
+figure figcaption {
+	text-align: center;
+	font-size: 12px;
+  }

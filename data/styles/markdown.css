@@ -105,3 +105,8 @@ body{font-size:16px;}
   p, h2, h3 { orphans: 3; widows: 3; }
   h2, h3 { page-break-after: avoid; }
 }
+
+figure figcaption {
+  text-align: center;
+  font-size: 12px;
+}

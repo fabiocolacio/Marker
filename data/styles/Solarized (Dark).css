@@ -197,3 +197,8 @@ kbd {
     color: #000 !important;
   }
 }
+
+figure figcaption {
+  text-align: center;
+  font-size: 12px;
+}
