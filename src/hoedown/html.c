@@ -99,11 +99,9 @@ rndr_blockcode(hoedown_buffer *ob, const hoedown_buffer *text, const hoedown_buf
 	hoedown_html_renderer_state *state = data->opaque;
 	if (lang && (state->flags & HOEDOWN_HTML_MERMAID) != 0 && hoedown_buffer_eq(lang, "mermaid", 5) == 0){
 		if (text){
-		  HOEDOWN_BUFPUTSL(ob, "<canvas id=\"chart_0\" width=\"400\" height=\"400\"></canvas><script>");
-			HOEDOWN_BUFPUTSL(ob, "var ctx =  document.getElementById(\"chart_0\");");
-			HOEDOWN_BUFPUTSL(ob, "var chart = new Chart(ctx, {");
+	        HOEDOWN_BUFPUTSL(ob, "<div class=\"mermaid\">");
 			hoedown_buffer_put(ob, text->data, text->size);
-			HOEDOWN_BUFPUTSL(ob, "});</script>");
+			HOEDOWN_BUFPUTSL(ob, "</div>");
 		}
 		return;
 	}
