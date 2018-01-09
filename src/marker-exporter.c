@@ -180,6 +180,9 @@ marker_exporter_show_export_dialog(MarkerEditorWindow* window)
                                                      (marker_prefs_get_use_highlight())
                                                        ? HIGHLIGHT_NET
                                                        : HIGHLIGHT_OFF,
+                                                     (marker_prefs_get_use_mermaid()
+                                                       ? MERMAID_NET
+                                                       : MERMAID_OFF),
                                                      stylesheet_path,
                                                      filename);
         break;
