@@ -162,6 +162,11 @@ get_html_mode(MarkerMermaidMode mermaid_mode)
     mode |= HOEDOWN_HTML_FIGCOUNTER;
   }
 
+  if (marker_prefs_get_use_katex() && marker_prefs_get_use_equation_numbering())
+  {
+    mode |= HOEDOWN_HTML_EQCOUNTER;
+  }
+
   return mode;
 }
 

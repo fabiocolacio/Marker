@@ -404,6 +404,7 @@ rndr_image(hoedown_buffer *ob, const hoedown_buffer *link, const hoedown_buffer 
 		HOEDOWN_BUFPUTSL(ob, "<figcaption>");
 		if ((state->flags & HOEDOWN_HTML_FIGCOUNTER) != 0)
 		{
+			state->figure_counter ++;
 			char * buffer = malloc(sizeof(char)*50);
 			memset(buffer,0, 50);
 			if ((title && title->size) || (alt && alt->size))
@@ -418,7 +419,6 @@ rndr_image(hoedown_buffer *ob, const hoedown_buffer *link, const hoedown_buffer 
 			}
 			hoedown_buffer_printf(ob, buffer, 50);
 			free(buffer);
-			state->figure_counter ++;
 		}
 		if (title && title->size)
 		{
@@ -595,8 +595,23 @@ rndr_footnote_ref(hoedown_buffer *ob, unsigned int num, const hoedown_renderer_d
 static int
 rndr_math(hoedown_buffer *ob, const hoedown_buffer *text, int displaymode, const hoedown_renderer_data *data)
 {
+	hoedown_html_renderer_state *state = data->opaque;
+
 	hoedown_buffer_put(ob, (const uint8_t *)(displaymode ? "\\[" : "\\("), 2);
+	if (displaymode && (state->flags & HOEDOWN_HTML_EQCOUNTER) !=0)
+	{
+		HOEDOWN_BUFPUTSL(ob, "\\begin{array}{lr}");
+	}
 	escape_html(ob, text->data, text->size);
+	if (displaymode && (state->flags & HOEDOWN_HTML_EQCOUNTER) !=0)
+	{
+		state->equation_counter ++;
+		char * buffer = malloc(sizeof(char)*30);
+		memset(buffer, 0, 30); /*\begin{array}{lr} & \quad(1)\\\end{array}*/
+		sprintf(buffer, "& \\quad(%u)\\end{array}", state->equation_counter);
+		hoedown_buffer_printf(ob, buffer, 30);
+		free(buffer);
+	}
 	hoedown_buffer_put(ob, (const uint8_t *)(displaymode ? "\\]" : "\\)"), 2);
 	return 1;
 }
@@ -715,7 +730,8 @@ hoedown_html_toc_renderer_new(int nesting_level, char* figure_tag)
 	memset(state, 0x0, sizeof(hoedown_html_renderer_state));
 
 	state->toc_data.nesting_level = nesting_level;
-	state->figure_counter = 1;
+	state->figure_counter = 0;
+	state->equation_counter = 0;
 	state->figure_tag = figure_tag;
 
 	/* Prepare the renderer */
@@ -780,9 +796,11 @@ hoedown_html_renderer_new(hoedown_html_flags render_flags, int nesting_level, ch
 	memset(state, 0x0, sizeof(hoedown_html_renderer_state));
 
 	state->flags = render_flags;
-	state->figure_counter = 1;
+	state->figure_counter = 0;
+	state->equation_counter = 0;
 	state->figure_tag = figure_tag;
-	state->toc_data.nesting_level = nesting_level;
+
+  state->toc_data.nesting_level = nesting_level;
 
 	/* Prepare the renderer */
 	renderer = hoedown_malloc(sizeof(hoedown_renderer));

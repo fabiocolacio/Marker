@@ -23,7 +23,8 @@ typedef enum hoedown_html_flags {
 	/* -- experimental flags -- */
 	HOEDOWN_HTML_MERMAID = (1 << 4),
 	HOEDOWN_HTML_FIGCAPTION = (1 << 5),
-	HOEDOWN_HTML_FIGCOUNTER = (1 << 6)
+	HOEDOWN_HTML_FIGCOUNTER = (1 << 6),
+	HOEDOWN_HTML_EQCOUNTER = (1 << 7)
 } hoedown_html_flags;
 
 typedef enum hoedown_html_tag {
@@ -49,6 +50,7 @@ struct hoedown_html_renderer_state {
 
 	hoedown_html_flags flags;
 	unsigned int figure_counter;
+	unsigned int equation_counter;
 	char* figure_tag;
 
 	/* extra callbacks */
