@@ -123,6 +123,16 @@
       <summary>Highlight.js CSS theme.</summary>
       <description>The css theme to use for the synthax highlight.</description>
     </key>
+    <key name="figure-caption-toggle" type="b">
+      <default>false</default>
+      <summary>Enable figure caption in Preview</summary>
+      <description>Display title or alt text as caption in the live preview.</description>
+    </key>
+    <key name="figure-numbering-toggle" type="b">
+      <default>false</default>
+      <summary>Enable figure numbering in Preview</summary>
+      <description>Enable and display figure numbering in the live preview (when figure-caption-toggle is enabled).</description>
+    </key>
   </schema>
   
   <schema path="/com/github/fabiocolacio/marker/preferences/window/" id="com.github.fabiocolacio.marker.preferences.window">
