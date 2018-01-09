@@ -310,3 +310,8 @@ kbd {
 		word-wrap: break-word;
 	}
 }
+
+figure figcaption {
+  text-align: center;
+  font-size: 12px;
+}

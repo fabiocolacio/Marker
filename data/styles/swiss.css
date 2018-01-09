@@ -49,10 +49,10 @@ tr:nth-child(even) {
 
 body {
     font-family: Helvetica, Arial, Freesans, clean, sans-serif;
-padding:1em;
-margin:auto;
-max-width:42em;
-background:#fefefe;
+    padding:1em;
+    margin:auto;
+    max-width:42em;
+    background:#fefefe;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -130,3 +130,8 @@ a, a:visited {
     text-decoration: none;
 }
 
+
+figure figcaption {
+    text-align: center;
+    font-size: 12px;
+}
