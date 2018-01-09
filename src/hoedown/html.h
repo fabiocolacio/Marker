@@ -20,7 +20,10 @@ typedef enum hoedown_html_flags {
 	HOEDOWN_HTML_ESCAPE = (1 << 1),
 	HOEDOWN_HTML_HARD_WRAP = (1 << 2),
 	HOEDOWN_HTML_USE_XHTML = (1 << 3),
-	HOEDOWN_HTML_MERMAID = (1 << 4) /* < experimental flag */
+	/* -- experimental flags -- */
+	HOEDOWN_HTML_MERMAID = (1 << 4),
+	HOEDOWN_HTML_FIGCAPTION = (1 << 5),
+	HOEDOWN_HTML_FIGCOUNTER = (1 << 6)
 } hoedown_html_flags;
 
 typedef enum hoedown_html_tag {
@@ -45,6 +48,7 @@ struct hoedown_html_renderer_state {
 	} toc_data;
 
 	hoedown_html_flags flags;
+	unsigned int figure_counter;
 
 	/* extra callbacks */
 	void (*link_attributes)(hoedown_buffer *ob, const hoedown_buffer *url, const hoedown_renderer_data *data);
