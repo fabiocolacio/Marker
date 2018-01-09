@@ -18,6 +18,12 @@ typedef enum{
   HIGHLIGHT_LOCAL /**< Include the local highlight.js installation */
 } MarkerHighlightMode;
 
+typedef enum{
+  MERMAID_OFF,
+  MERMAID_NET,
+  MERMAID_LOCAL
+} MarkerMermaidMode;
+
 /**
  * Generates HTML output from markdown input.
  *
@@ -37,6 +43,7 @@ marker_markdown_to_html(const char*         markdown,
                         size_t              size,
                         MarkerKaTeXMode     katex_mode,
                         MarkerHighlightMode highlight_mode, 
+                        MarkerMermaidMode   mermaid_mode,
                         const char*         stylesheet_location);
 
 /**
@@ -60,6 +67,7 @@ marker_markdown_to_html_with_css_inline(const char*         markdown,
                                         size_t              size,
                                         MarkerKaTeXMode     katex_mode,
                                         MarkerHighlightMode highlight_mode, 
+                                        MarkerMermaidMode   mermaid_mode,
                                         const char*         stylesheet_location);
 
 /**
@@ -76,7 +84,8 @@ void
 marker_markdown_to_html_file(const char*         markdown,
                              size_t              size,
                              MarkerKaTeXMode     katex_mode,
-                             MarkerHighlightMode highlight_mode, 
+                             MarkerHighlightMode highlight_mode,
+                             MarkerMermaidMode   mermaid_mode,
                              const char*         stylesheet_location,
                              const char*         filepath);
 
@@ -97,6 +106,7 @@ marker_markdown_to_html_file_with_css_inline(const char*         markdown,
                                              size_t              size,
                                              MarkerKaTeXMode     katex_mode,
                                              MarkerHighlightMode highlight_mode, 
+                                             MarkerMermaidMode   mermaid_mode,
                                              const char*         stylesheet_location,
                                              const char*         filepath);
 

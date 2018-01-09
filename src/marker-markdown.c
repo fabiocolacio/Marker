@@ -12,7 +12,8 @@
 #include "marker-prefs.h"
 
 char* html_header(MarkerKaTeXMode     katex_mode,
-          MarkerHighlightMode highlight_mode)
+                  MarkerHighlightMode highlight_mode,
+                  MarkerMermaidMode   mermaid_mode)
 {
   char* katex_script;
   char* katex_auto;
@@ -20,6 +21,8 @@ char* html_header(MarkerKaTeXMode     katex_mode,
 
   char* highlight_css;
   char* highlight_script;
+
+  char* mermaid_script;
 
   char * local_highlight_css = marker_prefs_get_highlight_theme();
 
@@ -56,13 +59,26 @@ char* html_header(MarkerKaTeXMode     katex_mode,
       highlight_script = g_strdup_printf("<script src=\"%shighlight/highlight.pack.js\"></script>", SCRIPTS_DIR);
       break;
   }
+
+  switch (mermaid_mode)
+  {
+    case MERMAID_OFF:
+      mermaid_script = g_strdup(" ");
+      break;
+    case MERMAID_NET:
+      mermaid_script = g_strdup("<script src=\"https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js\"></script>");
+      break;
+    case MERMAID_LOCAL:
+      mermaid_script = g_strdup_printf("<script src=\"%smermaid/mermaid.min.js\"></script>", SCRIPTS_DIR);
+      break;
+  }
   
   char * buffer = g_strdup_printf("<!doctype html>"
                                   "<html>\n"
                                   "<head>\n"
-                                  "%s\n%s\n%s\n%s\n%s\n"
+                                  "%s\n%s\n%s\n%s\n%s\n%s\n"
                                   "<meta charset=\"utf-8\">\n",
-                                  katex_css, highlight_css, katex_script, katex_auto, highlight_script);
+                                  katex_css, highlight_css, katex_script, katex_auto, highlight_script, mermaid_script);
 
   g_free(katex_script);
   g_free(katex_auto);
@@ -72,16 +88,20 @@ char* html_header(MarkerKaTeXMode     katex_mode,
   g_free(highlight_script);
   g_free(local_highlight_css);
 
+  g_free(mermaid_script);
+
   return buffer;
 }
 
 
 char*
 html_footer(MarkerKaTeXMode     katex_mode,
-            MarkerHighlightMode highlight_mode)
+            MarkerHighlightMode highlight_mode,
+            MarkerMermaidMode   mermaid_mode)
 {
   char * katex_render;
   char * highlight_render;
+  char * mermaid_render;
 
   switch(katex_mode){
     case KATEX_OFF:
@@ -101,12 +121,24 @@ html_footer(MarkerKaTeXMode     katex_mode,
       highlight_render = g_strdup("<script>hljs.initHighlightingOnLoad();</script>");
       break;
   }
-  char* buffer = g_strdup_printf("%s\n%s\n"
+  
+  switch(mermaid_mode)
+  {
+    case MERMAID_OFF:
+      mermaid_render = g_strdup(" ");
+      break;
+    default:
+      mermaid_render = g_strdup("<script>mermaid.initialize({startOnLoad:true});</script>");
+      break;
+  }
+
+  char* buffer = g_strdup_printf("%s\n%s\n%s\n"
                                  "</body>\n"
                                  "</html>",
-                                 katex_render, highlight_render);
+                                 katex_render, highlight_render, mermaid_render);
   g_free(highlight_render);
   g_free(katex_render);
+  g_free(mermaid_render);
   return buffer;
 }
 
@@ -116,6 +148,7 @@ marker_markdown_to_html(const char*         markdown,
                         size_t              size,
                         MarkerKaTeXMode     katex_mode,
                         MarkerHighlightMode highlight_mode,
+                        MarkerMermaidMode   mermaid_mode,
                         const char*         stylesheet_location)
 {
   char* html = NULL;
@@ -123,8 +156,8 @@ marker_markdown_to_html(const char*         markdown,
   hoedown_renderer* renderer;
   hoedown_document* document;
   hoedown_buffer* buffer;
-
-  renderer = hoedown_html_renderer_new(HOEDOWN_HTML_CHART,0);
+   
+  renderer = hoedown_html_renderer_new(mermaid_mode == MERMAID_OFF ? 0 : HOEDOWN_HTML_MERMAID,0);
   
   document = hoedown_document_new(renderer,
                                   HOEDOWN_EXT_BLOCK         |
@@ -136,7 +169,7 @@ marker_markdown_to_html(const char*         markdown,
                                   
   buffer = hoedown_buffer_new(500); 
 
-  char * header = html_header(katex_mode, highlight_mode);
+  char * header = html_header(katex_mode, highlight_mode, mermaid_mode);
   
   
   hoedown_buffer_printf(buffer,
@@ -155,7 +188,7 @@ marker_markdown_to_html(const char*         markdown,
                       
   hoedown_document_render(document, buffer, (uint8_t*) markdown, size);
   
-  char * footer = html_footer(katex_mode, highlight_mode);
+  char * footer = html_footer(katex_mode, highlight_mode, mermaid_mode);
   hoedown_buffer_printf(buffer,
   					          "%s\n",
                       footer);
@@ -177,6 +210,7 @@ marker_markdown_to_html_with_css_inline(const char*         markdown,
                                         size_t              size,
                                         MarkerKaTeXMode     katex_mode,
                                         MarkerHighlightMode highlight_mode,
+                                        MarkerMermaidMode   mermaid_mode,
                                         const char*         stylesheet_location)
 {
   char* html = NULL;
@@ -203,7 +237,7 @@ marker_markdown_to_html_with_css_inline(const char*         markdown,
   hoedown_document* document;
   hoedown_buffer* buffer;
 
-  renderer = hoedown_html_renderer_new(HOEDOWN_HTML_CHART,0);
+  renderer = hoedown_html_renderer_new(mermaid_mode == MERMAID_OFF ? 0 : HOEDOWN_HTML_MERMAID,0);
   
   document = hoedown_document_new(renderer,
                                   HOEDOWN_EXT_BLOCK         |
@@ -215,7 +249,7 @@ marker_markdown_to_html_with_css_inline(const char*         markdown,
  
   buffer = hoedown_buffer_new(500);
   
-  char * header = html_header(katex_mode, highlight_mode);
+  char * header = html_header(katex_mode, highlight_mode, mermaid_mode);
 
   hoedown_buffer_printf(buffer,
                         "%s\n",
@@ -238,7 +272,7 @@ marker_markdown_to_html_with_css_inline(const char*         markdown,
                       
   hoedown_document_render(document, buffer, (uint8_t*) markdown, size);
   
-  char * footer = html_footer(katex_mode, highlight_mode);
+  char * footer = html_footer(katex_mode, highlight_mode, mermaid_mode);
   hoedown_buffer_printf(buffer,
   					          "%s\n",
                       footer);
@@ -260,10 +294,16 @@ marker_markdown_to_html_file(const char*         markdown,
                              size_t              size,
                              MarkerKaTeXMode     katex_mode,
                              MarkerHighlightMode highlight_mode,
+                             MarkerMermaidMode   mermaid_mode,
                              const char*         stylesheet_location,
                              const char*         filepath)
 {
-  char* html = marker_markdown_to_html(markdown, size, katex_mode, highlight_mode, stylesheet_location);
+  char* html = marker_markdown_to_html(markdown, 
+                                       size, 
+                                       katex_mode, 
+                                       highlight_mode, 
+                                       mermaid_mode, 
+                                       stylesheet_location);
   FILE* fp = fopen(filepath, "w");
   if (fp && html)
   {
@@ -278,10 +318,16 @@ marker_markdown_to_html_file_with_css_inline(const char*         markdown,
                                              size_t              size,
                                              MarkerKaTeXMode     katex_mode,
                                              MarkerHighlightMode highlight_mode,
+                                             MarkerMermaidMode   mermaid_mode,
                                              const char*         stylesheet_location,
                                              const char*         filepath)
 {
-  char* html = marker_markdown_to_html_with_css_inline(markdown, size, katex_mode, highlight_mode, stylesheet_location);
+  char* html = marker_markdown_to_html_with_css_inline(markdown, 
+                                                       size, 
+                                                       katex_mode, 
+                                                       highlight_mode, 
+                                                       mermaid_mode, 
+                                                       stylesheet_location);
   FILE* fp = fopen(filepath, "w");
   printf("fp: %p\nfilepath: %s\n", fp, filepath);
   if (fp && html)
