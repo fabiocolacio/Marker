@@ -202,15 +202,14 @@ main(int    argc,
 {
   app = gtk_application_new("com.github.fabiocolacio.marker",
                             G_APPLICATION_HANDLES_OPEN);
-  
+
   g_signal_connect(app, "activate", G_CALLBACK(activate), NULL);
   g_signal_connect(app, "open", G_CALLBACK(marker_open), NULL);
   
   g_application_add_main_option_entries (G_APPLICATION(app), CLI_OPTIONS);
   
   int status = g_application_run(G_APPLICATION(app), argc, argv);
-  
   g_object_unref(app);
-    
+
   return status;
 }
