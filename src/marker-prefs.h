@@ -9,6 +9,12 @@ typedef struct {
   GSettings* window_settings;
 } MarkerPrefs;
 
+gboolean
+marker_prefs_get_use_dark_theme();
+
+void
+marker_prefs_set_use_dark_theme(gboolean state);
+
 char*
 marker_prefs_get_syntax_theme();
 

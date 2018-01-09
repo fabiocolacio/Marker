@@ -16,6 +16,18 @@
 MarkerPrefs prefs;
 
 gboolean
+marker_prefs_get_use_dark_theme()
+{
+  return g_settings_get_boolean(prefs.window_settings, "enable-dark-mode");
+}
+
+void
+marker_prefs_set_use_dark_theme(gboolean state)
+{
+  g_settings_set_boolean(prefs.window_settings, "enable-dark-mode", state);
+}
+
+gboolean
 marker_prefs_get_use_syntax_theme()
 {
   return g_settings_get_boolean(prefs.editor_settings, "enable-syntax-theme");
@@ -468,8 +480,17 @@ wrap_text_toggled(GtkToggleButton* button,
 }
 
 static void
+enable_dark_mode_toggled(GtkToggleButton* button,
+                         gpointer         user_data)
+{
+  gboolean state = gtk_toggle_button_get_active(button);
+  marker_prefs_set_use_dark_theme(state);
+  g_object_set(gtk_settings_get_default(), "gtk-application-prefer-dark-theme", state, NULL);
+}
+
+static void
 auto_indent_toggled(GtkToggleButton* button,
-                     gpointer         user_data)
+                    gpointer         user_data)
 {
   gboolean state = gtk_toggle_button_get_active(button);
   marker_prefs_set_auto_indent(state);
@@ -815,6 +836,10 @@ marker_prefs_show_window()
     GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "use_appmenu_check_button"));
   gtk_toggle_button_set_active(check_button, marker_prefs_get_gnome_appmenu());
 
+  check_button =
+    GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "enable_dark_mode_check_button"));
+  gtk_toggle_button_set_active(check_button, marker_prefs_get_use_dark_theme());
+
   spin_button =
     GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "right_margin_position_spin_button"));
   gtk_widget_set_sensitive(GTK_WIDGET(spin_button), marker_prefs_get_show_right_margin());
@@ -893,6 +918,9 @@ marker_prefs_show_window()
   gtk_builder_add_callback_symbol(builder,
                                   "use_gnome_appmenu_toggled",
                                   G_CALLBACK(use_gnome_appmenu_toggled));
+  gtk_builder_add_callback_symbol(builder,
+                                  "enable_dark_mode_toggled",
+                                  G_CALLBACK(enable_dark_mode_toggled));
   gtk_builder_add_callback_symbol(builder,
                                   "editor_syntax_toggled",
                                   G_CALLBACK(editor_syntax_toggled));

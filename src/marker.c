@@ -50,6 +50,11 @@ marker_init(GtkApplication* app)
     
     g_object_unref(builder);
   }
+  
+  g_object_set(gtk_settings_get_default(),
+               "gtk-application-prefer-dark-theme",
+               marker_prefs_get_use_dark_theme(),
+               NULL);
 }
 
 static void
