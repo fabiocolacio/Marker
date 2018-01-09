@@ -1,3 +1,5 @@
+#include <string.h>
+
 #include "scroll-extension.h"
 
 /** 
@@ -27,15 +29,11 @@ restore_scroll_position(WebKitWebPage   *web_page,
     
     const glong *pos = user_data;
     
-    g_print("restore_scroll_position()\n");
-    
     if (body){
-        webkit_dom_element_set_scroll_top(body, *pos);     
+      webkit_dom_element_set_scroll_top(body, *pos);     
     } else {
-      g_print("  couldn't get body!\n");
+      g_error("Error restoring scroll position!\n");
     }
-    
-    g_print("  scroll position: %d\n", *pos);
 }
 
 static gboolean 
@@ -46,22 +44,16 @@ store_scroll_position(WebKitWebPage      *web_page,
 {
     const gchar *uri = webkit_uri_request_get_uri(request);
     if (marker_string_ends_with(uri, ".md"))
-    {
-      g_print("uri: %s\n", uri);
-      
+    { 
       WebKitDOMDocument * document = webkit_web_page_get_dom_document (web_page);
       WebKitDOMElement* body = WEBKIT_DOM_ELEMENT(webkit_dom_document_get_body (document));
       glong * pos = user_data;
       
-      g_print("store_scroll_position()\n");
       if (body){
-          *pos = webkit_dom_element_get_scroll_top(body);        
+        *pos = webkit_dom_element_get_scroll_top(body);        
       } else {
-      g_print("  couldn't get body!\n");
+        g_error("Error restoring scroll position!\n");
       }
-      
-      
-      g_print("  scroll position: %d\n", *pos);
     }
     
     return FALSE;
@@ -82,8 +74,6 @@ initialize (WebKitWebExtension                *extension,
     g_signal_connect(web_page, "send-request",
                      G_CALLBACK(store_scroll_position),
                      pos);
-    
-    g_print("initialize()\n");
 }
 
 
@@ -93,5 +83,4 @@ webkit_web_extension_initialize (WebKitWebExtension *extension)
     g_signal_connect (extension, "page-created",
                       G_CALLBACK (initialize),
                       NULL);
-    g_print("webkit_web_extension_initialize()\n");
 }
