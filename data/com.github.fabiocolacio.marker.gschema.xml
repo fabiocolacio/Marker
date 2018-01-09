@@ -147,6 +147,12 @@
       <description>Controls how to organize the editor and preview areas on the screen.</description>
     </key>
     
+    <key name="enable-dark-mode" type="b">
+      <default>false</default>
+      <summary>Enter dark-mode</summary>
+      <description>When this is enabled, the dark variant of the current gtk theme will be used.</description>
+    </key>
+    
     <key name="gnome-appmenu" type="b">
       <default>true</default>
       <summary>Use GNOME Appmenu</summary>
