@@ -43,7 +43,7 @@ store_scroll_position(WebKitWebPage      *web_page,
                        gpointer           user_data)
 {
     const gchar *uri = webkit_uri_request_get_uri(request);
-    if (marker_string_ends_with(uri, ".md"))
+    if (marker_string_ends_with(uri, ".md/"))
     { 
       WebKitDOMDocument * document = webkit_web_page_get_dom_document (web_page);
       WebKitDOMElement* body = WEBKIT_DOM_ELEMENT(webkit_dom_document_get_body (document));
@@ -54,8 +54,7 @@ store_scroll_position(WebKitWebPage      *web_page,
       } else {
         g_error("Error restoring scroll position!\n");
       }
-    }
-    
+    }    
     return FALSE;
 }
 
@@ -80,7 +79,7 @@ initialize (WebKitWebExtension                *extension,
 G_MODULE_EXPORT void
 webkit_web_extension_initialize (WebKitWebExtension *extension)
 {
-    g_signal_connect (extension, "page-created",
-                      G_CALLBACK (initialize),
-                      NULL);
+  g_signal_connect (extension, "page-created",
+                    G_CALLBACK (initialize),
+                    NULL);
 }

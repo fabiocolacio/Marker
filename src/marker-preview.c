@@ -146,7 +146,7 @@ marker_preview_render_markdown(MarkerPreview* preview,
                                        mermaid_mode,
                                        css_theme);
                                        
-  const char* uri = (base_uri) ? base_uri : "file://";
+  const char* uri = (base_uri) ? base_uri : "file://unnamed.md";
   WebKitWebView* web_view = WEBKIT_WEB_VIEW(preview);
 
   g_signal_connect(web_view,
