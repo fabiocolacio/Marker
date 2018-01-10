@@ -35,6 +35,10 @@ struct{
 struct{
     plotType        type;
     char*           label;
+    char*           color;
+    char*           line_style;
+    char*           marker_style;
+    double          line_width;
     double*         x_data;
     double*         y_data;
     unsigned int    n;
