@@ -37,6 +37,19 @@ typedef enum hoedown_html_tag {
 /*********
  * TYPES *
  *********/
+struct {
+	char* figure;
+	char* listing;
+}typedef html_localization;
+
+
+struct
+{
+	uint32_t figure;
+	uint32_t equation;
+	uint32_t listing;
+}typedef html_counter;
+
 
 struct hoedown_html_renderer_state {
 	void *opaque;
@@ -49,9 +62,8 @@ struct hoedown_html_renderer_state {
 	} toc_data;
 
 	hoedown_html_flags flags;
-	unsigned int figure_counter;
-	unsigned int equation_counter;
-	char* figure_tag;
+	html_counter counter;
+	html_localization localization;
 
 	/* extra callbacks */
 	void (*link_attributes)(hoedown_buffer *ob, const hoedown_buffer *url, const hoedown_renderer_data *data);
@@ -74,13 +86,13 @@ hoedown_html_tag hoedown_html_is_tag(const uint8_t *data, size_t size, const cha
 hoedown_renderer *hoedown_html_renderer_new(
 	hoedown_html_flags render_flags,
 	int nesting_level,
-	char* figure_tag
+	html_localization local
 ) __attribute__ ((malloc));
 
 /* hoedown_html_toc_renderer_new: like hoedown_html_renderer_new, but the returned renderer produces the Table of Contents */
 hoedown_renderer *hoedown_html_toc_renderer_new(
 	int nesting_level,
-	char* figure_tag
+	html_localization local
 ) __attribute__ ((malloc));
 
 /* hoedown_html_renderer_free: deallocate an HTML renderer */
