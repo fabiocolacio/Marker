@@ -1,0 +1,110 @@
+#ifndef __CHARTER_H__
+#define __CHARTER_H__
+
+enum{
+    NONE        = 0,
+    AXIS_X      = 1,
+    AXIS_Y      = 2,
+    PLOT        = 3
+}typedef _pstate;
+
+enum{
+    FALSE       = 0,
+    TRUE        = 1
+}typedef cbool;
+
+enum{
+    LINEAR      = 0,
+    LOG         = 1
+}typedef axisMode;
+
+enum{
+    LINE        = 0,
+    SCATTER     = 1,
+    BAR         = 2
+}typedef plotType;
+
+struct{
+    axisMode        mode;
+    char*           label;
+    cbool           autoscale;
+    double          range_min;
+    double          range_max;
+}typedef axis;
+
+struct{
+    plotType        type;
+    char*           label;
+    double*         x_data;
+    double*         y_data;
+    unsigned int    n;
+}typedef plot;
+
+struct
+{
+    plot*           plot;
+    void*           next;
+}typedef plotList;
+
+struct{
+    axis            x_axis;
+    axis            y_axis;   
+    unsigned int    width;
+    unsigned int    height;
+    plotList*       plots;
+    unsigned int    n_plots;
+    char *          title;
+}typedef chart;
+
+
+
+cbool 
+is_empty(plotList *e);
+
+plotList* 
+plot_new_element(plot*);
+
+void 
+plot_append(plotList *, plot*);
+
+plot* 
+plot_at(plotList*, unsigned int);
+
+plotList* 
+plot_get_last_element(plotList*);
+
+unsigned int 
+chart_add_plot(chart*, plot*);
+
+plot* 
+chart_get_plot(chart*, unsigned int);
+
+chart*
+initialize_empty_chart();
+
+
+double 
+plot_get_max_x(plot *);
+
+double 
+plot_get_max_y(plot *);
+
+double 
+plot_get_min_x(plot *);
+
+double 
+plot_get_min_y(plot *);
+
+double 
+chart_get_max_x(chart *);
+
+double 
+chart_get_max_y(chart *);
+
+double 
+chart_get_min_x(chart *);
+
+double 
+chart_get_min_y(chart *);
+
+#endif
