@@ -19,13 +19,16 @@ struct _MarkerEditorWindow
 {
   GtkApplicationWindow parent_instance;
   
-  GtkHeaderBar* header_bar;
-  GtkPaned* paned;
-  MarkerSourceView* source_view;
-  GtkWidget* source_scroll;
-  MarkerPreview* web_view;
-  MarkerEditorWindowViewMode view_mode;
-  GFile* file;
+  GtkHeaderBar               *header_bar;
+  GtkPaned                   *paned;
+  MarkerSourceView           *source_view;
+  GtkWidget                  *source_scroll;
+  MarkerPreview              *web_view;
+  
+  GFile                      *file;
+  
+  MarkerEditorWindowViewMode  view_mode;
+  gboolean                    is_fullscreen;
 };
 
 G_DEFINE_TYPE(MarkerEditorWindow, marker_editor_window, GTK_TYPE_APPLICATION_WINDOW)
@@ -454,6 +457,31 @@ marker_editor_window_set_right_margin_position(MarkerEditorWindow* window,
 }
 
 void
+marker_editor_window_set_fullscreen (MarkerEditorWindow *window,
+                                     gboolean            state)
+{
+  window->is_fullscreen = state;
+  if (state) {
+    gtk_window_fullscreen (GTK_WINDOW (window));
+  }
+  else {
+    gtk_window_unfullscreen (GTK_WINDOW (window));
+  }
+}
+
+gboolean
+marker_editor_window_get_is_fullscreen (MarkerEditorWindow *window)
+{
+  return window->is_fullscreen;
+}
+
+void
+marker_editor_window_toggle_fullscreen (MarkerEditorWindow *window)
+{
+  marker_editor_window_set_fullscreen (window, !(window->is_fullscreen));
+}
+
+void
 marker_editor_window_apply_prefs(MarkerEditorWindow* window)
 {
   if (marker_prefs_get_use_syntax_theme())
@@ -536,12 +564,19 @@ modifier_pressed(GdkEventKey     event,
 }
                  
 static gboolean
-key_pressed(GtkWidget*   widget,
-            GdkEventKey* event,
+key_pressed(GtkWidget   *widget,
+            GdkEventKey *event,
             gpointer     user_data)
 {
   gboolean ctrl_pressed = modifier_pressed(*event, GDK_CONTROL_MASK);
-  MarkerEditorWindow* window = MARKER_EDITOR_WINDOW(widget);
+  MarkerEditorWindow *window = MARKER_EDITOR_WINDOW(widget);
+  
+  switch (event->keyval)
+  {
+    case GDK_KEY_F11:
+      marker_editor_window_toggle_fullscreen (window);
+      break;
+  }
   
   if (ctrl_pressed)
   {
@@ -599,7 +634,7 @@ marker_editor_window_get_preview(MarkerEditorWindow* window)
 }
 
 static void
-init_ui(MarkerEditorWindow* window)
+init_ui (MarkerEditorWindow *window)
 {
   GtkBuilder* builder =
     gtk_builder_new_from_resource("/com/github/fabiocolacio/marker/ui/editor-window.ui");
@@ -686,9 +721,12 @@ init_ui(MarkerEditorWindow* window)
 }
 
 static void
-marker_editor_window_init(MarkerEditorWindow* window)
+marker_editor_window_init (MarkerEditorWindow *window)
 {
+  window->is_fullscreen = FALSE;
+  
   init_ui(window);
+  
   marker_editor_window_apply_prefs(window);
 }
 

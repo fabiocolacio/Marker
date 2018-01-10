@@ -82,6 +82,19 @@
             </child>
           </object>
         </child>
+        <child>
+          <object class="GtkShortcutsGroup">
+            <property name="visible">1</property>
+            <property name="title" context="shortcut window">Window</property>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="visible">1</property>
+                <property name="accelerator">F11</property>
+                <property name="title" context="shortcut window">Toggle fullscreen mode</property>
+              </object>
+            </child>
+          </object>
+        </child>
       </object>
     </child>
   </object>
