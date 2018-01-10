@@ -111,6 +111,16 @@ marker_editor_window_set_view_mode (MarkerEditorWindow         *window,
 MarkerPreview *
 marker_editor_window_get_preview (MarkerEditorWindow *window);
 
+void
+marker_editor_window_set_fullscreen (MarkerEditorWindow *window,
+                                     gboolean            state);
+
+gboolean
+marker_editor_window_get_is_fullscreen (MarkerEditorWindow *window);
+
+void
+marker_editor_window_toggle_fullscreen (MarkerEditorWindow *window);
+
 G_END_DECLS
 
 #endif

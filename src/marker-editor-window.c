@@ -457,6 +457,31 @@ marker_editor_window_set_right_margin_position(MarkerEditorWindow* window,
 }
 
 void
+marker_editor_window_set_fullscreen (MarkerEditorWindow *window,
+                                     gboolean            state)
+{
+  window->is_fullscreen = state;
+  if (state) {
+    gtk_window_fullscreen (GTK_WINDOW (window));
+  }
+  else {
+    gtk_window_unfullscreen (GTK_WINDOW (window));
+  }
+}
+
+gboolean
+marker_editor_window_get_is_fullscreen (MarkerEditorWindow *window)
+{
+  return window->is_fullscreen;
+}
+
+void
+marker_editor_window_toggle_fullscreen (MarkerEditorWindow *window)
+{
+  marker_editor_window_set_fullscreen (window, !(window->is_fullscreen));
+}
+
+void
 marker_editor_window_apply_prefs(MarkerEditorWindow* window)
 {
   if (marker_prefs_get_use_syntax_theme())
@@ -549,19 +574,8 @@ key_pressed(GtkWidget   *widget,
   switch (event->keyval)
   {
     case GDK_KEY_F11:
-    {
-      const gboolean fullscreen = !window->is_fullscreen;
-      
-      if (fullscreen) {
-        gtk_window_fullscreen (GTK_WINDOW (window));
-      }
-      else {
-        gtk_window_unfullscreen (GTK_WINDOW (window));
-      }
-      
-      window->is_fullscreen = fullscreen;
+      marker_editor_window_toggle_fullscreen (window);
       break;
-    }
   }
   
   if (ctrl_pressed)
