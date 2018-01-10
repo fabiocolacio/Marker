@@ -428,7 +428,7 @@ void legend_to_svg(char* buffer, plotList * plots, svg_plane plane)
                 "<clipPath id=\"leg-area\">"
                 "<rect x=\"%.2f\" y=\"%.2f\" width=\"%d\" height=\"%d\"/>"
                 "</clipPath>"
-                "</defs>",
+                "</defs>\n",
                 buffer, x+dw, y, w-dw-2, h);
     el = plots;
     int ind= 0;
@@ -444,9 +444,9 @@ void legend_to_svg(char* buffer, plotList * plots, svg_plane plane)
                 memcpy(color, colormap[ind%10], 7);
             }
             y+= dh;
-            sprintf(buffer, "%s<line x1=\"%.2f\" y1=\"%.2f\" x2=\"%.2f\"  y2=\"%.2f\" style=\"fill:none; stroke:%s; stroke-width:2;\" />",
+            sprintf(buffer, "%s<line x1=\"%.2f\" y1=\"%.2f\" x2=\"%.2f\"  y2=\"%.2f\" style=\"fill:none; stroke:%s; stroke-width:2;\" />\n",
                     buffer, x+10, y-4, x+dw, y-4, color);
-            sprintf(buffer, "%s<text x=\"%.2f\" y=\"%.2f\" fill=\"#111\" font-size=\"12\" text-anchor=\"middle\"  clip-path=\"url(#leg-area)\">%s</text>",
+            sprintf(buffer, "%s<text x=\"%.2f\" y=\"%.2f\" fill=\"#111\" font-size=\"12\" text-anchor=\"middle\"  clip-path=\"url(#leg-area)\">%s</text>\n",
                     buffer, x+dw+30, y, p->label);
 
             if (is_marker(p->marker_style))
@@ -589,7 +589,7 @@ chart_to_svg(chart* chart)
     char * buffer = malloc(1024*1024*sizeof(char));
     memset(buffer, 0, 1024*1024);
     
-    sprintf(buffer, "%s<svg width=\"%u\" height=\"%u\">\n", 
+    sprintf(buffer, "%s<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\" width=\"%u\" height=\"%u\">\n", 
             buffer, chart->width, chart->height);
     svg_plane p = compute_plane(chart);
     sprintf(buffer, "%s<defs>"
