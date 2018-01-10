@@ -21,6 +21,8 @@ struct{
     double left;
     double w;
     double h;
+    axisMode x_mode;
+    axisMode y_mode;
 } typedef svg_plane;
 
 struct
@@ -79,6 +81,10 @@ svg_plane compute_plane(chart * c)
     int h = c->height - (c->x_axis.label != NULL ? 3*p_h : 2*p_h);
     
     svg_plane p;
+
+    p.x_mode = c->x_axis.mode;
+    p.y_mode = c->y_axis.mode;
+    
     p.h = h;
     p.w = w;
     p.top = p_h;
@@ -89,6 +95,7 @@ svg_plane compute_plane(chart * c)
     p.y_max = chart_get_max_y(c);
     p.x_min = chart_get_min_x(c);
     p.y_min = chart_get_min_y(c);
+
     return p;
 }
 
