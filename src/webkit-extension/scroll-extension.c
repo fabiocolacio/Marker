@@ -30,7 +30,8 @@ restore_scroll_position(WebKitWebPage   *web_page,
     const glong *pos = user_data;
     
     if (body){
-      webkit_dom_element_set_scroll_top(body, *pos);     
+      webkit_dom_element_set_scroll_top(body, pos[0]);
+      webkit_dom_element_set_scroll_left(body, pos[1]);     
     } else {
       g_error("Error restoring scroll position!\n");
     }
@@ -50,7 +51,8 @@ store_scroll_position(WebKitWebPage      *web_page,
       glong * pos = user_data;
       
       if (body){
-        *pos = webkit_dom_element_get_scroll_top(body);        
+        pos[0] = webkit_dom_element_get_scroll_top(body);
+        pos[1] = webkit_dom_element_get_scroll_left(body);       
       } else {
         g_error("Error restoring scroll position!\n");
       }
@@ -64,8 +66,9 @@ initialize (WebKitWebExtension                *extension,
                            gpointer            user_data)
 {
     /** create a new position index for each thread.**/
-    glong * pos = g_malloc(sizeof(glong));
-    *pos = 0;
+    glong * pos = g_malloc(2*sizeof(glong));
+    pos[0] = 0;
+    pos[1] = 0;
 
     g_signal_connect(web_page, "document-loaded",
                      G_CALLBACK(restore_scroll_position), 
