@@ -115,7 +115,7 @@ rndr_blockcode(hoedown_buffer *ob, const hoedown_buffer *text, const hoedown_buf
 			int n = strlen(svg);
 			hoedown_buffer_printf(ob, svg, n);
 			free(copy);
-			free(c);
+			chart_free(c);
 			free(svg);
 
 			if ((state->flags & HOEDOWN_HTML_FIGCAPTION)!=0 && (state->flags & HOEDOWN_HTML_FIGCOUNTER)!=0)

@@ -50,12 +50,30 @@ const char *colormap[10] = {
 const int tick_mul[3] = {5, 2, 1};
 
 
+void ticks_free(ticks t)
+{
+    if (t.vals)
+        free(t.vals);
+    if (t.pos)
+        free(t.pos);
+    if (t.labels)
+    {
+        int i;
+        for (i = 0; i < t.n; i++)
+        {
+            free(t.labels[i]);
+        }
+        free(t.labels);
+    }
+}
+
 svg_plane compute_plane(chart * c)
 {
     int p_h = y_margin;
     int p_w = x_margin;
     int w = c->width -  (c->y_axis.label != NULL ? 3*p_w : 2.5*p_w);
     int h = c->height - (c->x_axis.label != NULL ? 3*p_h : 2*p_h);
+    
     svg_plane p;
     p.h = h;
     p.w = w;
@@ -298,6 +316,144 @@ void y_ticks_to_svg(char* buffer, svg_plane plane, ticks t)
     }
 }
 
+double get_x(double x, svg_plane p, axis a)
+{
+    if (a.mode == LOG){
+        x = log10(x);
+    }
+    double dx = p.w/(p.x_max-p.x_min);
+    x -= p.x_min;
+    x *= dx;
+    x += p.x0;
+    return x;
+}
+
+double get_y(double y, svg_plane p, axis a)
+{
+    if (a.mode == LOG){
+        y = log10(y);
+    }
+    double dy = p.h/(p.y_max-p.y_min);
+    y -= p.y_min;
+    y *= dy;
+    y = p.y0-y;
+    return y;
+}
+
+cbool is_marker(char c)
+{
+    switch (c)
+    {
+        case 'o':
+            return TRUE;
+        case 's':
+            return TRUE;
+        case 'x':
+            return TRUE;
+        case '+':
+            return TRUE;
+        default:
+            return FALSE;
+    }
+}
+
+void draw_point(char* buffer, char style, char* color, double x, double y)
+{
+    switch (style){
+        case 'o':
+            sprintf(buffer, "%s<circle clip-path=\"url(#plot-area)\" cx=\"%.2f\" cy=\"%.2f\" r=\"3\" fill=\"%s\" />",
+                    buffer, x, y, color);
+            break;
+        case 's':
+            sprintf(buffer, "%s<rect clip-path=\"url(#plot-area)\" x=\"%.2f\" y=\"%.2f\" width=\"6\" height=\"6\" "
+                            "style=\"fill:%s; stroke:none; stroke-width:0;\" />\n",
+                    buffer, x-3, y-3, color);
+            break;
+        case 'x':
+            sprintf(buffer, "%s<line clip-path=\"url(#plot-area)\" x1=\"%.2f\" y1=\"%.2f\" x2=\"%.2f\" y2=\"%.2f\""
+                            "style=\"fill:none; stroke:%s; stroke-width:1.5;\" />\n" ,
+                    buffer, x-3, y-3, x+3, y+3, color);
+
+            sprintf(buffer, "%s<line clip-path=\"url(#plot-area)\" x1=\"%.2f\" y1=\"%.2f\" x2=\"%.2f\" y2=\"%.2f\""
+                            "style=\"fill:none; stroke:%s; stroke-width:1.5;\" />\n" ,
+                    buffer, x+3, y-3, x-3, y+3, color);
+            break;
+        case '+':
+            sprintf(buffer, "%s<line clip-path=\"url(#plot-area)\" x1=\"%.2f\" y1=\"%.2f\" x2=\"%.2f\" y2=\"%.2f\""
+                            "style=\"fill:none; stroke:%s; stroke-width:1.5;\" />\n" ,
+                    buffer, x-4.5, y, x+4.5, y, color);
+
+            sprintf(buffer, "%s<line clip-path=\"url(#plot-area)\" x1=\"%.2f\" y1=\"%.2f\" x2=\"%.2f\" y2=\"%.2f\""
+                            "style=\"fill:none; stroke:%s; stroke-width:1.5;\" />\n" ,
+                    buffer, x, y-4.5, x, y+4.5, color);
+            break;
+    }
+}
+
+void legend_to_svg(char* buffer, plotList * plots, svg_plane plane)
+{
+    if (plots == NULL || plots->plot == NULL)
+        return;
+    
+    plotList * el = plots;
+    unsigned int c = el->plot->label == NULL ? 0 : 1;
+    while ((el = el->next) != NULL)
+    {
+        c += el->plot->label == NULL ? 0 : 1;
+    }
+    if (c == 0)
+        return;
+    int dh = 15;
+    int dw = 40;
+    int h = dh*c+6;
+    int w = 100;
+    double x = plane.left+plane.w-10-w;
+    double y = plane.top+10;
+    sprintf(buffer, "%s<rect x=\"%.2f\" y=\"%.2f\" width=\"%d\" height=\"%d\" "
+            "style=\"fill:white; fill-opacity:0.5; stroke:#333; stroke-width:0.5;\" />\n",
+            buffer, x, y, w, h);
+    sprintf(buffer, "%s<defs>"
+                "<clipPath id=\"leg-area\">"
+                "<rect x=\"%.2f\" y=\"%.2f\" width=\"%d\" height=\"%d\"/>"
+                "</clipPath>"
+                "</defs>",
+                buffer, x+dw, y, w-dw-2, h);
+    el = plots;
+    int ind= 0;
+    while (el!= NULL)
+    {
+        if (el->plot->label != NULL)
+        {  
+            plot * p = el->plot;
+            char * color = p->color;
+            if (!color)
+            {
+                color = malloc(8*sizeof(char));
+                memcpy(color, colormap[ind%10], 7);
+            }
+            y+= dh;
+            sprintf(buffer, "%s<line x1=\"%.2f\" y1=\"%.2f\" x2=\"%.2f\"  y2=\"%.2f\" style=\"fill:none; stroke:%s; stroke-width:2;\" />",
+                    buffer, x+10, y-4, x+dw, y-4, color);
+            sprintf(buffer, "%s<text x=\"%.2f\" y=\"%.2f\" fill=\"#111\" font-size=\"12\" text-anchor=\"middle\"  clip-path=\"url(#leg-area)\">%s</text>",
+                    buffer, x+dw+30, y, p->label);
+
+            if (is_marker(p->marker_style))
+            {
+                draw_point(buffer, p->marker_style, color, x+10+(dw-10)/2, y-4);
+            }
+            if (!p->color)
+            {
+                free(color);
+            }
+        }
+        el = el->next;
+        ind ++;
+    }
+
+
+}
+
+
 void line_plot_to_svg(char* buffer, chart* c, plot* p, svg_plane plane, unsigned int index)
 {
     unsigned int n = p->n;
@@ -305,7 +461,6 @@ void line_plot_to_svg(char* buffer, chart* c, plot* p, svg_plane plane, unsigned
         return;
     }
     unsigned int i;
-    double dx = plane.w/(plane.x_max-plane.x_min);
     double dy = plane.h/(plane.y_max-plane.y_min);
     
     sprintf(buffer, "%s<polyline points=\"",
@@ -314,18 +469,39 @@ void line_plot_to_svg(char* buffer, chart* c, plot* p, svg_plane plane, unsigned
         double x = p->x_data == NULL ? i : p->x_data[i];
         double y = p->y_data[i];
 
-        x -= plane.x_min;
-        x *= dx;
-        x += plane.x0;
-        y -= plane.y_min;
-        y *= dy;
-        y = plane.y0-y;
+        x = get_x(x, plane, c->x_axis);
+        y = get_y(y, plane, c->y_axis);
 
         sprintf(buffer, "%s%.2f,%.2f ",
                 buffer, x, y);
     }
+    char * color = p->color;
+    if (!color)
+    {
+        color = malloc(8*sizeof(char));
+        memcpy(color, colormap[index%10], 7);
+    }
+
     sprintf(buffer, "%s\" style=\"fill:none; stroke:%s; stroke-width:2;\" clip-path=\"url(#plot-area)\"/>\n",
-            buffer, colormap[index%10]);
+            buffer, color);
+  
+    if (is_marker(p->marker_style))
+    {
+                
+        
+        for (i=0; i< n;i++){
+            double x = p->x_data == NULL ? i : p->x_data[i];
+            double y = p->y_data[i];
+    
+            x = get_x(x, plane, c->x_axis);
+            y = get_y(y, plane, c->y_axis);
+            draw_point(buffer, p->marker_style, color, x, y);
+        }
+    }
+    if (!p->color)
+    {
+        free(color);
+    }
 }
 
 void plots_to_svg(char* buffer, chart* c, svg_plane plane)
@@ -381,6 +557,20 @@ void y_grid_to_svg(char* buffer, svg_plane p, ticks t)
 }
 
 
+void
+title_to_svg(char* buffer,
+             svg_plane p,
+             char*  title)
+{
+    if (title == NULL)
+        return;
+    double tx = p.left + p.w/2;
+    double ty = 15;
+    sprintf(buffer,
+            "%s<text x=\"%.2f\" y=\"%.2f\" text-anchor=\"middle\"  font-weight=\"bold\">%s</text>\n",
+            buffer, tx, ty, title);
+}
+
 char * 
 chart_to_svg(chart* chart)
 {
@@ -398,14 +588,16 @@ chart_to_svg(chart* chart)
                     buffer, p.left, p.top, p.w, p.h);
     ticks x_t = compute_x_ticks(p);
     ticks y_t = compute_y_ticks(p);
+    title_to_svg(buffer, p, chart->title);
     x_grid_to_svg(buffer, p, x_t);
     y_grid_to_svg(buffer, p, y_t);
     plots_to_svg(buffer, chart, p);
     axis_to_svg(buffer, chart, p);
     x_ticks_to_svg(buffer, p, x_t);
     y_ticks_to_svg(buffer, p, y_t);
+    legend_to_svg(buffer, chart->plots, p);
     sprintf(buffer, "%s</svg>\n", buffer);
-
-    
+    ticks_free(x_t);
+    ticks_free(y_t);    
     return buffer;
 }

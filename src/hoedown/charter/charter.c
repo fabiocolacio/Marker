@@ -30,7 +30,7 @@ double plot_get_max_x(plot* p)
     if (!p->n)
         return 0;
     if (p->x_data == NULL)
-        return p->n;
+        return p->n-1;
     double max_x = p->x_data[0];
     unsigned int i;
     for (i = 1; i<p->n;i++)
@@ -254,4 +254,42 @@ plot*
 chart_get_plot(chart* c, unsigned int i)
 {
     return plot_at(c->plots, i);
+}
+
+
+void chart_free(chart *c)
+{
+    if (c->title)
+        free(c->title);
+    if (c->x_axis.label)
+        free(c->x_axis.label);
+    if (c->y_axis.label)
+        free(c->y_axis.label);
+    plot_list_free(c->plots);
+    free(c);
+}
+
+
+void plot_list_free(plotList *pl)
+{
+    if (!pl)
+        return;
+    plot_free(pl->plot);
+    plot_list_free(pl->next);
+    free(pl);
+}
+
+void plot_free(plot *p)
+{
+    if (!p)
+        return;
+    if (p->color)
+        free(p->color);
+    if (p->label)
+        free(p->label);
+    if (p->x_data)
+        free(p->x_data);
+    if (p->y_data)
+        free(p->y_data);
+    free(p);
 }

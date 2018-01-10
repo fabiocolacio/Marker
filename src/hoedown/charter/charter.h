@@ -24,6 +24,11 @@ enum{
     BAR         = 2
 }typedef plotType;
 
+enum{
+    NORMAL      = 0,
+    DOT         = 1
+}typedef lineStyle;
+
 struct{
     axisMode        mode;
     char*           label;
@@ -36,8 +41,8 @@ struct{
     plotType        type;
     char*           label;
     char*           color;
-    char*           line_style;
-    char*           marker_style;
+    lineStyle       line_style;
+    char            marker_style;
     double          line_width;
     double*         x_data;
     double*         y_data;
@@ -110,5 +115,11 @@ chart_get_min_x(chart *);
 
 double 
 chart_get_min_y(chart *);
+
+void chart_free(chart *);
+
+void plot_list_free(plotList *);
+
+void plot_free(plot *);
 
 #endif

@@ -23,22 +23,19 @@
 #define TOK_MODE_LOG    "log"       /*done*/
 #define TOK_MODE_LIN    "linear"    /*done*/
 
-#define TOK_X_DATA      "x"
-#define TOK_Y_DATA      "y"
+#define TOK_X_DATA      "x"         /*done*/
+#define TOK_Y_DATA      "y"         /*done*/
 /*later*/
-#define TOK_COLOR       "color"
+#define TOK_COLOR       "color"     /*done*/
 #define TOK_LIN_STYLE   "line-style"
 #define TOK_LIN_WIDTH   "line-width"
-#define TOK_MARKER      "marker"
+#define TOK_MARKER      "marker"    /*done*/
 
 #define TOK_RANGE       "range"     /*done*/
 
-#define TOK_BEGIN       "("         /*done*/
-#define TOK_END         ")"         /*done*/
-
-#define TOK_WIDTH       "width"     
-#define TOK_HEIGHT      "height"    
-#define TOK_TITLE       "title"     
+#define TOK_WIDTH       "width"     /*done*/
+#define TOK_HEIGHT      "height"    /*done*/
+#define TOK_TITLE       "title"     /*done*/
 
 
 struct{
@@ -46,6 +43,13 @@ struct{
     void* prev;
 } typedef _dList;
 
+void d_list_free(_dList * l)
+{
+    if (!l)
+        return;
+    d_list_free(l->prev);
+    free(l);
+}
 
 
 void 
@@ -53,7 +57,8 @@ parse_mode(char *line, chart *chart, _pstate prev)
 {
     unsigned int s = line[0] == ' ' ? 1 : 0;
     unsigned int n = strlen(line) - s;
-    char * copy = malloc(n*sizeof(char));
+    char * copy = malloc((n+1)*sizeof(char));
+    copy[n] = 0;
     memcpy(copy, &line[s], n);
     if (strcmp(copy, TOK_MODE_LIN) == 0)
     {
@@ -223,6 +228,7 @@ parse_x_data(chart *chart, char* line)
     if (p->n == 0)
         p->n = l;
     p->x_data = data;
+    d_list_free(list);
     free(local);
 }
 
@@ -265,6 +271,8 @@ parse_y_data(chart *chart, char* line)
     plot * p = plot_get_last_element(chart->plots)->plot;
     p->n = l;
     p->y_data = data;
+    
+    d_list_free(list);
     free(copy);
 }
 
@@ -287,6 +295,30 @@ char * parse_text(char * rest)
     return copy;
 }
 
+void strip(char* str, char c) {
+    char *pr = str, *pw = str;
+    while (*pr) {
+        *pw = *pr++;
+        pw += (*pw != c);
+    }
+    *pw = '\0';
+}
+
+plot * init_plot()
+{
+    plot * p = malloc(sizeof(plot));
+    p->type = LINE;
+    p->label = NULL;
+    p->n = 0;
+    p->x_data = NULL;
+    p->y_data = NULL;
+    p->color = NULL;
+    p->line_style = NORMAL;
+    p->marker_style = 0;
+    p->line_width = 1;
+    return p;
+}
+
 _pstate 
 parse_line(char* line, chart * chart, _pstate prev)
 {
@@ -296,14 +328,11 @@ parse_line(char* line, chart * chart, _pstate prev)
     memcpy(copy, line, n);
     char * tok = copy;
     char * rest;
-    while((tok = strtok_r(tok, " (:", &rest)) != NULL)
+    while((tok = strtok_r(tok, " :", &rest)) != NULL)
     {
         if (strcmp(tok, TOK_AXIS_X) == 0)
         {
             prev = AXIS_X;
-        } else if (strcmp(tok, TOK_END) == 0)
-        {
-            prev = NONE;
         } else if (strcmp(tok, TOK_AXIS_Y) ==0)
         {
             prev = AXIS_Y;
@@ -322,14 +351,7 @@ parse_line(char* line, chart * chart, _pstate prev)
             {
                 plotList * el = plot_get_last_element(chart->plots);
                 if (el->plot == NULL){
-                    plot * p = malloc(sizeof(plot));
-                    p->type = LINE;
-                    p->label = NULL;
-                    p->n = 0;
-                    p->x_data = NULL;
-                    p->y_data = NULL;
-
-                    el->plot = p;
+                    el->plot = init_plot();
                     chart->n_plots ++;
                 }
                 el->plot->label = label;
@@ -345,15 +367,7 @@ parse_line(char* line, chart * chart, _pstate prev)
         } else if (strcmp(tok, TOK_PLOT) == 0)
         {
             prev = PLOT;
-            
-            plot * p = malloc(sizeof(plot));
-            p->type = LINE;
-            p->label = NULL;
-            p->n = 0;
-            p->x_data = NULL;
-            p->y_data = NULL;
-
-            chart_add_plot(chart, p);
+            chart_add_plot(chart, init_plot());
         } else if (strcmp(tok, TOK_MODE) == 0)
         {
             if (prev == AXIS_X || prev == AXIS_Y)
@@ -368,6 +382,41 @@ parse_line(char* line, chart * chart, _pstate prev)
         } else if (strcmp(tok, TOK_Y_DATA) == 0 && prev == PLOT)
         {
             parse_y_data(chart, rest);
+            break;
+        } else if (strcmp(tok, TOK_WIDTH) == 0)
+        {
+            strip(rest, ' ');
+            chart->width = atof(rest);
+            prev = NONE;
+            break;
+        } else if (strcmp(tok, TOK_HEIGHT) == 0)
+        {
+            strip(rest, ' ');
+            chart->height = atof(rest);
+            prev = NONE;
+            break;
+        } else if (strcmp(tok, TOK_TITLE) == 0)
+        {
+            chart->title = parse_text(rest);
+            prev = NONE;
+            break;
+        } else if (strcmp(tok, TOK_COLOR) == 0 && prev == PLOT)
+        {
+            char * color = parse_text(rest);
+            strip(color, ' ');
+            plot_get_last_element(chart->plots)->plot->color = color;
+            break;
+        }else if (strcmp(tok, TOK_MARKER) == 0 && prev == PLOT)
+        {
+            char * ms = parse_text(rest);
+            strip(ms, ' ');
+            plot * p = plot_get_last_element(chart->plots)->plot;
+            if (ms != NULL && strlen(ms) > 0)
+            {
+                p->marker_style = ms[0];
+            }else {
+                p->marker_style = 0;
+            }
             break;
         }
         tok = NULL;
