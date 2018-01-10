@@ -484,6 +484,7 @@ enable_katex_toggled(GtkToggleButton* button,
   gboolean state = gtk_toggle_button_get_active(button);
   marker_prefs_set_use_katex(state);
   gtk_widget_set_sensitive(GTK_WIDGET(user_data), state);
+  gtk_toggle_button_set_inconsistent(GTK_TOGGLE_BUTTON(user_data), !state);
   refresh_preview();
 }
 
@@ -511,6 +512,7 @@ figure_caption_toggled(GtkToggleButton* button,
 {
   gboolean state = gtk_toggle_button_get_active(button);
   gtk_widget_set_sensitive(GTK_WIDGET(user_data), state);
+  gtk_toggle_button_set_inconsistent(GTK_TOGGLE_BUTTON(user_data), !state);
   marker_prefs_set_use_figure_caption(state);
   refresh_preview();
 }
@@ -864,6 +866,7 @@ marker_prefs_show_window()
     GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "equation_numbering_check_button"));
   gtk_toggle_button_set_active(check_button, marker_prefs_get_use_equation_numbering());
   gtk_widget_set_sensitive(GTK_WIDGET(check_button), marker_prefs_get_use_katex());
+  gtk_toggle_button_set_inconsistent(GTK_TOGGLE_BUTTON(check_button), !marker_prefs_get_use_katex());
 
   check_button =
     GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "mermaid_check_button"));
@@ -877,6 +880,7 @@ marker_prefs_show_window()
     GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "figure_numbering_check_button"));
   gtk_toggle_button_set_active(check_button, marker_prefs_get_use_figure_numbering());
   gtk_widget_set_sensitive(GTK_WIDGET(check_button), marker_prefs_get_use_figure_caption());
+  gtk_toggle_button_set_inconsistent(GTK_TOGGLE_BUTTON(check_button), !marker_prefs_get_use_figure_caption());
 
   check_button = 
     GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "code_highlight_check_button"));
