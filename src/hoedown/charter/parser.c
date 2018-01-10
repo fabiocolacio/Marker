@@ -329,7 +329,7 @@ parse_line(char* line, chart * chart, _pstate prev)
     memcpy(copy, line, n);
     char * tok = copy;
     char * rest;
-    while((tok = strtok_r(tok, " :", &rest)) != NULL)
+    while((tok = strtok_r(tok, "\t :", &rest)) != NULL)
     {
         if (strcmp(tok, TOK_AXIS_X) == 0)
         {
