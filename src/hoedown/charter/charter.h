@@ -26,7 +26,10 @@ enum{
 
 enum{
     NORMAL      = 0,
-    DOT         = 1
+    DOTTED      = 1,
+    DASHED      = 2,
+    DOT_DASH    = 3,
+    NOLINE      = 4
 }typedef lineStyle;
 
 struct{

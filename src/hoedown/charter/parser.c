@@ -27,8 +27,10 @@
 #define TOK_Y_DATA      "y"         /*done*/
 /*later*/
 #define TOK_COLOR       "color"     /*done*/
-#define TOK_LIN_STYLE   "line-style"
-#define TOK_LIN_WIDTH   "line-width"
+#define TOK_LIN_STYLE   "line-style"/*done*/
+#define TOK_LIN_WIDTH   "line-width"/*done*/
+#define TOK_ALT_LIN_STYLE "ls"      /*done*/
+#define TOK_ALT_LIN_WIDTH "lw"      /*done*/
 #define TOK_MARKER      "marker"    /*done*/
 
 #define TOK_RANGE       "range"     /*done*/
@@ -316,8 +318,34 @@ plot * init_plot()
     p->color = NULL;
     p->line_style = NORMAL;
     p->marker_style = 0;
-    p->line_width = 1;
+    p->line_width = 2;
     return p;
+}
+
+lineStyle 
+parse_line_style(char * c)
+{
+    strip(c, ' ');
+    if (c == NULL || strlen(c) == 0)
+        return NORMAL;
+    
+    if (strcmp(c, "-") == 0 || strcmp(c, "normal") ==0)
+    {
+        return NORMAL;
+    }
+    if (strcmp(c, ":") == 0 || strcmp(c, "dotted") == 0)
+    {
+        return DOTTED;
+    }
+    if (strcmp(c, "--") == 0 || strcmp(c, "dashed") == 0)
+    {
+        return DASHED;
+    }
+    if (strcmp(c, "/")  == 0 || strcmp(c, "none") == 0 || strcmp(c, "NONE") == 0 || strcmp(c, "None"))
+    {
+        return NOLINE;
+    }
+    return NORMAL;
 }
 
 _pstate 
@@ -419,8 +447,23 @@ parse_line(char* line, chart * chart, _pstate prev)
                 p->marker_style = 0;
             }
             break;
+        }else if ((strcmp(tok, TOK_LIN_WIDTH) == 0 || strcmp(tok, TOK_ALT_LIN_WIDTH) == 0) && prev == PLOT)
+        {
+            strip(rest, ' ');
+            double v = atof(rest);
+            if (v > 0)
+            {
+                plot * p = plot_get_last_element(chart->plots)->plot;
+                p->line_width = v;
+            }
+            break;
+        } else if ((strcmp(tok, TOK_LIN_STYLE) == 0 || strcmp(tok, TOK_ALT_LIN_STYLE) == 0)&& prev == PLOT)
+        {
+            plot * p = plot_get_last_element(chart->plots)->plot;
+            p->line_style = parse_line_style(rest);
         }
         tok = NULL;
+        break;
     }
     free(copy);
     return prev;
