@@ -642,7 +642,7 @@ init_ui(MarkerEditorWindow* window)
     GtkApplication* app = marker_get_app();
     g_action_map_add_action_entries(G_ACTION_MAP(app),
                                     APP_MENU_ACTION_ENTRIES,
-                                    3,
+                                    APP_MENU_ACTION_ENTRIES_LEN,
                                     window);
   }
   

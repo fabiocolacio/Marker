@@ -38,6 +38,8 @@ marker_shortcuts_cb(GSimpleAction* action,
 gboolean
 marker_has_app_menu();
 
-extern GActionEntry APP_MENU_ACTION_ENTRIES[];
+extern const int APP_MENU_ACTION_ENTRIES_LEN;
+
+extern const GActionEntry APP_MENU_ACTION_ENTRIES[];
 
 #endif

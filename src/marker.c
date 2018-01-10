@@ -23,7 +23,7 @@ static const GOptionEntry CLI_OPTIONS[] =
 
 const int APP_MENU_ACTION_ENTRIES_LEN = 4;
 
-GActionEntry APP_MENU_ACTION_ENTRIES[] =
+const GActionEntry APP_MENU_ACTION_ENTRIES[] =
 {
   { "quit", marker_quit_cb, NULL, NULL, NULL },
   { "about", marker_about_cb, NULL, NULL, NULL },
