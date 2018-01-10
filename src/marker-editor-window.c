@@ -634,6 +634,10 @@ key_pressed(GtkWidget   *widget,
       case GDK_KEY_3:
         marker_editor_window_set_view_mode (window, DUAL_PANE_MODE);
         break;
+      
+      case GDK_KEY_4:
+        marker_editor_window_set_view_mode (window, DUAL_WINDOW_MODE);
+        break;
     }
   }
   
