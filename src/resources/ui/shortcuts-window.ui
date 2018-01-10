@@ -93,6 +93,27 @@
                 <property name="title" context="shortcut window">Toggle fullscreen mode</property>
               </object>
             </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="visible">1</property>
+                <property name="accelerator">&lt;ctrl&gt;1</property>
+                <property name="title" context="shortcut window">Switch to editor-only mode</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="visible">1</property>
+                <property name="accelerator">&lt;ctrl&gt;2</property>
+                <property name="title" context="shortcut window">Switch to preview-only mode</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="visible">1</property>
+                <property name="accelerator">&lt;ctrl&gt;3</property>
+                <property name="title" context="shortcut window">Switch to dual-pane mode</property>
+              </object>
+            </child>
           </object>
         </child>
       </object>
