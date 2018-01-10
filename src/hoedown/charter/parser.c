@@ -236,9 +236,7 @@ parse_x_data(chart *chart, char* line)
         data[i] = list->value;
         list = list->prev;
     }
-    printf("searching for plot....\n");
     plot * p = plot_get_last_element(chart->plots)->plot;
-    printf("plot found: %x\n", p);
     if (p->n == 0)
         p->n = l;
     p->x_data = data;
