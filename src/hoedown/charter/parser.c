@@ -194,16 +194,20 @@ void
 parse_x_data(chart *chart, char* line)
 {
     unsigned int n = strlen(line);
+    if (n == 0)
+        return;
+
     char * local = malloc((1+n)*sizeof(char));
     local[n] = 0;
     memcpy(local, line, n);
+    
     char * tok = local;
     char * point;
     
     unsigned int l = 0;
     _dList * list = NULL;
     /* count values */
-    while((tok = strtok_r(tok, " ,)\n", &point)) != NULL)
+    while((tok = strtok_r(tok, "\t ,)\n", &point)) != NULL)
     {
         if (startsWith("csv://", tok))
         {   
@@ -219,7 +223,12 @@ parse_x_data(chart *chart, char* line)
         tok = NULL;
     }
     
-    
+    if (l == 0 || list == NULL)
+    {
+        free(local);
+        return;
+    }
+
     double * data = malloc(l*sizeof(double)); 
     int i;
     for (i = l-1 ; i >= 0 ; i--)
@@ -227,7 +236,9 @@ parse_x_data(chart *chart, char* line)
         data[i] = list->value;
         list = list->prev;
     }
+    printf("searching for plot....\n");
     plot * p = plot_get_last_element(chart->plots)->plot;
+    printf("plot found: %x\n", p);
     if (p->n == 0)
         p->n = l;
     p->x_data = data;
@@ -239,6 +250,9 @@ void
 parse_y_data(chart *chart, char* line)
 {
     unsigned int n = strlen(line);
+    if (n == 0)
+        return;
+
     char * copy = malloc((1+n)*sizeof(char));
     copy[n] = 0;
     memcpy(copy, line, n);
@@ -248,7 +262,7 @@ parse_y_data(chart *chart, char* line)
     unsigned int l = 0;
     _dList * list = NULL;
     /* count values */
-    while((tok = strtok_r(tok, " ,", &point)) != NULL)
+    while((tok = strtok_r(tok, "\t ,", &point)) != NULL)
     {
         if (startsWith("csv://", tok))
         {   
@@ -480,8 +494,9 @@ parse_chart(char *text)
     char* line = strtok_r(copy, "\n", &tok_pointer);
     _pstate state = NONE;
     while (line != NULL)
-    {
-        state = parse_line(line, nchart, state);
+    {   
+        if (strlen(line) > 0)
+            state = parse_line(line, nchart, state);
         line = strtok_r(NULL, "\n", &tok_pointer);
     }
     free(copy);

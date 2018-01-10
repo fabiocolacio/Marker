@@ -110,10 +110,13 @@ rndr_blockcode(hoedown_buffer *ob, const hoedown_buffer *text, const hoedown_buf
 			char * copy = malloc((text->size + 1)*sizeof(char));
 			memset(copy, 0, text->size+1);
 			memcpy(copy, text->data, text->size);
+
 			chart * c =  parse_chart(copy);
 			char * svg = chart_to_svg(c);
-			int n = strlen(svg);
+
+			int n = strlen(svg);		
 			hoedown_buffer_printf(ob, svg, n);
+			
 			free(copy);
 			chart_free(c);
 			free(svg);

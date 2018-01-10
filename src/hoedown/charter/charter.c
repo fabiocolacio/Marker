@@ -199,12 +199,13 @@ plot_new_element(plot *p)
     plotList * l = malloc(sizeof(plotList));
     l->next = NULL;
     l->plot = p;
+    return l;
 }
 
 void 
 plot_append(plotList * list, plot* plot)
 {
-    plotList * last =plot_get_last_element(list);
+    plotList * last = plot_get_last_element(list);
     if (is_empty(last))
     {
         last->plot = plot;
@@ -214,13 +215,14 @@ plot_append(plotList * list, plot* plot)
     }
 }
 
+
 plotList * 
 plot_get_last_element(plotList* list)
 {
-    plotList * next = list;
+    plotList * next = list;        
     while(next->next != NULL)
     {
-        next = list->next;
+        next = next->next;        
     }
     return next;
 }
