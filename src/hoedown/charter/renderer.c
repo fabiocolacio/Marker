@@ -91,11 +91,26 @@ svg_plane compute_plane(chart * c)
     p.left = (c->y_axis.label != NULL ? 2*p_w : 1.5*p_w); 
     p.x0 =  (c->y_axis.label != NULL ? 2*p_w : 1.5*p_w);
     p.y0 = h+p_h;
-    p.x_max = chart_get_max_x(c);
-    p.y_max = chart_get_max_y(c);
-    p.x_min = chart_get_min_x(c);
-    p.y_min = chart_get_min_y(c);
+    
+    if (c->x_axis.mode == LINEAR)
+    {
+        p.x_max = chart_get_max_x(c);
+        p.x_min = chart_get_min_x(c);
+    } else 
+    {
+        p.x_max = ceil(log10(chart_get_max_x(c)));
+        p.x_min = floor(log10(chart_get_min_x(c)));
+    }
 
+    if (c->y_axis.mode == LINEAR)
+    {
+        p.y_max = chart_get_max_y(c);
+        p.y_min = chart_get_min_y(c);
+    } else 
+    {
+        p.y_max = ceil(log10(chart_get_max_y(c)));
+        p.y_min = floor(log10(chart_get_min_y(c)));
+    }
     return p;
 }
 

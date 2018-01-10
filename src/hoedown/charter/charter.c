@@ -104,7 +104,8 @@ double chart_get_max_x(chart *c)
             if (v < m)
                 m = v;
         }
-        M += (M-m)*0.05;
+        if (c->x_axis.mode == LINEAR)
+            M += (M-m)*0.05;
         return M;
     }
     return c->x_axis.range_max;
@@ -128,7 +129,8 @@ double chart_get_min_x(chart *c)
             if (v < m)
                 m = v;
         }
-        m -= (M-m)*0.05;
+        if (c->x_axis.mode == LINEAR)
+            m -= (M-m)*0.05;
         return m;
     }
     return c->x_axis.range_min;
@@ -152,7 +154,8 @@ double chart_get_max_y(chart *c)
             if (v < m)
                 m = v;
         }
-        M += (M-m)*0.05;
+        if (c->y_axis.mode == LINEAR)
+            M += (M-m)*0.05;
         return M;
     }
     return c->y_axis.range_max;
@@ -176,7 +179,8 @@ double chart_get_min_y(chart *c)
             if (v < m)
                 m = v;
         }
-        m -= (M-m)*0.05;
+        if (c->y_axis.mode == LINEAR)
+            m -= (M-m)*0.05;
         return m;
     }
     return c->y_axis.range_min;
