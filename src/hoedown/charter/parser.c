@@ -183,6 +183,7 @@ _dList* parse_csv(char * link, unsigned int * size)
         *size = *size + 1;
         CsvParser_destroy_row(row);
     }
+    CsvParser_destroy(csvparser);
     return list;
 }
 

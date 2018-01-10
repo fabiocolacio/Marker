@@ -52,18 +52,22 @@ const int tick_mul[3] = {5, 2, 1};
 
 void ticks_free(ticks t)
 {
-    if (t.vals)
-        free(t.vals);
-    if (t.pos)
-        free(t.pos);
-    if (t.labels)
+    if (t.n > 0)
     {
-        int i;
-        for (i = 0; i < t.n; i++)
+        if (t.vals != NULL)
+            free(t.vals);
+        if (t.pos != NULL)
+            free(t.pos);
+    
+        if (t.labels != NULL)
         {
-            free(t.labels[i]);
+            int i;
+            for (i = 0; i < t.n; i++)
+            {
+                free(t.labels[i]);
+            }
+            free(t.labels);
         }
-        free(t.labels);
     }
 }
 
@@ -91,7 +95,11 @@ svg_plane compute_plane(chart * c)
 
 ticks compute_y_ticks(svg_plane plane)
 {
-   ticks r;
+    ticks r;
+    r.labels = NULL;
+    r.vals = NULL;
+    r.pos = NULL;
+    
     double range = plane.y_max- plane.y_min;
     int r_xp = (int)floor(log10(range));
     int r_np = r_xp;
@@ -170,6 +178,10 @@ ticks compute_y_ticks(svg_plane plane)
 ticks compute_x_ticks(svg_plane plane)
 {
     ticks r;
+    r.labels = NULL;
+    r.vals = NULL;
+    r.pos = NULL;
+    
     double range = plane.x_max- plane.x_min;
     int r_xp = (int)floor(log10(range));
     int r_np = r_xp;
@@ -574,8 +586,8 @@ title_to_svg(char* buffer,
 char * 
 chart_to_svg(chart* chart)
 {
-    char * buffer = malloc(10000*sizeof(char));
-    memset(buffer, 0, 10000);
+    char * buffer = malloc(1024*1024*sizeof(char));
+    memset(buffer, 0, 1024*1024);
     
     sprintf(buffer, "%s<svg width=\"%u\" height=\"%u\">\n", 
             buffer, chart->width, chart->height);
@@ -598,6 +610,6 @@ chart_to_svg(chart* chart)
     legend_to_svg(buffer, chart->plots, p);
     sprintf(buffer, "%s</svg>\n", buffer);
     ticks_free(x_t);
-    ticks_free(y_t);    
+    ticks_free(y_t);
     return buffer;
 }

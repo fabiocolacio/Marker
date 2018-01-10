@@ -11,6 +11,7 @@ unfinished features.
 * HTML conversion of markdown documents with [hoedown](https://github.com/hoedown/hoedown)
 * TeX math rendering with [KaTeX](https://khan.github.io/KaTeX/)
 * Support for [mermaid](https://mermaidjs.github.io/) diagrams
+* Support for [charter](https://github.com/Mandarancio/charter/) for plot 
 * Syntax highlighting for code blocks with [highlight.js](https://highlightjs.org/)
 * Flexible export options with [pandoc](https://pandoc.org/)
   * PDF
@@ -27,6 +28,8 @@ unfinished features.
 ![scrot.png](scrot.png)
 
 ![scrot1.png](scrot1.png)
+
+![scrot2.png](scrot2.png)
 
 ## Packages
 

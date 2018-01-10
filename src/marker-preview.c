@@ -157,7 +157,6 @@ marker_preview_render_markdown(MarkerPreview* preview,
                    "context-menu",
                    G_CALLBACK(disable_menu),
                    NULL);
-
   webkit_web_view_load_html(web_view, html, uri);
   free(html);
 }
