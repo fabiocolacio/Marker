@@ -283,31 +283,32 @@ marker_editor_window_refresh_preview(MarkerEditorWindow* window)
 }
 
 void
-marker_editor_window_open_file(MarkerEditorWindow* window,
-                               GFile*              file)
+marker_editor_window_open_file (MarkerEditorWindow *window,
+                                GFile*              file)
 {
-  char* file_contents = NULL;
+  char *file_contents = NULL;
   gsize file_size = 0;
   GError* err = NULL;
   
-  g_file_load_contents(file, NULL, &file_contents, &file_size, NULL, &err);
+  g_file_load_contents (file, NULL, &file_contents, &file_size, NULL, &err);
   
   if (err)
   {
-    printf("There was a problem opening the file!\n\n%s\n", err->message);
+    g_error("There was a problem opening the file!\n\n%s\n", err->message);
     g_error_free(err);
   }
   else
   {
     window->file = file;
     
-    marker_source_view_set_text(window->source_view, file_contents, file_size);    
-    g_free(file_contents);
+    GtkSourceBuffer *buffer = GTK_SOURCE_BUFFER (gtk_text_view_get_buffer (GTK_TEXT_VIEW (window->source_view)));
+    gtk_source_buffer_begin_not_undoable_action (buffer);
+    marker_source_view_set_text (window->source_view, file_contents, file_size);
+    gtk_source_buffer_end_not_undoable_action (buffer);
+    g_free (file_contents);
 
-    marker_source_view_set_modified(window->source_view, FALSE);
-    char* filepath = g_file_get_path(file);
-    marker_editor_window_set_title_filename(window);
-    g_free(filepath);
+    marker_source_view_set_modified (window->source_view, FALSE);
+    marker_editor_window_set_title_filename (window);
   }
 }
                                

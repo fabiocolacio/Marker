@@ -141,25 +141,25 @@ default_font_changed(GSettings*   settings,
 }
 
 static void
-marker_source_view_init(MarkerSourceView* source_view)
+marker_source_view_init (MarkerSourceView *source_view)
 {
-  marker_source_view_set_language(source_view, "markdown");
-  source_view->settings = g_settings_new("org.gnome.desktop.interface");
-  g_signal_connect(source_view->settings, "changed::monospace-font-name", G_CALLBACK(default_font_changed), source_view);
-  gchar* fontname = g_settings_get_string(source_view->settings, "monospace-font-name");
-  PangoFontDescription* font = pango_font_description_from_string(fontname);
-  gtk_widget_modify_font(GTK_WIDGET(source_view), font);
-  pango_font_description_free(font);
-  g_free(fontname);
+  marker_source_view_set_language (source_view, "markdown");
+  source_view->settings = g_settings_new ("org.gnome.desktop.interface");
+  g_signal_connect (source_view->settings, "changed::monospace-font-name", G_CALLBACK (default_font_changed), source_view);
+  gchar *fontname = g_settings_get_string (source_view->settings, "monospace-font-name");
+  PangoFontDescription* font = pango_font_description_from_string (fontname);
+  gtk_widget_modify_font (GTK_WIDGET (source_view), font);
+  pango_font_description_free (font);
+  g_free (fontname);
 
-  gtk_source_view_set_insert_spaces_instead_of_tabs(source_view, marker_prefs_get_replace_tabs());
-  gtk_source_view_set_tab_width(source_view, marker_prefs_get_tab_width());
-  gtk_source_view_set_auto_indent(source_view, marker_prefs_get_auto_indent());
+  gtk_source_view_set_insert_spaces_instead_of_tabs (GTK_SOURCE_VIEW (source_view), marker_prefs_get_replace_tabs ());
+  gtk_source_view_set_tab_width (GTK_SOURCE_VIEW (source_view), marker_prefs_get_tab_width ());
+  gtk_source_view_set_auto_indent (GTK_SOURCE_VIEW (source_view), marker_prefs_get_auto_indent ());
 
   source_view->spell = gtk_spell_checker_new ();
   gchar* lang = marker_prefs_get_spell_check_langauge();
   gtk_spell_checker_set_language (source_view->spell, lang, NULL);
-  if (marker_prefs_get_spell_check()){
+  if (marker_prefs_get_spell_check ()){
     gtk_spell_checker_attach (source_view->spell, GTK_TEXT_VIEW (source_view));
   }
 }
@@ -175,4 +175,3 @@ marker_source_view_new(void)
 {
   return g_object_new(MARKER_TYPE_SOURCE_VIEW, NULL);
 }
-
