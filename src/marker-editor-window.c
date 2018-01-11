@@ -606,6 +606,13 @@ modifier_pressed(GdkEventKey     event,
 {
   return (event.state & modifier) == modifier;
 }
+
+static void
+unfullscreen_btn_clicked (GtkButton *button,
+                          gpointer   user_data)
+{
+  marker_editor_window_unfullscreen (MARKER_EDITOR_WINDOW (user_data));
+}
                  
 static gboolean
 key_pressed(GtkWidget   *widget,
@@ -716,6 +723,10 @@ init_ui (MarkerEditorWindow *window)
   GtkButton *unfullscreen_btn =
     GTK_BUTTON (gtk_builder_get_object (builder, "unfullscreen_btn"));
   window->unfullscreen_btn = unfullscreen_btn;
+  g_signal_connect (unfullscreen_btn,
+                    "clicked",
+                    G_CALLBACK (unfullscreen_btn_clicked),
+                    window);
   
   GtkMenuButton* menu_btn =
     GTK_MENU_BUTTON(gtk_builder_get_object(builder, "menu_btn"));  
