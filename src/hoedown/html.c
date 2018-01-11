@@ -7,6 +7,9 @@
 
 #include "escape.h"
 
+#include "charter/parser.h"
+#include "charter/renderer.h"
+
 #define USE_XHTML(opt) (opt->flags & HOEDOWN_HTML_USE_XHTML)
 
 hoedown_html_tag
@@ -97,6 +100,42 @@ rndr_blockcode(hoedown_buffer *ob, const hoedown_buffer *text, const hoedown_buf
 {
 	if (ob->size) hoedown_buffer_putc(ob, '\n');
 	hoedown_html_renderer_state *state = data->opaque;
+	if (lang && hoedown_buffer_eqs(lang, "charter") != 0){
+		if (text){
+			if ((state->flags & HOEDOWN_HTML_FIGCAPTION)!=0 && (state->flags & HOEDOWN_HTML_FIGCOUNTER)!=0)
+			{
+				HOEDOWN_BUFPUTSL(ob, "<figure>\n");
+				state->counter.figure ++;
+			}
+			char * copy = malloc((text->size + 1)*sizeof(char));
+			memset(copy, 0, text->size+1);
+			memcpy(copy, text->data, text->size);
+
+			chart * c =  parse_chart(copy);
+			char * svg = chart_to_svg(c);
+
+			int n = strlen(svg);		
+			hoedown_buffer_printf(ob, svg, n);
+			
+			free(copy);
+			chart_free(c);
+			free(svg);
+
+			if ((state->flags & HOEDOWN_HTML_FIGCAPTION)!=0 && (state->flags & HOEDOWN_HTML_FIGCOUNTER)!=0)
+			{
+				HOEDOWN_BUFPUTSL(ob, "<figcaption>");
+
+				char * buffer = malloc(sizeof(char)*50);
+				memset(buffer,0, 50);
+				sprintf(buffer, "<b id=\"figure_%u\">%s %u</b>", 
+				state->counter.figure, state->localization.figure, state->counter.figure);
+				hoedown_buffer_printf(ob, buffer, 50);
+				free(buffer);
+				HOEDOWN_BUFPUTSL(ob, "</figcaption>\n</figure>");
+			}
+		}
+		return;
+	}
 	if (lang && (state->flags & HOEDOWN_HTML_MERMAID) != 0 && hoedown_buffer_eqs(lang, "mermaid") != 0){
 		if (text){
 			if ((state->flags & HOEDOWN_HTML_FIGCAPTION)!=0 && (state->flags & HOEDOWN_HTML_FIGCOUNTER)!=0)

@@ -51,7 +51,11 @@ hoedown_sources = [
   'src/hoedown/html_blocks.c',
   'src/hoedown/html_smartypants.c',
   'src/hoedown/stack.c',
-  'src/hoedown/version.c'
+  'src/hoedown/version.c',
+  'src/hoedown/charter/csv_parser/csvparser.c',
+  'src/hoedown/charter/parser.c',
+  'src/hoedown/charter/charter.c',
+  'src/hoedown/charter/renderer.c'
 ]
 
 deps = [
@@ -96,6 +100,7 @@ executable(
   EXECUTABLE_NAME,
   sources : [marker_sources, hoedown_sources],
   dependencies : deps,
+  link_args: '-lm',
   install : true
 )
 
