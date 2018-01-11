@@ -30,7 +30,7 @@ double plot_get_max_x(plot* p)
     if (!p->n)
         return 0;
     if (p->x_data == NULL)
-        return p->n-1;
+        return p->n;
     double max_x = p->x_data[0];
     unsigned int i;
     for (i = 1; i<p->n;i++)
@@ -46,7 +46,7 @@ double plot_get_min_x(plot* p)
     if (!p->n)
         return 0;
     if (p->x_data == NULL)
-        return 0;
+        return 1;
     double min_x = p->x_data[0];
     unsigned int i;
     for (i = 1; i<p->n;i++)

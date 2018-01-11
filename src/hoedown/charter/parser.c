@@ -54,8 +54,8 @@ void d_list_free(_dList * l)
 }
 
 
-void 
-parse_mode(char *line, chart *chart, _pstate prev)
+axisMode
+parse_mode(char *line)
 {
     unsigned int s = line[0] == ' ' ? 1 : 0;
     unsigned int n = strlen(line) - s;
@@ -64,28 +64,17 @@ parse_mode(char *line, chart *chart, _pstate prev)
     memcpy(copy, &line[s], n);
     if (strcmp(copy, TOK_MODE_LIN) == 0)
     {
-        if (prev == AXIS_X) 
-        {
-            chart->x_axis.mode = LINEAR;
-        } else
-        {
-            chart->y_axis.mode = LINEAR;
-        }
+        return LINEAR;
     } else if (strcmp(copy, TOK_MODE_LOG)==0)
     {
-        if (prev == AXIS_X) 
-        {
-            chart->x_axis.mode = LOG;
-        } else
-        {
-            chart->y_axis.mode = LOG;
-        }
+        return LOG;
     }
     free(copy);
+    return LINEAR;
 }
 
 void 
-parse_range(char *line, chart *chart, _pstate prev)
+parse_range(char *line, double * min, double * max, double * step)
 {
     unsigned int n = strlen(line);
     char * copy = malloc((n+1)*sizeof(char));
@@ -99,24 +88,13 @@ parse_range(char *line, chart *chart, _pstate prev)
         double v = atof(tok);
         if (i == 0)
         {
-            if (prev == AXIS_X)
-            {
-                chart->x_axis.autoscale = FALSE;
-                chart->x_axis.range_min = v;
-            } else
-            {
-                chart->y_axis.autoscale = FALSE;
-                chart->y_axis.range_min = v;
-            }
+            *min = v;
         } else if (i == 1)
         {
-            if (prev == AXIS_X)
-            {
-                chart->x_axis.range_max = v;
-            } else
-            {
-                chart->y_axis.range_max = v;
-            }
+            *max = v;
+        } else if (i == 2 && step)
+        {
+            *step = v;
         }
         i ++;
         tok = NULL;
@@ -189,13 +167,12 @@ _dList* parse_csv(char * link, unsigned int * size)
     return list;
 }
 
-
-void  
-parse_x_data(chart *chart, char* line)
-{
+double * parse_data(char* line, unsigned int *l)
+{   
+    *l = 0;
     unsigned int n = strlen(line);
     if (n == 0)
-        return;
+        return NULL;
 
     char * local = malloc((1+n)*sizeof(char));
     local[n] = 0;
@@ -204,14 +181,13 @@ parse_x_data(chart *chart, char* line)
     char * tok = local;
     char * point;
     
-    unsigned int l = 0;
     _dList * list = NULL;
     /* count values */
     while((tok = strtok_r(tok, "\t ,)\n", &point)) != NULL)
     {
         if (startsWith("csv://", tok))
         {   
-            list = parse_csv(tok, &l);
+            list = parse_csv(tok, l);
             break;
         }
         _dList *el = malloc(sizeof(_dList));
@@ -219,76 +195,47 @@ parse_x_data(chart *chart, char* line)
         el->prev = list;
         list = el;
 
-        l ++;
+        *l = (unsigned int)(*l + 1);
         tok = NULL;
     }
     
-    if (l == 0 || list == NULL)
+    if (*l == 0 || list == NULL)
     {
         free(local);
-        return;
+        return NULL;
     }
 
-    double * data = malloc(l*sizeof(double)); 
+    double * data = malloc(*l*sizeof(double)); 
     int i;
-    for (i = l-1 ; i >= 0 ; i--)
+    for (i = *l-1 ; i >= 0 ; i--)
     {
         data[i] = list->value;
         list = list->prev;
     }
+    d_list_free(list);
+    free(local);
+    return data;
+}
+
+void  
+parse_x_data(chart *chart, char* line)
+{
+    unsigned int l = 0 ;
+    double * data = parse_data(line, &l);
     plot * p = plot_get_last_element(chart->plots)->plot;
     if (p->n == 0)
         p->n = l;
     p->x_data = data;
-    d_list_free(list);
-    free(local);
 }
 
 void  
 parse_y_data(chart *chart, char* line)
 {
-    unsigned int n = strlen(line);
-    if (n == 0)
-        return;
-
-    char * copy = malloc((1+n)*sizeof(char));
-    copy[n] = 0;
-    memcpy(copy, line, n);
-    char * tok = copy;
-    char * point;
-    
     unsigned int l = 0;
-    _dList * list = NULL;
-    /* count values */
-    while((tok = strtok_r(tok, "\t ,", &point)) != NULL)
-    {
-        if (startsWith("csv://", tok))
-        {   
-            list = parse_csv(tok, &l);
-            break;
-        }
-        _dList *el = malloc(sizeof(_dList));
-        el->value = atof(tok);
-        el->prev = list;
-
-        list = el;
-        l ++;
-        tok = NULL;
-    }
-    
-    double * data = malloc(l*sizeof(double)); 
-    int i;
-    for (i = l-1 ; i >= 0 ; i--)
-    {
-        data[i] = list->value;
-        list = list->prev;
-    }
+    double * data = parse_data(line, &l);
     plot * p = plot_get_last_element(chart->plots)->plot;
     p->n = l;
     p->y_data = data;
-    
-    d_list_free(list);
-    free(copy);
 }
 
 
@@ -400,9 +347,20 @@ parse_line(char* line, chart * chart, _pstate prev)
             break;
         } else if (strcmp(tok, TOK_RANGE) == 0)
         {
-            if (prev == AXIS_X || prev == AXIS_Y)
-            {
-                parse_range(rest, chart, prev);
+            double min=0, max=0;
+            parse_range(rest, &min, &max, NULL);
+            if (min != max && max > min){
+                if (prev == AXIS_X)
+                {
+                    chart->x_axis.autoscale = FALSE;
+                    chart->x_axis.range_min = min;
+                    chart->x_axis.range_max = max;
+                } else if (prev == AXIS_Y)
+                {
+                    chart->y_axis.autoscale = FALSE;
+                    chart->y_axis.range_min = min;
+                    chart->y_axis.range_max = max;
+                }
             }
             break;
         } else if (strcmp(tok, TOK_PLOT) == 0)
@@ -411,9 +369,12 @@ parse_line(char* line, chart * chart, _pstate prev)
             chart_add_plot(chart, init_plot());
         } else if (strcmp(tok, TOK_MODE) == 0)
         {
-            if (prev == AXIS_X || prev == AXIS_Y)
+            if (prev == AXIS_X) 
             {
-                parse_mode(rest, chart, prev);
+                chart->x_axis.mode = parse_mode(rest);
+            } else if (prev == AXIS_Y)
+            {
+                chart->y_axis.mode = parse_mode(rest); 
             }
             break;
         } else if (strcmp(tok, TOK_X_DATA) == 0 && prev == PLOT)

@@ -521,7 +521,7 @@ void line_plot_to_svg(char* buffer, chart* c, plot* p, svg_plane plane, unsigned
         sprintf(buffer, "%s<polyline points=\"",
                 buffer);
         for (i=0; i< n;i++){
-            double x = p->x_data == NULL ? i : p->x_data[i];
+            double x = p->x_data == NULL ? i+1 : p->x_data[i];
             double y = p->y_data[i];
 
             x = get_x(x, plane, c->x_axis);
@@ -541,7 +541,7 @@ void line_plot_to_svg(char* buffer, chart* c, plot* p, svg_plane plane, unsigned
                 
         
         for (i=0; i< n;i++){
-            double x = p->x_data == NULL ? i : p->x_data[i];
+            double x = p->x_data == NULL ? i+1 : p->x_data[i];
             double y = p->y_data[i];
     
             x = get_x(x, plane, c->x_axis);
