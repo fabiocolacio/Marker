@@ -10,8 +10,12 @@
 #include "marker-preview.h"
 #include "marker.h"
 
-#define MAX_ZOOM 4.0
-#define MIN_ZOOM 0.1
+#define MAX_ZOOM  4.0
+#define MIN_ZOOM  0.1
+
+#define KEY_0     48
+#define KEY_PLUS  43
+#define KEY_MINUS 45
 
 struct _MarkerPreview
 {
@@ -87,6 +91,36 @@ initialize_web_extensions (WebKitWebContext *context,
      context, g_variant_new_uint32 (unique_id++));
 }
 
+gboolean key_zoom(GtkWidget *       widget,
+                  GdkEventKey*      event,
+                  gpointer          user_data)
+{
+  if ((event->state & GDK_CONTROL_MASK) != 0)
+  {
+    WebKitWebView * view = WEBKIT_WEB_VIEW(widget);
+    if (!view)
+      return FALSE;
+    gdouble val = webkit_web_view_get_zoom_level(view);
+    guint32 unival =  gdk_keyval_to_unicode(event->keyval);
+    /** unival conversion table at 
+     * https://en.wikipedia.org/wiki/List_of_Unicode_characters#Basic_Latin 
+     * */
+    if ( unival == KEY_0)
+    {
+      val = 1.0;
+    } else if ( unival == KEY_PLUS && val < MAX_ZOOM)
+    {
+      val += 0.1;
+    } else if ( unival == KEY_MINUS && val > MIN_ZOOM)
+    {
+      val -= 0.1;
+    }
+    marker_prefs_set_zoom_level(val);
+    webkit_web_view_set_zoom_level(view, val);
+  }
+  return FALSE;
+}
+
 gboolean zoom(GtkWidget *       widget,
               GdkEventScroll *  event,
               gpointer          user_data)
@@ -123,6 +157,10 @@ marker_preview_init(MarkerPreview* preview)
   g_signal_connect(preview,
                    "scroll-event",
                    G_CALLBACK (zoom),
+                   NULL);
+  g_signal_connect(preview,
+                   "key-press-event",
+                   G_CALLBACK (key_zoom),
                    NULL);
 }
 
