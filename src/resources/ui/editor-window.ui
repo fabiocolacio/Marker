@@ -19,10 +19,10 @@
     <property name="icon_name">view-paged-symbolic</property>
     <property name="icon_size">2</property>
   </object>
-  
-  <menu id="view-menu">
-    
-  </menu>
+  <object class="GtkImage" id="restore-view">
+    <property name="icon_name">view-restore-symbolic</property>
+    <property name="icon_size">2</property>
+  </object>
   
   <!-- Gear Popover Menu -->
   <menu id="gear_menu">
@@ -135,8 +135,10 @@
   
   <!-- Header Bar -->
   <object class="GtkHeaderBar" id="header_bar">
+    <property name="visible">True</property>
     <child>
       <object class="GtkButton">
+        <property name="visible">True</property>
         <property name="label">Open...</property>
         <signal name="clicked" handler="open_cb" swapped="no"/>
       </object>
@@ -146,6 +148,7 @@
     </child>
     <child>
       <object class="GtkButton">
+        <property name="visible">True</property>
         <property name="label">Save</property>
         <signal name="clicked" handler="save_cb" swapped="no"/>
       </object>
@@ -154,7 +157,17 @@
       </packing>
     </child>
     <child>
+      <object class="GtkButton" id="unfullscreen_btn">
+        <property name="visible">False</property>
+        <property name="image">restore-view</property>
+      </object>
+      <packing>
+        <property name="pack_type">end</property>
+      </packing>
+    </child>
+    <child>
       <object class="GtkMenuButton" id="menu_btn">
+        <property name="visible">True</property>
         <property name="image">open-menu</property>
       </object>
       <packing>

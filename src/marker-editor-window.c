@@ -708,6 +708,7 @@ init_ui (MarkerEditorWindow *window)
   gtk_window_set_titlebar(GTK_WINDOW (window), GTK_WIDGET (header_box));
   gtk_box_pack_start (header_box, GTK_WIDGET (header_bar), FALSE, TRUE, 0);
   gtk_header_bar_set_show_close_button (header_bar, TRUE);
+  gtk_widget_show (GTK_WIDGET (header_box));
   
   GtkMenuButton* menu_btn =
     GTK_MENU_BUTTON(gtk_builder_get_object(builder, "menu_btn"));  

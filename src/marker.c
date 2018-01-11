@@ -169,14 +169,14 @@ void
 marker_create_new_window()
 {
   MarkerEditorWindow* window = marker_editor_window_new(app);
-  gtk_widget_show_all(GTK_WIDGET(window));
+  gtk_widget_show(GTK_WIDGET(window));
 }
 
 void
 marker_create_new_window_from_file(GFile* file)
 {
   MarkerEditorWindow* window = marker_editor_window_new_from_file(app, file);
-  gtk_widget_show_all(GTK_WIDGET(window));
+  gtk_widget_show(GTK_WIDGET(window));
   if (preview_mode)
     marker_editor_window_set_view_mode(window, PREVIEW_ONLY_MODE);
 }
