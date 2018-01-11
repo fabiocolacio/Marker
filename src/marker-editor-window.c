@@ -21,6 +21,7 @@ struct _MarkerEditorWindow
   
   GtkBox                     *header_box;
   GtkHeaderBar               *header_bar;
+  GtkButton                  *unfullscreen_btn;
   GtkPaned                   *paned;
   MarkerSourceView           *source_view;
   GtkWidget                  *source_scroll;
@@ -474,7 +475,8 @@ marker_editor_window_fullscreen (MarkerEditorWindow *window)
   g_object_ref (header_bar);
   gtk_container_remove (GTK_CONTAINER (header_box), header_bar);
   gtk_header_bar_set_show_close_button (GTK_HEADER_BAR (header_bar), FALSE);
-      
+  gtk_widget_show (GTK_WIDGET (window->unfullscreen_btn));
+  
   g_object_ref (paned);
   gtk_container_remove (GTK_CONTAINER (vbox), paned);
   
@@ -496,6 +498,7 @@ marker_editor_window_unfullscreen (MarkerEditorWindow *window)
   g_object_ref (header_bar);
   gtk_container_remove (GTK_CONTAINER (vbox), header_bar);
   gtk_header_bar_set_show_close_button (GTK_HEADER_BAR (header_bar), TRUE);
+  gtk_widget_hide (GTK_WIDGET (window->unfullscreen_btn));
   
   gtk_box_pack_start (header_box, header_bar, FALSE, TRUE, 0);
 }
@@ -709,6 +712,10 @@ init_ui (MarkerEditorWindow *window)
   gtk_box_pack_start (header_box, GTK_WIDGET (header_bar), FALSE, TRUE, 0);
   gtk_header_bar_set_show_close_button (header_bar, TRUE);
   gtk_widget_show (GTK_WIDGET (header_box));
+  
+  GtkButton *unfullscreen_btn =
+    GTK_BUTTON (gtk_builder_get_object (builder, "unfullscreen_btn"));
+  window->unfullscreen_btn = unfullscreen_btn;
   
   GtkMenuButton* menu_btn =
     GTK_MENU_BUTTON(gtk_builder_get_object(builder, "menu_btn"));  
