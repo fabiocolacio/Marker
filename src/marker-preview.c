@@ -83,6 +83,44 @@ initialize_web_extensions (WebKitWebContext *context,
      context, g_variant_new_uint32 (unique_id++));
 }
 
+gboolean zoom(GtkWidget *       widget,
+              GdkEventScroll *  event,
+              gpointer          user_data)
+{
+  guint state = event->state;
+  if ((state & GDK_CONTROL_MASK) != 0)
+  {
+    WebKitWebView * view = WEBKIT_WEB_VIEW(widget);
+    if (!view)
+      return FALSE;
+    gdouble val = webkit_web_view_get_zoom_level(view);
+    GdkScrollDirection dir = event->direction;
+
+    if (dir == GDK_SCROLL_UP)
+    {
+      val += 0.1;
+    }else if (dir == GDK_SCROLL_DOWN)
+    {
+      val -= 0.1;
+    } else if (dir == GDK_SCROLL_SMOOTH)
+    {
+      
+      gdouble delta_x , delta_y;
+      gdk_event_get_scroll_deltas(event, &delta_x, &delta_y); 
+      if (delta_y > 0)
+      {
+        val += 0.1;
+      } else if (delta_y < 0)
+      {
+        val -= 0.1;
+      }
+    }
+
+    webkit_web_view_set_zoom_level(view, val);
+  }
+  return FALSE;
+}
+
 static void
 marker_preview_init(MarkerPreview* preview)
 {
@@ -90,6 +128,10 @@ marker_preview_init(MarkerPreview* preview)
                     "initialize-web-extensions",
                     G_CALLBACK (initialize_web_extensions),
                     NULL);
+  g_signal_connect(preview,
+                   "scroll-event",
+                   G_CALLBACK (zoom),
+                   NULL);
 }
 
 static void
