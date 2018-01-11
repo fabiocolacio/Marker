@@ -31,6 +31,11 @@ marker_quit_cb(GSimpleAction*  action,
                gpointer        user_data);
 
 void
+new_cb(GSimpleAction *action,
+       GVariant      *parameter,
+       gpointer       user_data);
+
+void
 marker_shortcuts_cb(GSimpleAction* action,
                     GVariant*      parameter,
                     gpointer       user_data);

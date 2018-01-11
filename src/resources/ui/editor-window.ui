@@ -39,10 +39,6 @@
         <attribute name="label">Print...</attribute>
         <attribute name="action">win.print</attribute>
       </item>
-      <item>
-        <attribute name="label">New</attribute>
-        <attribute name="action">win.new</attribute>
-      </item>
     </section>
     <section>
       <submenu id="view-submenu">
@@ -83,9 +79,11 @@
         <attribute name="label">Print...</attribute>
         <attribute name="action">win.print</attribute>
       </item>
+    </section>
+    <section>
       <item>
-        <attribute name="label">New</attribute>
-        <attribute name="action">win.new</attribute>
+        <attribute name="label">New Window</attribute>
+        <attribute name="action">app.new</attribute>
       </item>
     </section>
     <section>
@@ -111,6 +109,12 @@
   </menu>
   
   <menu id="app_menu">
+    <section>
+      <item>
+        <attribute name="label">New Window</attribute>
+        <attribute name="action">app.new</attribute>
+      </item>
+    </section>
     <section>
       <item>
         <attribute name="label">Preferences</attribute>

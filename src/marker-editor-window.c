@@ -86,14 +86,6 @@ export_cb(GSimpleAction* action,
 }
 
 static void
-new_cb(GSimpleAction* action,
-       GVariant*      parameter,
-       gpointer       user_data)
-{
-  marker_create_new_window();
-}
-
-static void
 editoronlymode_cb(GSimpleAction* action,
                   GVariant*      parameter,
                   gpointer       user_data)
@@ -134,7 +126,6 @@ static GActionEntry win_entries[] =
   { "saveas", save_as_cb, NULL, NULL, NULL },
   { "export", export_cb, NULL, NULL, NULL },
   { "print", print_cb, NULL, NULL, NULL },
-  { "new", new_cb, NULL, NULL, NULL },
   { "editoronlymode", editoronlymode_cb, NULL, NULL, NULL },
   { "previewonlymode", previewonlymode_cb, NULL, NULL, NULL },
   { "dualpanemode", dualpanemode_cb, NULL, NULL, NULL },

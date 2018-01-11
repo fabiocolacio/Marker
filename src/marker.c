@@ -21,10 +21,11 @@ static const GOptionEntry CLI_OPTIONS[] =
   { NULL }
 };
 
-const int APP_MENU_ACTION_ENTRIES_LEN = 4;
+const int APP_MENU_ACTION_ENTRIES_LEN = 5;
 
 const GActionEntry APP_MENU_ACTION_ENTRIES[] =
 {
+  { "new", new_cb, NULL, NULL, NULL },
   { "quit", marker_quit_cb, NULL, NULL, NULL },
   { "about", marker_about_cb, NULL, NULL, NULL },
   { "prefs", marker_prefs_cb, NULL, NULL, NULL },
@@ -77,6 +78,14 @@ marker_open(GtkApplication* app,
     g_object_ref(file);
     marker_create_new_window_from_file(file);
   }
+}
+
+void
+new_cb(GSimpleAction* action,
+       GVariant*      parameter,
+       gpointer       user_data)
+{
+  marker_create_new_window();
 }
 
 void
