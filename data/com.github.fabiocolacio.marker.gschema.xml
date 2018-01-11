@@ -138,6 +138,11 @@
       <summary>Enable numbering of equation in Preview</summary>
       <description>Enable automatic numbering of equations in the live preview.</description>
     </key>
+    <key name="preview-zoom-level" type="d">
+      <default>1.0</default>
+      <summary>Zoom level of the preview</summary>
+      <description>Zoom level of the preview widget</description>
+    </key>
   </schema>
   
   <schema path="/com/github/fabiocolacio/marker/preferences/window/" id="com.github.fabiocolacio.marker.preferences.window">

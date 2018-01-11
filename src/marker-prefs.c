@@ -100,6 +100,19 @@ marker_prefs_set_use_equation_numbering(gboolean state)
   g_settings_set_boolean(prefs.preview_settings, "equation-numbering-toggle", state);
 }
 
+
+gdouble
+makrer_prefs_get_zoom_level()
+{
+  return  g_settings_get_double(prefs.preview_settings, "preview-zoom-level");
+}
+
+void
+marker_prefs_set_zoom_level(gdouble val)
+{
+  g_settings_set_double(prefs.preview_settings, "preview-zoom-level", val);
+}
+
 gboolean
 marker_prefs_get_use_mermaid()
 {

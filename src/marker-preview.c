@@ -10,6 +10,8 @@
 #include "marker-preview.h"
 #include "marker.h"
 
+#define MAX_ZOOM 4.0
+#define MIN_ZOOM 0.1
 
 struct _MarkerPreview
 {
@@ -64,7 +66,9 @@ G_DEFINE_TYPE(MarkerPreview, marker_preview, WEBKIT_TYPE_WEB_VIEW)
 MarkerPreview*
 marker_preview_new(void)
 {
-  return g_object_new(MARKER_TYPE_PREVIEW, NULL);
+  MarkerPreview * obj =  g_object_new(MARKER_TYPE_PREVIEW, NULL);
+  webkit_web_view_set_zoom_level(obj, makrer_prefs_get_zoom_level());
+  return obj;
 }
 
 /**
@@ -96,14 +100,14 @@ gboolean zoom(GtkWidget *       widget,
     gdouble val = webkit_web_view_get_zoom_level(view);
     gdouble delta_y = event->delta_y;
     
-    if (delta_y > 0)
+    if (delta_y > 0 && val > MIN_ZOOM)
     {
       val -= 0.1;
-    } else if (delta_y < 0)
+    } else if (delta_y < 0 && val < MAX_ZOOM)
     {
       val += 0.1;
     }
-  
+    marker_prefs_set_zoom_level(val);
     webkit_web_view_set_zoom_level(view, val);
   }
   return FALSE;

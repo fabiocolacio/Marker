@@ -114,6 +114,12 @@ marker_prefs_set_use_katex(gboolean state);
 gboolean
 marker_prefs_get_use_equation_numbering();
 
+gdouble
+makrer_prefs_get_zoom_level();
+
+void
+marker_prefs_set_zoom_level(gdouble val);
+
 void
 marker_prefs_set_use_equation_numbering(gboolean state);
 
