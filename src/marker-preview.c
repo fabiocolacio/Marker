@@ -94,28 +94,16 @@ gboolean zoom(GtkWidget *       widget,
     if (!view)
       return FALSE;
     gdouble val = webkit_web_view_get_zoom_level(view);
-    GdkScrollDirection dir = event->direction;
-
-    if (dir == GDK_SCROLL_UP)
-    {
-      val += 0.1;
-    }else if (dir == GDK_SCROLL_DOWN)
+    gdouble delta_y = event->delta_y;
+    
+    if (delta_y > 0)
     {
       val -= 0.1;
-    } else if (dir == GDK_SCROLL_SMOOTH)
+    } else if (delta_y < 0)
     {
-      
-      gdouble delta_x , delta_y;
-      gdk_event_get_scroll_deltas(event, &delta_x, &delta_y); 
-      if (delta_y > 0)
-      {
-        val += 0.1;
-      } else if (delta_y < 0)
-      {
-        val -= 0.1;
-      }
+      val += 0.1;
     }
-
+  
     webkit_web_view_set_zoom_level(view, val);
   }
   return FALSE;
