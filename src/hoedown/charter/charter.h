@@ -50,7 +50,13 @@ struct{
     double*         x_data;
     double*         y_data;
     unsigned int    n;
+    void*           extra_data;
 }typedef plot;
+
+struct{
+    char*           line_color;
+    double          bar_width;
+}typedef barPref;
 
 struct
 {
@@ -124,5 +130,7 @@ void chart_free(chart *);
 void plot_list_free(plotList *);
 
 void plot_free(plot *);
+
+void bar_pref_free(barPref *);
 
 #endif

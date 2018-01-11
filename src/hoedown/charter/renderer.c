@@ -391,6 +391,13 @@ cbool is_marker(char c)
     }
 }
 
+void draw_bar(char * buffer, double lw, char* color, char* lcolor, double x, double y, double y0, double w)
+{
+    sprintf(buffer, "%s<rect clip-path=\"url(#plot-area)\" x=\"%.2f\" y=\"%.2f\" width=\"%.2f\" height=\"%.2f\" style=\"fill:%s; stroke:%s; stroke-width:%.2f;\" />\n",
+            buffer, x-w/2, (y < y0 ? y : y0), w, fabs(y-y0), color, lcolor, lw);
+}
+
+
 void draw_point(char* buffer, char style, char* color, double x, double y)
 {
     switch (style){
@@ -487,6 +494,15 @@ void legend_to_svg(char* buffer, plotList * plots, svg_plane plane)
             {
                 draw_point(buffer, p->marker_style, color, x+10+(dw-10)/2, y-4);
             }
+            if (p->type == BAR)
+            {
+                barPref * pref = p->extra_data;
+                double y0 = y;
+                double w = dw-10;
+                double xb = x+10+w/2;
+                double yb = y - 8;
+                draw_bar(buffer,p->line_width , color, pref->line_color, xb, yb, y0, w);
+            }
             if (!p->color)
             {
                 free(color);
@@ -557,7 +573,7 @@ void line_plot_to_svg(char* buffer, chart* c, plot* p, svg_plane plane, unsigned
 
 void scatter_to_svg(char* buffer, chart* c, plot* p, svg_plane plane, unsigned int index)
 {
- unsigned int n = p->n;
+    unsigned int n = p->n;
     if (!n || p->y_data == NULL){
         return;
     }
@@ -587,6 +603,42 @@ void scatter_to_svg(char* buffer, chart* c, plot* p, svg_plane plane, unsigned i
 }
 
 
+void bar_to_svg(char* buffer, chart* c, plot* p, svg_plane plane, unsigned int index)
+{
+    unsigned int n = p->n;
+    if (!n || p->y_data == NULL || p->extra_data == NULL){
+        return;
+    }
+    unsigned int i;
+    double dy = plane.h/(plane.y_max-plane.y_min);
+    char * color = p->color;
+    
+    if (!color)
+    {
+        color = malloc(8*sizeof(char));
+        memcpy(color, colormap[index%10], 7);
+    }            
+    barPref * pref = p->extra_data;
+    double y0 = get_y(0, plane, c->y_axis);
+    double w = fabs(get_x(pref->bar_width, plane, c->x_axis));
+
+    for (i=0; i< n;i++){
+        double x = p->x_data == NULL ? i+1 : p->x_data[i];
+        double y = p->y_data[i];
+
+        x = get_x(x, plane, c->x_axis);
+        y = get_y(y, plane, c->y_axis);
+      
+        draw_bar(buffer,p->line_width , color, pref->line_color, x, y, y0, w);
+    }
+
+    if (!p->color)
+    {
+        free(color);
+    }   
+}
+
+
 void plots_to_svg(char* buffer, chart* c, svg_plane plane)
 {
     unsigned int i;
@@ -600,6 +652,10 @@ void plots_to_svg(char* buffer, chart* c, svg_plane plane)
         if (p->type == SCATTER)
         {
             scatter_to_svg(buffer,c, p, plane, i);
+        }
+        if (p->type == BAR)
+        {
+            bar_to_svg(buffer, c, p, plane, i);
         }
     }
 }

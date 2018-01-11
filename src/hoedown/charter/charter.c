@@ -82,6 +82,10 @@ double plot_get_min_y(plot* p)
         if (p->y_data[i] < min_x)
             min_x = p->y_data[i];
     }
+    if (p->type == BAR && min_x > 0)
+    {
+        return 0;
+    }
     return min_x;
 }
 
@@ -297,10 +301,21 @@ void plot_list_free(plotList *pl)
     free(pl);
 }
 
+void bar_pref_free(barPref * d)
+{   
+    if (!d)
+        return;
+    if (d->line_color)
+        free(d->line_color);
+    free(d);
+}
+
 void plot_free(plot *p)
 {
     if (!p)
         return;
+    if (p->type == BAR)
+        bar_pref_free(p->extra_data);
     if (p->color)
         free(p->color);
     if (p->label)

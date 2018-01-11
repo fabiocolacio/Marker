@@ -55,8 +55,7 @@ hoedown_sources = [
   'src/hoedown/charter/csv_parser/csvparser.c',
   'src/hoedown/charter/parser.c',
   'src/hoedown/charter/charter.c',
-  'src/hoedown/charter/renderer.c',
-  'src/hoedown/charter/printer.c' 
+  'src/hoedown/charter/renderer.c'
 ]
 
 deps = [

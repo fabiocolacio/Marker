@@ -14,8 +14,8 @@
 #define TOK_AXIS_Y      "y-axis"    /*done*/
 #define TOK_PLOT        "plot"      /*done*/
 /*later*/
-#define TOK_SCATTER     "scatter" 
-#define TOK_BAR         "bar"
+#define TOK_SCATTER     "scatter"   /*done*/
+#define TOK_BAR         "bar"       /*done*/
 
 #define TOK_LABEL       "label"     /*done*/
 
@@ -29,6 +29,9 @@
 #define TOK_COLOR       "color"     /*done*/
 #define TOK_LIN_STYLE   "line-style"/*done*/
 #define TOK_LIN_WIDTH   "line-width"/*done*/
+#define TOK_LIN_COLOR   "line-color"/*done*/
+#define TOK_BAR_WIDTH   "bar-width" /*done*/
+#define TOK_ALT_BAR_WIDTH "bw"      /*done*/
 #define TOK_ALT_LIN_STYLE "ls"      /*done*/
 #define TOK_ALT_LIN_WIDTH "lw"      /*done*/
 #define TOK_MARKER      "marker"    /*done*/
@@ -278,7 +281,31 @@ plot * init_scatter()
     p->line_style = NOLINE;
     p->marker_style = 'o';
     p->line_width = 0;
+    p->extra_data = NULL;
     return p;   
+}
+
+plot * init_bar()
+{
+    plot * p = malloc(sizeof(plot));
+    p->type = BAR;
+    p->label = NULL;
+    p->n = 0;
+    p->x_data = NULL;
+    p->y_data = NULL;
+    p->color = NULL;
+    p->line_style = NORMAL;
+    p->marker_style = 0;
+    p->line_width = 2;
+    barPref * pref = malloc(sizeof(barPref));
+    char * color = malloc(8*sizeof(char));
+    color[7] = 0;
+    memcpy(color, "#000000", 7);
+
+    pref->bar_width = 0.8;
+    pref->line_color = color; 
+    p->extra_data = pref;
+    return p; 
 }
 
 plot * init_plot()
@@ -293,6 +320,7 @@ plot * init_plot()
     p->line_style = NORMAL;
     p->marker_style = 0;
     p->line_width = 2;
+    p->extra_data = NULL;
     return p;
 }
 
@@ -383,6 +411,10 @@ parse_line(char* line, chart * chart, _pstate prev)
         {
             prev = PLOT;
             chart_add_plot(chart, init_scatter());
+        } else if (strcmp(tok, TOK_BAR) == 0 )
+        {
+            prev = PLOT;
+            chart_add_plot(chart, init_bar());
         } else if (strcmp(tok, TOK_MODE) == 0)
         {
             if (prev == AXIS_X) 
@@ -436,20 +468,51 @@ parse_line(char* line, chart * chart, _pstate prev)
                 p->marker_style = 0;
             }
             break;
-        }else if ((strcmp(tok, TOK_LIN_WIDTH) == 0 || strcmp(tok, TOK_ALT_LIN_WIDTH) == 0) && prev == PLOT)
+        }else if (((strcmp(tok, TOK_LIN_WIDTH) == 0) || 
+                  (strcmp(tok, TOK_ALT_LIN_WIDTH) == 0)) && 
+                  prev == PLOT)
+        {
+            strip(rest, ' ');
+            double v = atof(rest);
+            if (v >= 0)
+            {
+                plot * p = plot_get_last_element(chart->plots)->plot;
+                p->line_width = v;
+            }
+            break;
+        } else if (((strcmp(tok, TOK_LIN_STYLE) == 0) || 
+                   (strcmp(tok, TOK_ALT_LIN_STYLE) == 0)) && 
+                   prev == PLOT)
+        {
+            plot * p = plot_get_last_element(chart->plots)->plot;
+            p->line_style = parse_line_style(rest);
+            break;
+        }  else if (((strcmp(tok, TOK_BAR_WIDTH) == 0) || 
+                   (strcmp(tok, TOK_ALT_BAR_WIDTH) == 0)) && 
+                   prev == PLOT)
         {
             strip(rest, ' ');
             double v = atof(rest);
             if (v > 0)
             {
                 plot * p = plot_get_last_element(chart->plots)->plot;
-                p->line_width = v;
+                if (p->type == BAR && p->extra_data)
+                {
+                    barPref* pref = p->extra_data;
+                    pref->bar_width = v;
+                }    
             }
             break;
-        } else if ((strcmp(tok, TOK_LIN_STYLE) == 0 || strcmp(tok, TOK_ALT_LIN_STYLE) == 0)&& prev == PLOT)
+        } else if ((strcmp(tok, TOK_LIN_COLOR) == 0) && prev == PLOT)
         {
             plot * p = plot_get_last_element(chart->plots)->plot;
-            p->line_style = parse_line_style(rest);
+            if (p->type == BAR && p->extra_data)
+            {
+                barPref* pref = p->extra_data;
+                free(pref->line_color);
+                pref->line_color = parse_text(rest);
+            }
+            break;
         }
         tok = NULL;
         break;
