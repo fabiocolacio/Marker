@@ -19,11 +19,13 @@ struct _MarkerEditorWindow
 {
   GtkApplicationWindow parent_instance;
   
+  GtkBox                     *header_box;
   GtkHeaderBar               *header_bar;
   GtkPaned                   *paned;
   MarkerSourceView           *source_view;
   GtkWidget                  *source_scroll;
   MarkerPreview              *web_view;
+  GtkBox                     *vbox;
   
   GFile                      *file;
   
@@ -462,11 +464,35 @@ marker_editor_window_set_fullscreen (MarkerEditorWindow *window,
                                      gboolean            state)
 {
   window->is_fullscreen = state;
-  if (state) {
+  
+  GtkBox *vbox = window->vbox;
+  GtkBox *header_box = window->header_box;
+  GtkWidget *header_bar = GTK_WIDGET (window->header_bar);
+  GtkWidget *paned = GTK_WIDGET (window->paned);
+  
+  if (state)
+  {
     gtk_window_fullscreen (GTK_WINDOW (window));
+
+    g_object_ref (header_bar);
+    gtk_container_remove (GTK_CONTAINER (header_box), header_bar);
+    gtk_header_bar_set_show_close_button (GTK_HEADER_BAR (header_bar), FALSE);
+        
+    g_object_ref (paned);
+    gtk_container_remove (GTK_CONTAINER (vbox), paned);
+    
+    gtk_box_pack_start (GTK_BOX (window->vbox), header_bar, FALSE, TRUE, 0); 
+    gtk_box_pack_start (GTK_BOX (window->vbox), paned, TRUE, TRUE, 0);
   }
-  else {
+  else
+  {
     gtk_window_unfullscreen (GTK_WINDOW (window));
+    
+    g_object_ref (header_bar);
+    gtk_container_remove (GTK_CONTAINER (vbox), header_bar);
+    gtk_header_bar_set_show_close_button (GTK_HEADER_BAR (header_bar), TRUE);
+    
+    gtk_box_pack_start (header_box, header_bar, FALSE, TRUE, 0);
   }
 }
 
@@ -657,15 +683,17 @@ init_ui (MarkerEditorWindow *window)
     gtk_builder_new_from_resource("/com/github/fabiocolacio/marker/ui/editor-window.ui");
 
   GtkBox* vbox = GTK_BOX(gtk_box_new(GTK_ORIENTATION_VERTICAL, 0));
+  window->vbox = vbox;
   gtk_container_add(GTK_CONTAINER(window), GTK_WIDGET(vbox));
 
   // Header Bar //
-  GtkHeaderBar* header_bar =
-    GTK_HEADER_BAR(gtk_builder_get_object(builder, "header_bar"));
+  GtkBox *header_box = GTK_BOX (gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
+  window->header_box = header_box;
+  GtkHeaderBar* header_bar = GTK_HEADER_BAR(gtk_builder_get_object(builder, "header_bar"));
   window->header_bar = header_bar;
-  gtk_window_set_titlebar(GTK_WINDOW(window), GTK_WIDGET(header_bar));
-  gtk_header_bar_set_show_close_button(header_bar, TRUE);
-  
+  gtk_window_set_titlebar(GTK_WINDOW (window), GTK_WIDGET (header_box));
+  gtk_box_pack_start (header_box, GTK_WIDGET (header_bar), FALSE, TRUE, 0);
+  gtk_header_bar_set_show_close_button (header_bar, TRUE);
   
   GtkMenuButton* menu_btn =
     GTK_MENU_BUTTON(gtk_builder_get_object(builder, "menu_btn"));  
