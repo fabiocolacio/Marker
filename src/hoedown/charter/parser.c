@@ -266,6 +266,21 @@ void strip(char* str, char c) {
     *pw = '\0';
 }
 
+plot * init_scatter()
+{
+    plot * p = malloc(sizeof(plot));
+    p->type = SCATTER;
+    p->label = NULL;
+    p->n = 0;
+    p->x_data = NULL;
+    p->y_data = NULL;
+    p->color = NULL;
+    p->line_style = NOLINE;
+    p->marker_style = 'o';
+    p->line_width = 0;
+    return p;   
+}
+
 plot * init_plot()
 {
     plot * p = malloc(sizeof(plot));
@@ -338,11 +353,8 @@ parse_line(char* line, chart * chart, _pstate prev)
             else if (prev == PLOT)
             {
                 plotList * el = plot_get_last_element(chart->plots);
-                if (el->plot == NULL){
-                    el->plot = init_plot();
-                    chart->n_plots ++;
-                }
-                el->plot->label = label;
+                if (el->plot)
+                    el->plot->label = label;
             }
             break;
         } else if (strcmp(tok, TOK_RANGE) == 0)
@@ -367,6 +379,10 @@ parse_line(char* line, chart * chart, _pstate prev)
         {
             prev = PLOT;
             chart_add_plot(chart, init_plot());
+        } else if (strcmp(tok, TOK_SCATTER) == 0)
+        {
+            prev = PLOT;
+            chart_add_plot(chart, init_scatter());
         } else if (strcmp(tok, TOK_MODE) == 0)
         {
             if (prev == AXIS_X) 

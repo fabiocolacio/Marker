@@ -475,7 +475,7 @@ void legend_to_svg(char* buffer, plotList * plots, svg_plane plane)
                 memcpy(color, colormap[ind%10], 7);
             }
             y+= dh;
-            if (p->line_style != NOLINE)
+            if (p->type == LINE && p->line_style != NOLINE)
             {
                 sprintf(buffer, "%s<line x1=\"%.2f\" y1=\"%.2f\" x2=\"%.2f\"  y2=\"%.2f\" %s style=\"fill:none; stroke:%s; stroke-width:%.2f;\" />\n",
                         buffer, x+10, y-4, x+dw, y-4, get_style(p->line_style), color, p->line_width);
@@ -483,7 +483,7 @@ void legend_to_svg(char* buffer, plotList * plots, svg_plane plane)
             sprintf(buffer, "%s<text x=\"%.2f\" y=\"%.2f\" fill=\"#111\" font-size=\"12\" text-anchor=\"middle\"  clip-path=\"url(#leg-area)\">%s</text>\n",
                     buffer, x+dw+30, y, p->label);
 
-            if (is_marker(p->marker_style))
+            if ((is_marker(p->marker_style) && p->type == LINE ) || p->type == SCATTER)
             {
                 draw_point(buffer, p->marker_style, color, x+10+(dw-10)/2, y-4);
             }
@@ -555,6 +555,38 @@ void line_plot_to_svg(char* buffer, chart* c, plot* p, svg_plane plane, unsigned
     }
 }
 
+void scatter_to_svg(char* buffer, chart* c, plot* p, svg_plane plane, unsigned int index)
+{
+ unsigned int n = p->n;
+    if (!n || p->y_data == NULL){
+        return;
+    }
+    unsigned int i;
+    double dy = plane.h/(plane.y_max-plane.y_min);
+    char * color = p->color;
+    
+    if (!color)
+    {
+        color = malloc(8*sizeof(char));
+        memcpy(color, colormap[index%10], 7);
+    }            
+        
+    for (i=0; i< n;i++){
+        double x = p->x_data == NULL ? i+1 : p->x_data[i];
+        double y = p->y_data[i];
+
+        x = get_x(x, plane, c->x_axis);
+        y = get_y(y, plane, c->y_axis);
+        draw_point(buffer, p->marker_style, color, x, y);
+    }
+
+    if (!p->color)
+    {
+        free(color);
+    }   
+}
+
+
 void plots_to_svg(char* buffer, chart* c, svg_plane plane)
 {
     unsigned int i;
@@ -564,6 +596,10 @@ void plots_to_svg(char* buffer, chart* c, svg_plane plane)
         if (p->type == LINE)
         {
             line_plot_to_svg(buffer, c, p, plane, i);
+        }
+        if (p->type == SCATTER)
+        {
+            scatter_to_svg(buffer,c, p, plane, i);
         }
     }
 }
