@@ -460,40 +460,54 @@ marker_editor_window_set_right_margin_position(MarkerEditorWindow* window,
 }
 
 void
-marker_editor_window_set_fullscreen (MarkerEditorWindow *window,
-                                     gboolean            state)
+marker_editor_window_fullscreen (MarkerEditorWindow *window)
 {
-  window->is_fullscreen = state;
-  
+  window->is_fullscreen = TRUE;
+
   GtkBox *vbox = window->vbox;
   GtkBox *header_box = window->header_box;
   GtkWidget *header_bar = GTK_WIDGET (window->header_bar);
   GtkWidget *paned = GTK_WIDGET (window->paned);
   
-  if (state)
-  {
-    gtk_window_fullscreen (GTK_WINDOW (window));
+  gtk_window_fullscreen (GTK_WINDOW (window));
 
-    g_object_ref (header_bar);
-    gtk_container_remove (GTK_CONTAINER (header_box), header_bar);
-    gtk_header_bar_set_show_close_button (GTK_HEADER_BAR (header_bar), FALSE);
-        
-    g_object_ref (paned);
-    gtk_container_remove (GTK_CONTAINER (vbox), paned);
+  g_object_ref (header_bar);
+  gtk_container_remove (GTK_CONTAINER (header_box), header_bar);
+  gtk_header_bar_set_show_close_button (GTK_HEADER_BAR (header_bar), FALSE);
+      
+  g_object_ref (paned);
+  gtk_container_remove (GTK_CONTAINER (vbox), paned);
+  
+  gtk_box_pack_start (GTK_BOX (window->vbox), header_bar, FALSE, TRUE, 0); 
+  gtk_box_pack_start (GTK_BOX (window->vbox), paned, TRUE, TRUE, 0);
+}
+
+void
+marker_editor_window_unfullscreen (MarkerEditorWindow *window)
+{
+  window->is_fullscreen = FALSE;
+
+  GtkBox *vbox = window->vbox;
+  GtkBox *header_box = window->header_box;
+  GtkWidget *header_bar = GTK_WIDGET (window->header_bar);
+
+  gtk_window_unfullscreen (GTK_WINDOW (window));
     
-    gtk_box_pack_start (GTK_BOX (window->vbox), header_bar, FALSE, TRUE, 0); 
-    gtk_box_pack_start (GTK_BOX (window->vbox), paned, TRUE, TRUE, 0);
-  }
+  g_object_ref (header_bar);
+  gtk_container_remove (GTK_CONTAINER (vbox), header_bar);
+  gtk_header_bar_set_show_close_button (GTK_HEADER_BAR (header_bar), TRUE);
+  
+  gtk_box_pack_start (header_box, header_bar, FALSE, TRUE, 0);
+}
+
+void
+marker_editor_window_set_fullscreen (MarkerEditorWindow *window,
+                                     gboolean            state)
+{
+  if (state)
+    marker_editor_window_fullscreen (window);
   else
-  {
-    gtk_window_unfullscreen (GTK_WINDOW (window));
-    
-    g_object_ref (header_bar);
-    gtk_container_remove (GTK_CONTAINER (vbox), header_bar);
-    gtk_header_bar_set_show_close_button (GTK_HEADER_BAR (header_bar), TRUE);
-    
-    gtk_box_pack_start (header_box, header_bar, FALSE, TRUE, 0);
-  }
+    marker_editor_window_unfullscreen (window);
 }
 
 gboolean

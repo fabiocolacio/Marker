@@ -112,6 +112,12 @@ MarkerPreview *
 marker_editor_window_get_preview (MarkerEditorWindow *window);
 
 void
+marker_editor_window_fullscreen (MarkerEditorWindow *window);
+
+void
+marker_editor_window_unfullscreen (MarkerEditorWindow *window);
+
+void
 marker_editor_window_set_fullscreen (MarkerEditorWindow *window,
                                      gboolean            state);
 
