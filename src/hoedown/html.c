@@ -439,8 +439,8 @@ rndr_image(hoedown_buffer *ob, const hoedown_buffer *link, const hoedown_buffer 
 		if ((state->flags & HOEDOWN_HTML_FIGCOUNTER) != 0)
 		{
 			state->counter.figure ++;
-			char * buffer = malloc(sizeof(char)*50);
-			memset(buffer,0, 50);
+			char * buffer = malloc(sizeof(char)*256);
+			memset(buffer,0, 256);
 			if ((title && title->size) || (alt && alt->size))
 			{
 				sprintf(buffer, "<b id=\"figure_%u\">%s %u:</b> ", 
@@ -451,7 +451,7 @@ rndr_image(hoedown_buffer *ob, const hoedown_buffer *link, const hoedown_buffer 
 				sprintf(buffer, "<b id=\"figure_%u\">%s %u</b>", 
 						state->counter.figure, state->localization.figure, state->counter.figure);
 			}
-			hoedown_buffer_printf(ob, buffer, 50);
+			hoedown_buffer_printf(ob, buffer, 256);
 			free(buffer);
 		}
 		if (title && title->size)
@@ -490,9 +490,28 @@ static void
 rndr_table(hoedown_buffer *ob, const hoedown_buffer *content, const hoedown_renderer_data *data)
 {
     if (ob->size) hoedown_buffer_putc(ob, '\n');
+	hoedown_html_renderer_state *state = data->opaque;
+	if ((state->flags & HOEDOWN_HTML_FIGCAPTION) != 0 || 
+		(state->flags & HOEDOWN_HTML_FIGCOUNTER) != 0)
+	{
+		HOEDOWN_BUFPUTSL(ob, "<figure>\n");
+	}
     HOEDOWN_BUFPUTSL(ob, "<table>\n");
     hoedown_buffer_put(ob, content->data, content->size);
     HOEDOWN_BUFPUTSL(ob, "</table>\n");
+	if ((state->flags & HOEDOWN_HTML_FIGCAPTION) != 0 || 
+		(state->flags & HOEDOWN_HTML_FIGCOUNTER) != 0)
+	{
+		state->counter.table ++;
+		HOEDOWN_BUFPUTSL(ob, "<figcaption>");
+		char * buffer = malloc(sizeof(char)*50);
+			memset(buffer,0, 50);
+		sprintf(buffer, "<b id=\"table_%u\">%s %u</b>", 
+						state->counter.table, state->localization.table, state->counter.table);
+		hoedown_buffer_printf(ob, buffer, 256);
+		free(buffer);
+		HOEDOWN_BUFPUTSL(ob, "</figcaption>\n</figure>");
+	}
 }
 
 static void
@@ -767,6 +786,7 @@ hoedown_html_toc_renderer_new(int nesting_level, html_localization local)
 	state->counter.figure = 0;
 	state->counter.equation = 0;
 	state->counter.listing =0;
+	state->counter.table = 0;
 	state->localization = local;
 
 	/* Prepare the renderer */
@@ -834,6 +854,7 @@ hoedown_html_renderer_new(hoedown_html_flags render_flags, int nesting_level, ht
 	state->counter.figure = 0;
 	state->counter.equation = 0;
 	state->counter.listing = 0;
+	state->counter.table = 0;
 
 	state->localization = local;
 

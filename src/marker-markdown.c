@@ -175,6 +175,7 @@ html_localization get_local()
   html_localization local;
   local.figure = "Figure";
   local.listing = "Listing";
+  local.table = "Table";
   return local;
 }
 
