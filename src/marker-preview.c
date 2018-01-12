@@ -71,7 +71,9 @@ MarkerPreview*
 marker_preview_new(void)
 {
   MarkerPreview * obj =  g_object_new(MARKER_TYPE_PREVIEW, NULL);
-  webkit_web_view_set_zoom_level(obj, makrer_prefs_get_zoom_level());
+  
+  webkit_web_view_set_zoom_level (WEBKIT_WEB_VIEW (obj), makrer_prefs_get_zoom_level ());
+  
   return obj;
 }
 
@@ -187,13 +189,20 @@ load_changed(WebKitWebView*  preview,
 static void
 marker_preview_class_init(MarkerPreviewClass* class)
 {
+  g_signal_newv ("zoom-changed",
+                 G_TYPE_FROM_CLASS (class),
+                 G_SIGNAL_RUN_LAST | G_SIGNAL_NO_RECURSE,
+                 NULL, NULL, NULL, NULL,
+                 G_TYPE_NONE, 0, NULL);
+                 
+
   WEBKIT_WEB_VIEW_CLASS(class)->load_changed = load_changed;
 }
 
 void
 marker_preview_zoom_out (MarkerPreview *preview)
 {
-  g_return_val_if_fail (WEBKIT_IS_WEB_VIEW (preview), FALSE);
+  g_return_if_fail (WEBKIT_IS_WEB_VIEW (preview));
   WebKitWebView *view = WEBKIT_WEB_VIEW (preview);
   
   gdouble val = webkit_web_view_get_zoom_level (view);
@@ -201,24 +210,28 @@ marker_preview_zoom_out (MarkerPreview *preview)
   
   marker_prefs_set_zoom_level(val);
   webkit_web_view_set_zoom_level(view, val);
+  
+  g_signal_emit_by_name (preview, "zoom-changed");
 }
 
 void
 marker_preview_zoom_original (MarkerPreview *preview)
 {
-  g_return_val_if_fail (WEBKIT_IS_WEB_VIEW (preview), FALSE);
+  g_return_if_fail (WEBKIT_IS_WEB_VIEW (preview));
   WebKitWebView *view = WEBKIT_WEB_VIEW (preview);
   
   gdouble zoom = 1.0;
   
   marker_prefs_set_zoom_level (zoom);
   webkit_web_view_set_zoom_level (view, zoom);
+  
+  g_signal_emit_by_name (preview, "zoom-changed");
 }
 
 void
 marker_preview_zoom_in (MarkerPreview *preview)
 {
-  g_return_val_if_fail (WEBKIT_IS_WEB_VIEW (preview), FALSE);
+  g_return_if_fail (WEBKIT_IS_WEB_VIEW (preview));
   WebKitWebView *view = WEBKIT_WEB_VIEW (preview);
   
   gdouble val = webkit_web_view_get_zoom_level (view);
@@ -226,6 +239,8 @@ marker_preview_zoom_in (MarkerPreview *preview)
   
   marker_prefs_set_zoom_level(val);
   webkit_web_view_set_zoom_level(view, val);
+  
+  g_signal_emit_by_name (preview, "zoom-changed");
 }
 
 void
