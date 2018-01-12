@@ -15,6 +15,13 @@
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="visible">1</property>
+                <property name="accelerator">&lt;ctrl&gt;n</property>
+                <property name="title" context="shortcut window">Create a new document</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="visible">1</property>
                 <property name="accelerator">&lt;ctrl&gt;O</property>
                 <property name="title" context="shortcut window">Open a document</property>
               </object>
@@ -36,8 +43,8 @@
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="visible">1</property>
-                <property name="accelerator">&lt;ctrl&gt;n</property>
-                <property name="title" context="shortcut window">Create a new document</property>
+                <property name="accelerator">&lt;ctrl&gt;w</property>
+                <property name="title" context="shortcut window">Close the document</property>
               </object>
             </child>
           </object>
@@ -119,6 +126,13 @@
                 <property name="visible">1</property>
                 <property name="accelerator">&lt;ctrl&gt;4</property>
                 <property name="title" context="shortcut window">Switch to dual-window mode</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="visible">1</property>
+                <property name="accelerator">&lt;ctrl&gt;q</property>
+                <property name="title" context="shortcut window">Quit the application</property>
               </object>
             </child>
           </object>
