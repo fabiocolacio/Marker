@@ -40,6 +40,7 @@
         <attribute name="action">win.print</attribute>
       </item>
     </section>
+    
     <section>
       <submenu id="view-submenu">
         <attribute name="label">View</attribute>
@@ -80,18 +81,21 @@
         <attribute name="action">win.print</attribute>
       </item>
     </section>
+    
     <section>
       <item>
         <attribute name="label">New Window</attribute>
         <attribute name="action">app.new</attribute>
       </item>
     </section>
+    
     <section>
       <item>
         <attribute name="label">Preferences</attribute>
         <attribute name="action">app.prefs</attribute>
       </item>
     </section>
+    
     <section>
       <item>
         <attribute name="label">Keyboard Shortcuts</attribute>
