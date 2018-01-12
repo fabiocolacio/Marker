@@ -44,6 +44,7 @@ unfinished features.
 * gtksourceview3-devel
 * webkitgtk4-devel
 * pandoc
+* gtkspell
 
 ### Build Instructions
 
