@@ -191,6 +191,44 @@ marker_preview_class_init(MarkerPreviewClass* class)
 }
 
 void
+marker_preview_zoom_out (MarkerPreview *preview)
+{
+  g_return_val_if_fail (WEBKIT_IS_WEB_VIEW (preview), FALSE);
+  WebKitWebView *view = WEBKIT_WEB_VIEW (preview);
+  
+  gdouble val = webkit_web_view_get_zoom_level (view);
+  val -= 0.1;
+  
+  marker_prefs_set_zoom_level(val);
+  webkit_web_view_set_zoom_level(view, val);
+}
+
+void
+marker_preview_zoom_original (MarkerPreview *preview)
+{
+  g_return_val_if_fail (WEBKIT_IS_WEB_VIEW (preview), FALSE);
+  WebKitWebView *view = WEBKIT_WEB_VIEW (preview);
+  
+  gdouble zoom = 1.0;
+  
+  marker_prefs_set_zoom_level (zoom);
+  webkit_web_view_set_zoom_level (view, zoom);
+}
+
+void
+marker_preview_zoom_in (MarkerPreview *preview)
+{
+  g_return_val_if_fail (WEBKIT_IS_WEB_VIEW (preview), FALSE);
+  WebKitWebView *view = WEBKIT_WEB_VIEW (preview);
+  
+  gdouble val = webkit_web_view_get_zoom_level (view);
+  val += 0.1;
+  
+  marker_prefs_set_zoom_level(val);
+  webkit_web_view_set_zoom_level(view, val);
+}
+
+void
 marker_preview_render_markdown(MarkerPreview* preview,
                                const char*    markdown,
                                const char*    css_theme,

@@ -15,7 +15,7 @@
             <child>
               <object class="GtkButton" id="zoom_out_btn">
                 <property name="visible">True</property>
-                <property name="action_name">preview.zoom-out</property>
+                <property name="action_name">win.zoomout</property>
                 <property name="tooltip-text" translatable="yes">Zoom Out</property>
                 <child>
                   <object class="GtkImage">
@@ -29,21 +29,14 @@
             <child>
               <object class="GtkButton" id="zoom_original_btn">
                 <property name="visible">True</property>
-                <property name="action_name">preview.zoom-original</property>
+                <property name="action_name">win.zoomoriginal</property>
                 <property name="tooltip-text" translatable="yes">Zoom Reset</property>
-                <child>
-                  <object class="GtkImage">
-                    <property name="visible">True</property>
-                    <property name="icon-name">zoom-original-symbolic</property>
-                    <property name="icon-size">1</property>
-                  </object>
-                </child>
               </object>
             </child>
             <child>
               <object class="GtkButton" id="zoom_in_btn">
                 <property name="visible">True</property>
-                <property name="action_name">preview.zoom-in</property>
+                <property name="action_name">win.zoomin</property>
                 <property name="tooltip-text" translatable="yes">Zoom In</property>
                 <child>
                   <object class="GtkImage">

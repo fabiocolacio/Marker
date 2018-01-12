@@ -17,7 +17,7 @@
 
 struct _MarkerEditorWindow
 {
-  GtkApplicationWindow parent_instance;
+  GtkApplicationWindow        parent_instance;
   
   GtkBox                     *header_box;
   GtkHeaderBar               *header_bar;
@@ -35,6 +35,36 @@ struct _MarkerEditorWindow
 };
 
 G_DEFINE_TYPE(MarkerEditorWindow, marker_editor_window, GTK_TYPE_APPLICATION_WINDOW)
+
+static void
+action_zoom_in (GSimpleAction *action,
+                GVariant      *parameter,
+                gpointer       user_data)
+{  
+  MarkerEditorWindow *window = user_data;
+  MarkerPreview *preview = window->web_view;
+  marker_preview_zoom_in (preview);
+}
+
+static void
+action_zoom_original (GSimpleAction *action,
+                      GVariant      *parameter,
+                      gpointer       user_data)
+{
+  MarkerEditorWindow *window = user_data;
+  MarkerPreview *preview = window->web_view;
+  marker_preview_zoom_original (preview);
+}
+
+static void
+action_zoom_out (GSimpleAction *action,
+                 GVariant      *parameter,
+                 gpointer       user_data)
+{
+  MarkerEditorWindow *window = user_data;
+  MarkerPreview *preview = window->web_view;
+  marker_preview_zoom_out (preview);
+}
 
 static void
 print_cb(GSimpleAction* action,
@@ -121,8 +151,11 @@ dualwindowmode_cb(GSimpleAction* action,
   marker_editor_window_set_view_mode(window, DUAL_WINDOW_MODE);
 }
 
-static GActionEntry win_entries[] =
+static const GActionEntry win_entries[] =
 {
+  { "zoomout", action_zoom_out, NULL, NULL, NULL },
+  { "zoomoriginal", action_zoom_original, NULL, NULL, NULL },
+  { "zoomin", action_zoom_in, NULL, NULL, NULL },
   { "saveas", save_as_cb, NULL, NULL, NULL },
   { "export", export_cb, NULL, NULL, NULL },
   { "print", print_cb, NULL, NULL, NULL },
@@ -734,20 +767,17 @@ init_ui (MarkerEditorWindow *window)
   {
     GtkBuilder *popover_builder =
       gtk_builder_new_from_resource ("/com/github/fabiocolacio/marker/ui/gear-popover.ui");
-    
     GtkWidget *popover =
       GTK_WIDGET (gtk_builder_get_object (popover_builder, "gear_menu_popover"));
-    
+
     gtk_menu_button_set_use_popover (menu_btn, TRUE);
-    
     gtk_menu_button_set_popover (menu_btn, popover);
-    
-    g_object_unref (popover_builder);
-    
     g_action_map_add_action_entries(G_ACTION_MAP(window),
-                                    win_entries,
-                                    G_N_ELEMENTS(win_entries),
-                                    window);
+                                win_entries,
+                                G_N_ELEMENTS(win_entries),
+                                window);
+
+    g_object_unref (popover_builder);
   }
   else
   {
