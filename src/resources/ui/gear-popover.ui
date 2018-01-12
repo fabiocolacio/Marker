@@ -5,6 +5,7 @@
       <object class="GtkBox">
         <property name="visible">True</property>
         <property name="orientation">vertical</property>
+        <property name="margin">8</property>
         <child>
           <!-- Zoom Controls -->
           <object class="GtkBox">
@@ -102,48 +103,70 @@
               </object>
             </child>
             <child>
-              <!-- View Submenu -->
-              <object class="GtkBox">
+              <object class="GtkModelButton">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="orientation">vertical</property>
-                <child>
-                  <object class="GtkModelButton" id="editor_only_mode_btn">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="text" translatable="yes">Editor Only Mode</property>
-                    <property name="action-name">win.editoronlymode</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkModelButton" id="preview_only_mode_btn">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="text" translatable="yes">Preview Only Mode</property>
-                    <property name="action-name">win.previewonlymode</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkModelButton" id="dual_pane_mode_btn">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="text" translatable="yes">Dual Pane Mode</property>
-                    <property name="action-name">win.dualpanemode</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkModelButton" id="dual_window_mode_btn">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="text" translatable="yes">Dual Window Mode</property>
-                    <property name="action-name">win.dualwindowmode</property>
-                  </object>
-                </child>
+                <property name="can_focus">True</property>
+                <property name="text" translatable="yes">View</property>
+                <property name="menu-name">view</property>
               </object>
             </child>
           </object>
         </child>
       </object>
+    </child>
+    <child>
+      <!-- View Submenu -->
+      <object class="GtkBox">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="orientation">vertical</property>
+        <property name="margin">8</property>
+        <child>
+          <object class="GtkModelButton">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="text" translatable="yes">View</property>
+            <property name="inverted">True</property>
+            <property name="menu-name">main</property>
+            <property name="centered">True</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkModelButton" id="editor_only_mode_btn">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="text" translatable="yes">Editor Only Mode</property>
+            <property name="action-name">win.editoronlymode</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkModelButton" id="preview_only_mode_btn">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="text" translatable="yes">Preview Only Mode</property>
+            <property name="action-name">win.previewonlymode</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkModelButton" id="dual_pane_mode_btn">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="text" translatable="yes">Dual Pane Mode</property>
+            <property name="action-name">win.dualpanemode</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkModelButton" id="dual_window_mode_btn">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="text" translatable="yes">Dual Window Mode</property>
+            <property name="action-name">win.dualwindowmode</property>
+          </object>
+        </child>
+      </object>
+      <packing>
+        <property name="submenu">view</property>
+      </packing>
     </child>
   </object>
 </interface>
