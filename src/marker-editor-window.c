@@ -663,6 +663,14 @@ key_pressed(GtkWidget   *widget,
       case GDK_KEY_p:
         marker_preview_run_print_dialog(window->web_view, GTK_WINDOW(window));
         break;
+      
+      case GDK_KEY_w:
+        marker_editor_window_try_close (window);
+        break;
+      
+      case GDK_KEY_q:
+        marker_quit ();
+        break;
 
       case GDK_KEY_1:
         marker_editor_window_set_view_mode (window, EDITOR_ONLY_MODE);
