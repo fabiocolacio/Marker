@@ -6,5 +6,6 @@
     <file>ui/export-dialog.ui</file>
     <file>ui/shortcuts-window.ui</file>
     <file>ui/gear-popover.ui</file>
+    <file>ui/gear-popover-full.ui</file>
   </gresource>
 </gresources>
