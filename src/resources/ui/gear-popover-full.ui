@@ -12,6 +12,9 @@
             <property name="visible">True</property>
             <property name="orientation">horizontal</property>
             <property name="homogeneous">True</property>
+            <style>
+              <class name="linked"/>
+            </style>
             <child>
               <object class="GtkButton" id="zoom_out_btn">
                 <property name="visible">True</property>
