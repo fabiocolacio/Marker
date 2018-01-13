@@ -24,48 +24,28 @@
 
 #include <gtk/gtk.h>
 
-GtkApplication*
-marker_get_app();
-
-void
-marker_create_new_window();
-
-void
-marker_create_new_window_from_file(GFile* file);
-
-void
-marker_quit();
-
-void
-marker_prefs_cb(GSimpleAction* action,
-                GVariant*      parameter,
-                gpointer       user_data);
-
-void
-marker_about_cb(GSimpleAction* action,
-                GVariant*      parameter,
-                gpointer       user_data);
-
-void
-marker_quit_cb(GSimpleAction*  action,
-               GVariant*       parameter,
-               gpointer        user_data);
-
-void
-new_cb(GSimpleAction *action,
-       GVariant      *parameter,
-       gpointer       user_data);
-
-void
-marker_shortcuts_cb(GSimpleAction* action,
-                    GVariant*      parameter,
-                    gpointer       user_data);
-
-gboolean
-marker_has_app_menu();
+GtkApplication*      marker_get_app                              (void);
+void                 marker_create_new_window                    (void);
+void                 marker_create_new_window_from_file          (GFile              *file);
+void                 marker_quit                                 (void);
+void                 marker_prefs_cb                             (GSimpleAction      *action,
+                                                                  GVariant           *parameter,
+                                                                  gpointer            user_data);
+void                 marker_about_cb                             (GSimpleAction      *action,
+                                                                  GVariant           *parameter,
+                                                                  gpointer            user_data);
+void                 marker_quit_cb                              (GSimpleAction      *action,
+                                                                  GVariant           *parameter,
+                                                                  gpointer            user_data);
+void                 new_cb                                      (GSimpleAction      *action,
+                                                                  GVariant           *parameter,
+                                                                  gpointer            user_data);
+void                 marker_shortcuts_cb                         (GSimpleAction      *action,
+                                                                  GVariant           *parameter,
+                                                                  gpointer            user_data);
+gboolean             marker_has_app_menu                         (void);
 
 extern const int APP_MENU_ACTION_ENTRIES_LEN;
-
 extern const GActionEntry APP_MENU_ACTION_ENTRIES[];
 
 #endif

@@ -35,22 +35,12 @@ to upstream libraries such as *hoedown* and *charter* should try to match the st
 
 ## Header (.h) files
 
-Function prototypes will look the same as their paired functions in the
-source files, just without a body:
+Function prototypes have the function name start at column 22, the the opening
+parenthases at column 66, and the last asterisk for pointer types, at column 86:
 
 ```C
-// Prototype in .h file:
-Foo *
-marker_foo_new (Bar     *bar,
-                GError **err);
-
-// Implementation in .c file:
-Foo *
-marker_foo_new (Bar     *bar,
-                GError **err)
-{
-  /* ,,, */
-}
+void                 marker_editor_window_set_tab_width          (MarkerEditorWindow *window,
+                                                                  guint               value);
 ```
 
 ## Source (.c) files
