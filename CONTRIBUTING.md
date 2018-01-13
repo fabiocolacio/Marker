@@ -55,11 +55,27 @@ appear in the following order:
 5. Enums
 6. Static variables
 7. Auxillary methods
-8. Signal callbacks
-9. Interface implementations
-10. Parent class overrides
-11. ``class_init ()`` and ``init ()``
-12. Public API
+8. Action callbacks
+9. Action array
+10. Signal callbacks
+11. Interface implementations
+12. Parent class overrides
+13. ``class_init ()`` and ``init ()``
+14. Public API
+
+### Action Callbacks
+
+Names for action callbacks should start with ``action_``:
+
+```C
+static void
+action_zoom_in (GSimpleAction *action,
+                GVariant      *parameter,
+                gpointer       user_data)
+{  
+  /* ... */
+}
+```
 
 ### Auxillary Methods
 
