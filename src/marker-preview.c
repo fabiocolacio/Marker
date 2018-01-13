@@ -72,7 +72,6 @@ initialize_web_extensions_cb (WebKitWebContext *context,
      context, WEB_EXTENSIONS_DIRECTORY);
   webkit_web_context_set_web_extensions_initialization_user_data (
      context, g_variant_new_uint32 (unique_id++));
-  g_print ("test");
 }
 
 gboolean
