@@ -17,10 +17,11 @@
 
 struct _MarkerEditorWindow
 {
-  GtkApplicationWindow parent_instance;
+  GtkApplicationWindow        parent_instance;
   
   GtkBox                     *header_box;
   GtkHeaderBar               *header_bar;
+  GtkButton                  *zoom_original_btn;
   GtkButton                  *unfullscreen_btn;
   GtkPaned                   *paned;
   MarkerSourceView           *source_view;
@@ -35,6 +36,36 @@ struct _MarkerEditorWindow
 };
 
 G_DEFINE_TYPE(MarkerEditorWindow, marker_editor_window, GTK_TYPE_APPLICATION_WINDOW)
+
+static void
+action_zoom_in (GSimpleAction *action,
+                GVariant      *parameter,
+                gpointer       user_data)
+{  
+  MarkerEditorWindow *window = user_data;
+  MarkerPreview *preview = window->web_view;
+  marker_preview_zoom_in (preview);
+}
+
+static void
+action_zoom_original (GSimpleAction *action,
+                      GVariant      *parameter,
+                      gpointer       user_data)
+{
+  MarkerEditorWindow *window = user_data;
+  MarkerPreview *preview = window->web_view;
+  marker_preview_zoom_original (preview);
+}
+
+static void
+action_zoom_out (GSimpleAction *action,
+                 GVariant      *parameter,
+                 gpointer       user_data)
+{
+  MarkerEditorWindow *window = user_data;
+  MarkerPreview *preview = window->web_view;
+  marker_preview_zoom_out (preview);
+}
 
 static void
 print_cb(GSimpleAction* action,
@@ -121,8 +152,11 @@ dualwindowmode_cb(GSimpleAction* action,
   marker_editor_window_set_view_mode(window, DUAL_WINDOW_MODE);
 }
 
-static GActionEntry win_entries[] =
+static const GActionEntry win_entries[] =
 {
+  { "zoomout", action_zoom_out, NULL, NULL, NULL },
+  { "zoomoriginal", action_zoom_original, NULL, NULL, NULL },
+  { "zoomin", action_zoom_in, NULL, NULL, NULL },
   { "saveas", save_as_cb, NULL, NULL, NULL },
   { "export", export_cb, NULL, NULL, NULL },
   { "print", print_cb, NULL, NULL, NULL },
@@ -604,7 +638,18 @@ unfullscreen_btn_clicked (GtkButton *button,
 {
   marker_editor_window_unfullscreen (MARKER_EDITOR_WINDOW (user_data));
 }
-                 
+
+static void
+preview_zoom_changed_cb (MarkerPreview *preview,
+                         gpointer       user_data)
+{
+  MarkerEditorWindow *window = user_data;
+  const gdouble zoom_percentage = 100 * webkit_web_view_get_zoom_level (WEBKIT_WEB_VIEW (preview));
+  gchar *zoom_level_str = g_strdup_printf ("%.0f%%", zoom_percentage);
+  gtk_button_set_label (window->zoom_original_btn, zoom_level_str);
+  g_free (zoom_level_str);
+}
+         
 static gboolean
 key_pressed(GtkWidget   *widget,
             GdkEventKey *event,
@@ -732,30 +777,51 @@ init_ui (MarkerEditorWindow *window)
   
   if (marker_has_app_menu())
   {
-    GMenuModel* gear_menu =
-      G_MENU_MODEL(gtk_builder_get_object(builder, "gear_menu"));  
-    gtk_menu_button_set_use_popover(menu_btn, TRUE);
-    gtk_menu_button_set_menu_model(menu_btn, gear_menu);
+    GtkBuilder *popover_builder =
+      gtk_builder_new_from_resource ("/com/github/fabiocolacio/marker/ui/gear-popover.ui");
+      
+    GtkWidget *popover =
+      GTK_WIDGET (gtk_builder_get_object (popover_builder, "gear_menu_popover"));
+
+    window->zoom_original_btn =
+      GTK_BUTTON (gtk_builder_get_object (popover_builder, "zoom_original_btn"));
+    
+
+    gtk_menu_button_set_use_popover (menu_btn, TRUE);
+    gtk_menu_button_set_popover (menu_btn, popover);
     g_action_map_add_action_entries(G_ACTION_MAP(window),
-                                    win_entries,
-                                    G_N_ELEMENTS(win_entries),
-                                    window);
+                                win_entries,
+                                G_N_ELEMENTS(win_entries),
+                                window);
+
+    g_object_unref (popover_builder);
   }
   else
   {
-    GMenuModel* gear_menu =
-      G_MENU_MODEL(gtk_builder_get_object(builder, "gear_menu_full"));  
-    gtk_menu_button_set_use_popover(menu_btn, TRUE);
-    gtk_menu_button_set_menu_model(menu_btn, gear_menu);
-    g_action_map_add_action_entries(G_ACTION_MAP(window),
-                                    win_entries,
-                                    G_N_ELEMENTS(win_entries),
-                                    window);
-    GtkApplication* app = marker_get_app();
-    g_action_map_add_action_entries(G_ACTION_MAP(app),
-                                    APP_MENU_ACTION_ENTRIES,
-                                    APP_MENU_ACTION_ENTRIES_LEN,
-                                    window);
+    GtkBuilder *popover_builder =
+      gtk_builder_new_from_resource ("/com/github/fabiocolacio/marker/ui/gear-popover-full.ui");
+    
+    GtkWidget *popover =
+      GTK_WIDGET (gtk_builder_get_object (popover_builder, "gear_menu_popover_full"));
+
+    window->zoom_original_btn =
+      GTK_BUTTON (gtk_builder_get_object (popover_builder, "zoom_original_btn"));
+    
+    gtk_menu_button_set_use_popover (menu_btn, TRUE);
+    gtk_menu_button_set_popover (menu_btn, popover);
+
+    g_action_map_add_action_entries (G_ACTION_MAP(window),
+                                     win_entries,
+                                     G_N_ELEMENTS(win_entries),
+                                     window);
+    
+    GtkApplication* app = marker_get_app ();
+    g_action_map_add_action_entries (G_ACTION_MAP(app),
+                                     APP_MENU_ACTION_ENTRIES,
+                                     APP_MENU_ACTION_ENTRIES_LEN,
+                                     window);
+    
+    g_object_unref (popover_builder);
   }
   
   // Source View //
@@ -772,6 +838,8 @@ init_ui (MarkerEditorWindow *window)
   GtkWidget* web_view = GTK_WIDGET(marker_preview_new());
   window->web_view = MARKER_PREVIEW(web_view);
   gtk_widget_show_all(web_view);
+  g_signal_connect (web_view, "zoom-changed", G_CALLBACK (preview_zoom_changed_cb), window);
+  preview_zoom_changed_cb (MARKER_PREVIEW (web_view), window);
   
   // View Area //
   GtkPaned* paned = GTK_PANED(gtk_paned_new(GTK_ORIENTATION_HORIZONTAL));
