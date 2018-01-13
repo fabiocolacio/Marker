@@ -8,8 +8,8 @@
 **/
 
 int
-marker_string_ends_with(const char* str,
-                        const char* sub_str)
+marker_string_ends_with (const char *str,
+                         const char *sub_str)
 {
   size_t str_len = strlen(str);
   size_t sub_len = strlen(sub_str);
@@ -21,11 +21,11 @@ marker_string_ends_with(const char* str,
 }
 
 static void
-restore_scroll_position(WebKitWebPage   *web_page,
-                        gpointer         user_data)
+restore_scroll_position (WebKitWebPage *web_page,
+                         gpointer       user_data)
 {
-    WebKitDOMDocument * document = webkit_web_page_get_dom_document (web_page);
-    WebKitDOMElement* body = WEBKIT_DOM_ELEMENT(webkit_dom_document_get_body (document));
+    WebKitDOMDocument *document = webkit_web_page_get_dom_document (web_page);
+    WebKitDOMElement *body = WEBKIT_DOM_ELEMENT(webkit_dom_document_get_body (document));
     
     const glong *pos = user_data;
     
@@ -38,13 +38,13 @@ restore_scroll_position(WebKitWebPage   *web_page,
 }
 
 static gboolean 
-store_scroll_position(WebKitWebPage      *web_page,
+store_scroll_position (WebKitWebPage     *web_page,
                        WebKitURIRequest  *request,
                        WebKitURIResponse *redirected_response,
                        gpointer           user_data)
 {
     const gchar *uri = webkit_uri_request_get_uri(request);
-    if (marker_string_ends_with(uri, ".md/"))
+    if (marker_string_ends_with(uri, ".md"))
     { 
       WebKitDOMDocument * document = webkit_web_page_get_dom_document (web_page);
       WebKitDOMElement* body = WEBKIT_DOM_ELEMENT(webkit_dom_document_get_body (document));
@@ -61,9 +61,9 @@ store_scroll_position(WebKitWebPage      *web_page,
 }
 
 static void
-initialize (WebKitWebExtension                *extension,
-                           WebKitWebPage      *web_page,
-                           gpointer            user_data)
+initialize (WebKitWebExtension *extension,
+            WebKitWebPage      *web_page,
+            gpointer            user_data)
 {
     /** create a new position index for each thread.**/
     glong * pos = g_malloc(2*sizeof(glong));
