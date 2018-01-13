@@ -13,9 +13,8 @@
 #define MAX_ZOOM  4.0
 #define MIN_ZOOM  0.1
 
-#define KEY_0     48
-#define KEY_PLUS  43
-#define KEY_MINUS 45
+#define min(a, b) ((a < b) ? a : b)
+#define max(a, b) ((a < b) ? b : a)
 
 struct _MarkerPreview
 {
@@ -93,78 +92,61 @@ initialize_web_extensions (WebKitWebContext *context,
      context, g_variant_new_uint32 (unique_id++));
 }
 
-gboolean key_zoom(GtkWidget *       widget,
-                  GdkEventKey*      event,
-                  gpointer          user_data)
+gboolean
+key_zoom (GtkWidget   *widget,
+          GdkEventKey *event,
+          gpointer     user_data)
 {
+  g_return_val_if_fail (MARKER_IS_PREVIEW (widget), FALSE);
+  MarkerPreview *preview = MARKER_PREVIEW (widget);
+
   if ((event->state & GDK_CONTROL_MASK) != 0)
   {
-    WebKitWebView * view = WEBKIT_WEB_VIEW(widget);
-    if (!view)
-      return FALSE;
-    gdouble val = webkit_web_view_get_zoom_level(view);
-    guint32 unival =  gdk_keyval_to_unicode(event->keyval);
-    /** unival conversion table at 
-     * https://en.wikipedia.org/wiki/List_of_Unicode_characters#Basic_Latin 
-     * */
-    if ( unival == KEY_0)
+    switch (event->keyval)
     {
-      val = 1.0;
-    } else if ( unival == KEY_PLUS && val < MAX_ZOOM)
-    {
-      val += 0.1;
-    } else if ( unival == KEY_MINUS && val > MIN_ZOOM)
-    {
-      val -= 0.1;
+      case GDK_KEY_plus:
+        marker_preview_zoom_in (preview);
+        break;
+      
+      case GDK_KEY_minus:
+        marker_preview_zoom_out (preview);
+        break;
+      
+      case GDK_KEY_0:
+        marker_preview_zoom_original (preview);
+        break;
     }
-    marker_prefs_set_zoom_level(val);
-    webkit_web_view_set_zoom_level(view, val);
   }
+  
   return FALSE;
 }
 
-gboolean zoom(GtkWidget *       widget,
-              GdkEventScroll *  event,
-              gpointer          user_data)
+gboolean
+zoom (GtkWidget      *widget,
+      GdkEventScroll *event,
+      gpointer        user_data)
 {
+  g_return_val_if_fail (MARKER_IS_PREVIEW (widget), FALSE);
+  MarkerPreview *preview = MARKER_PREVIEW (widget);
+  
   guint state = event->state;
   if ((state & GDK_CONTROL_MASK) != 0)
   {
-    WebKitWebView * view = WEBKIT_WEB_VIEW(widget);
-    if (!view)
-      return FALSE;
-    gdouble val = webkit_web_view_get_zoom_level(view);
     gdouble delta_y = event->delta_y;
     
-    if (delta_y > 0 && val > MIN_ZOOM)
+    if (delta_y > 0)
     {
-      val -= 0.1;
-    } else if (delta_y < 0 && val < MAX_ZOOM)
-    {
-      val += 0.1;
+      marker_preview_zoom_out (preview);
     }
-    marker_prefs_set_zoom_level(val);
-    webkit_web_view_set_zoom_level(view, val);
+    else if (delta_y < 0)
+    {
+      marker_preview_zoom_in (preview);
+    }
   }
+  
   return FALSE;
 }
 
-static void
-marker_preview_init(MarkerPreview* preview)
-{
-  g_signal_connect (webkit_web_context_get_default (),
-                    "initialize-web-extensions",
-                    G_CALLBACK (initialize_web_extensions),
-                    NULL);
-  g_signal_connect(preview,
-                   "scroll-event",
-                   G_CALLBACK (zoom),
-                   NULL);
-  g_signal_connect(preview,
-                   "key-press-event",
-                   G_CALLBACK (key_zoom),
-                   NULL);
-}
 
 static void
 load_changed(WebKitWebView*  preview,
@@ -186,8 +168,42 @@ load_changed(WebKitWebView*  preview,
   }
 }
 
+/**
+ * marker_preview_set_zoom_level:
+ * @preview: The #MarkerPreview to set the zoom-level for.
+ * @zoom_level: The zoom-level to set @preview to.
+ *
+ * This overrides webkit_web_view_set_zoom_level(), and  emits the
+ * "zoom-changed" signal.
+ */
+void
+marker_preview_set_zoom_level (MarkerPreview *preview,
+                               gdouble        zoom_level)
+{
+  g_return_if_fail (MARKER_IS_PREVIEW (preview));
+  webkit_web_view_set_zoom_level (WEBKIT_WEB_VIEW (preview), zoom_level);
+  g_signal_emit_by_name (preview, "zoom-changed");
+}
+
 static void
-marker_preview_class_init(MarkerPreviewClass* class)
+marker_preview_init (MarkerPreview *preview)
+{
+  g_signal_connect (webkit_web_context_get_default (),
+                    "initialize-web-extensions",
+                    G_CALLBACK (initialize_web_extensions),
+                    NULL);
+  g_signal_connect(preview,
+                   "scroll-event",
+                   G_CALLBACK (zoom),
+                   NULL);
+  g_signal_connect(preview,
+                   "key-press-event",
+                   G_CALLBACK (key_zoom),
+                   NULL);
+}
+
+static void
+marker_preview_class_init (MarkerPreviewClass *class)
 {
   g_signal_newv ("zoom-changed",
                  G_TYPE_FROM_CLASS (class),
@@ -205,8 +221,8 @@ marker_preview_zoom_out (MarkerPreview *preview)
   g_return_if_fail (WEBKIT_IS_WEB_VIEW (preview));
   WebKitWebView *view = WEBKIT_WEB_VIEW (preview);
   
-  gdouble val = webkit_web_view_get_zoom_level (view);
-  val -= 0.1;
+  gdouble val = webkit_web_view_get_zoom_level (view) - 0.1;
+  val = max (val, MIN_ZOOM);
   
   marker_prefs_set_zoom_level(val);
   webkit_web_view_set_zoom_level(view, val);
@@ -234,8 +250,8 @@ marker_preview_zoom_in (MarkerPreview *preview)
   g_return_if_fail (WEBKIT_IS_WEB_VIEW (preview));
   WebKitWebView *view = WEBKIT_WEB_VIEW (preview);
   
-  gdouble val = webkit_web_view_get_zoom_level (view);
-  val += 0.1;
+  gdouble val = webkit_web_view_get_zoom_level (view) + 0.1;
+  val = min (val, MAX_ZOOM);
   
   marker_prefs_set_zoom_level(val);
   webkit_web_view_set_zoom_level(view, val);

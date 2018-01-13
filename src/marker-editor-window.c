@@ -644,14 +644,9 @@ preview_zoom_changed_cb (MarkerPreview *preview,
                          gpointer       user_data)
 {
   MarkerEditorWindow *window = user_data;
-  
-  const gdouble zoom_percentage =
-    100 * webkit_web_view_get_zoom_level (WEBKIT_WEB_VIEW (preview));
-  
+  const gdouble zoom_percentage = 100 * webkit_web_view_get_zoom_level (WEBKIT_WEB_VIEW (preview));
   gchar *zoom_level_str = g_strdup_printf ("%.0f%%", zoom_percentage);
-  
   gtk_button_set_label (window->zoom_original_btn, zoom_level_str);
-  
   g_free (zoom_level_str);
 }
          
@@ -790,6 +785,7 @@ init_ui (MarkerEditorWindow *window)
 
     window->zoom_original_btn =
       GTK_BUTTON (gtk_builder_get_object (popover_builder, "zoom_original_btn"));
+    
 
     gtk_menu_button_set_use_popover (menu_btn, TRUE);
     gtk_menu_button_set_popover (menu_btn, popover);
@@ -834,6 +830,7 @@ init_ui (MarkerEditorWindow *window)
   window->web_view = MARKER_PREVIEW(web_view);
   gtk_widget_show_all(web_view);
   g_signal_connect (web_view, "zoom-changed", G_CALLBACK (preview_zoom_changed_cb), window);
+  preview_zoom_changed_cb (MARKER_PREVIEW (web_view), window);
   
   // View Area //
   GtkPaned* paned = GTK_PANED(gtk_paned_new(GTK_ORIENTATION_HORIZONTAL));
