@@ -21,18 +21,15 @@ struct _MarkerPreview
   WebKitWebView parent_instance;
 };
 
-/* Open uri in default browser.
- */
-static
-void open_uri(WebKitResponsePolicyDecision *decision){
+G_DEFINE_TYPE(MarkerPreview, marker_preview, WEBKIT_TYPE_WEB_VIEW)
+
+static void
+open_uri (WebKitResponsePolicyDecision *decision) {
   const gchar * uri = webkit_uri_request_get_uri(webkit_response_policy_decision_get_request(decision));
-  g_print("open %s\n", uri);
   GtkApplication * app = marker_get_app();
   GList* windows = gtk_application_get_windows(app);
-  time_t now = time(0); // Get the system time
-  gtk_show_uri_on_window (windows->data,
-                          uri,
-                          now,NULL);
+  time_t now = time(0);
+  gtk_show_uri_on_window (windows->data, uri, now, NULL);
 }
 
 static gboolean
@@ -55,33 +52,18 @@ decide_policy_cb (WebKitWebView *web_view,
 
 
 static gboolean
-disable_menu  (WebKitWebView       *web_view,
-               WebKitContextMenu   *context_menu,
-               GdkEvent            *event,
-               WebKitHitTestResult *hit_test_result,
-               gpointer             user_data)
+context_menu_cb  (WebKitWebView       *web_view,
+                  WebKitContextMenu   *context_menu,
+                  GdkEvent            *event,
+                  WebKitHitTestResult *hit_test_result,
+                  gpointer             user_data)
 {
   return TRUE;
 }
 
-G_DEFINE_TYPE(MarkerPreview, marker_preview, WEBKIT_TYPE_WEB_VIEW)
-
-MarkerPreview*
-marker_preview_new(void)
-{
-  MarkerPreview * obj =  g_object_new(MARKER_TYPE_PREVIEW, NULL);
-  
-  webkit_web_view_set_zoom_level (WEBKIT_WEB_VIEW (obj), makrer_prefs_get_zoom_level ());
-  
-  return obj;
-}
-
-/**
- * Initialize custom web extensions.
- **/
 static void
-initialize_web_extensions (WebKitWebContext *context,
-                           gpointer          user_data)
+initialize_web_extensions_cb (WebKitWebContext *context,
+                              gpointer          user_data)
 {
   /* Web Extensions get a different ID for each Web Process */
   static guint32 unique_id = 0;
@@ -90,19 +72,22 @@ initialize_web_extensions (WebKitWebContext *context,
      context, WEB_EXTENSIONS_DIRECTORY);
   webkit_web_context_set_web_extensions_initialization_user_data (
      context, g_variant_new_uint32 (unique_id++));
+  g_print ("test");
 }
 
 gboolean
-key_zoom (GtkWidget   *widget,
-          GdkEventKey *event,
-          gpointer     user_data)
+key_press_event_cb (GtkWidget *widget,
+                    GdkEvent  *event,
+                    gpointer   user_data)
 {
   g_return_val_if_fail (MARKER_IS_PREVIEW (widget), FALSE);
   MarkerPreview *preview = MARKER_PREVIEW (widget);
 
-  if ((event->state & GDK_CONTROL_MASK) != 0)
+  GdkEventKey *key_event = (GdkEventKey *) event;
+
+  if ((key_event->state & GDK_CONTROL_MASK) != 0)
   {
-    switch (event->keyval)
+    switch (key_event->keyval)
     {
       case GDK_KEY_plus:
         marker_preview_zoom_in (preview);
@@ -122,17 +107,19 @@ key_zoom (GtkWidget   *widget,
 }
 
 gboolean
-zoom (GtkWidget      *widget,
-      GdkEventScroll *event,
-      gpointer        user_data)
+scroll_event_cb (GtkWidget *widget,
+                 GdkEvent  *event,
+                 gpointer   user_data)
 {
   g_return_val_if_fail (MARKER_IS_PREVIEW (widget), FALSE);
   MarkerPreview *preview = MARKER_PREVIEW (widget);
   
-  guint state = event->state;
+  GdkEventScroll *scroll_event = (GdkEventScroll *) event;
+  
+  guint state = scroll_event->state;
   if ((state & GDK_CONTROL_MASK) != 0)
   {
-    gdouble delta_y = event->delta_y;
+    gdouble delta_y = scroll_event->delta_y;
     
     if (delta_y > 0)
     {
@@ -147,10 +134,9 @@ zoom (GtkWidget      *widget,
   return FALSE;
 }
 
-
 static void
-load_changed(WebKitWebView*  preview,
-             WebKitLoadEvent event)
+load_changed_cb (WebKitWebView   *preview,
+                 WebKitLoadEvent  event)
 {
   switch (event)
   {
@@ -166,6 +152,14 @@ load_changed(WebKitWebView*  preview,
     case WEBKIT_LOAD_FINISHED:
       break;
   }
+}
+
+static void
+pdf_print_failed_cb (WebKitPrintOperation* print_op,
+                     GError*               err,
+                     gpointer              user_data)
+{
+  g_printerr("print failed with error: %s\n", err->message);
 }
 
 /**
@@ -190,16 +184,11 @@ marker_preview_init (MarkerPreview *preview)
 {
   g_signal_connect (webkit_web_context_get_default (),
                     "initialize-web-extensions",
-                    G_CALLBACK (initialize_web_extensions),
+                    G_CALLBACK (initialize_web_extensions_cb),
                     NULL);
-  g_signal_connect(preview,
-                   "scroll-event",
-                   G_CALLBACK (zoom),
-                   NULL);
-  g_signal_connect(preview,
-                   "key-press-event",
-                   G_CALLBACK (key_zoom),
-                   NULL);
+
+  g_signal_connect (preview, "scroll-event", G_CALLBACK (scroll_event_cb), NULL);
+  g_signal_connect (preview, "key-press-event", G_CALLBACK (key_press_event_cb), NULL);
 }
 
 static void
@@ -212,7 +201,17 @@ marker_preview_class_init (MarkerPreviewClass *class)
                  G_TYPE_NONE, 0, NULL);
                  
 
-  WEBKIT_WEB_VIEW_CLASS(class)->load_changed = load_changed;
+  WEBKIT_WEB_VIEW_CLASS(class)->load_changed = load_changed_cb;
+}
+
+MarkerPreview*
+marker_preview_new(void)
+{
+  MarkerPreview * obj =  g_object_new(MARKER_TYPE_PREVIEW, NULL); 
+  
+  webkit_web_view_set_zoom_level (WEBKIT_WEB_VIEW (obj), makrer_prefs_get_zoom_level ());
+  
+  return obj;
 }
 
 void
@@ -296,24 +295,10 @@ marker_preview_render_markdown(MarkerPreview* preview,
                    NULL);
   g_signal_connect(web_view,
                    "context-menu",
-                   G_CALLBACK(disable_menu),
+                   G_CALLBACK(context_menu_cb),
                    NULL);
   webkit_web_view_load_html(web_view, html, uri);
   free(html);
-}
-
-static void
-print_failed(WebKitPrintOperation* print_op,
-             GError*               err,
-             gpointer              user_data)
-{
-  g_printerr("print failed with error: %s\n", err->message);
-}
-
-static void
-print_finished()
-{
-
 }
 
 WebKitPrintOperationResponse
@@ -323,8 +308,7 @@ marker_preview_run_print_dialog(MarkerPreview* preview,
   WebKitPrintOperation* print_op =
     webkit_print_operation_new(WEBKIT_WEB_VIEW(preview));
   
-  g_signal_connect(print_op, "failed", G_CALLBACK(print_failed), NULL);
-  g_signal_connect(print_op, "finished", G_CALLBACK(print_finished), NULL);
+  g_signal_connect(print_op, "failed", G_CALLBACK(pdf_print_failed_cb), NULL);
   
   return webkit_print_operation_run_dialog(print_op, parent);
 }
@@ -339,8 +323,7 @@ marker_preview_print_pdf(MarkerPreview* preview,
     char* uri = g_strdup_printf("file://%s", outfile);
     
     print_op = webkit_print_operation_new(WEBKIT_WEB_VIEW(preview));
-    g_signal_connect(print_op, "failed", G_CALLBACK(print_failed), NULL);
-    g_signal_connect(print_op, "finished", G_CALLBACK(print_finished), NULL);
+    g_signal_connect(print_op, "failed", G_CALLBACK(pdf_print_failed_cb), NULL);
     
     print_s = gtk_print_settings_new();
     gtk_print_settings_set(print_s, GTK_PRINT_SETTINGS_OUTPUT_FILE_FORMAT, "pdf");
@@ -352,5 +335,3 @@ marker_preview_print_pdf(MarkerPreview* preview,
 
     g_free(uri);
 }
-
-
