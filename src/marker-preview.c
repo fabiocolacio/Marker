@@ -162,14 +162,6 @@ pdf_print_failed_cb (WebKitPrintOperation* print_op,
   g_printerr("print failed with error: %s\n", err->message);
 }
 
-/**
- * marker_preview_set_zoom_level:
- * @preview: The #MarkerPreview to set the zoom-level for.
- * @zoom_level: The zoom-level to set @preview to.
- *
- * This overrides webkit_web_view_set_zoom_level(), and  emits the
- * "zoom-changed" signal.
- */
 void
 marker_preview_set_zoom_level (MarkerPreview *preview,
                                gdouble        zoom_level)
