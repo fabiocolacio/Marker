@@ -207,26 +207,24 @@ motion_notify_event_cb (GtkWidget      *widget,
 
 
 static void
-init_ui ()
+init_ui (GtkWindow * parent)
 {
     GtkWidget *window;
     GtkWidget *frame;
     GtkWidget *drawing_area;
 
-    window = gtk_window_new (GTK_WINDOW_TOPLEVEL );
+    window = gtk_dialog_new ( );
+    gtk_window_set_transient_for(GTK_WINDOW(window), parent);
     gtk_window_set_title (GTK_WINDOW (window), "Drawing Area");
 
 
-    gtk_container_set_border_width (GTK_CONTAINER (window), 8);
-
     frame = gtk_frame_new (NULL);
-    gtk_frame_set_shadow_type (GTK_FRAME (frame), GTK_SHADOW_IN);
-    gtk_container_add (GTK_CONTAINER (window), frame);
+    gtk_container_add (GTK_CONTAINER (gtk_dialog_get_content_area(GTK_DIALOG(window))), frame);
 
     drawing_area = gtk_drawing_area_new ();
     /* set a minimum size */
-    gtk_widget_set_size_request (drawing_area, 800, 600);
 
+    gtk_window_set_default_size(GTK_WINDOW(window), 800, 600);
     gtk_container_add (GTK_CONTAINER (frame), drawing_area);
 
     /* Signals used to handle the backing surface */
@@ -254,11 +252,12 @@ init_ui ()
 
     gtk_widget_show_all (window);
     gtk_window_set_resizable(GTK_WINDOW(window), FALSE);
+    gtk_window_set_modal(GTK_WINDOW(window), TRUE);
 }
 
 
 void
-marker_sketcher_window_show()
+marker_sketcher_window_show(GtkWindow * parent)
 {
-    init_ui();    
+    init_ui(parent);    
 }

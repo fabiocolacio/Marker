@@ -796,7 +796,7 @@ sketch_cb(GSimpleAction* action,
                    GVariant*      parameter,
                    gpointer       user_data)
 {
-  marker_sketcher_window_show();
+  marker_sketcher_window_show(GTK_WINDOW(user_data));
 }
 
 static void
