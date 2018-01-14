@@ -24,6 +24,8 @@
 
 #include <gtk/gtk.h>
 
+#include "marker-editor-window.h"
+
 typedef enum
 {
   HTML, PDF, RTF, ODT, DOCX, LATEX

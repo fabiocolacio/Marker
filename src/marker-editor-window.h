@@ -24,6 +24,7 @@
 
 #include <gtk/gtk.h>
 
+#include "marker-editor.h"
 #include "marker-preview.h"
 
 G_BEGIN_DECLS
@@ -32,22 +33,14 @@ G_BEGIN_DECLS
 
 G_DECLARE_FINAL_TYPE (MarkerEditorWindow, marker_editor_window, MARKER, EDITOR_WINDOW, GtkApplicationWindow)
 
-typedef enum
-{
-  EDITOR_ONLY_MODE,
-  PREVIEW_ONLY_MODE,
-  DUAL_PANE_MODE,
-  DUAL_WINDOW_MODE
-} MarkerEditorWindowViewMode;
-
-MarkerEditorWindow*  marker_editor_window_new                    (GtkApplication     *app);
-MarkerEditorWindow*  marker_editor_window_new_from_file          (GtkApplication     *app,
+MarkerEditorWindow  *marker_editor_window_new                    (GtkApplication     *app);
+MarkerEditorWindow  *marker_editor_window_new_from_file          (GtkApplication     *app,
                                                                   GFile              *file);
 void                 marker_editor_window_open_file              (MarkerEditorWindow *window,
                                                                   GFile              *file);
 void                 marker_editor_window_save_file              (MarkerEditorWindow *window,
                                                                   GFile              *file);
-gchar*               marker_editor_window_get_markdown           (MarkerEditorWindow *window);
+gchar               *marker_editor_window_get_markdown           (MarkerEditorWindow *window);
 void                 marker_editor_window_refresh_preview        (MarkerEditorWindow *window);
 void                 marker_editor_window_try_close              (MarkerEditorWindow *window);
 void                 marker_editor_window_set_syntax_theme       (MarkerEditorWindow *window,
@@ -81,8 +74,8 @@ void                 marker_editor_window_set_title_filename     (MarkerEditorWi
 void                 marker_editor_window_set_title_filename_unsaved
                                                                  (MarkerEditorWindow *window);
 void                 marker_editor_window_set_view_mode          (MarkerEditorWindow *window,
-                                                                  MarkerEditorWindowViewMode  mode);
-MarkerPreview*       marker_editor_window_get_preview            (MarkerEditorWindow *window);
+                                                                  MarkerViewMode      mode);
+MarkerPreview       *marker_editor_window_get_preview            (MarkerEditorWindow *window);
 void                 marker_editor_window_fullscreen             (MarkerEditorWindow *window);
 void                 marker_editor_window_unfullscreen           (MarkerEditorWindow *window);
 void                 marker_editor_window_set_fullscreen         (MarkerEditorWindow *window,

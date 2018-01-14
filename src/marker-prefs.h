@@ -22,7 +22,7 @@
 #ifndef __MARKER_PREFS_H__
 #define __MARKER_PREFS_H__
 
-#include "marker-editor-window.h"
+#include "marker-editor.h"
 
 typedef struct {
   GSettings *editor_settings;
@@ -78,9 +78,8 @@ gboolean             marker_prefs_get_use_figure_numbering       (void);
 void                 marker_prefs_set_use_figure_numbering       (gboolean            state);
 gboolean             marker_prefs_get_gnome_appmenu              (void);
 void                 marker_prefs_set_gnome_appmenu              (gboolean            state);
-MarkerEditorWindowViewMode
-                     marker_prefs_get_default_view_mode          (void);
-void                 marker_prefs_set_default_view_mode          (MarkerEditorWindowViewMode view_mode);
+MarkerViewMode       marker_prefs_get_default_view_mode          (void);
+void                 marker_prefs_set_default_view_mode          (MarkerViewMode      view_mode);
 void                 marker_prefs_load                           (void);
 void                 marker_prefs_show_window                    (void);
 GList*               marker_prefs_get_available_stylesheets      (void);

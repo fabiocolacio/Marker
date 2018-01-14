@@ -33,6 +33,7 @@
 #include "marker-preview.h"
 #include "marker-markdown.h"
 #include "marker-exporter.h"
+#include "marker-editor.h"
 
 #include "marker-editor-window.h"
 
@@ -57,7 +58,7 @@ struct _MarkerEditorWindow
   /**REFRESH VARIABLE**/
   gboolean                   triggered;
   
-  MarkerEditorWindowViewMode  view_mode;
+  MarkerViewMode  view_mode;
   gboolean                    is_fullscreen;
 };
 
@@ -249,7 +250,7 @@ preview_window_closed(GtkWindow* preview_window,
 
 void
 marker_editor_window_set_view_mode(MarkerEditorWindow*        window,
-                                   MarkerEditorWindowViewMode mode)
+                                   MarkerViewMode mode)
 {
   window->view_mode = mode;
   

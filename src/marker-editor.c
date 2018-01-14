@@ -19,7 +19,7 @@
  *
  */
 
-#include <marker-editor.h>
+#include "marker-editor.h"
 
 struct _MarkerEditor
 {
@@ -62,6 +62,6 @@ marker_editor_class_init (MarkerEditorClass *class)
 MarkerEditor *
 marker_editor_new (void)
 {
-  MarkerEditor *editor = g_object_new (MARKER_TYPE_EDITOR, NULL);
+  MarkerEditor *editor = g_object_new (MARKER_TYPE_EDITOR, "orientation", GTK_ORIENTATION_VERTICAL, NULL);
   return editor;
 }

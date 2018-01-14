@@ -326,14 +326,14 @@ marker_prefs_set_gnome_appmenu(gboolean state)
   g_settings_set_boolean(prefs.window_settings, "gnome-appmenu", state);
 }
 
-MarkerEditorWindowViewMode
+MarkerViewMode
 marker_prefs_get_default_view_mode()
 {
   return g_settings_get_enum(prefs.window_settings, "view-mode");
 }
 
 void
-marker_prefs_set_default_view_mode(MarkerEditorWindowViewMode view_mode)
+marker_prefs_set_default_view_mode(MarkerViewMode view_mode)
 {
   g_settings_set_enum(prefs.window_settings, "view-mode", view_mode);
 }
@@ -805,7 +805,7 @@ static void
 default_view_mode_chosen(GtkComboBox* combo_box,
                          gpointer     user_data)
 {
-  MarkerEditorWindowViewMode mode = gtk_combo_box_get_active(combo_box);
+  MarkerViewMode mode = gtk_combo_box_get_active(combo_box);
   marker_prefs_set_default_view_mode(mode);
 }
 
