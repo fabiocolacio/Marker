@@ -6,7 +6,6 @@
     <file>ui/export-dialog.ui</file>
     <file>ui/shortcuts-window.ui</file>
     <file>ui/marker-gear-popover.ui</file>
-    <file>ui/marker-gear-popover-full.ui</file>
     <file>ui/marker-headerbar.ui</file>
   </gresource>
 </gresources>

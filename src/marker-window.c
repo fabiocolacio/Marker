@@ -42,48 +42,46 @@ init_ui (MarkerWindow *window)
 {
   GtkBuilder *builder = gtk_builder_new ();
 
+  /** VBox **/
   GtkBox *vbox = GTK_BOX (gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
   window->vbox = vbox;
   gtk_container_add (GTK_CONTAINER (window), GTK_WIDGET (vbox));
   
+  /** Editor **/
   MarkerEditor *editor = marker_editor_new ();
   window->editor = editor;
   gtk_box_pack_start (vbox, GTK_WIDGET (editor), TRUE, TRUE, 0);
   
+  /** HeaderBar **/
   gtk_builder_add_from_resource (builder, "/com/github/fabiocolacio/marker/ui/marker-headerbar.ui", NULL);
   GtkHeaderBar *header_bar = GTK_HEADER_BAR (gtk_builder_get_object (builder, "header_bar"));
   window->header_bar = header_bar;
   gtk_header_bar_set_show_close_button (header_bar, TRUE);
   gtk_window_set_titlebar (GTK_WINDOW (window), GTK_WIDGET (header_bar));
   
+  /** Popover **/
   GtkMenuButton *menu_btn = GTK_MENU_BUTTON(gtk_builder_get_object(builder, "menu_btn")); 
-  
-  if (marker_has_app_menu ())
+  gtk_builder_add_from_resource (builder, "/com/github/fabiocolacio/marker/ui/marker-gear-popover.ui", NULL);
+  GtkWidget *popover = GTK_WIDGET (gtk_builder_get_object (builder, "gear_menu_popover"));
+  window->zoom_original_btn = GTK_BUTTON (gtk_builder_get_object (builder, "zoom_original_btn"));
+  gtk_menu_button_set_use_popover (menu_btn, TRUE);
+  gtk_menu_button_set_popover (menu_btn, popover);
+  gtk_menu_button_set_direction (menu_btn, GTK_ARROW_DOWN);
+  if (!marker_has_app_menu ())
   {
-    gtk_builder_add_from_resource (builder, "/com/github/fabiocolacio/marker/ui/marker-gear-popover.ui", NULL);
-      
-    GtkWidget *popover = GTK_WIDGET (gtk_builder_get_object (builder, "gear_menu_popover"));
-    window->zoom_original_btn = GTK_BUTTON (gtk_builder_get_object (builder, "zoom_original_btn"));
-
-    gtk_menu_button_set_use_popover (menu_btn, TRUE);
-    gtk_menu_button_set_popover (menu_btn, popover);
-  }
-  else
-  {
-    gtk_builder_add_from_resource (builder, "/com/github/fabiocolacio/marker/ui/marker-gear-popover-full.ui", NULL);
-    
-    GtkWidget *popover = GTK_WIDGET (gtk_builder_get_object (builder, "gear_menu_popover_full"));
-    window->zoom_original_btn = GTK_BUTTON (gtk_builder_get_object (builder, "zoom_original_btn"));
-    
-    gtk_menu_button_set_use_popover (menu_btn, TRUE);
-    gtk_menu_button_set_popover (menu_btn, popover);
-    
+    GtkWidget *extra_items = GTK_WIDGET (gtk_builder_get_object (builder, "appmenu_popover_items"));
+    GtkBox *popover_vbox = GTK_BOX (gtk_builder_get_object (builder, "gear_menu_popover_vbox"));
+    gtk_box_pack_end (popover_vbox, extra_items, FALSE, FALSE, 0);
     GtkApplication* app = marker_get_app ();
     g_action_map_add_action_entries (G_ACTION_MAP(app),
                                      APP_MENU_ACTION_ENTRIES,
                                      APP_MENU_ACTION_ENTRIES_LEN,
                                      window);
   }
+  
+  /** Window **/
+  gtk_window_set_default_size(GTK_WINDOW(window), 900, 600);
+  gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
   
   gtk_widget_show (GTK_WIDGET (vbox));
   gtk_widget_show (GTK_WIDGET (editor));

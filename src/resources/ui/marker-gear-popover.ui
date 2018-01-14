@@ -1,8 +1,78 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
+  <object class="GtkBox" id="appmenu_popover_items">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="orientation">vertical</property>
+    <child>
+      <object class="GtkSeparator">
+        <property name="visible">True</property>
+        <property name="orientation">horizontal</property>
+        <property name="margin-top">6</property>
+        <property name="margin-bottom">6</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkModelButton">
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="text" translatable="yes">New Window</property>
+        <property name="action-name">app.new</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparator">
+        <property name="visible">True</property>
+        <property name="orientation">horizontal</property>
+        <property name="margin-top">6</property>
+        <property name="margin-bottom">6</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkModelButton">
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="text" translatable="yes">Preferences</property>
+        <property name="action-name">app.prefs</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparator">
+        <property name="visible">True</property>
+        <property name="orientation">horizontal</property>
+        <property name="margin-top">6</property>
+        <property name="margin-bottom">6</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkModelButton">
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="text" translatable="yes">Keyboard Shortcuts</property>
+        <property name="action-name">app.shortcuts</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkModelButton">
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="text" translatable="yes">About</property>
+        <property name="action-name">app.about</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkModelButton">
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="text" translatable="yes">Quit</property>
+        <property name="action-name">app.quit</property>
+      </object>
+    </child>
+  </object>
+
   <object class="GtkPopoverMenu" id="gear_menu_popover">
     <child>
-      <object class="GtkBox">
+      <object class="GtkBox" id="gear_menu_popover_vbox">
         <property name="visible">True</property>
         <property name="orientation">vertical</property>
         <property name="margin">8</property>
