@@ -43,6 +43,12 @@ init_ui (MarkerEditor *editor)
 {
   gtk_box_pack_start (GTK_BOX (editor), GTK_WIDGET (editor->paned), TRUE, TRUE, 0);
   gtk_container_add (GTK_CONTAINER (editor->source_scroll), GTK_WIDGET (editor->source_view));
+
+  gtk_widget_show (GTK_WIDGET (editor->paned));
+  gtk_widget_show (GTK_WIDGET (editor->preview));
+  gtk_widget_show (GTK_WIDGET (editor->source_view));
+  gtk_widget_show (GTK_WIDGET (editor->source_scroll));
+  gtk_widget_show (GTK_WIDGET (editor));
 }
 
 static void
