@@ -22,8 +22,8 @@
 #ifndef __MARKER_EDITOR_H__
 #define __MARKER_EDITOR_H__
 
-#include <glib-object.h>
 #include <gio/gio.h>
+#include <gtk/gtk.h>
 
 #include "marker-preview.h"
 #include "marker-source-view.h"
@@ -32,7 +32,7 @@ G_BEGIN_DECLS
 
 #define MARKER_TYPE_EDITOR (marker_editor_get_type ())
 
-G_DECLARE_FINAL_TYPE (MarkerEditor, marker_editor, MARKER, EDITOR, GObject)
+G_DECLARE_FINAL_TYPE (MarkerEditor, marker_editor, MARKER, EDITOR, GtkBox)
 
 typedef enum
 {
@@ -40,7 +40,7 @@ typedef enum
   PREVIEW_ONLY_MODE,
   DUAL_PANE_MODE,
   DUAL_WINDOW_MODE
-} MarkerEditorViewMode;
+} MarkerViewMode;
 
 MarkerEditor        *marker_editor_new                           (void);
 MarkerEditor        *marker_editor_new_from_file                 (GFile              *file);
@@ -53,9 +53,9 @@ void                 marker_editor_save_as                       (MarkerEditor  
 void                 marker_editor_export                        (MarkerEditor       *editor);
 void                 marker_editor_print                         (MarkerEditor       *editor);
 void                 marker_editor_close                         (MarkerEditor       *editor);
+MarkerViewMode       marker_editor_get_view_mode                 (MarkerEditor        editor);
 void                 marker_editor_set_view_mode                 (MarkerEditor       *editor,
-                                                                  MarkerEditorViewMode view_mode);
-MarkerEditorViewMode marker_editor_get_view_mode                 (MarkerEditor        editor);
+                                                                  MarkerViewMode      view_mode);
 
 G_END_DECLS
 
