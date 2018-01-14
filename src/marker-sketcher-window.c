@@ -21,7 +21,7 @@
 
 
 #include "marker-sketcher-window.h"
-
+#include <math.h>
 
 struct _MarkerSketcherWindow
 {
@@ -50,6 +50,8 @@ marker_sketcher_window_init (MarkerSketcherWindow *sketcher)
 }
 
 static cairo_surface_t *surface = NULL;
+static gboolean         status = FALSE;
+static gdouble          old_x, old_y;
 
 static void
 clear_surface (void)
@@ -110,14 +112,34 @@ draw_brush (GtkWidget *widget,
 
   /* Paint to the surface, where we store our state */
   cr = cairo_create (surface);
+  if (!status)
+  {
 
-  cairo_rectangle (cr, x - 3, y - 3, 6, 6);
-  cairo_fill (cr);
+    cairo_arc(cr, x, y, 3, 0, 2.0*M_PI) ;
+    cairo_fill (cr);
 
-  cairo_destroy (cr);
+    cairo_destroy (cr);
+    gtk_widget_queue_draw_area (widget, x - 3, y - 3, 6, 6);
+  } else
+  {
+    cairo_set_line_cap(cr, CAIRO_LINE_CAP_ROUND);
+    cairo_set_source_rgb(cr, 0, 0, 0);
+    cairo_set_line_width(cr, 6.0);
+    cairo_move_to(cr, old_x, old_y);
+    cairo_line_to(cr, x, y);
+    cairo_stroke(cr);
+    gdouble l = x > old_x ? old_x : x;
+    gdouble t = y > old_y ? old_y : y;
 
+
+    gtk_widget_queue_draw_area (widget, l - 3, t - 3, fabs(x-old_x) + 6, fabs(y-old_y) + 6);
+
+  }
+  status = TRUE;
+
+  old_x = x;
+  old_y = y;
   /* Now invalidate the affected region of the drawing area. */
-  gtk_widget_queue_draw_area (widget, x - 3, y - 3, 6, 6);
 }
 
 /* Handle button press events by either drawing a rectangle
@@ -140,10 +162,24 @@ button_press_event_cb (GtkWidget      *widget,
     }
   else if (event->button == GDK_BUTTON_SECONDARY)
     {
+      status = FALSE;
       clear_surface ();
       gtk_widget_queue_draw (widget);
     }
 
+  /* We've handled the event, stop processing */
+  return TRUE;
+}
+
+static gboolean
+button_release_event_cb (GtkWidget      *widget,
+                       GdkEventButton *event,
+                       gpointer        data)
+{
+  if (event->button == GDK_BUTTON_PRIMARY)
+    {
+        status = FALSE;
+    }
   /* We've handled the event, stop processing */
   return TRUE;
 }
@@ -189,7 +225,7 @@ init_ui ()
 
     drawing_area = gtk_drawing_area_new ();
     /* set a minimum size */
-    gtk_widget_set_size_request (drawing_area, 100, 100);
+    gtk_widget_set_size_request (drawing_area, 800, 600);
 
     gtk_container_add (GTK_CONTAINER (frame), drawing_area);
 
@@ -204,6 +240,8 @@ init_ui ()
                         G_CALLBACK (motion_notify_event_cb), NULL);
     g_signal_connect (drawing_area, "button-press-event",
                         G_CALLBACK (button_press_event_cb), NULL);
+    g_signal_connect (drawing_area, "button-release-event",
+                        G_CALLBACK (button_release_event_cb), NULL);
 
     /* Ask to receive events the drawing area doesn't normally
     * subscribe to. In particular, we need to ask for the
@@ -211,9 +249,11 @@ init_ui ()
     */
     gtk_widget_set_events (drawing_area, gtk_widget_get_events (drawing_area)
                                         | GDK_BUTTON_PRESS_MASK
+                                        | GDK_BUTTON_RELEASE_MASK
                                         | GDK_POINTER_MOTION_MASK);
 
     gtk_widget_show_all (window);
+    gtk_window_set_resizable(GTK_WINDOW(window), FALSE);
 }
 
 
