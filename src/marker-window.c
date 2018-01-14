@@ -34,9 +34,19 @@ struct _MarkerWindow
 G_DEFINE_TYPE (MarkerWindow, marker_window, GTK_TYPE_APPLICATION_WINDOW);
 
 static void
+init_ui (MarkerWindow *window)
+{
+  gtk_container_add (GTK_CONTAINER (window), GTK_WIDGET (window->vbox));
+  gtk_box_pack_start (window->vbox, GTK_WIDGET (window->editor), TRUE, TRUE, 0);
+}
+
+static void
 marker_window_init (MarkerWindow *window)
 {
-
+  window->vbox = GTK_BOX (gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
+  window->editor = marker_editor_new ();
+  
+  init_ui (window);
 }
 
 static void
@@ -52,8 +62,8 @@ marker_window_new (GtkApplication *app)
 }
 
 MarkerWindow *
-marker_window_new_from_filew (GtkApplication *app,
-                              GFile          *file)
+marker_window_new_from_file (GtkApplication *app,
+                             GFile          *file)
 {
   return g_object_new (MARKER_TYPE_WINDOW, "application", app, NULL);
 }

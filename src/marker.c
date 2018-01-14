@@ -22,7 +22,7 @@
 #include <gtk/gtk.h>
 
 #include "marker-prefs.h"
-#include "marker-editor-window.h"
+#include "marker-window.h"
 
 #include "marker.h"
 
@@ -198,37 +198,24 @@ marker_has_app_menu()
 void
 marker_create_new_window()
 {
-  MarkerEditorWindow* window = marker_editor_window_new(app);
-  gtk_widget_show(GTK_WIDGET(window));
+  MarkerWindow *window = marker_window_new (app);
+  gtk_widget_show (GTK_WIDGET (window));
 }
 
 void
-marker_create_new_window_from_file(GFile* file)
+marker_create_new_window_from_file (GFile *file)
 {
-  MarkerEditorWindow* window = marker_editor_window_new_from_file(app, file);
-  gtk_widget_show(GTK_WIDGET(window));
+  MarkerWindow *window = marker_window_new_from_file (app, file);
+  gtk_widget_show (GTK_WIDGET (window));
+  
   if (preview_mode)
-    marker_editor_window_set_view_mode(window, PREVIEW_ONLY_MODE);
+  { }
 }
 
 void
 marker_quit()
 {
-  GList *windows = gtk_application_get_windows(app), *window = NULL;
-  if (windows)
-  {
-    for (window = windows; windows != NULL; windows = windows->next)
-    {
-      if (MARKER_IS_EDITOR_WINDOW(window->data))
-      {
-        marker_editor_window_try_close(MARKER_EDITOR_WINDOW(window->data));
-      }
-      else
-      {
-        gtk_widget_destroy(GTK_WIDGET(window->data));
-      }
-    }
-  }
+
 }
 
 int

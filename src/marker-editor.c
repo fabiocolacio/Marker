@@ -68,7 +68,19 @@ marker_editor_class_init (MarkerEditorClass *class)
 MarkerEditor *
 marker_editor_new (void)
 {
-  return g_object_new (MARKER_TYPE_EDITOR, "orientation", GTK_ORIENTATION_VERTICAL, NULL);
+  return g_object_new (MARKER_TYPE_EDITOR,
+                       "orientation", GTK_ORIENTATION_VERTICAL,
+                       "spacing",     0,
+                       NULL);
+}
+
+MarkerEditor *
+marker_editor_new_from_file (GFile *file)
+{
+  return g_object_new (MARKER_TYPE_EDITOR,
+                       "orientation", GTK_ORIENTATION_VERTICAL,
+                       "spacing",     0,
+                       NULL);
 }
 
 void
