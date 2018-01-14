@@ -117,6 +117,7 @@ marker_prefs_cb(GSimpleAction* action,
   marker_prefs_show_window();
 }
 
+
 void
 marker_about_cb(GSimpleAction* action,
                 GVariant*      parameter,
