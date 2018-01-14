@@ -114,15 +114,19 @@ svg_plane compute_plane(chart * c)
     return p;
 }
 
-
-ticks compute_y_ticks(svg_plane plane)
+ticks 
+compute_ticks(double min, 
+              double max, 
+              double origin, 
+              double size, 
+              cbool  vertical)
 {
     ticks r;
     r.labels = NULL;
     r.vals = NULL;
     r.pos = NULL;
     
-    double range = plane.y_max- plane.y_min;
+    double range = max - min;
     int r_xp = (int)floor(log10(range));
     int r_np = r_xp;
     cbool done = FALSE;
@@ -138,7 +142,7 @@ ticks compute_y_ticks(svg_plane plane)
             
             if (count >= min_ticks && count <= max_ticks)
             {
-                t0 = floor(plane.y_min/tick);
+                t0 = floor(min/tick);
  
                 r.n = count+3;
                 r.tick = tick_mul[i];
@@ -161,7 +165,7 @@ ticks compute_y_ticks(svg_plane plane)
     double *pos = malloc(r.n*sizeof(double));
     
     char  **labels =malloc(sizeof(char*)*r.n); 
-    double dx = plane.h/range;
+    double dx = size/range;
     int i;
     for (i = 0; i< r.n; i++)
     {
@@ -186,7 +190,12 @@ ticks compute_y_ticks(svg_plane plane)
         }       
         
         labels[i] = l;
-        pos[i] = plane.y0 - dx*(vals[i] - plane.y_min);
+        if (vertical){
+            pos[i] = origin - dx*(vals[i] - min);
+        }else
+        {
+            pos[i] = origin + dx*(vals[i] - min);
+        }
     }
     r.vals = vals;
     r.pos = pos;
@@ -195,86 +204,16 @@ ticks compute_y_ticks(svg_plane plane)
     return r; 
 }
 
+ticks compute_y_ticks(svg_plane plane)
+{
+    return compute_ticks(plane.y_min, plane.y_max, plane.y0, plane.h, TRUE); 
+}
+
 
 
 ticks compute_x_ticks(svg_plane plane)
 {
-    ticks r;
-    r.labels = NULL;
-    r.vals = NULL;
-    r.pos = NULL;
-    
-    double range = plane.x_max- plane.x_min;
-    int r_xp = (int)floor(log10(range));
-    int r_np = r_xp;
-    cbool done = FALSE;
-    double tick;
-    int t0 ;
-    for (r_np = r_xp + 2; r_np >= r_xp-2; r_np --)
-    {
-        int i;
-        for (i = 0; i < 3; i++)
-        {
-            tick = tick_mul[i]*pow(10, r_np);
-            int count = (int)floor(range/tick);
-            
-            if (count >= min_ticks && count <= max_ticks)
-            {
-                t0 = (int)floor(plane.x_min/tick);
-
-                r.n = count+3;
-                r.tick = tick_mul[i];
-                r.t_exp = r_np; 
-                done = TRUE;
-                break;
-            }
-        }
-        if (done)
-        {
-            break;
-        }
-    }
-
-    if (!done)
-    {
-        return r;
-    }
-
-    double *vals = malloc(r.n*sizeof(double));
-    double *pos = malloc(r.n*sizeof(double));
-    
-    char  **labels =malloc(sizeof(char*)*r.n); 
-    double dx = plane.w/range;
-    int i;
-    for (i = 0; i< r.n; i++)
-    {
-        double v = r.tick*pow(10, r.t_exp)*(t0 + i-1);
-        int e = (int)floor(log10(fabs(v)));
-        double d = v/pow(10,e);
-        
-        vals[i] = v;
-        char * l = malloc(6*sizeof(char));
-        memset(l, 0, 6);
-        if (v == 0)
-        {
-            sprintf(l, "0");
-        }
-        else if (e > -2 && e < 2)
-        {
-            sprintf(l, "%.1f", v);
-        }
-        else 
-        {
-            sprintf(l, "%.1fe%d", d, e);
-        }       
-        labels[i] = l;
-        pos[i] = plane.left + dx*(vals[i] - plane.x_min);
-    }
-    r.vals = vals;
-    r.pos = pos;
-    r.labels = labels;
-
-    return r;
+    return compute_ticks(plane.x_min, plane.x_max, plane.x0, plane.w, FALSE); 
 }
 
 void axis_to_svg(char* buffer, chart* c, svg_plane plane)
@@ -523,7 +462,6 @@ void line_plot_to_svg(char* buffer, chart* c, plot* p, svg_plane plane, unsigned
         return;
     }
     unsigned int i;
-    double dy = plane.h/(plane.y_max-plane.y_min);
     char * color = p->color;
     
     if (!color)
@@ -578,7 +516,6 @@ void scatter_to_svg(char* buffer, chart* c, plot* p, svg_plane plane, unsigned i
         return;
     }
     unsigned int i;
-    double dy = plane.h/(plane.y_max-plane.y_min);
     char * color = p->color;
     
     if (!color)
@@ -610,7 +547,6 @@ void bar_to_svg(char* buffer, chart* c, plot* p, svg_plane plane, unsigned int i
         return;
     }
     unsigned int i;
-    double dy = plane.h/(plane.y_max-plane.y_min);
     char * color = p->color;
     
     if (!color)
