@@ -26,6 +26,8 @@
 
 int                  marker_string_ends_with                     (const char         *str,
                                                                   const char         *sub_str);
+int		     marker_string_contains			 (const char	     *str,
+                                     				  const char         *sub_str);
 char*                marker_string_alloc                         (const char         *str);
 char*                marker_string_prepend                       (const char         *str,
                                                                   const char         *addition,

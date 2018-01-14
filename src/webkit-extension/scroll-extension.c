@@ -23,8 +23,7 @@
 
 #include "scroll-extension.h"
 
-/** 
- * TODO: Clear user_data when closing window. 
+/**TODO: Clear user_data when closing window.
  * I did not found any signal to connect to a cleaning function!
 **/
 
@@ -71,8 +70,8 @@ send_request_cb (WebKitWebPage     *web_page,
                  gpointer           user_data)
 {
     const gchar *uri = webkit_uri_request_get_uri (request);
-    if (marker_string_ends_with (uri, ".md"))
-    { 
+    if (strstr (uri, ".md") != NULL)
+    {
       WebKitDOMDocument *document = webkit_web_page_get_dom_document (web_page);
       WebKitDOMElement *body = WEBKIT_DOM_ELEMENT (webkit_dom_document_get_body (document));
       glong * pos = user_data;
