@@ -19,6 +19,7 @@
  *
  */
 
+#include "marker.h"
 #include "marker-editor.h"
 
 #include "marker-window.h"
@@ -28,6 +29,7 @@ struct _MarkerWindow
   GtkApplicationWindow  parent_instance;
   
   GtkHeaderBar         *header_bar;
+  GtkButton            *zoom_original_btn;
   
   GtkBox               *vbox;
   MarkerEditor         *editor;
@@ -54,10 +56,47 @@ init_ui (MarkerWindow *window)
   gtk_header_bar_set_show_close_button (header_bar, TRUE);
   gtk_window_set_titlebar (GTK_WINDOW (window), GTK_WIDGET (header_bar));
   
+  GtkMenuButton *menu_btn = GTK_MENU_BUTTON(gtk_builder_get_object(builder, "menu_btn")); 
+  
+  if (marker_has_app_menu ())
+  {
+    gtk_builder_add_from_resource (builder, "/com/github/fabiocolacio/marker/ui/marker-gear-popover.ui", NULL);
+      
+    GtkWidget *popover = GTK_WIDGET (gtk_builder_get_object (builder, "gear_menu_popover"));
+    window->zoom_original_btn = GTK_BUTTON (gtk_builder_get_object (builder, "zoom_original_btn"));
+
+    gtk_menu_button_set_use_popover (menu_btn, TRUE);
+    gtk_menu_button_set_popover (menu_btn, popover);
+  }
+  else
+  {
+    gtk_builder_add_from_resource (builder, "/com/github/fabiocolacio/marker/ui/marker-gear-popover-full.ui", NULL);
+    
+    GtkWidget *popover = GTK_WIDGET (gtk_builder_get_object (builder, "gear_menu_popover_full"));
+    window->zoom_original_btn = GTK_BUTTON (gtk_builder_get_object (builder, "zoom_original_btn"));
+    
+    gtk_menu_button_set_use_popover (menu_btn, TRUE);
+    gtk_menu_button_set_popover (menu_btn, popover);
+    
+    GtkApplication* app = marker_get_app ();
+    g_action_map_add_action_entries (G_ACTION_MAP(app),
+                                     APP_MENU_ACTION_ENTRIES,
+                                     APP_MENU_ACTION_ENTRIES_LEN,
+                                     window);
+  }
+  
   gtk_widget_show (GTK_WIDGET (vbox));
   gtk_widget_show (GTK_WIDGET (editor));
 
   g_object_unref (builder);
+}
+
+static gboolean
+key_pressed_cb (GtkWidget *widget,
+                GdkEvent  *event,
+                gpointer   user_data)
+{
+  return FALSE;
 }
 
 static void
@@ -69,7 +108,7 @@ marker_window_init (MarkerWindow *window)
 static void
 marker_window_class_init (MarkerWindowClass *class)
 {
-
+  GTK_WIDGET_CLASS (class)->key_press_event = key_pressed_cb;
 }
 
 MarkerWindow *
