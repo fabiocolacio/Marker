@@ -38,6 +38,13 @@ marker_string_ends_with(const char* str,
   return 0;
 }
 
+int
+marker_string_contains(const char   *str,
+                       const char   *sub_str)
+{
+  return strstr(str, sub_str) != NULL;
+}
+
 char*
 marker_string_alloc(const char* str)
 {

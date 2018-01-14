@@ -36,6 +36,8 @@
 
 #include "marker-editor-window.h"
 
+#define REFRESH_INTERVAL 20
+
 struct _MarkerEditorWindow
 {
   GtkApplicationWindow        parent_instance;
@@ -51,6 +53,9 @@ struct _MarkerEditorWindow
   GtkBox                     *vbox;
   
   GFile                      *file;
+
+  /**REFRESH VARIABLE**/
+  gboolean                   triggered;
   
   MarkerEditorWindowViewMode  view_mode;
   gboolean                    is_fullscreen;
@@ -308,10 +313,14 @@ marker_editor_window_set_use_syntax_theme(MarkerEditorWindow* window,
   gtk_source_buffer_set_highlight_syntax(buffer, state);
 }
 
-void
-marker_editor_window_refresh_preview(MarkerEditorWindow* window)
+gboolean
+marker_editor_window_refresh_callback(gpointer user_data)
 {
+  MarkerEditorWindow *window = MARKER_EDITOR_WINDOW(user_data);
   gchar* markdown = marker_editor_window_get_markdown(window);
+
+  window->triggered = FALSE;
+
   const char* css_theme = (marker_prefs_get_use_css_theme())
                           ? marker_prefs_get_css_theme()
                           : NULL;
@@ -329,6 +338,21 @@ marker_editor_window_refresh_preview(MarkerEditorWindow* window)
   }
   
   g_free(markdown);
+  return FALSE;
+}
+
+void
+marker_editor_window_refresh_preview(MarkerEditorWindow* window)
+{
+  if (!window->triggered)
+  {
+    window->triggered = TRUE;
+    g_timeout_add(
+      REFRESH_INTERVAL,
+      marker_editor_window_refresh_callback,
+      window
+    );
+  }
 }
 
 void
@@ -768,6 +792,7 @@ marker_editor_window_get_preview(MarkerEditorWindow* window)
 static void
 init_ui (MarkerEditorWindow *window)
 {
+  window->triggered = FALSE;
   GtkBuilder* builder =
     gtk_builder_new_from_resource("/com/github/fabiocolacio/marker/ui/editor-window.ui");
 
