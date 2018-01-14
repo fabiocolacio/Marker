@@ -10,7 +10,7 @@
         <property name="can_focus">False</property>
         <property name="orientation">vertical</property>
         <child>
-          <object class="GtkDrawingArea" id="sket-area">
+          <object class="GtkDrawingArea" id="drawing-area">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
           </object>
