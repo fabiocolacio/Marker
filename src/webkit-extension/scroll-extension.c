@@ -33,19 +33,6 @@ enum
   HORIZONTAL_SCROLL = 1
 };
 
-int
-marker_string_ends_with (const char *str,
-                         const char *sub_str)
-{
-  size_t str_len = strlen (str);
-  size_t sub_len = strlen (sub_str);
-  if (strcmp (sub_str, &str[str_len - sub_len]) == 0)
-  {
-    return 1;
-  }
-  return 0;
-}
-
 static void
 document_loaded_cb (WebKitWebPage *web_page,
                     gpointer       user_data)
