@@ -34,6 +34,10 @@ G_DECLARE_FINAL_TYPE (MarkerWindow, marker_window, MARKER, WINDOW, GtkApplicatio
 MarkerWindow        *marker_window_new                           (GtkApplication     *app);
 MarkerWindow        *marker_window_new_from_file                 (GtkApplication     *app,
                                                                   GFile              *file);
+void                 marker_window_fullscreen                    (MarkerWindow       *window);
+void                 marker_window_unfullscreen                  (MarkerWindow       *window);
+void                 marker_window_toggle_fullscreen             (MarkerWindow       *window);
+gboolean             marker_window_is_fullscreen                 (MarkerWindow       *window);
 
 G_END_DECLS
 
