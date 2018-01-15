@@ -7,6 +7,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <math.h>
 
 #include "csv_parser/csvparser.h"
 
@@ -57,6 +58,15 @@ void d_list_free(_dList * l)
 }
 
 
+void strip(char* str, char c) {
+    char *pr = str, *pw = str;
+    while (*pr) {
+        *pw = *pr++;
+        pw += (*pw != c);
+    }
+    *pw = '\0';
+}
+
 axisMode
 parse_mode(char *line)
 {
@@ -78,9 +88,11 @@ parse_mode(char *line)
     return LINEAR;
 }
 
-void 
-parse_range(char *line, double * min, double * max, double * step)
+unsigned int
+parse_range(char *line, double * min, double * max, unsigned int * num)
 {
+    if (line == NULL)
+        return 0;
     unsigned int n = strlen(line);
     char * copy = malloc((n+1)*sizeof(char));
     copy[n] = 0;
@@ -90,21 +102,21 @@ parse_range(char *line, double * min, double * max, double * step)
     unsigned int i = 0;
     while((tok = strtok_r(tok, " ,", &point)) != NULL)
     {
-        double v = atof(tok);
         if (i == 0)
         {
-            *min = v;
+            *min = atof(tok);
         } else if (i == 1)
         {
-            *max = v;
-        } else if (i == 2 && step)
+            *max = atof(tok);
+        } else if (i == 2 && num != NULL)
         {
-            *step = v;
+            *num = atoi(tok);
         }
         i ++;
         tok = NULL;
     }
     free(copy);
+    return i;
 }
 
 cbool startsWith(const char *pre, const char *str)
@@ -172,8 +184,37 @@ _dList* parse_csv(char * link, unsigned int * size)
     return list;
 }
 
-double * parse_data(char* line, unsigned int *l)
+void* parse_math(char* text)
+{
+    unsigned int n = strlen(text)-5;
+    if (n <= 0)
+    {
+        return NULL;
+    }
+    char * expr = malloc((n+1)*sizeof(char));
+    expr[n] = 0;
+    memcpy(expr, &text[5], n);
+    strip(expr, ' ');
+    return expr;
+}
+
+char* 
+get_rest(char* text, unsigned int m)
+{
+    unsigned int n = strlen(text) - m;
+    if (n <= 0)
+    {
+        return NULL;
+    }
+    char * rest = malloc((n+1) * sizeof(char));
+    rest[n] = 0;
+    memcpy(rest, &text[m], n);
+    return rest;
+}
+
+void* parse_data(char* line, unsigned int *l, dtype  * type)
 {   
+
     *l = 0;
     unsigned int n = strlen(line);
     if (n == 0)
@@ -182,28 +223,85 @@ double * parse_data(char* line, unsigned int *l)
     char * local = malloc((1+n)*sizeof(char));
     local[n] = 0;
     memcpy(local, line, n);
-    
+
     char * tok = local;
     char * point;
-    
+    *type = ND;
     _dList * list = NULL;
-    /* count values */
-    while((tok = strtok_r(tok, "\t ,)\n", &point)) != NULL)
+    if (startsWith("csv://", local))
+    {   
+            *type = CSV;
+            list = parse_csv(local, l);
+    } else if (startsWith("math:", local))
+    {   
+        *type = MATH;
+        char * expr = parse_math(local);
+        free(local);
+        return expr;
+    } else if (startsWith("range:", local))
     {
-        if (startsWith("csv://", tok))
-        {   
-            list = parse_csv(tok, l);
-            break;
+        *type = RANGE;
+        double min = 0;
+        double max = 0;
+        unsigned int num = 10;
+        char * rest = get_rest(local, 6);
+        double * data = NULL; 
+        
+        if (parse_range(rest, &min, &max, &num)  && max != min && num > 0)
+        {
+            *l = num;
+            data = malloc(num*sizeof(double));
+            double step = (max-min)/(num-1);
+            unsigned int i;
+            for (i = 0; i < num; i++)
+            {
+                data[i] = min + i * step;
+            }
         }
-        _dList *el = malloc(sizeof(_dList));
-        el->value = atof(tok);
-        el->prev = list;
-        list = el;
-
-        *l = (unsigned int)(*l + 1);
-        tok = NULL;
-    }
+        free(local);
+        free(rest);
+        return data;
+    } else if (startsWith("logrange:", local))
+    {
+        *type = RANGE;
+        double min = 0;
+        double max = 0;
+        unsigned int num = 10;
+        char * rest = get_rest(local, 9);
+        double * data = NULL; 
+        
+        if (parse_range(rest, &min, &max, &num)  && max != min && num > 0)
+        {
+            *l = num;
+            data = malloc(num*sizeof(double));
+            double step = (max-min)/(num-1);
+            unsigned int i;
+            for (i = 0; i < num; i++)
+            {
+                data[i] = pow(10.0, min + i * step);
+            }
+        }
+        free(local);
+        free(rest);
+        return data;
+    } else
+    {
+        *type = DATA;
     
+        /* count values */
+        while((tok = strtok_r(tok, "\t ,\n", &point)) != NULL)
+        {
+            
+            _dList *el = malloc(sizeof(_dList));
+            el->value = atof(tok);
+            el->prev = list;
+            list = el;
+
+            *l = (unsigned int)(*l + 1);
+            tok = NULL;
+        }
+    }
+
     if (*l == 0 || list == NULL)
     {
         free(local);
@@ -227,7 +325,10 @@ void
 parse_x_data(chart *chart, char* line)
 {
     unsigned int l = 0 ;
-    double * data = parse_data(line, &l);
+    dtype t;
+    void * data = parse_data(line, &l, &t);
+    if (t == ND || t == MATH)
+        return;
     plot * p = plot_get_last_element(chart->plots)->plot;
     if (p->n == 0)
         p->n = l;
@@ -238,9 +339,16 @@ void
 parse_y_data(chart *chart, char* line)
 {
     unsigned int l = 0;
-    double * data = parse_data(line, &l);
+    dtype t;
+    void * data = parse_data(line, &l, &t);
     plot * p = plot_get_last_element(chart->plots)->plot;
-    p->n = l;
+    p->y_type = t; 
+    if (t == ND)
+        return;
+    if (t == DATA || t == CSV)
+    {        
+        p->n = l;
+    }
     p->y_data = data;
 }
 
@@ -263,14 +371,6 @@ char * parse_text(char * rest)
     return copy;
 }
 
-void strip(char* str, char c) {
-    char *pr = str, *pw = str;
-    while (*pr) {
-        *pw = *pr++;
-        pw += (*pw != c);
-    }
-    *pw = '\0';
-}
 
 plot * init_scatter()
 {

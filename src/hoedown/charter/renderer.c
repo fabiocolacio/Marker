@@ -187,8 +187,8 @@ compute_ticks(double min,
             memset(l, 0, 128);
             if (v - round(v) == 0)
             {
-                sprintf(l, "<tspan>10<tspan  font-size=\"11\" baseline-shift=\"super\">%d</tspan></tspan>", (int)v);
-            }
+                sprintf(l, "<tspan>10<tspan  font-size=\"10\" dy=\"-5\" dx=\"1\">%d</tspan></tspan>", (int)v);
+            } 
             if (vertical){
                 pos[i] = origin - dx*((vals[i]) - min);
             }else
@@ -196,19 +196,24 @@ compute_ticks(double min,
                 pos[i] = origin + dx*((vals[i]) - min);
             }
         }else{
-            l = malloc(8*sizeof(char));
-            memset(l, 0, 8);
+    
             if (v == 0)
             {
+                l = malloc(8*sizeof(char));
+                memset(l, 0, 8);
                 sprintf(l, "0");
             }
             else if (e > -2 && e < 2)
             {
+                l = malloc(8*sizeof(char));
+                memset(l, 0, 8);
                 sprintf(l, "%.1f", v);
             }
             else
             {
-                sprintf(l, "%.1fe%d", d, e);
+                l = malloc(128*sizeof(char));
+                memset(l, 0, 128);
+                sprintf(l, "<tspan>%.1fe<tspan  font-size=\"10\" dy=\"-5\" dx=\"1\">%d</tspan></tspan>", d,e);
             }
             if (vertical){
                 pos[i] = origin - dx*(vals[i] - min);
@@ -259,7 +264,7 @@ axis_to_svg(char*       buffer,
     }
     if (c->y_axis.label != NULL)
     {
-        double tx = 1;
+        double tx = 5;
         double ty = p_h+plane.h/2;
         char * transform = malloc(64*sizeof(char));
         memset(transform, 0, 64);
@@ -496,6 +501,7 @@ line_plot_to_svg(char*          buffer,
         color = malloc(8*sizeof(char));
         memcpy(color, colormap[index%10], 7);
     }
+    double * y_data = plot_eval_y(p);
 
     if (p->line_style != NOLINE)
     {
@@ -503,7 +509,7 @@ line_plot_to_svg(char*          buffer,
         double *ys = malloc(n*sizeof(double));
         for (i=0; i< n;i++){
             double x = p->x_data == NULL ? i+1 : p->x_data[i];
-            double y = p->y_data[i];
+            double y = y_data[i];
 
             xs[i] = get_x(x, plane, c->x_axis);
             ys[i] = get_y(y, plane, c->y_axis);
@@ -517,10 +523,9 @@ line_plot_to_svg(char*          buffer,
     if (is_marker(p->marker_style))
     {
 
-
         for (i=0; i< n;i++){
             double x = p->x_data == NULL ? i+1 : p->x_data[i];
-            double y = p->y_data[i];
+            double y = y_data[i];
 
             x = get_x(x, plane, c->x_axis);
             y = get_y(y, plane, c->y_axis);
@@ -531,6 +536,8 @@ line_plot_to_svg(char*          buffer,
     {
         free(color);
     }
+
+    free(y_data);
 }
 
 void
@@ -552,10 +559,11 @@ scatter_to_svg(char*        buffer,
         color = malloc(8*sizeof(char));
         memcpy(color, colormap[index%10], 7);
     }
+    double * y_data = plot_eval_y(p);
 
     for (i=0; i< n;i++){
         double x = p->x_data == NULL ? i+1 : p->x_data[i];
-        double y = p->y_data[i];
+        double y = y_data[i];
 
         x = get_x(x, plane, c->x_axis);
         y = get_y(y, plane, c->y_axis);
@@ -566,6 +574,8 @@ scatter_to_svg(char*        buffer,
     {
         free(color);
     }
+
+    free(y_data);
 }
 
 
@@ -590,11 +600,12 @@ bar_to_svg(char*        buffer,
     }
     barPref * pref = p->extra_data;
     double y0 = get_y(0, plane, c->y_axis);
-    double w = fabs(get_x(pref->bar_width, plane, c->x_axis));
+    double w = pref->bar_width;
+    double * y_data = plot_eval_y(p);
 
     for (i=0; i< n;i++){
         double x = p->x_data == NULL ? i+1 : p->x_data[i];
-        double y = p->y_data[i];
+        double y = y_data[i];
 
         x = get_x(x, plane, c->x_axis);
         y = get_y(y, plane, c->y_axis);
@@ -606,6 +617,7 @@ bar_to_svg(char*        buffer,
     {
         free(color);
     }
+    free(y_data);
 }
 
 

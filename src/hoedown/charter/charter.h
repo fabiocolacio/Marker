@@ -40,6 +40,14 @@ struct{
     double          range_max;
 }typedef axis;
 
+enum{
+    ND = 0,
+    DATA = 1,
+    CSV = 2,
+    MATH = 3,
+    RANGE = 4
+}typedef dtype;
+
 struct{
     plotType        type;
     char*           label;
@@ -48,8 +56,9 @@ struct{
     char            marker_style;
     double          line_width;
     double*         x_data;
-    double*         y_data;
+    void*           y_data;
     unsigned int    n;
+    dtype           y_type;
     void*           extra_data;
 }typedef plot;
 
@@ -87,6 +96,9 @@ plot_append(plotList *, plot*);
 
 plot* 
 plot_at(plotList*, unsigned int);
+
+double * 
+plot_eval_y(plot *p);
 
 plotList* 
 plot_get_last_element(plotList*);
