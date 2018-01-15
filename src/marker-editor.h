@@ -48,6 +48,8 @@ MarkerViewMode       marker_editor_get_view_mode                 (MarkerEditor  
 void                 marker_editor_set_view_mode                 (MarkerEditor       *editor,
                                                                   MarkerViewMode      view_mode);
 void                 marker_editor_refresh_preview               (MarkerEditor       *editor);
+void                 marker_editor_open_file                     (MarkerEditor       *editor,
+                                                                  GFile              *file);
 
 G_END_DECLS
 

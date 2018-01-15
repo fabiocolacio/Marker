@@ -104,10 +104,11 @@ marker_editor_new (void)
 MarkerEditor *
 marker_editor_new_from_file (GFile *file)
 {
-  return g_object_new (MARKER_TYPE_EDITOR,
-                       "orientation", GTK_ORIENTATION_VERTICAL,
-                       "spacing",     0,
-                       NULL);
+  MarkerEditor *editor = g_object_new (MARKER_TYPE_EDITOR,
+                                       "orientation", GTK_ORIENTATION_VERTICAL,
+                                       "spacing", 0, NULL);
+  marker_editor_open_file (editor, file);
+  return editor;
 }
 
 void
@@ -177,5 +178,38 @@ marker_editor_set_view_mode (MarkerEditor   *editor,
       gtk_paned_add1 (GTK_PANED (paned), source_scroll);
       gtk_paned_add2 (GTK_PANED (paned), preview);
       break;
+  }
+}
+
+void
+marker_editor_open_file (MarkerEditor *editor,
+                        GFile        *file)
+{
+  g_return_if_fail (MARKER_IS_EDITOR (editor));
+  
+  if (G_IS_FILE (editor->file))
+    g_object_unref (editor->file);
+  
+  editor->file = file;
+  
+  gchar *file_contents = NULL;
+  gsize file_size = 0;
+  GError *err = NULL;
+  
+  g_file_load_contents (file, NULL, &file_contents, &file_size, NULL, &err);
+  
+  if (err)
+  {
+    g_error_free (err);
+  }
+  else
+  {
+    MarkerSourceView *source_view = editor->source_view;
+    GtkSourceBuffer *buffer =
+      GTK_SOURCE_BUFFER (gtk_text_view_get_buffer (GTK_TEXT_VIEW (source_view)));
+    gtk_source_buffer_begin_not_undoable_action (buffer);
+    marker_source_view_set_text (source_view, file_contents, file_size);
+    gtk_source_buffer_end_not_undoable_action (buffer);
+    g_free (file_contents);
   }
 }

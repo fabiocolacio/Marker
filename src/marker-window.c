@@ -124,7 +124,7 @@ marker_window_init (MarkerWindow *window)
 { 
   window->is_fullscreen = FALSE;
   
-    GtkBuilder *builder = gtk_builder_new ();
+  GtkBuilder *builder = gtk_builder_new ();
 
   /** VBox **/
   GtkBox *vbox = GTK_BOX (gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
@@ -196,7 +196,9 @@ MarkerWindow *
 marker_window_new_from_file (GtkApplication *app,
                              GFile          *file)
 {
-  return g_object_new (MARKER_TYPE_WINDOW, "application", app, NULL);
+  MarkerWindow *window = g_object_new (MARKER_TYPE_WINDOW, "application", app, NULL);
+  marker_editor_open_file (marker_window_get_active_editor (window), file);
+  return window;
 }
 
 void
