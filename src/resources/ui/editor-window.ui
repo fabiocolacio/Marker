@@ -1,99 +1,78 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Generated with glade 3.20.2 -->
 <interface>
   <requires lib="gtk+" version="3.16"/>
-  
-  <!-- Image Icons -->
-  <object class="GtkImage" id="refresh">
-    <property name="icon_name">view-refresh-symbolic</property>
-    <property name="icon_size">2</property>
-  </object>
   <object class="GtkImage" id="doc-open">
+    <property name="can_focus">False</property>
     <property name="icon_name">document-open-symbolic</property>
     <property name="icon_size">2</property>
   </object>
   <object class="GtkImage" id="open-menu">
+    <property name="can_focus">False</property>
     <property name="icon_name">open-menu-symbolic</property>
     <property name="icon_size">2</property>
   </object>
   <object class="GtkImage" id="page-view">
+    <property name="can_focus">False</property>
     <property name="icon_name">view-paged-symbolic</property>
     <property name="icon_size">2</property>
   </object>
+  <object class="GtkImage" id="refresh">
+    <property name="can_focus">False</property>
+    <property name="icon_name">view-refresh-symbolic</property>
+    <property name="icon_size">2</property>
+  </object>
   <object class="GtkImage" id="restore-view">
+    <property name="can_focus">False</property>
     <property name="icon_name">view-restore-symbolic</property>
     <property name="icon_size">2</property>
   </object>
-  
-  <menu id="app_menu">
-    <section>
-      <item>
-        <attribute name="label">New Window</attribute>
-        <attribute name="action">app.new</attribute>
-      </item>
-    </section>
-    <section>
-      <item>
-        <attribute name="label">Preferences</attribute>
-        <attribute name="action">app.prefs</attribute>
-      </item>
-    </section>
-    <section>
-      <item>
-        <attribute name="label">Keyboard Shortcuts</attribute>
-        <attribute name="action">app.shortcuts</attribute>
-      </item>
-      <item>
-        <attribute name="label">About</attribute>
-        <attribute name="action">app.about</attribute>
-      </item>
-      <item>
-        <attribute name="label">Quit</attribute>
-        <attribute name="action">app.quit</attribute>
-      </item>
-    </section>
-  </menu>
-  
-  <!-- Header Bar -->
   <object class="GtkHeaderBar" id="header_bar">
     <property name="visible">True</property>
+    <property name="can_focus">False</property>
     <child>
       <object class="GtkButton">
-        <property name="visible">True</property>
         <property name="label">Open...</property>
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="receives_default">False</property>
         <signal name="clicked" handler="open_cb" swapped="no"/>
       </object>
-      <packing>
-        <property name="pack_type">start</property>
-      </packing>
     </child>
     <child>
       <object class="GtkButton">
-        <property name="visible">True</property>
         <property name="label">Save</property>
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="receives_default">False</property>
         <signal name="clicked" handler="save_cb" swapped="no"/>
       </object>
       <packing>
-        <property name="pack_type">start</property>
+        <property name="position">1</property>
       </packing>
     </child>
     <child>
       <object class="GtkButton" id="unfullscreen_btn">
-        <property name="visible">False</property>
+        <property name="can_focus">False</property>
+        <property name="receives_default">False</property>
         <property name="image">restore-view</property>
       </object>
       <packing>
         <property name="pack_type">end</property>
+        <property name="position">2</property>
       </packing>
     </child>
     <child>
       <object class="GtkMenuButton" id="menu_btn">
         <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="receives_default">False</property>
         <property name="image">open-menu</property>
       </object>
       <packing>
         <property name="pack_type">end</property>
+        <property name="position">3</property>
       </packing>
     </child>
   </object>
-      
 </interface>

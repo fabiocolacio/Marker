@@ -124,7 +124,8 @@ compute_ticks(double min,
               double max,
               double origin,
               double size,
-              cbool  vertical)
+              cbool  vertical,
+              cbool  logmode)
 {
     ticks r;
     r.labels = NULL;
@@ -179,28 +180,46 @@ compute_ticks(double min,
         double d = v/pow(10,e);
 
         vals[i] = v;
-        char * l = malloc(8*sizeof(char));
-        memset(l, 0, 8);
-        if (v == 0)
+        char * l;
+        if (logmode)
         {
-            sprintf(l, "0");
-        }
-        else if (e > -2 && e < 2)
-        {
-            sprintf(l, "%.1f", v);
-        }
-        else
-        {
-            sprintf(l, "%.1fe%d", d, e);
+            l = malloc(128*sizeof(char));
+            memset(l, 0, 128);
+            if (v - round(v) == 0)
+            {
+                sprintf(l, "<tspan>10<tspan  font-size=\"11\" baseline-shift=\"super\">%d</tspan></tspan>", (int)v);
+            }
+            if (vertical){
+                pos[i] = origin - dx*((vals[i]) - min);
+            }else
+            {
+                pos[i] = origin + dx*((vals[i]) - min);
+            }
+        }else{
+            l = malloc(8*sizeof(char));
+            memset(l, 0, 8);
+            if (v == 0)
+            {
+                sprintf(l, "0");
+            }
+            else if (e > -2 && e < 2)
+            {
+                sprintf(l, "%.1f", v);
+            }
+            else
+            {
+                sprintf(l, "%.1fe%d", d, e);
+            }
+            if (vertical){
+                pos[i] = origin - dx*(vals[i] - min);
+            }else
+            {
+                pos[i] = origin + dx*(vals[i] - min);
+            }
         }
 
         labels[i] = l;
-        if (vertical){
-            pos[i] = origin - dx*(vals[i] - min);
-        }else
-        {
-            pos[i] = origin + dx*(vals[i] - min);
-        }
+
     }
     r.vals = vals;
     r.pos = pos;
@@ -210,15 +229,15 @@ compute_ticks(double min,
 }
 
 ticks
-compute_y_ticks(svg_plane plane)
+compute_y_ticks(svg_plane plane, cbool logmode)
 {
-    return compute_ticks(plane.y_min, plane.y_max, plane.y0, plane.h, TRUE);
+    return compute_ticks(plane.y_min, plane.y_max, plane.y0, plane.h, TRUE, logmode);
 }
 
 ticks
-compute_x_ticks(svg_plane plane)
+compute_x_ticks(svg_plane plane, cbool logmode)
 {
-    return compute_ticks(plane.x_min, plane.x_max, plane.x0, plane.w, FALSE);
+    return compute_ticks(plane.x_min, plane.x_max, plane.x0, plane.w, FALSE, logmode);
 }
 
 void
@@ -679,8 +698,8 @@ chart_to_svg(chart* chart)
 
     clip_region(buffer, p.left, p.top, p.w, p.h, "plot-area");
 
-    ticks x_t = compute_x_ticks(p);
-    ticks y_t = compute_y_ticks(p);
+    ticks x_t = compute_x_ticks(p, chart->x_axis.mode == LOG);
+    ticks y_t = compute_y_ticks(p, chart->y_axis.mode == LOG);
 
     title_to_svg(buffer, p, chart->title);
 
