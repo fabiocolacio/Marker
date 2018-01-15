@@ -34,35 +34,56 @@ struct _MarkerEditor
   MarkerSourceView     *source_view;
   GtkScrolledWindow    *source_scroll;
   MarkerViewMode        view_mode;
+  
+  gboolean              needs_refresh;
 };
 
 G_DEFINE_TYPE (MarkerEditor, marker_editor, GTK_TYPE_BOX);
 
-static void
-init_ui (MarkerEditor *editor)
+static gboolean
+refresh_timeout_cb (gpointer user_data)
 {
-  gtk_box_pack_start (GTK_BOX (editor), GTK_WIDGET (editor->paned), TRUE, TRUE, 0);
-  gtk_container_add (GTK_CONTAINER (editor->source_scroll), GTK_WIDGET (editor->source_view));
+  MarkerEditor *editor = user_data;
+  if (editor->needs_refresh)
+    marker_editor_refresh_preview (editor);
+  return G_SOURCE_CONTINUE;
+}
 
-  gtk_widget_show (GTK_WIDGET (editor->paned));
-  gtk_widget_show (GTK_WIDGET (editor->preview));
-  gtk_widget_show (GTK_WIDGET (editor->source_view));
-  gtk_widget_show (GTK_WIDGET (editor->source_scroll));
-  gtk_widget_show (GTK_WIDGET (editor));
+static void
+buffer_changed_cb (GtkTextBuffer *buffer,
+                   gpointer user_data)
+{
+  MarkerEditor *editor = user_data;
+  editor->needs_refresh = TRUE;
 }
 
 static void
 marker_editor_init (MarkerEditor *editor)
 {
   editor->file = NULL;
-  editor->paned = GTK_PANED (gtk_paned_new (GTK_ORIENTATION_HORIZONTAL));
-  editor->preview = marker_preview_new ();
-  editor->source_view = marker_source_view_new ();
-  editor->source_scroll = GTK_SCROLLED_WINDOW (gtk_scrolled_window_new (NULL, NULL));
-  editor->view_mode = marker_prefs_get_default_view_mode ();
   
-  init_ui (editor);
+  editor->paned = GTK_PANED (gtk_paned_new (GTK_ORIENTATION_HORIZONTAL));
+  gtk_widget_show (GTK_WIDGET (editor->paned));
+  gtk_box_pack_start (GTK_BOX (editor), GTK_WIDGET (editor->paned), TRUE, TRUE, 0);
+  
+  editor->preview = marker_preview_new ();
+  gtk_widget_show (GTK_WIDGET (editor->preview));
+  
+  editor->source_view = marker_source_view_new ();
+  gtk_widget_show (GTK_WIDGET (editor->source_view));
+  editor->source_scroll = GTK_SCROLLED_WINDOW (gtk_scrolled_window_new (NULL, NULL));
+  gtk_widget_show (GTK_WIDGET (editor->source_scroll));
+  gtk_container_add (GTK_CONTAINER (editor->source_scroll), GTK_WIDGET (editor->source_view));
+  GtkTextBuffer *buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (editor->source_view));
+  g_signal_connect (buffer, "changed", G_CALLBACK (buffer_changed_cb), editor);
+  
+  editor->view_mode = marker_prefs_get_default_view_mode ();
+  editor->needs_refresh = TRUE;
+  
   marker_editor_set_view_mode (editor, editor->view_mode);
+  gtk_widget_show (GTK_WIDGET (editor));
+  
+  g_timeout_add (20, refresh_timeout_cb, editor);
 }
 
 static void
@@ -93,6 +114,8 @@ void
 marker_editor_refresh_preview (MarkerEditor *editor)
 {
   g_return_if_fail (MARKER_IS_EDITOR (editor));
+  
+  editor->needs_refresh = FALSE;
   
   gchar *markdown = marker_source_view_get_text (editor->source_view);
   
