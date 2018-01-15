@@ -50,7 +50,7 @@ struct{
 
 void d_list_free(_dList * l)
 {
-    if (!l)
+    if (l == NULL)
         return;
     d_list_free(l->prev);
     free(l);
@@ -67,9 +67,11 @@ parse_mode(char *line)
     memcpy(copy, &line[s], n);
     if (strcmp(copy, TOK_MODE_LIN) == 0)
     {
+        free(copy);
         return LINEAR;
     } else if (strcmp(copy, TOK_MODE_LOG)==0)
     {
+        free(copy);
         return LOG;
     }
     free(copy);
@@ -210,12 +212,13 @@ double * parse_data(char* line, unsigned int *l)
 
     double * data = malloc(*l*sizeof(double)); 
     int i;
+    _dList *head = list;
     for (i = *l-1 ; i >= 0 ; i--)
     {
         data[i] = list->value;
         list = list->prev;
     }
-    d_list_free(list);
+    d_list_free(head);
     free(local);
     return data;
 }
@@ -467,6 +470,7 @@ parse_line(char* line, chart * chart, _pstate prev)
             }else {
                 p->marker_style = 0;
             }
+            free(ms);
             break;
         }else if (((strcmp(tok, TOK_LIN_WIDTH) == 0) || 
                   (strcmp(tok, TOK_ALT_LIN_WIDTH) == 0)) && 
@@ -525,9 +529,8 @@ chart *
 parse_chart(char *text)
 {
     chart* nchart = initialize_empty_chart();
-    unsigned int n = strlen(text);
-    char * copy = malloc(n*sizeof(char));
-    memccpy(copy, text, 0, n);
+    
+    char * copy = text;
     char* tok_pointer;
     char* line = strtok_r(copy, "\n", &tok_pointer);
     _pstate state = NONE;
@@ -537,6 +540,5 @@ parse_chart(char *text)
             state = parse_line(line, nchart, state);
         line = strtok_r(NULL, "\n", &tok_pointer);
     }
-    free(copy);
     return nchart;
 }
