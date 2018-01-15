@@ -44,18 +44,10 @@ typedef enum
 
 MarkerEditor        *marker_editor_new                           (void);
 MarkerEditor        *marker_editor_new_from_file                 (GFile              *file);
-MarkerPreview       *marker_editor_get_preview                   (MarkerEditor       *editor);
-MarkerSourceView    *marker_editor_get_source_view               (MarkerEditor       *editor);
-GFile               *marker_editor_get_file                      (MarkerEditor       *editor);
-gboolean             marker_editor_has_unsaved_changes           (MarkerEditor       *editor);
-void                 marker_editor_save                          (MarkerEditor       *editor);
-void                 marker_editor_save_as                       (MarkerEditor       *editor);
-void                 marker_editor_export                        (MarkerEditor       *editor);
-void                 marker_editor_print                         (MarkerEditor       *editor);
-void                 marker_editor_close                         (MarkerEditor       *editor);
-MarkerViewMode       marker_editor_get_view_mode                 (MarkerEditor        editor);
+MarkerViewMode       marker_editor_get_view_mode                 (MarkerEditor       *editor);
 void                 marker_editor_set_view_mode                 (MarkerEditor       *editor,
                                                                   MarkerViewMode      view_mode);
+void                 marker_editor_refresh_preview               (MarkerEditor       *editor);
 
 G_END_DECLS
 

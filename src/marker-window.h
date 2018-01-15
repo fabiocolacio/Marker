@@ -38,6 +38,7 @@ void                 marker_window_fullscreen                    (MarkerWindow  
 void                 marker_window_unfullscreen                  (MarkerWindow       *window);
 void                 marker_window_toggle_fullscreen             (MarkerWindow       *window);
 gboolean             marker_window_is_fullscreen                 (MarkerWindow       *window);
+MarkerEditor        *marker_window_get_active_editor             (MarkerWindow       *window);
 
 G_END_DECLS
 

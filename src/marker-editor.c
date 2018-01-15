@@ -90,6 +90,29 @@ marker_editor_new_from_file (GFile *file)
 }
 
 void
+marker_editor_refresh_preview (MarkerEditor *editor)
+{
+  g_return_if_fail (MARKER_IS_EDITOR (editor));
+  
+  gchar *markdown = marker_source_view_get_text (editor->source_view);
+  
+  const char* css_theme = (marker_prefs_get_use_css_theme()) ? marker_prefs_get_css_theme() : NULL;
+  gchar *uri = (G_IS_FILE(editor->file)) ? g_file_get_uri(editor->file) : NULL;
+
+  marker_preview_render_markdown(editor->preview, markdown, css_theme, uri);
+  
+  if (uri) g_free(uri);
+  g_free (markdown);
+}
+
+MarkerViewMode
+marker_editor_get_view_mode (MarkerEditor *editor)
+{
+  g_return_val_if_fail (MARKER_IS_EDITOR (editor), DUAL_PANE_MODE);
+  return editor->view_mode;
+}
+
+void
 marker_editor_set_view_mode (MarkerEditor   *editor,
                              MarkerViewMode  view_mode)
 {

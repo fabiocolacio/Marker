@@ -48,11 +48,25 @@ key_pressed_cb (GtkWidget   *widget,
 {
   MarkerWindow *window = MARKER_WINDOW (widget);
 
-  switch (event->keyval)
+  gboolean ctrl_pressed = (event->state & GDK_CONTROL_MASK);
+
+  if (ctrl_pressed)
   {
-    case GDK_KEY_F11:
-      marker_window_toggle_fullscreen (window);
-      break;
+    switch (event->keyval)
+    {
+      case GDK_KEY_r:
+        marker_editor_refresh_preview (marker_window_get_active_editor (window));
+        break;
+    }
+  }
+  else
+  {
+    switch (event->keyval)
+    {
+      case GDK_KEY_F11:
+        marker_window_toggle_fullscreen (window);
+        break;
+    }
   }
 
   return FALSE;
@@ -161,6 +175,7 @@ marker_window_init (MarkerWindow *window)
   /** Window **/
   gtk_window_set_default_size(GTK_WINDOW(window), 900, 600);
   gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
+  g_signal_connect (window, "key-press-event", G_CALLBACK (key_pressed_cb), window);
   
   g_object_unref (builder);
 }
@@ -168,7 +183,7 @@ marker_window_init (MarkerWindow *window)
 static void
 marker_window_class_init (MarkerWindowClass *class)
 {
-  GTK_WIDGET_CLASS (class)->key_press_event = key_pressed_cb;
+
 }
 
 MarkerWindow *
@@ -202,4 +217,11 @@ gboolean
 marker_window_is_fullscreen (MarkerWindow *window)
 {
   return window->is_fullscreen;
+}
+
+MarkerEditor *
+marker_window_get_active_editor (MarkerWindow *window)
+{
+  g_return_val_if_fail (MARKER_IS_WINDOW (window), NULL);
+  return window->editor;
 }
