@@ -120,8 +120,26 @@ marker_window_unfullscreen (MarkerWindow *window)
 }
 
 static void
+title_changed_cb (MarkerEditor *editor,
+                  const gchar  *title,
+                  gpointer      user_data)
+{
+  MarkerWindow *window = user_data;
+  gtk_header_bar_set_title (window->header_bar, title);
+}
+
+static void
+subtitle_changed_cb (MarkerEditor *editor,
+                     const gchar  *subtitle,
+                     gpointer      user_data)
+{
+  MarkerWindow *window = user_data;
+  gtk_header_bar_set_subtitle (window->header_bar, subtitle);
+}
+
+static void
 marker_window_init (MarkerWindow *window)
-{ 
+{
   window->is_fullscreen = FALSE;
   
   GtkBuilder *builder = gtk_builder_new ();
@@ -137,6 +155,8 @@ marker_window_init (MarkerWindow *window)
   window->editor = editor;
   gtk_box_pack_start (vbox, GTK_WIDGET (editor), TRUE, TRUE, 0);
   gtk_widget_show (GTK_WIDGET (editor));
+  g_signal_connect (editor, "title-changed", G_CALLBACK (title_changed_cb), window);
+  g_signal_connect (editor, "subtitle-changed", G_CALLBACK (subtitle_changed_cb), window);
   
   /** HeaderBar **/
   GtkBox *header_box = GTK_BOX (gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
@@ -145,6 +165,10 @@ marker_window_init (MarkerWindow *window)
   gtk_builder_add_from_resource (builder, "/com/github/fabiocolacio/marker/ui/marker-headerbar.ui", NULL);
   GtkHeaderBar *header_bar = GTK_HEADER_BAR (gtk_builder_get_object (builder, "header_bar"));
   window->header_bar = header_bar;
+  g_autofree gchar *title = marker_editor_get_title (marker_window_get_active_editor (window));
+  g_autofree gchar *subtitle = marker_editor_get_subtitle (marker_window_get_active_editor (window));
+  gtk_header_bar_set_title (header_bar, title);
+  gtk_header_bar_set_subtitle (header_bar, subtitle);
   GtkButton *unfullscreen_btn = GTK_BUTTON (gtk_builder_get_object (builder, "unfullscreen_btn"));
   window->unfullscreen_btn = unfullscreen_btn;
   g_signal_connect_swapped (unfullscreen_btn, "clicked", G_CALLBACK (marker_window_unfullscreen), window);
@@ -226,4 +250,14 @@ marker_window_get_active_editor (MarkerWindow *window)
 {
   g_return_val_if_fail (MARKER_IS_WINDOW (window), NULL);
   return window->editor;
+}
+
+gboolean
+marker_window_is_active_editor (MarkerWindow *window,
+                                MarkerEditor *editor)
+{
+  g_assert (MARKER_IS_WINDOW (window));
+  g_assert (MARKER_IS_EDITOR (editor));
+  
+  return (marker_window_get_active_editor (window) == editor);
 }

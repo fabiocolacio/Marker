@@ -20,14 +20,16 @@
  */
 
 #include "marker-prefs.h"
+#include "marker-string.h"
 
 #include "marker-editor.h"
 
 struct _MarkerEditor
 {
-  GtkBox               parent_instance;
+  GtkBox                parent_instance;
   
   GFile                *file;
+  gboolean              unsaved_changes;
   
   GtkPaned             *paned;
   MarkerPreview        *preview;
@@ -54,13 +56,17 @@ buffer_changed_cb (GtkTextBuffer *buffer,
                    gpointer user_data)
 {
   MarkerEditor *editor = user_data;
+  editor->unsaved_changes = TRUE;
   editor->needs_refresh = TRUE;
+  
+  g_signal_emit_by_name (editor, "title-changed", marker_editor_get_title (editor));
 }
 
 static void
 marker_editor_init (MarkerEditor *editor)
 {
   editor->file = NULL;
+  editor->unsaved_changes = FALSE;
   
   editor->paned = GTK_PANED (gtk_paned_new (GTK_ORIENTATION_HORIZONTAL));
   gtk_widget_show (GTK_WIDGET (editor->paned));
@@ -89,7 +95,17 @@ marker_editor_init (MarkerEditor *editor)
 static void
 marker_editor_class_init (MarkerEditorClass *class)
 {
-
+  g_signal_new ("title-changed",
+                G_TYPE_FROM_CLASS (class),
+                G_SIGNAL_RUN_LAST | G_SIGNAL_NO_RECURSE,
+                0, NULL, NULL, NULL,
+                G_TYPE_NONE, 1, G_TYPE_STRING);
+  
+  g_signal_new ("subtitle-changed",
+                G_TYPE_FROM_CLASS (class),
+                G_SIGNAL_RUN_LAST | G_SIGNAL_NO_RECURSE,
+                0, NULL, NULL, NULL,
+                G_TYPE_NONE, 1, G_TYPE_STRING);
 }
 
 MarkerEditor *
@@ -208,4 +224,79 @@ marker_editor_open_file (MarkerEditor *editor,
     marker_source_view_set_text (source_view, file_contents, file_size);
     gtk_source_buffer_end_not_undoable_action (buffer);
   }
+  
+  editor->unsaved_changes = FALSE;
+  
+  g_autofree gchar *title = marker_editor_get_title (editor);
+  g_autofree gchar *subtitle = marker_editor_get_subtitle (editor);
+  g_signal_emit_by_name (editor, "title-changed", title);
+  g_signal_emit_by_name (editor, "subtitle-changed", subtitle);
+}
+
+GFile *
+marker_editor_get_file (MarkerEditor *editor)
+{
+  g_return_val_if_fail (MARKER_IS_EDITOR (editor), NULL);
+  return editor->file;
+}
+
+gboolean
+marker_editor_has_unsaved_changes (MarkerEditor *editor)
+{
+  g_return_val_if_fail (MARKER_IS_EDITOR (editor), FALSE);
+  return editor->unsaved_changes;
+}
+
+gchar *
+marker_editor_get_title (MarkerEditor *editor)
+{
+  g_return_val_if_fail (MARKER_IS_EDITOR (editor), NULL);
+  
+  gchar *title = NULL;
+  GFile *file = marker_editor_get_file (editor);
+  
+  if (G_IS_FILE (file))
+  {
+    gchar *basename = g_file_get_basename (file);
+    
+    if (marker_editor_has_unsaved_changes (editor))
+    {
+      title = g_strdup_printf ("*%s", basename);
+      g_free (basename);
+    }
+    else
+    {
+      title = basename;
+    }
+  }
+  else
+  {
+    if (marker_editor_has_unsaved_changes (editor))
+    {
+      title = g_strdup ("*Untitled.md");
+    }
+    else
+    {
+      title = g_strdup ("Untitled.md");
+    }
+  }
+  
+  return title;
+}
+
+gchar *
+marker_editor_get_subtitle (MarkerEditor *editor)
+{
+  g_return_val_if_fail (MARKER_IS_EDITOR (editor), NULL);
+  
+  gchar *subtitle = NULL;
+  GFile *file = marker_editor_get_file (editor);
+  
+  if (G_IS_FILE (file))
+  {
+    g_autofree gchar *path = g_file_get_path (file);
+    subtitle = marker_string_filename_get_path (path);
+  }
+  
+  return subtitle;
 }
