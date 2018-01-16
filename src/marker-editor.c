@@ -44,6 +44,20 @@ struct _MarkerEditor
 
 G_DEFINE_TYPE (MarkerEditor, marker_editor, GTK_TYPE_BOX);
 
+static void
+emit_signal_title_changed (MarkerEditor *editor)
+{
+  g_autofree gchar *title = marker_editor_get_title (editor);
+  g_signal_emit_by_name (editor, "title-changed", title);
+}
+
+static void
+emit_signal_subtitle_changed (MarkerEditor *editor)
+{
+  g_autofree gchar *subtitle = marker_editor_get_subtitle (editor);
+  g_signal_emit_by_name (editor, "subtitle-changed", subtitle);
+}
+
 static gboolean
 refresh_timeout_cb (gpointer user_data)
 {
@@ -61,8 +75,7 @@ buffer_changed_cb (GtkTextBuffer *buffer,
   editor->unsaved_changes = TRUE;
   editor->needs_refresh = TRUE;
   
-  g_autofree gchar *title = marker_editor_get_title (editor);
-  g_signal_emit_by_name (editor, "title-changed", title);
+  emit_signal_title_changed (editor);
 }
 
 static void
@@ -230,10 +243,8 @@ marker_editor_open_file (MarkerEditor *editor,
   
   editor->unsaved_changes = FALSE;
   
-  g_autofree gchar *title = marker_editor_get_title (editor);
-  g_autofree gchar *subtitle = marker_editor_get_subtitle (editor);
-  g_signal_emit_by_name (editor, "title-changed", title);
-  g_signal_emit_by_name (editor, "subtitle-changed", subtitle);
+  emit_signal_title_changed (editor);
+  emit_signal_subtitle_changed (editor);
 }
 
 void
@@ -271,6 +282,8 @@ marker_editor_save_file (MarkerEditor *editor)
     g_printerr ("Error writing file: %s", err->message);
     return;
   }
+  
+  emit_signal_title_changed (editor);
 }
 
 void
@@ -289,7 +302,7 @@ marker_editor_save_file_as (MarkerEditor *editor)
   
   /** TODO: Call marker_editor_save_file() **/
   
-  /** TODO: Emit subtitle-changed signal **/
+  emit_signal_subtitle_changed (editor);
 }
 
 GFile *
