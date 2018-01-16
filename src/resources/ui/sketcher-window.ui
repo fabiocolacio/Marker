@@ -58,6 +58,7 @@
                 <property name="image">pen_img</property>
                 <property name="active">True</property>
                 <property name="draw_indicator">False</property>
+                <signal name="clicked" handler="pen_cb" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -74,6 +75,7 @@
                 <property name="active">True</property>
                 <property name="draw_indicator">False</property>
                 <property name="group">pen_radio_button</property>
+                <signal name="clicked" handler="eraser_cb" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -90,6 +92,7 @@
                 <property name="active">True</property>
                 <property name="draw_indicator">False</property>
                 <property name="group">pen_radio_button</property>
+                <signal name="clicked" handler="text_cb" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -110,6 +113,7 @@
             <property name="use_alpha">True</property>
             <property name="color">#000000000000</property>
             <property name="alpha">65535</property>
+            <signal name="color-set" handler="color_set_cb" swapped="no"/>
           </object>
           <packing>
             <property name="position">1</property>

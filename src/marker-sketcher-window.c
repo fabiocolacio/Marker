@@ -52,6 +52,9 @@ marker_sketcher_window_init (MarkerSketcherWindow *sketcher)
 static cairo_surface_t *surface = NULL;
 static gboolean         status = FALSE;
 static gdouble          old_x, old_y;
+static guint            size = 6;
+static SketchTool       tool = PEN;
+static GdkRGBA          color;
 
 static void
 clear_surface (void)
@@ -110,7 +113,6 @@ draw_brush (GtkWidget *widget,
 {
   if (!widget || !surface)
   {
-    g_print("eeeeee!!!!\n");
     return;
   }
   cairo_t *cr;
@@ -128,7 +130,10 @@ draw_brush (GtkWidget *widget,
   } else
   {
     cairo_set_line_cap(cr, CAIRO_LINE_CAP_ROUND);
-    cairo_set_source_rgb(cr, 0, 0, 0);
+    if (tool == PEN)
+      cairo_set_source_rgb(cr, color.red, color.green, color.blue);
+    else if (tool == ERASER)
+      cairo_set_source_rgb(cr, 1, 1, 1);
     cairo_set_line_width(cr, 6.0);
     cairo_move_to(cr, old_x, old_y);
     cairo_line_to(cr, x, y);
@@ -220,11 +225,43 @@ close_cb(GtkButton * widget,
   gtk_widget_destroy(window);
 }         
 
+static void
+pen_cb(GtkButton * button,
+       gpointer    user_data)
+{
+  tool = PEN;
+}
 
+static void
+eraser_cb(GtkButton * button,
+       gpointer    user_data)
+{
+  tool = ERASER;
+}
+
+static void
+text_cb(GtkButton * button,
+       gpointer    user_data)
+{
+  tool = TEXT;
+}
+
+static void
+color_set_cb(GtkColorButton*  button,
+             gpointer         user_data)
+{
+  gtk_color_button_get_rgba(button, &color);
+}
 
 static void
 init_ui (GtkWindow * parent)
 {
+  tool = PEN;
+  color.red=0;
+  color.green=0;
+  color.blue=0;
+  color.alpha=1;
+
   GtkWindow *window;
   GtkDrawingArea *drawing_area;
 
@@ -273,6 +310,19 @@ init_ui (GtkWindow * parent)
   gtk_builder_add_callback_symbol(builder,
                                   "close_cb",
                                   G_CALLBACK(close_cb));
+  gtk_builder_add_callback_symbol(builder,
+                                  "pen_cb",
+                                  G_CALLBACK(pen_cb));
+  gtk_builder_add_callback_symbol(builder,
+                                  "eraser_cb",
+                                  G_CALLBACK(eraser_cb));
+  gtk_builder_add_callback_symbol(builder,
+                                  "text_cb",
+                                  G_CALLBACK(text_cb));
+  gtk_builder_add_callback_symbol(builder,
+                                  "color_set_cb",
+                                  G_CALLBACK(color_set_cb));
+
   gtk_builder_connect_signals(builder, window);
   g_object_unref(builder);
 }

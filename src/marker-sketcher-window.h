@@ -24,6 +24,12 @@
 
 #include <gtk/gtk.h>
 
+enum{
+    PEN,
+    ERASER,
+    TEXT
+}typedef SketchTool;
+
 G_BEGIN_DECLS
 
 #define MARKER_TYPE_SKETCHER_WINDOW (marker_sketcher_window_get_type ())
