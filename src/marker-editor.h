@@ -50,6 +50,8 @@ void                 marker_editor_set_view_mode                 (MarkerEditor  
 void                 marker_editor_refresh_preview               (MarkerEditor       *editor);
 void                 marker_editor_open_file                     (MarkerEditor       *editor,
                                                                   GFile              *file);
+void                 marker_editor_save                          (MarkerEditor       *editor);
+void                 marker_editor_save_file_as                  (MarkerEditor       *editor);
 GFile               *marker_editor_get_file                      (MarkerEditor       *editor);
 gboolean             marker_editor_has_unsaved_changes           (MarkerEditor       *editor);
 gchar               *marker_editor_get_title                     (MarkerEditor       *editor);

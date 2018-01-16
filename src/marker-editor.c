@@ -131,7 +131,7 @@ marker_editor_new_from_file (GFile *file)
 void
 marker_editor_refresh_preview (MarkerEditor *editor)
 {
-  g_return_if_fail (MARKER_IS_EDITOR (editor));
+  g_assert (MARKER_IS_EDITOR (editor));
   
   editor->needs_refresh = FALSE;
   
@@ -146,7 +146,7 @@ marker_editor_refresh_preview (MarkerEditor *editor)
 MarkerViewMode
 marker_editor_get_view_mode (MarkerEditor *editor)
 {
-  g_return_val_if_fail (MARKER_IS_EDITOR (editor), DUAL_PANE_MODE);
+  g_assert (MARKER_IS_EDITOR (editor));
   return editor->view_mode;
 }
 
@@ -154,7 +154,7 @@ void
 marker_editor_set_view_mode (MarkerEditor   *editor,
                              MarkerViewMode  view_mode)
 {
-  g_return_if_fail (MARKER_IS_EDITOR (editor));
+  g_assert (MARKER_IS_EDITOR (editor));
 
   editor->view_mode = view_mode;
   
@@ -199,7 +199,7 @@ void
 marker_editor_open_file (MarkerEditor *editor,
                         GFile        *file)
 {
-  g_return_if_fail (MARKER_IS_EDITOR (editor));
+  g_assert (MARKER_IS_EDITOR (editor));
   
   if (G_IS_FILE (editor->file))
     g_object_unref (editor->file);
@@ -234,24 +234,37 @@ marker_editor_open_file (MarkerEditor *editor,
   g_signal_emit_by_name (editor, "subtitle-changed", subtitle);
 }
 
+void
+marker_editor_save_file (MarkerEditor *editor)
+{
+  g_assert (MARKER_IS_EDITOR (editor));
+  
+}
+
+void
+marker_editor_save_file_as (MarkerEditor *editor)
+{
+  g_assert (MARKER_IS_EDITOR (editor));
+}
+
 GFile *
 marker_editor_get_file (MarkerEditor *editor)
 {
-  g_return_val_if_fail (MARKER_IS_EDITOR (editor), NULL);
+  g_assert (MARKER_IS_EDITOR (editor));
   return editor->file;
 }
 
 gboolean
 marker_editor_has_unsaved_changes (MarkerEditor *editor)
 {
-  g_return_val_if_fail (MARKER_IS_EDITOR (editor), FALSE);
+  g_assert (MARKER_IS_EDITOR (editor));
   return editor->unsaved_changes;
 }
 
 gchar *
 marker_editor_get_title (MarkerEditor *editor)
 {
-  g_return_val_if_fail (MARKER_IS_EDITOR (editor), NULL);
+  g_assert (MARKER_IS_EDITOR (editor));
   
   gchar *title = NULL;
   GFile *file = marker_editor_get_file (editor);
@@ -288,7 +301,7 @@ marker_editor_get_title (MarkerEditor *editor)
 gchar *
 marker_editor_get_subtitle (MarkerEditor *editor)
 {
-  g_return_val_if_fail (MARKER_IS_EDITOR (editor), NULL);
+  g_assert (MARKER_IS_EDITOR (editor));
   
   gchar *subtitle = NULL;
   GFile *file = marker_editor_get_file (editor);
