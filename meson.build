@@ -55,6 +55,7 @@ hoedown_sources = [
   'src/hoedown/stack.c',
   'src/hoedown/version.c',
   'src/hoedown/charter/csv_parser/csvparser.c',
+  'src/hoedown/charter/tinyexpr/tinyexpr.c',
   'src/hoedown/charter/parser.c',
   'src/hoedown/charter/charter.c',
   'src/hoedown/charter/renderer.c',

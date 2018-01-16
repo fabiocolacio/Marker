@@ -1,4 +1,6 @@
 #include "charter.h"
+#include "tinyexpr/tinyexpr.h"
+
 #include <stdlib.h>
 
 chart * 
@@ -57,17 +59,64 @@ double plot_get_min_x(plot* p)
     return min_x;
 }
 
+double * eval_math(plot *p)
+{
+    if (p->y_type != MATH || p->y_data == NULL || p->n == 0)
+        return NULL;
+    double * eval = malloc(p->n*sizeof(double));
+    double x;
+    te_variable vars[] = {{"x", &x}};
+
+    int err;
+    /* Compile the expression with variables. */
+    te_expr *expr = te_compile((const char*)p->y_data, vars, 1, &err);
+
+    if (expr) {
+        unsigned int i;
+        for (i = 0; i < p->n ;i++)
+        {
+            x = p->x_data[i];
+            eval[i] = te_eval(expr);
+        }
+    }
+    return eval;
+}
+
+double * plot_eval_y(plot *p)
+{
+    if (p->y_type == MATH){
+        return eval_math(p); 
+    }
+    if (p->n && p->y_data != NULL)
+    {
+        double * data = malloc(p->n * sizeof(double));
+        unsigned int i = 0;
+        for (i = 0; i < p->n; i++)
+        {
+            data[i] = ((double*)p->y_data)[i];
+        }
+        return data;
+    }
+    
+    return NULL;
+}
+
+
 double plot_get_max_y(plot* p)
 {
     if (!p->n || !p->y_data)
         return 0;
-    double max_x = p->y_data[0];
+
+    double * data = plot_eval_y(p);
+   
+    double max_x = data[0];
     unsigned int i;
     for (i = 1; i<p->n;i++)
     {
-        if (p->y_data[i] > max_x)
-            max_x = p->y_data[i];
+        if (data[i] > max_x)
+            max_x = data[i];
     }
+    free(data);
     return max_x;
 }
 
@@ -75,17 +124,20 @@ double plot_get_min_y(plot* p)
 {
     if (!p->n || !p->y_data)
         return 0;
-    double min_x = p->y_data[0];
+    double * data = plot_eval_y(p);
+
+    double min_x = data[0];
     unsigned int i;
     for (i = 1; i<p->n;i++)
     {
-        if (p->y_data[i] < min_x)
-            min_x = p->y_data[i];
+        if (data[i] < min_x)
+            min_x = data[i];
     }
     if (p->type == BAR && min_x > 0)
     {
         return 0;
     }
+    free(data);
     return min_x;
 }
 
