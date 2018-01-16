@@ -19,6 +19,8 @@
  *
  */
 
+#include <string.h>
+
 #include "marker-prefs.h"
 #include "marker-string.h"
 
@@ -239,12 +241,55 @@ marker_editor_save_file (MarkerEditor *editor)
 {
   g_assert (MARKER_IS_EDITOR (editor));
   
+  if (!G_IS_FILE (editor->file))
+  {
+    marker_editor_save_file_as (editor);
+    return;
+  }
+  
+  g_autoptr (GError) err = NULL;
+  g_autoptr (GIOStream) stream = G_IO_STREAM (g_file_open_readwrite (editor->file, NULL, &err));
+  GOutputStream *ostream = NULL;
+  
+  if (err)
+  {
+    /** TODO: Inform user of errors such as permission erros **/
+    g_printerr ("Error opening file: %s", err->message);
+    return;
+  }
+
+  g_autofree gchar *buffer = marker_source_view_get_text (editor->source_view);
+  gsize buffer_size = strlen (buffer);
+  gsize bytes_written = 0;
+
+  ostream = g_io_stream_get_output_stream (stream);
+  g_output_stream_write_all (ostream, buffer, buffer_size, &bytes_written, NULL, &err);
+  
+  if (err)
+  {
+    /** TODO: Inform user of errors such as permission erros **/
+    g_printerr ("Error writing file: %s", err->message);
+    return;
+  }
 }
 
 void
 marker_editor_save_file_as (MarkerEditor *editor)
 {
   g_assert (MARKER_IS_EDITOR (editor));
+
+  if (G_IS_FILE (editor->file))
+  {
+    g_object_unref (editor->file);
+  }
+  
+  /** TODO: Run filechooser dialog **/
+  
+  /** TODO: Set editor->file to chosen file **/
+  
+  /** TODO: Call marker_editor_save_file() **/
+  
+  /** TODO: Emit subtitle-changed signal **/
 }
 
 GFile *
