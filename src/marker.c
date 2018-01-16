@@ -60,7 +60,7 @@ marker_init(GtkApplication* app)
   if (marker_prefs_get_gnome_appmenu())
   {
     GtkBuilder* builder =
-      gtk_builder_new_from_resource("/com/github/fabiocolacio/marker/ui/editor-window.ui");
+      gtk_builder_new_from_resource("/com/github/fabiocolacio/marker/ui/marker-appmenu.ui");
       
     GMenuModel* app_menu =
       G_MENU_MODEL(gtk_builder_get_object(builder, "app_menu"));  
