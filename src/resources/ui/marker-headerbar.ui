@@ -15,20 +15,20 @@
   <object class="GtkHeaderBar" id="header_bar">
     <property name="visible">True</property>
     <child>
-      <object class="GtkButton">
+      <object class="GtkButton" id="open_btn">
         <property name="visible">True</property>
         <property name="label">Open...</property>
-        <signal name="clicked" handler="open_cb" swapped="no"/>
+        <signal name="clicked" handler="open_button_clicked_cb" swapped="no"/>
       </object>
       <packing>
         <property name="pack_type">start</property>
       </packing>
     </child>
     <child>
-      <object class="GtkButton">
+      <object class="GtkButton" id="save_btn">
         <property name="visible">True</property>
         <property name="label">Save</property>
-        <signal name="clicked" handler="save_cb" swapped="no"/>
+        <signal name="clicked" handler="save_button_clicked_cb" swapped="no"/>
       </object>
       <packing>
         <property name="pack_type">start</property>

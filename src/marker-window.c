@@ -41,6 +41,21 @@ struct _MarkerWindow
 
 G_DEFINE_TYPE (MarkerWindow, marker_window, GTK_TYPE_APPLICATION_WINDOW);
 
+static void
+open_button_clicked_cb (GtkButton *button,
+                        gpointer   user_data)
+{
+
+}
+
+static void
+save_button_clicked_cb (GtkButton *button,
+                        gpointer   user_data)
+{
+  MarkerWindow *window = user_data;
+  marker_editor_save_file (marker_window_get_active_editor (window));
+}
+
 static gboolean
 key_pressed_cb (GtkWidget   *widget,
                 GdkEventKey *event,
@@ -56,6 +71,10 @@ key_pressed_cb (GtkWidget   *widget,
     {
       case GDK_KEY_r:
         marker_editor_refresh_preview (marker_window_get_active_editor (window));
+        break;
+      
+      case GDK_KEY_s:
+        marker_editor_save_file (marker_window_get_active_editor (window));
         break;
     }
   }
@@ -200,6 +219,10 @@ marker_window_init (MarkerWindow *window)
   gtk_window_set_default_size(GTK_WINDOW(window), 900, 600);
   gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
   g_signal_connect (window, "key-press-event", G_CALLBACK (key_pressed_cb), window);
+  
+  gtk_builder_add_callback_symbol (builder, "save_button_clicked_cb", G_CALLBACK (save_button_clicked_cb));
+  gtk_builder_add_callback_symbol (builder, "open_button_clicked_cb", G_CALLBACK (open_button_clicked_cb));
+  gtk_builder_connect_signals (builder, window);
   
   g_object_unref (builder);
 }

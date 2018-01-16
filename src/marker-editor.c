@@ -283,6 +283,7 @@ marker_editor_save_file (MarkerEditor *editor)
     return;
   }
   
+  editor->unsaved_changes = FALSE;
   emit_signal_title_changed (editor);
 }
 
