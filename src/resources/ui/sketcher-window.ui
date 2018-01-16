@@ -6,22 +6,12 @@
     <property name="can_focus">False</property>
     <property name="modal">True</property>
     <child>
-      <object class="GtkBox">
+      <object class="GtkBox" id="vbox">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="orientation">vertical</property>
         <child>
-          <object class="GtkDrawingArea" id="drawing-area">
-            <property name="width_request">800</property>
-            <property name="height_request">600</property>
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-          </object>
-          <packing>
-            <property name="expand">True</property>
-            <property name="fill">True</property>
-            <property name="position">1</property>
-          </packing>
+          <placeholder/>
         </child>
       </object>
     </child>
@@ -157,9 +147,6 @@
           <packing>
             <property name="position">2</property>
           </packing>
-        </child>
-        <child type="title">
-          <placeholder/>
         </child>
       </object>
     </child>
