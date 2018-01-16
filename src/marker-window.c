@@ -63,9 +63,40 @@ open_file (MarkerWindow *window)
 }
 
 static void
+save_active_file_as (MarkerWindow *window)
+{
+  GtkWidget *dialog = gtk_file_chooser_dialog_new ("Save As",
+                                                   GTK_WINDOW (window),
+                                                   GTK_FILE_CHOOSER_ACTION_SAVE,
+                                                   "Cancel", GTK_RESPONSE_CANCEL,
+                                                   "Save", GTK_RESPONSE_ACCEPT,
+                                                   NULL);
+
+  gtk_file_chooser_set_do_overwrite_confirmation(GTK_FILE_CHOOSER(dialog), TRUE);
+
+  gint response = gtk_dialog_run (GTK_DIALOG (dialog));
+  
+  if (response == GTK_RESPONSE_ACCEPT)
+  {
+    GFile *file = gtk_file_chooser_get_file (GTK_FILE_CHOOSER (dialog)); 
+    marker_editor_save_file_as (marker_window_get_active_editor (window), file);
+  }
+  
+  gtk_widget_destroy (dialog);
+}
+
+static void
 save_active_file (MarkerWindow *window)
 {
-  marker_editor_save_file (marker_window_get_active_editor (window));
+  MarkerEditor *editor = marker_window_get_active_editor (window);
+  if (marker_editor_get_file (editor))
+  {
+    marker_editor_save_file (editor);
+  }
+  else
+  {
+    save_active_file_as (window);
+  }
 }
 
 static gboolean
@@ -76,6 +107,7 @@ key_pressed_cb (GtkWidget   *widget,
   MarkerWindow *window = MARKER_WINDOW (widget);
 
   gboolean ctrl_pressed = (event->state & GDK_CONTROL_MASK);
+  gboolean shift_pressed = (event->state & GDK_SHIFT_MASK);
 
   if (ctrl_pressed)
   {
@@ -90,7 +122,10 @@ key_pressed_cb (GtkWidget   *widget,
         break;
       
       case GDK_KEY_s:
-        save_active_file (window);
+        if (shift_pressed)
+          save_active_file_as (window);
+        else
+          save_active_file (window);
         break;
     }
   }

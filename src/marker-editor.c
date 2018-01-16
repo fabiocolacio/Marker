@@ -251,36 +251,17 @@ void
 marker_editor_save_file (MarkerEditor *editor)
 {
   g_assert (MARKER_IS_EDITOR (editor));
-  
-  if (!G_IS_FILE (editor->file))
-  {
-    marker_editor_save_file_as (editor);
-    return;
-  }
-  
-  g_autoptr (GError) err = NULL;
-  g_autoptr (GIOStream) stream = G_IO_STREAM (g_file_open_readwrite (editor->file, NULL, &err));
-  GOutputStream *ostream = NULL;
-  
-  if (err)
-  {
-    /** TODO: Inform user of errors such as permission erros **/
-    g_printerr ("Error opening file: %s", err->message);
-    return;
-  }
+  g_return_if_fail (G_IS_FILE (editor->file));
 
-  g_autofree gchar *buffer = marker_source_view_get_text (editor->source_view);
-  gsize buffer_size = strlen (buffer);
-  gsize bytes_written = 0;
-
-  ostream = g_io_stream_get_output_stream (stream);
-  g_output_stream_write_all (ostream, buffer, buffer_size, &bytes_written, NULL, &err);
+  g_autofree gchar *filepath = g_file_get_path (editor->file);
   
-  if (err)
+  FILE *fp = fopen (filepath, "w");
+ 
+  if (fp)
   {
-    /** TODO: Inform user of errors such as permission erros **/
-    g_printerr ("Error writing file: %s", err->message);
-    return;
+    g_autofree gchar *buffer = marker_source_view_get_text (editor->source_view);
+    fputs (buffer, fp);
+    fclose (fp);
   }
   
   editor->unsaved_changes = FALSE;
@@ -288,21 +269,18 @@ marker_editor_save_file (MarkerEditor *editor)
 }
 
 void
-marker_editor_save_file_as (MarkerEditor *editor)
+marker_editor_save_file_as (MarkerEditor *editor,
+                            GFile        *file)
 {
   g_assert (MARKER_IS_EDITOR (editor));
-
+  
   if (G_IS_FILE (editor->file))
   {
     g_object_unref (editor->file);
   }
   
-  /** TODO: Run filechooser dialog **/
-  
-  /** TODO: Set editor->file to chosen file **/
-  
-  /** TODO: Call marker_editor_save_file() **/
-  
+  editor->file = file;
+  marker_editor_save_file (editor);
   emit_signal_subtitle_changed (editor);
 }
 
@@ -310,7 +288,11 @@ GFile *
 marker_editor_get_file (MarkerEditor *editor)
 {
   g_assert (MARKER_IS_EDITOR (editor));
-  return editor->file;
+  if (G_IS_FILE (editor->file))
+  {
+    return editor->file;
+  }
+  return NULL;
 }
 
 gboolean
