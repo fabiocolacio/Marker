@@ -209,6 +209,17 @@ motion_notify_event_cb (GtkWidget      *widget,
   return TRUE;
 }
 
+static void
+close_cb(GtkButton * widget,
+         gpointer    user_data)
+{
+  GtkWindow * window = GTK_WINDOW(user_data);
+  if (surface)
+    cairo_surface_destroy (surface);
+  gtk_widget_hide(window);
+  gtk_widget_destroy(window);
+}         
+
 
 
 static void
@@ -254,11 +265,16 @@ init_ui (GtkWindow * parent)
                                       | GDK_BUTTON_PRESS_MASK
                                       | GDK_BUTTON_RELEASE_MASK
                                       | GDK_POINTER_MOTION_MASK);
-  
-  
+
+                                  
   gtk_widget_show_all(GTK_WIDGET(window));
   gtk_window_present(window);
 
+  gtk_builder_add_callback_symbol(builder,
+                                  "close_cb",
+                                  G_CALLBACK(close_cb));
+  gtk_builder_connect_signals(builder, window);
+  g_object_unref(builder);
 }
 
 
