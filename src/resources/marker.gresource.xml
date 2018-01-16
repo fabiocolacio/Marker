@@ -7,5 +7,6 @@
     <file>ui/shortcuts-window.ui</file>
     <file>ui/gear-popover.ui</file>
     <file>ui/gear-popover-full.ui</file>
+    <file>ui/marker-appmenu.ui</file>
   </gresource>
 </gresources>
