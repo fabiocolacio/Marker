@@ -59,7 +59,8 @@ buffer_changed_cb (GtkTextBuffer *buffer,
   editor->unsaved_changes = TRUE;
   editor->needs_refresh = TRUE;
   
-  g_signal_emit_by_name (editor, "title-changed", marker_editor_get_title (editor));
+  g_autofree gchar *title = marker_editor_get_title (editor);
+  g_signal_emit_by_name (editor, "title-changed", title);
 }
 
 static void
