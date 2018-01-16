@@ -187,6 +187,7 @@
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="image">add_img</property>
+                <signal name="clicked" handler="insert_sketch_cb" object="sketcher-window" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>

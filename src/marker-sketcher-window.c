@@ -254,6 +254,18 @@ color_set_cb(GtkColorButton*  button,
 }
 
 static void
+insert_sketch_cb(GtkButton *  button,
+                 gpointer     user_data)
+{
+  cairo_surface_write_to_png(surface, "temp.png");
+  GtkWindow * window = GTK_WINDOW(user_data);
+  if (surface)
+    cairo_surface_destroy (surface);
+  gtk_widget_hide(window);
+  gtk_widget_destroy(window);
+}
+
+static void
 init_ui (GtkWindow * parent)
 {
   tool = PEN;
@@ -322,6 +334,9 @@ init_ui (GtkWindow * parent)
   gtk_builder_add_callback_symbol(builder,
                                   "color_set_cb",
                                   G_CALLBACK(color_set_cb));
+  gtk_builder_add_callback_symbol(builder,
+                                  "insert_sketch_cb",
+                                  G_CALLBACK(insert_sketch_cb));
 
   gtk_builder_connect_signals(builder, window);
   g_object_unref(builder);
