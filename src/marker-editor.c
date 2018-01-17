@@ -97,6 +97,7 @@ marker_editor_init (MarkerEditor *editor)
   editor->unsaved_changes = FALSE;
   
   editor->paned = GTK_PANED (gtk_paned_new (GTK_ORIENTATION_HORIZONTAL));
+  gtk_paned_set_position (editor->paned, 450);
   gtk_widget_show (GTK_WIDGET (editor->paned));
   gtk_box_pack_start (GTK_BOX (editor), GTK_WIDGET (editor->paned), TRUE, TRUE, 0);
   
