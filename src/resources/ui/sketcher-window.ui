@@ -17,10 +17,25 @@
     <property name="can_focus">False</property>
     <property name="pixbuf">icons/eraser.svg</property>
   </object>
+  <object class="GtkImage" id="large_img">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="pixbuf">icons/large.svg</property>
+  </object>
+  <object class="GtkImage" id="medium_img">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="pixbuf">icons/medium.svg</property>
+  </object>
   <object class="GtkImage" id="pen_img">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="pixbuf">icons/pen.svg</property>
+  </object>
+  <object class="GtkImage" id="small_img">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="pixbuf">icons/small.svg</property>
   </object>
   <object class="GtkImage" id="text_img">
     <property name="visible">True</property>
@@ -125,13 +140,14 @@
             <property name="can_focus">False</property>
             <property name="homogeneous">True</property>
             <child>
-              <object class="GtkRadioButton" id="size_1_radio_button">
-                <property name="label">1 px</property>
+              <object class="GtkRadioButton" id="small_radio_button">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
+                <property name="image">small_img</property>
                 <property name="draw_indicator">False</property>
-                <property name="group">size_5_radio_button</property>
+                <property name="group">medium_radio_button</property>
+                <signal name="clicked" handler="small_cb" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -140,13 +156,14 @@
               </packing>
             </child>
             <child>
-              <object class="GtkRadioButton" id="size_5_radio_button">
-                <property name="label">5 px</property>
+              <object class="GtkRadioButton" id="medium_radio_button">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
+                <property name="image">medium_img</property>
                 <property name="active">True</property>
                 <property name="draw_indicator">False</property>
+                <signal name="clicked" handler="medium_cb" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -155,13 +172,14 @@
               </packing>
             </child>
             <child>
-              <object class="GtkRadioButton" id="size_10_radio_button">
-                <property name="label">10 px</property>
+              <object class="GtkRadioButton" id="large_radio_button">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
+                <property name="image">large_img</property>
                 <property name="draw_indicator">False</property>
-                <property name="group">size_5_radio_button</property>
+                <property name="group">medium_radio_button</property>
+                <signal name="clicked" handler="large_cb" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>

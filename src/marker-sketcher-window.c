@@ -122,11 +122,11 @@ draw_brush (GtkWidget *widget,
   if (!status)
   {
 
-    cairo_arc(cr, x, y, 3, 0, 2.0*M_PI) ;
+    cairo_arc(cr, x, y, size/2, 0, 2.0*M_PI) ;
     cairo_fill (cr);
 
     cairo_destroy (cr);
-    gtk_widget_queue_draw_area (widget, x - 3, y - 3, 6, 6);
+    gtk_widget_queue_draw_area (widget, x - size/2, y - size/2, size, size);
   } else
   {
     cairo_set_line_cap(cr, CAIRO_LINE_CAP_ROUND);
@@ -134,7 +134,7 @@ draw_brush (GtkWidget *widget,
       cairo_set_source_rgb(cr, color.red, color.green, color.blue);
     else if (tool == ERASER)
       cairo_set_source_rgb(cr, 1, 1, 1);
-    cairo_set_line_width(cr, 6.0);
+    cairo_set_line_width(cr, size);
     cairo_move_to(cr, old_x, old_y);
     cairo_line_to(cr, x, y);
     cairo_stroke(cr);
@@ -142,7 +142,7 @@ draw_brush (GtkWidget *widget,
     gdouble t = y > old_y ? old_y : y;
 
 
-    gtk_widget_queue_draw_area (widget, l - 3, t - 3, fabs(x-old_x) + 6, fabs(y-old_y) + 6);
+    gtk_widget_queue_draw_area (widget, l - size/2, t - size/2, fabs(x-old_x) + size, fabs(y-old_y) + size);
 
   }
   status = TRUE;
@@ -218,7 +218,7 @@ static void
 close_cb(GtkButton * widget,
          gpointer    user_data)
 {
-  GtkWindow * window = GTK_WINDOW(user_data);
+  GtkWidget * window = GTK_WIDGET(user_data);
   if (surface)
     cairo_surface_destroy (surface);
   gtk_widget_hide(window);
@@ -247,10 +247,31 @@ text_cb(GtkButton * button,
 }
 
 static void
+small_cb(GtkButton* button,
+         gpointer   user_data)
+{
+  size = 3;
+}
+
+static void
+medium_cb(GtkButton* button,
+         gpointer   user_data)
+{
+  size = 6;
+}
+
+static void
+large_cb(GtkButton* button,
+         gpointer   user_data)
+{
+  size = 12;
+}
+
+static void
 color_set_cb(GtkColorButton*  button,
              gpointer         user_data)
 {
-  gtk_color_button_get_rgba(button, &color);
+  gtk_color_chooser_get_rgba (GTK_COLOR_CHOOSER(button), &color);
 }
 
 static void
@@ -258,7 +279,7 @@ insert_sketch_cb(GtkButton *  button,
                  gpointer     user_data)
 {
   cairo_surface_write_to_png(surface, "temp.png");
-  GtkWindow * window = GTK_WINDOW(user_data);
+  GtkWidget * window = GTK_WIDGET(user_data);
   if (surface)
     cairo_surface_destroy (surface);
   gtk_widget_hide(window);
@@ -285,11 +306,11 @@ init_ui (GtkWindow * parent)
   window = GTK_WINDOW(gtk_builder_get_object(builder, "sketcher-window"));
   gtk_window_set_modal(window, TRUE);
   
-  drawing_area = gtk_drawing_area_new();
+  drawing_area = GTK_DRAWING_AREA(gtk_drawing_area_new());
   gtk_widget_set_size_request(GTK_WIDGET(drawing_area), 800, 600);
 
   GtkBox * vbox = GTK_BOX(gtk_builder_get_object(builder, "vbox"));
-  gtk_box_pack_start(vbox, drawing_area,TRUE,TRUE, 5);
+  gtk_box_pack_start(vbox, GTK_WIDGET(drawing_area),TRUE,TRUE, 5);
 
 
   /* Signals used to handle the backing surface */
@@ -310,7 +331,7 @@ init_ui (GtkWindow * parent)
   * subscribe to. In particular, we need to ask for the
   * button press and motion notify events that want to handle.
   */
-  gtk_widget_set_events (drawing_area, gtk_widget_get_events (drawing_area)
+  gtk_widget_set_events (GTK_WIDGET(drawing_area), gtk_widget_get_events (GTK_WIDGET(drawing_area))
                                       | GDK_BUTTON_PRESS_MASK
                                       | GDK_BUTTON_RELEASE_MASK
                                       | GDK_POINTER_MOTION_MASK);
@@ -337,6 +358,15 @@ init_ui (GtkWindow * parent)
   gtk_builder_add_callback_symbol(builder,
                                   "insert_sketch_cb",
                                   G_CALLBACK(insert_sketch_cb));
+  gtk_builder_add_callback_symbol(builder,
+                                  "small_cb",
+                                  G_CALLBACK(small_cb));
+  gtk_builder_add_callback_symbol(builder,
+                                  "medium_cb",
+                                  G_CALLBACK(medium_cb));
+  gtk_builder_add_callback_symbol(builder,
+                                  "large_cb",
+                                  G_CALLBACK(large_cb));
 
   gtk_builder_connect_signals(builder, window);
   g_object_unref(builder);
