@@ -382,3 +382,10 @@ marker_editor_get_subtitle (MarkerEditor *editor)
   
   return subtitle;
 }
+
+MarkerPreview *
+marker_editor_get_preview (MarkerEditor *editor)
+{
+  g_assert (MARKER_IS_EDITOR (editor));
+  return editor->preview;
+}

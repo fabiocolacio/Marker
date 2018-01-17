@@ -46,7 +46,10 @@ action_zoom_out (GSimpleAction* action,
                  GVariant*      parameter,
                  gpointer       user_data)
 {
-
+  MarkerWindow *window = user_data;
+  MarkerEditor *editor = marker_window_get_active_editor (window);
+  MarkerPreview *preview = marker_editor_get_preview (editor);
+  marker_preview_zoom_out (preview);
 }
 
 static void
@@ -54,7 +57,10 @@ action_zoom_original (GSimpleAction *action,
                       GVariant      *parameter,
                       gpointer       user_data)
 {
-
+  MarkerWindow *window = user_data;
+  MarkerEditor *editor = marker_window_get_active_editor (window);
+  MarkerPreview *preview = marker_editor_get_preview (editor);
+  marker_preview_zoom_original (preview);
 }
 
 static void
@@ -62,7 +68,10 @@ action_zoom_in (GSimpleAction *action,
                 GVariant      *parameter,
                 gpointer       user_data)
 {
-
+  MarkerWindow *window = user_data;
+  MarkerEditor *editor = marker_window_get_active_editor (window);
+  MarkerPreview *preview = marker_editor_get_preview (editor);
+  marker_preview_zoom_in (preview);
 }
 
 static void

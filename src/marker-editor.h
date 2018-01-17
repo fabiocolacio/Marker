@@ -57,6 +57,7 @@ GFile               *marker_editor_get_file                      (MarkerEditor  
 gboolean             marker_editor_has_unsaved_changes           (MarkerEditor       *editor);
 gchar               *marker_editor_get_title                     (MarkerEditor       *editor);
 gchar               *marker_editor_get_subtitle                  (MarkerEditor       *editor);
+MarkerPreview       *marker_editor_get_preview                   (MarkerEditor       *editor);
 
 G_END_DECLS
 
