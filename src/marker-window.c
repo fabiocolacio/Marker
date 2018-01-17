@@ -231,6 +231,16 @@ subtitle_changed_cb (MarkerEditor *editor,
   gtk_header_bar_set_subtitle (window->header_bar, subtitle);
 }
 
+static void
+preview_zoom_changed_cb (MarkerPreview *preview,
+                         gpointer       user_data)
+{
+  MarkerWindow *window = user_data;
+  const gdouble zoom_percentage = 100 * webkit_web_view_get_zoom_level (WEBKIT_WEB_VIEW (preview));
+  g_autofree gchar *zoom_level_str = g_strdup_printf ("%.0f%%", zoom_percentage);
+  gtk_button_set_label (window->zoom_original_btn, zoom_level_str);
+}
+
 void
 marker_window_fullscreen (MarkerWindow *window)
 {
@@ -298,6 +308,8 @@ marker_window_init (MarkerWindow *window)
   gtk_widget_show (GTK_WIDGET (editor));
   g_signal_connect (editor, "title-changed", G_CALLBACK (title_changed_cb), window);
   g_signal_connect (editor, "subtitle-changed", G_CALLBACK (subtitle_changed_cb), window);
+  MarkerPreview *preview = marker_editor_get_preview (editor);
+  g_signal_connect (preview, "zoom-changed", G_CALLBACK (preview_zoom_changed_cb), window);
   
   /** HeaderBar **/
   GtkBox *header_box = GTK_BOX (gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
@@ -325,6 +337,7 @@ marker_window_init (MarkerWindow *window)
   gtk_menu_button_set_use_popover (menu_btn, TRUE);
   gtk_menu_button_set_popover (menu_btn, popover);
   gtk_menu_button_set_direction (menu_btn, GTK_ARROW_DOWN);
+  preview_zoom_changed_cb (preview, window);
   
   g_action_map_add_action_entries(G_ACTION_MAP(window), WINDOW_ACTIONS, G_N_ELEMENTS(WINDOW_ACTIONS), window);
   
