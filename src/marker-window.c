@@ -21,6 +21,7 @@
 
 #include "marker.h"
 #include "marker-editor.h"
+#include "marker-exporter.h"
 
 #include "marker-window.h"
 
@@ -88,7 +89,8 @@ action_export (GSimpleAction *action,
                GVariant      *parameter,
                gpointer       user_data)
 {
-
+  MarkerWindow *window = user_data;
+  marker_exporter_show_export_dialog (window);
 }
 
 static void

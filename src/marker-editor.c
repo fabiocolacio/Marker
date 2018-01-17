@@ -390,3 +390,10 @@ marker_editor_get_preview (MarkerEditor *editor)
   g_assert (MARKER_IS_EDITOR (editor));
   return editor->preview;
 }
+
+MarkerSourceView *
+marker_editor_get_source_view (MarkerEditor *editor)
+{
+  g_assert (MARKER_IS_EDITOR (editor));
+  return editor->source_view;
+}

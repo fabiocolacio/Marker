@@ -58,6 +58,7 @@ gboolean             marker_editor_has_unsaved_changes           (MarkerEditor  
 gchar               *marker_editor_get_title                     (MarkerEditor       *editor);
 gchar               *marker_editor_get_subtitle                  (MarkerEditor       *editor);
 MarkerPreview       *marker_editor_get_preview                   (MarkerEditor       *editor);
+MarkerSourceView    *marker_editor_get_source_view               (MarkerEditor       *editor);
 
 G_END_DECLS
 
