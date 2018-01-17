@@ -45,14 +45,14 @@ marker_source_view_surround_selection_with(MarkerSourceView* source_view,
   gint start_index, end_index, selection_len;
   gboolean selected;
   size_t len = strlen(insertion);
-  
-  selected = gtk_text_buffer_get_selection_bounds(buffer, &start, &end);  
+
+  selected = gtk_text_buffer_get_selection_bounds(buffer, &start, &end);
   if (selected)
   {
     start_index = gtk_text_iter_get_line_offset(&start);
     end_index = gtk_text_iter_get_line_offset(&end);
     selection_len = end_index - start_index;
-    
+
     gtk_text_buffer_insert(buffer, &start, insertion, len);
     gtk_text_iter_forward_chars(&start, selection_len);
     gtk_text_buffer_insert(buffer, &start, insertion, len);
@@ -157,15 +157,15 @@ marker_source_view_set_language(MarkerSourceView* source_view,
   {
     GtkSourceLanguageManager* manager =
       gtk_source_language_manager_get_default();
-      
+
     GtkSourceLanguage* language =
       gtk_source_language_manager_get_language(manager, language_name);
-      
+
     GtkSourceBuffer* buffer =
       GTK_SOURCE_BUFFER(gtk_text_view_get_buffer(GTK_TEXT_VIEW(source_view)));
-    
+
     gtk_source_buffer_set_language(buffer, language);
-    
+
     g_object_unref(manager);
   }
 }
@@ -210,7 +210,7 @@ marker_source_view_init (MarkerSourceView *source_view)
 static void
 marker_source_view_class_init(MarkerSourceViewClass* class)
 {
-  
+
 }
 
 MarkerSourceView*

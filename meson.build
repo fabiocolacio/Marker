@@ -54,9 +54,12 @@ hoedown_sources = [
   'src/hoedown/stack.c',
   'src/hoedown/version.c',
   'src/hoedown/charter/csv_parser/csvparser.c',
+  'src/hoedown/charter/tinyexpr/tinyexpr.c',
+  'src/hoedown/charter/clist.c',
   'src/hoedown/charter/parser.c',
   'src/hoedown/charter/charter.c',
-  'src/hoedown/charter/renderer.c'
+  'src/hoedown/charter/renderer.c',
+  'src/hoedown/charter/svg_utils.c'
 ]
 
 deps = [
@@ -67,7 +70,7 @@ deps = [
   dependency('gtkspell3-3.0')
 ]
 
-ext_deps =[  
+ext_deps =[
   dependency('webkit2gtk-4.0')
 ]
 

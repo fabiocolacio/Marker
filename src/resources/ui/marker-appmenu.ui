@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <menu id="app_menu">
+    <section>
+      <item>
+        <attribute name="label">New Window</attribute>
+        <attribute name="action">app.new</attribute>
+      </item>
+    </section>
+    <section>
+      <item>
+        <attribute name="label">Preferences</attribute>
+        <attribute name="action">app.prefs</attribute>
+      </item>
+    </section>
+    <section>
+      <item>
+        <attribute name="label">Keyboard Shortcuts</attribute>
+        <attribute name="action">app.shortcuts</attribute>
+      </item>
+      <item>
+        <attribute name="label">About</attribute>
+        <attribute name="action">app.about</attribute>
+      </item>
+      <item>
+        <attribute name="label">Quit</attribute>
+        <attribute name="action">app.quit</attribute>
+      </item>
+    </section>
+  </menu>
+</interface>

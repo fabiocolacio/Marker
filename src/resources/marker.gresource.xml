@@ -7,6 +7,7 @@
     <file>ui/shortcuts-window.ui</file>
     <file>ui/gear-popover.ui</file>
     <file>ui/gear-popover-full.ui</file>
+    <file>ui/marker-appmenu.ui</file>
     <file>ui/sketcher-window.ui</file>
     <file>ui/icons/pen.svg</file>
     <file>ui/icons/eraser.svg</file>

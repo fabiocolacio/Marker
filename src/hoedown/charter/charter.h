@@ -1,17 +1,7 @@
 #ifndef __CHARTER_H__
 #define __CHARTER_H__
 
-enum{
-    NONE        = 0,
-    AXIS_X      = 1,
-    AXIS_Y      = 2,
-    PLOT        = 3
-}typedef _pstate;
-
-enum{
-    FALSE       = 0,
-    TRUE        = 1
-}typedef cbool;
+#include "clist.h"
 
 enum{
     LINEAR      = 0,
@@ -32,6 +22,13 @@ enum{
     NOLINE      = 4
 }typedef lineStyle;
 
+
+struct{
+    unsigned int    n;
+    clist*          tags;
+    clist*          datas;
+}typedef table;
+
 struct{
     axisMode        mode;
     char*           label;
@@ -39,6 +36,14 @@ struct{
     double          range_min;
     double          range_max;
 }typedef axis;
+
+enum{
+    ND = 0,
+    DATA = 1,
+    CSV = 2,
+    MATH = 3,
+    RANGE = 4
+}typedef dtype;
 
 struct{
     plotType        type;
@@ -48,8 +53,9 @@ struct{
     char            marker_style;
     double          line_width;
     double*         x_data;
-    double*         y_data;
+    void*           y_data;
     unsigned int    n;
+    dtype           y_type;
     void*           extra_data;
 }typedef plot;
 
@@ -69,27 +75,13 @@ struct{
     axis            y_axis;   
     unsigned int    width;
     unsigned int    height;
-    plotList*       plots;
+    clist*          plots;
     unsigned int    n_plots;
     char *          title;
 }typedef chart;
 
-
-
-cbool 
-is_empty(plotList *e);
-
-plotList* 
-plot_new_element(plot*);
-
-void 
-plot_append(plotList *, plot*);
-
-plot* 
-plot_at(plotList*, unsigned int);
-
-plotList* 
-plot_get_last_element(plotList*);
+double * 
+plot_eval_y(plot *p);
 
 unsigned int 
 chart_add_plot(chart*, plot*);
@@ -127,7 +119,7 @@ chart_get_min_y(chart *);
 
 void chart_free(chart *);
 
-void plot_list_free(plotList *);
+void plot_list_free(clist *pl);
 
 void plot_free(plot *);
 

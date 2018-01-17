@@ -52,18 +52,6 @@
       </packing>
     </child>
     <child>
-      <object class="GtkButton">
-        <property name="label">Sketch</property>
-        <property name="visible">True</property>
-        <property name="can_focus">True</property>
-        <property name="receives_default">False</property>
-        <signal name="clicked" handler="sketch_cb" swapped="no"/>
-      </object>
-      <packing>
-        <property name="position">4</property>
-      </packing>
-    </child>
-    <child>
       <object class="GtkButton" id="unfullscreen_btn">
         <property name="can_focus">False</property>
         <property name="receives_default">False</property>
