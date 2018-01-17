@@ -41,7 +41,7 @@ G_DECLARE_FINAL_TYPE (MarkerSketcherWindow, marker_sketcher_window, MARKER, SKET
 MarkerSketcherWindow*  
 marker_sketcher_window_new (GtkApplication * application);
 
-void
-marker_sketcher_window_show(GtkApplication * app, GFile * file, MarkerSourceView * source_view);
+MarkerSketcherWindow*  
+marker_sketcher_window_show(GtkWindow* parent, GFile * file, MarkerSourceView * source_view);
 
 #endif

@@ -74,6 +74,13 @@
                 <property name="title" context="shortcut window">Make selection monospace</property>
               </object>
             </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="visible">1</property>
+                <property name="accelerator">&lt;ctrl&gt;k</property>
+                <property name="title" context="shortcut window">Insert sketch</property>
+              </object>
+            </child>
           </object>
         </child>
         <child>

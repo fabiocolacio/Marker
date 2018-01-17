@@ -5,22 +5,22 @@
   <object class="GtkImage" id="add_img">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="icon_name">dialog-ok</property>
+    <property name="icon_name">insert-image-symbolic.symbolic</property>
   </object>
   <object class="GtkImage" id="add_text_img">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="icon_name">dialog-ok</property>
+    <property name="icon_name">insert-text-symbolic.symbolic</property>
   </object>
   <object class="GtkImage" id="close_img">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="icon_name">dialog-close</property>
+    <property name="icon_name">window-close-symbolic.symbolic</property>
   </object>
   <object class="GtkImage" id="close_text_img">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="icon_name">dialog-close</property>
+    <property name="icon_name">window-close-symbolic.symbolic</property>
   </object>
   <object class="GtkPopover" id="text_popover">
     <property name="can_focus">False</property>
@@ -52,7 +52,7 @@
             <property name="expand">False</property>
             <property name="fill">True</property>
             <property name="pack_type">end</property>
-            <property name="position">1</property>
+            <property name="position">2</property>
           </packing>
         </child>
         <child>
@@ -66,7 +66,8 @@
           <packing>
             <property name="expand">False</property>
             <property name="fill">True</property>
-            <property name="position">2</property>
+            <property name="pack_type">end</property>
+            <property name="position">1</property>
           </packing>
         </child>
         <style>
@@ -257,7 +258,7 @@
           <packing>
             <property name="expand">False</property>
             <property name="fill">True</property>
-            <property name="position">0</property>
+            <property name="position">1</property>
           </packing>
         </child>
         <child>
@@ -271,7 +272,7 @@
           <packing>
             <property name="expand">False</property>
             <property name="fill">True</property>
-            <property name="position">1</property>
+            <property name="position">0</property>
           </packing>
         </child>
         <style>
