@@ -79,7 +79,8 @@ action_save_as (GSimpleAction *action,
                 GVariant      *parameter,
                 gpointer       user_data)
 {
-
+  MarkerWindow *window = user_data;
+  marker_window_save_active_file_as (window);
 }
 
 static void
