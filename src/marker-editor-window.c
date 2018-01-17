@@ -33,6 +33,7 @@
 #include "marker-preview.h"
 #include "marker-markdown.h"
 #include "marker-exporter.h"
+#include "marker-sketcher-window.h"
 
 #include "marker-editor-window.h"
 
@@ -789,6 +790,17 @@ marker_editor_window_get_preview(MarkerEditorWindow* window)
   return window->web_view;
 }
 
+
+void
+sketch_cb(GSimpleAction* action,
+                   GVariant*      parameter,
+                   gpointer       user_data)
+{
+  MarkerEditorWindow * w = MARKER_EDITOR_WINDOW(user_data);
+  
+  marker_sketcher_window_show(gtk_window_get_application(GTK_WINDOW(user_data)), w->file, w->source_view);
+}
+
 static void
 init_ui (MarkerEditorWindow *window)
 {
@@ -906,6 +918,7 @@ init_ui (MarkerEditorWindow *window)
   
   gtk_builder_add_callback_symbol(builder, "open_cb", G_CALLBACK(open_cb));
   gtk_builder_add_callback_symbol(builder, "save_cb", G_CALLBACK(save_cb));
+  gtk_builder_add_callback_symbol(builder, "sketch_cb", G_CALLBACK(sketch_cb));
   gtk_builder_connect_signals(builder, window);
   
   g_object_unref(builder);
