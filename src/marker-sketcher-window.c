@@ -40,6 +40,8 @@ struct _MarkerSketcherWindow
   
   GtkPopover* text_popover;
   GtkEntry* text_entry;
+  GdkCursor* cursor;
+  
   GtkDrawingArea* drawing_area;
   cairo_surface_t*  surface;
   
@@ -290,7 +292,7 @@ motion_notify_event_cb (GtkWidget      *widget,
 
   if (event->state & GDK_BUTTON1_MASK)
     draw_brush (widget, event->x, event->y, w);
-
+  gdk_window_set_cursor(gtk_widget_get_window(widget), w->cursor);
   /* We've handled it, stop processing */
   return TRUE;
 }
@@ -314,6 +316,7 @@ clean(MarkerSketcherWindow * window)
   }
   gtk_widget_hide(GTK_WIDGET(window));
   gtk_widget_destroy(GTK_WIDGET(window));
+  
   window->history = NULL;
   window->future = NULL;
   window->surface = NULL;
@@ -333,6 +336,8 @@ pen_cb(GtkButton * button,
 {
   MarkerSketcherWindow * window = MARKER_SKETCHER_WINDOW(user_data);
   window->tool = PEN;
+  window->cursor = gdk_cursor_new_from_name (gtk_widget_get_display(GTK_WIDGET(window)), "crosshair");
+  g_object_unref(window->cursor);
 }
 
 static void
@@ -341,6 +346,8 @@ eraser_cb(GtkButton * button,
 {
   MarkerSketcherWindow * window = MARKER_SKETCHER_WINDOW(user_data);
   window->tool = ERASER;
+  window->cursor = gdk_cursor_new_from_name (gtk_widget_get_display(GTK_WIDGET(window)), "cell");
+  g_object_unref(window->cursor);
 }
 
 static void
@@ -349,6 +356,8 @@ text_cb(GtkButton * button,
 {
   MarkerSketcherWindow * window = MARKER_SKETCHER_WINDOW(user_data);
   window->tool = TEXT;
+  window->cursor = gdk_cursor_new_from_name (gtk_widget_get_display(GTK_WIDGET(window)), "text");
+  g_object_unref(window->cursor);
 }
 
 static void
@@ -404,7 +413,7 @@ insert_sketch_cb(GtkButton *  button,
   char * fpath = create_unic_name(window->base_file);
   cairo_surface_write_to_png(window->surface, fpath);
   marker_source_view_insert_image(window->source_view, fpath);
-  free(fpath);
+
   clean(window);
 }
 
@@ -490,7 +499,8 @@ init_ui (MarkerSketcherWindow * window)
   window->drawing_area = drawing_area;
 
   gtk_window_set_default_size(GTK_WINDOW(window), 800, 600);
-  
+  gtk_window_set_modal(GTK_WINDOW(window), TRUE);
+ 
   GtkBox * vbox = GTK_BOX(gtk_builder_get_object(builder, "vbox"));
   gtk_box_pack_start(vbox, GTK_WIDGET(drawing_area),TRUE,TRUE, 5);
 
@@ -574,10 +584,12 @@ init_ui (MarkerSketcherWindow * window)
 }
 
 
-void
-marker_sketcher_window_show(GtkApplication * app, GFile * file, MarkerSourceView * source_view)
+MarkerSketcherWindow*  
+marker_sketcher_window_show(GtkWindow* parent, GFile * file, MarkerSourceView * source_view)
 {
+  GtkApplication * app = gtk_window_get_application(parent);
   MarkerSketcherWindow * w= marker_sketcher_window_new(app);
+  gtk_window_set_transient_for(GTK_WINDOW(w), parent);
   w->source_view = source_view;
   
   if (file)
@@ -592,6 +604,7 @@ marker_sketcher_window_show(GtkApplication * app, GFile * file, MarkerSourceView
   }
   
   gtk_window_present(GTK_WINDOW(w));
+  return w;
 }
 
 MarkerSketcherWindow*  
@@ -624,5 +637,7 @@ marker_sketcher_window_init (MarkerSketcherWindow *sketcher)
   sketcher->color.green = 0;
   sketcher->color.red = 0;
   
+  sketcher->cursor = gdk_cursor_new_from_name (gtk_widget_get_display(GTK_WIDGET(sketcher)), "crosshair");
+  g_object_unref(sketcher->cursor);
   init_ui(sketcher);
 }
