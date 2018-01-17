@@ -50,11 +50,23 @@ marker_sketcher_window_init (MarkerSketcherWindow *sketcher)
 }
 
 static cairo_surface_t *surface = NULL;
+static GList*           history = NULL;
+static GList*           future  = NULL;
 static gboolean         status = FALSE;
 static gdouble          old_x, old_y;
 static guint            size = 6;
 static SketchTool       tool = PEN;
 static GdkRGBA          color;
+
+
+void clean_surface_list(GList * list)
+{
+  if (list->next)
+  {
+    clean_surface_list(list->next);
+  }
+  cairo_surface_destroy(list->data);
+}
 
 static void
 clear_surface (void)
@@ -63,13 +75,13 @@ clear_surface (void)
 
   cr = cairo_create (surface);
 
-  cairo_set_source_rgb (cr, 1, 1, 1);
+  cairo_set_source_rgba (cr, 1, 1, 1, 0);
   cairo_paint (cr);
 
   cairo_destroy (cr);
 }
 
-/* Create a new surface of the appropriate size to store our scribbles */
+
 static gboolean
 configure_event_cb (GtkWidget         *widget,
                     GdkEventConfigure *event,
@@ -78,22 +90,17 @@ configure_event_cb (GtkWidget         *widget,
   if (surface)
     cairo_surface_destroy (surface);
 
-  surface = gdk_window_create_similar_surface (gtk_widget_get_window (widget),
-                                               CAIRO_CONTENT_COLOR,
+  surface = gdk_window_create_similar_surface (gtk_widget_get_window(widget),
+                                               CAIRO_CONTENT_COLOR_ALPHA,
                                                gtk_widget_get_allocated_width (widget),
                                                gtk_widget_get_allocated_height (widget));
+  
 
-  /* Initialize the surface to white */
   clear_surface ();
-
-  /* We've handled the configure event, no need for further processing. */
   return TRUE;
 }
 
-/* Redraw the screen from the surface. Note that the ::draw
- * signal receives a ready-to-be-used cairo_t that is already
- * clipped to only draw the exposed areas of the widget
- */
+
 static gboolean
 draw_cb (GtkWidget *widget,
          cairo_t   *cr,
@@ -105,7 +112,7 @@ draw_cb (GtkWidget *widget,
   return FALSE;
 }
 
-/* Draw a rectangle on the surface at the given position */
+
 static void
 draw_brush (GtkWidget *widget,
             gdouble    x,
@@ -115,9 +122,9 @@ draw_brush (GtkWidget *widget,
   {
     return;
   }
+  
   cairo_t *cr;
 
-  /* Paint to the surface, where we store our state */
   cr = cairo_create (surface);
   if (!status)
   {
@@ -126,7 +133,7 @@ draw_brush (GtkWidget *widget,
     cairo_fill (cr);
 
     cairo_destroy (cr);
-    gtk_widget_queue_draw_area (widget, x - size/2, y - size/2, size, size);
+    gtk_widget_queue_draw(widget); //, x - size, y - size, 2*size, 2*size);
   } else
   {
     cairo_set_line_cap(cr, CAIRO_LINE_CAP_ROUND);
@@ -141,22 +148,16 @@ draw_brush (GtkWidget *widget,
     gdouble l = x > old_x ? old_x : x;
     gdouble t = y > old_y ? old_y : y;
 
-
-    gtk_widget_queue_draw_area (widget, l - size/2, t - size/2, fabs(x-old_x) + size, fabs(y-old_y) + size);
+    cairo_destroy(cr);
+    gtk_widget_queue_draw_area (widget, l - size, t - size, fabs(x-old_x) + 2*size, fabs(y-old_y) + 2*size);
 
   }
   status = TRUE;
 
   old_x = x;
   old_y = y;
-  /* Now invalidate the affected region of the drawing area. */
 }
 
-/* Handle button press events by either drawing a rectangle
- * or clearing the surface, depending on which button was pressed.
- * The ::button-press signal handler receives a GdkEventButton
- * struct which contains this information.
- */
 static gboolean
 button_press_event_cb (GtkWidget      *widget,
                        GdkEventButton *event,
@@ -168,6 +169,24 @@ button_press_event_cb (GtkWidget      *widget,
 
   if (event->button == GDK_BUTTON_PRIMARY)
     {
+      if (!status)
+      {
+        cairo_surface_t * destination = cairo_surface_create_similar(surface, 
+                                                                    CAIRO_CONTENT_COLOR_ALPHA,
+                                                                    gtk_widget_get_allocated_width (widget),
+                                                                    gtk_widget_get_allocated_height (widget));
+        cairo_t *cr = cairo_create (destination);
+        cairo_set_source_surface (cr, surface, 0, 0);
+        cairo_paint (cr);
+        
+        history = g_list_append(history, destination);
+        if (future)
+        {
+          clean_surface_list(future);
+          g_list_free(future);
+          future = NULL;
+        }
+      }
       draw_brush (widget, event->x, event->y);
     }
   else if (event->button == GDK_BUTTON_SECONDARY)
@@ -215,14 +234,36 @@ motion_notify_event_cb (GtkWidget      *widget,
 }
 
 static void
+clean(GtkWidget * window)
+{
+  if (surface)
+    cairo_surface_destroy (surface);
+  if (history)
+  {
+    clean_surface_list(history);
+    g_list_free(history);
+  }
+  
+  if (future)
+  {
+    clean_surface_list(future);
+    g_list_free(future);
+  }
+  gtk_widget_hide(window);
+  gtk_widget_destroy(window);
+  history = NULL;
+  future = NULL;
+  surface = NULL;
+  size = 6;
+  
+}
+
+static void
 close_cb(GtkButton * widget,
          gpointer    user_data)
 {
   GtkWidget * window = GTK_WIDGET(user_data);
-  if (surface)
-    cairo_surface_destroy (surface);
-  gtk_widget_hide(window);
-  gtk_widget_destroy(window);
+  clean(window);
 }         
 
 static void
@@ -280,10 +321,60 @@ insert_sketch_cb(GtkButton *  button,
 {
   cairo_surface_write_to_png(surface, "temp.png");
   GtkWidget * window = GTK_WIDGET(user_data);
-  if (surface)
-    cairo_surface_destroy (surface);
-  gtk_widget_hide(window);
-  gtk_widget_destroy(window);
+  clean(window);
+}
+
+static void
+redo(GtkWidget* widget)
+{
+  GList * last =  g_list_last(future);
+  if (last)
+  {
+    history = g_list_append(history, surface);
+    surface = last->data;
+    gtk_widget_queue_draw(widget);
+    future = g_list_remove_link(future, last);
+  }
+}
+
+static void
+undo(GtkWidget * widget)
+{
+
+  GList * last =  g_list_last(history);
+  if (last)
+  {
+
+    future = g_list_append(future, surface);
+    surface = last->data;
+    
+
+    gtk_widget_queue_draw(widget);
+    
+    history = g_list_remove_link(history, last);
+
+  }
+}
+
+static gboolean
+key_pressed(GtkWidget   *widget,
+            GdkEventKey *event,
+            gpointer     user_data)
+{
+  gboolean ctrl_pressed = (event->state &  GDK_CONTROL_MASK) != 0;
+  if (ctrl_pressed)
+  {
+    switch (event->keyval)
+       {
+         case GDK_KEY_z:
+           undo(widget);
+           break;
+         case GDK_KEY_y:
+           redo(widget);
+           break;
+       }
+  }
+  return FALSE;
 }
 
 static void
@@ -326,7 +417,8 @@ init_ui (GtkWindow * parent)
                       G_CALLBACK (button_press_event_cb), NULL);
   g_signal_connect (drawing_area, "button-release-event",
                       G_CALLBACK (button_release_event_cb), NULL);
-
+  g_signal_connect (window, "key-press-event",
+                      G_CALLBACK(key_pressed), NULL);
   /* Ask to receive events the drawing area doesn't normally
   * subscribe to. In particular, we need to ask for the
   * button press and motion notify events that want to handle.
