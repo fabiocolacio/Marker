@@ -41,64 +41,6 @@ struct _MarkerWindow
 
 G_DEFINE_TYPE (MarkerWindow, marker_window, GTK_TYPE_APPLICATION_WINDOW);
 
-static void
-open_file (MarkerWindow *window)
-{
-  GtkWidget *dialog = gtk_file_chooser_dialog_new ("Open",
-                                                   GTK_WINDOW (window),
-                                                   GTK_FILE_CHOOSER_ACTION_OPEN,
-                                                   "Cancel", GTK_RESPONSE_CANCEL,
-                                                   "Open", GTK_RESPONSE_ACCEPT,
-                                                   NULL);
-
-  gint response = gtk_dialog_run (GTK_DIALOG (dialog));
-  
-  if (response == GTK_RESPONSE_ACCEPT)
-  {
-    GFile *file = gtk_file_chooser_get_file (GTK_FILE_CHOOSER (dialog));
-    marker_create_new_window_from_file (file);
-  }
-  
-  gtk_widget_destroy (dialog);
-}
-
-static void
-save_active_file_as (MarkerWindow *window)
-{
-  GtkWidget *dialog = gtk_file_chooser_dialog_new ("Save As",
-                                                   GTK_WINDOW (window),
-                                                   GTK_FILE_CHOOSER_ACTION_SAVE,
-                                                   "Cancel", GTK_RESPONSE_CANCEL,
-                                                   "Save", GTK_RESPONSE_ACCEPT,
-                                                   NULL);
-
-  gtk_file_chooser_set_do_overwrite_confirmation(GTK_FILE_CHOOSER(dialog), TRUE);
-
-  gint response = gtk_dialog_run (GTK_DIALOG (dialog));
-  
-  if (response == GTK_RESPONSE_ACCEPT)
-  {
-    GFile *file = gtk_file_chooser_get_file (GTK_FILE_CHOOSER (dialog)); 
-    marker_editor_save_file_as (marker_window_get_active_editor (window), file);
-  }
-  
-  gtk_widget_destroy (dialog);
-}
-
-static void
-save_active_file (MarkerWindow *window)
-{
-  MarkerEditor *editor = marker_window_get_active_editor (window);
-  if (marker_editor_get_file (editor))
-  {
-    marker_editor_save_file (editor);
-  }
-  else
-  {
-    save_active_file_as (window);
-  }
-}
-
 static gboolean
 key_pressed_cb (GtkWidget   *widget,
                 GdkEventKey *event,
@@ -118,14 +60,14 @@ key_pressed_cb (GtkWidget   *widget,
         break;
       
       case GDK_KEY_o:
-        open_file (window);
+        marker_window_open_file (window);
         break;
       
       case GDK_KEY_s:
         if (shift_pressed)
-          save_active_file_as (window);
+          marker_window_save_active_file_as (window);
         else
-          save_active_file (window);
+          marker_window_save_active_file (window);
         break;
     }
   }
@@ -271,8 +213,8 @@ marker_window_init (MarkerWindow *window)
   gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
   g_signal_connect (window, "key-press-event", G_CALLBACK (key_pressed_cb), window);
   
-  gtk_builder_add_callback_symbol (builder, "save_button_clicked_cb", G_CALLBACK (save_active_file));
-  gtk_builder_add_callback_symbol (builder, "open_button_clicked_cb", G_CALLBACK (open_file));
+  gtk_builder_add_callback_symbol (builder, "save_button_clicked_cb", G_CALLBACK (marker_window_save_active_file));
+  gtk_builder_add_callback_symbol (builder, "open_button_clicked_cb", G_CALLBACK (marker_window_open_file));
   gtk_builder_connect_signals (builder, window);
   
   g_object_unref (builder);
@@ -298,6 +240,68 @@ marker_window_new_from_file (GtkApplication *app,
   marker_editor_open_file (marker_window_get_active_editor (window), file);
   return window;
 }
+
+void
+marker_window_open_file (MarkerWindow *window)
+{
+  g_assert (MARKER_IS_WINDOW (window));
+  GtkWidget *dialog = gtk_file_chooser_dialog_new ("Open",
+                                                   GTK_WINDOW (window),
+                                                   GTK_FILE_CHOOSER_ACTION_OPEN,
+                                                   "Cancel", GTK_RESPONSE_CANCEL,
+                                                   "Open", GTK_RESPONSE_ACCEPT,
+                                                   NULL);
+
+  gint response = gtk_dialog_run (GTK_DIALOG (dialog));
+  
+  if (response == GTK_RESPONSE_ACCEPT)
+  {
+    GFile *file = gtk_file_chooser_get_file (GTK_FILE_CHOOSER (dialog));
+    marker_create_new_window_from_file (file);
+  }
+  
+  gtk_widget_destroy (dialog);
+}
+
+void
+marker_window_save_active_file_as (MarkerWindow *window)
+{
+  g_assert (MARKER_IS_WINDOW (window));
+  GtkWidget *dialog = gtk_file_chooser_dialog_new ("Save As",
+                                                   GTK_WINDOW (window),
+                                                   GTK_FILE_CHOOSER_ACTION_SAVE,
+                                                   "Cancel", GTK_RESPONSE_CANCEL,
+                                                   "Save", GTK_RESPONSE_ACCEPT,
+                                                   NULL);
+
+  gtk_file_chooser_set_do_overwrite_confirmation(GTK_FILE_CHOOSER(dialog), TRUE);
+
+  gint response = gtk_dialog_run (GTK_DIALOG (dialog));
+  
+  if (response == GTK_RESPONSE_ACCEPT)
+  {
+    GFile *file = gtk_file_chooser_get_file (GTK_FILE_CHOOSER (dialog)); 
+    marker_editor_save_file_as (marker_window_get_active_editor (window), file);
+  }
+  
+  gtk_widget_destroy (dialog);
+}
+
+void
+marker_window_save_active_file (MarkerWindow *window)
+{
+  g_assert (MARKER_IS_WINDOW (window));
+  MarkerEditor *editor = marker_window_get_active_editor (window);
+  if (marker_editor_get_file (editor))
+  {
+    marker_editor_save_file (editor);
+  }
+  else
+  {
+    marker_window_save_active_file_as (window);
+  }
+}
+
 
 void
 marker_window_toggle_fullscreen (MarkerWindow *window)
