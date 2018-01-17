@@ -94,7 +94,9 @@ action_editor_only_mode (GSimpleAction *action,
                          GVariant      *parameter,
                          gpointer       user_data)
 {
-
+  MarkerWindow *window = user_data;
+  MarkerEditor *editor = marker_window_get_active_editor (window);
+  marker_editor_set_view_mode (editor, EDITOR_ONLY_MODE);
 }
 
 static void
@@ -102,7 +104,9 @@ action_preview_only_mode (GSimpleAction *action,
                           GVariant      *parameter,
                           gpointer       user_data)
 {
-
+  MarkerWindow *window = user_data;
+  MarkerEditor *editor = marker_window_get_active_editor (window);
+  marker_editor_set_view_mode (editor, PREVIEW_ONLY_MODE);
 }
 
 static void
@@ -110,7 +114,9 @@ action_dual_pane_mode (GSimpleAction *action,
                        GVariant      *parameter,
                        gpointer       user_data)
 {
-
+  MarkerWindow *window = user_data;
+  MarkerEditor *editor = marker_window_get_active_editor (window);
+  marker_editor_set_view_mode (editor, DUAL_PANE_MODE);
 }
 
 static void
@@ -118,7 +124,9 @@ action_dual_window_mode (GSimpleAction *action,
                          GVariant      *parameter,
                          gpointer       user_data)
 {
-
+  MarkerWindow *window = user_data;
+  MarkerEditor *editor = marker_window_get_active_editor (window);
+  marker_editor_set_view_mode (editor, DUAL_WINDOW_MODE);
 }
 
 static const GActionEntry WINDOW_ACTIONS[] =
@@ -141,6 +149,7 @@ key_pressed_cb (GtkWidget   *widget,
                 gpointer     user_data)
 {
   MarkerWindow *window = MARKER_WINDOW (widget);
+  MarkerEditor *editor = marker_window_get_active_editor (window);
 
   gboolean ctrl_pressed = (event->state & GDK_CONTROL_MASK);
   gboolean shift_pressed = (event->state & GDK_SHIFT_MASK);
@@ -150,7 +159,7 @@ key_pressed_cb (GtkWidget   *widget,
     switch (event->keyval)
     {
       case GDK_KEY_r:
-        marker_editor_refresh_preview (marker_window_get_active_editor (window));
+        marker_editor_refresh_preview (editor);
         break;
       
       case GDK_KEY_o:
@@ -162,6 +171,22 @@ key_pressed_cb (GtkWidget   *widget,
           marker_window_save_active_file_as (window);
         else
           marker_window_save_active_file (window);
+        break;
+        
+      case GDK_KEY_1:
+        marker_editor_set_view_mode (editor, EDITOR_ONLY_MODE);
+        break;
+      
+      case GDK_KEY_2:
+        marker_editor_set_view_mode (editor, PREVIEW_ONLY_MODE);
+        break;
+      
+      case GDK_KEY_3:
+        marker_editor_set_view_mode (editor, DUAL_PANE_MODE);
+        break;
+      
+      case GDK_KEY_4:
+        marker_editor_set_view_mode (editor, DUAL_WINDOW_MODE);
         break;
     }
   }
@@ -291,10 +316,7 @@ marker_window_init (MarkerWindow *window)
   gtk_menu_button_set_popover (menu_btn, popover);
   gtk_menu_button_set_direction (menu_btn, GTK_ARROW_DOWN);
   
-  g_action_map_add_action_entries(G_ACTION_MAP(window),
-                                  WINDOW_ACTIONS,
-                                  G_N_ELEMENTS(WINDOW_ACTIONS),
-                                  window);
+  g_action_map_add_action_entries(G_ACTION_MAP(window), WINDOW_ACTIONS, G_N_ELEMENTS(WINDOW_ACTIONS), window);
   
   if (!marker_has_app_menu ())
   {
