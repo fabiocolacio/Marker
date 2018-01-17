@@ -51,6 +51,7 @@ struct _MarkerEditorWindow
   MarkerSourceView           *source_view;
   GtkWidget                  *source_scroll;
   MarkerPreview              *web_view;
+  MarkerSketcherWindow       *sketcher;
   GtkBox                     *vbox;
   
   GFile                      *file;
@@ -700,9 +701,9 @@ preview_zoom_changed_cb (MarkerPreview *preview,
 void
 sketch_cb(gpointer       user_data)
 {
-  MarkerEditorWindow * w = MARKER_EDITOR_WINDOW(user_data);
   
-  marker_sketcher_window_show(gtk_window_get_application(GTK_WINDOW(user_data)), w->file, w->source_view);
+  MarkerEditorWindow * w = MARKER_EDITOR_WINDOW(user_data);
+  w->sketcher = marker_sketcher_window_show(GTK_WINDOW(user_data), w->file, w->source_view);
 }
 
          
@@ -809,6 +810,7 @@ static void
 init_ui (MarkerEditorWindow *window)
 {
   window->triggered = FALSE;
+  window->sketcher = NULL;
   GtkBuilder* builder =
     gtk_builder_new_from_resource("/com/github/fabiocolacio/marker/ui/editor-window.ui");
 
