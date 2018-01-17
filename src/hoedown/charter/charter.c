@@ -2,6 +2,7 @@
 #include "tinyexpr/tinyexpr.h"
 
 #include <stdlib.h>
+#include <stdio.h>
 
 chart * 
 initialize_empty_chart()
@@ -21,7 +22,7 @@ initialize_empty_chart()
     new_chart->y_axis.mode = LINEAR;
     new_chart->y_axis.label = NULL;
 
-    new_chart->plots = plot_new_element(NULL);        
+    new_chart->plots = clist_new(NULL);
 
     return new_chart; 
 }
@@ -29,7 +30,7 @@ initialize_empty_chart()
 
 double plot_get_max_x(plot* p)
 {
-    if (!p->n)
+    if (!p || !p->n)
         return 0;
     if (p->x_data == NULL)
         return p->n;
@@ -45,7 +46,7 @@ double plot_get_max_x(plot* p)
 
 double plot_get_min_x(plot* p)
 {
-    if (!p->n)
+    if (!p || !p->n)
         return 0;
     if (p->x_data == NULL)
         return 1;
@@ -70,12 +71,11 @@ double * eval_math(plot *p)
     int err;
     /* Compile the expression with variables. */
     te_expr *expr = te_compile((const char*)p->y_data, vars, 1, &err);
-
     if (expr) {
         unsigned int i;
         for (i = 0; i < p->n ;i++)
         {
-            x = p->x_data[i];
+            x = p->x_data[i];            
             eval[i] = te_eval(expr);
         }
     }
@@ -104,7 +104,7 @@ double * plot_eval_y(plot *p)
 
 double plot_get_max_y(plot* p)
 {
-    if (!p->n || !p->y_data)
+    if (!p || !p->n || !p->y_data)
         return 0;
 
     double * data = plot_eval_y(p);
@@ -122,7 +122,7 @@ double plot_get_max_y(plot* p)
 
 double plot_get_min_y(plot* p)
 {
-    if (!p->n || !p->y_data)
+    if (!p || !p->n || !p->y_data)
         return 0;
     double * data = plot_eval_y(p);
 
@@ -148,8 +148,8 @@ double chart_get_max_x(chart *c)
         if (!c->n_plots)
             return 0;
         unsigned int i;
-        double M = plot_get_max_x(c->plots->plot);
-        double m = plot_get_min_x(c->plots->plot);
+        double M = plot_get_max_x(c->plots->data);
+        double m = plot_get_min_x(c->plots->data);
         for (i = 1; i < c->n_plots; i++)
         {
             plot * p = chart_get_plot(c, i);
@@ -176,8 +176,8 @@ double chart_get_min_x(chart *c)
         if (!c->n_plots) 
             return 0;
         unsigned int i;
-        double M = plot_get_max_x(c->plots->plot);
-        double m = plot_get_min_x(c->plots->plot);
+        double M = plot_get_max_x(c->plots->data);
+        double m = plot_get_min_x(c->plots->data);
         for (i = 1; i < c->n_plots; i++)
         {
             plot * p = chart_get_plot(c, i);
@@ -204,8 +204,8 @@ double chart_get_max_y(chart *c)
         if (!c->n_plots)
             return 0;
         unsigned int i;
-        double M = plot_get_max_y(c->plots->plot);
-        double m = plot_get_min_y(c->plots->plot);
+        double M = plot_get_max_y(c->plots->data);
+        double m = plot_get_min_y(c->plots->data);
         for (i = 1; i < c->n_plots; i++)
         {
             plot * p = chart_get_plot(c, i);
@@ -221,6 +221,8 @@ double chart_get_max_y(chart *c)
         }
         if (c->y_axis.mode == LINEAR)
             M += (M-m)*0.05;
+        if (M == m)
+            return M + 0.5;
         return M;
     }
     return c->y_axis.range_max;
@@ -232,8 +234,8 @@ double chart_get_min_y(chart *c)
         if (!c->n_plots)
             return 0;
         unsigned int i;
-        double M = plot_get_max_y(c->plots->plot);
-        double m = plot_get_min_y(c->plots->plot);
+        double M = plot_get_max_y(c->plots->data);
+        double m = plot_get_min_y(c->plots->data);
         for (i = 1; i < c->n_plots; i++)
         {
             plot * p = chart_get_plot(c, i);
@@ -249,85 +251,25 @@ double chart_get_min_y(chart *c)
         }
         if (c->y_axis.mode == LINEAR)
             m -= (M-m)*0.05;
+        if (M == m)
+            return m - 0.5;
         return m;
     }
     return c->y_axis.range_min;
 }
 
 
-cbool 
-is_empty(plotList *e)
-{
-    if (e->plot == NULL)
-    {
-        return TRUE;
-    }
-    return FALSE;
-}
-
-plotList * 
-plot_new_element(plot *p)
-{
-    plotList * l = malloc(sizeof(plotList));
-    l->next = NULL;
-    l->plot = p;
-    return l;
-}
-
-void 
-plot_append(plotList * list, plot* plot)
-{
-    plotList * last = plot_get_last_element(list);
-    if (is_empty(last))
-    {
-        last->plot = plot;
-    } else
-    {
-        last->next = plot_new_element(plot);
-    }
-}
-
-
-plotList * 
-plot_get_last_element(plotList* list)
-{
-    plotList * next = list;        
-    while(next->next != NULL)
-    {
-        next = next->next;        
-    }
-    return next;
-}
-
-
-plot* 
-plot_at(plotList* l, unsigned int i)
-{
-    unsigned int c = 0;
-    plotList * next = l;
-    while(i>c && next->next != NULL)
-    {
-        next = next->next;
-        c ++;
-    }
-    if (c == i)
-    {
-        return next->plot;
-    }
-    return NULL;
-}
-
 unsigned int 
 chart_add_plot(chart* c, plot* p)
 {
-    plot_append(c->plots, p);
+    clist_append(c->plots, p);
     return ++c->n_plots;
 }
 
 plot* 
 chart_get_plot(chart* c, unsigned int i)
 {
-    return plot_at(c->plots, i);
+    return clist_data_at(c->plots, i);
 }
 
 
@@ -344,11 +286,11 @@ void chart_free(chart *c)
 }
 
 
-void plot_list_free(plotList *pl)
+void plot_list_free(clist *pl)
 {
     if (!pl)
         return;
-    plot_free(pl->plot);
+    plot_free(pl->data);
     plot_list_free(pl->next);
     free(pl);
 }
