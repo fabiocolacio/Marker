@@ -41,6 +41,100 @@ struct _MarkerWindow
 
 G_DEFINE_TYPE (MarkerWindow, marker_window, GTK_TYPE_APPLICATION_WINDOW);
 
+static void
+action_zoom_out (GSimpleAction* action,
+                 GVariant*      parameter,
+                 gpointer       user_data)
+{
+
+}
+
+static void
+action_zoom_original (GSimpleAction *action,
+                      GVariant      *parameter,
+                      gpointer       user_data)
+{
+
+}
+
+static void
+action_zoom_in (GSimpleAction *action,
+                GVariant      *parameter,
+                gpointer       user_data)
+{
+
+}
+
+static void
+action_save_as (GSimpleAction *action,
+                GVariant      *parameter,
+                gpointer       user_data)
+{
+
+}
+
+static void
+action_export (GSimpleAction *action,
+               GVariant      *parameter,
+               gpointer       user_data)
+{
+
+}
+
+static void
+action_print (GSimpleAction *action,
+              GVariant      *parameter,
+              gpointer       user_data)
+{
+
+}
+
+static void
+action_editor_only_mode (GSimpleAction *action,
+                         GVariant      *parameter,
+                         gpointer       user_data)
+{
+
+}
+
+static void
+action_preview_only_mode (GSimpleAction *action,
+                          GVariant      *parameter,
+                          gpointer       user_data)
+{
+
+}
+
+static void
+action_dual_pane_mode (GSimpleAction *action,
+                       GVariant      *parameter,
+                       gpointer       user_data)
+{
+
+}
+
+static void
+action_dual_window_mode (GSimpleAction *action,
+                         GVariant      *parameter,
+                         gpointer       user_data)
+{
+
+}
+
+static const GActionEntry WINDOW_ACTIONS[] =
+{
+  { "zoomout", action_zoom_out, NULL, NULL, NULL },
+  { "zoomoriginal", action_zoom_original, NULL, NULL, NULL },
+  { "zoomin", action_zoom_in, NULL, NULL, NULL },
+  { "saveas", action_save_as, NULL, NULL, NULL },
+  { "export", action_export, NULL, NULL, NULL },
+  { "print", action_print, NULL, NULL, NULL },
+  { "editoronlymode", action_editor_only_mode, NULL, NULL, NULL },
+  { "previewonlymode", action_preview_only_mode, NULL, NULL, NULL },
+  { "dualpanemode", action_dual_pane_mode, NULL, NULL, NULL },
+  { "dualwindowmode", action_dual_window_mode, NULL, NULL, NULL }
+};
+
 static gboolean
 key_pressed_cb (GtkWidget   *widget,
                 GdkEventKey *event,
@@ -82,6 +176,24 @@ key_pressed_cb (GtkWidget   *widget,
   }
 
   return FALSE;
+}
+
+static void
+title_changed_cb (MarkerEditor *editor,
+                  const gchar  *title,
+                  gpointer      user_data)
+{
+  MarkerWindow *window = user_data;
+  gtk_header_bar_set_title (window->header_bar, title);
+}
+
+static void
+subtitle_changed_cb (MarkerEditor *editor,
+                     const gchar  *subtitle,
+                     gpointer      user_data)
+{
+  MarkerWindow *window = user_data;
+  gtk_header_bar_set_subtitle (window->header_bar, subtitle);
 }
 
 void
@@ -132,24 +244,6 @@ marker_window_unfullscreen (MarkerWindow *window)
 }
 
 static void
-title_changed_cb (MarkerEditor *editor,
-                  const gchar  *title,
-                  gpointer      user_data)
-{
-  MarkerWindow *window = user_data;
-  gtk_header_bar_set_title (window->header_bar, title);
-}
-
-static void
-subtitle_changed_cb (MarkerEditor *editor,
-                     const gchar  *subtitle,
-                     gpointer      user_data)
-{
-  MarkerWindow *window = user_data;
-  gtk_header_bar_set_subtitle (window->header_bar, subtitle);
-}
-
-static void
 marker_window_init (MarkerWindow *window)
 {
   window->is_fullscreen = FALSE;
@@ -196,6 +290,12 @@ marker_window_init (MarkerWindow *window)
   gtk_menu_button_set_use_popover (menu_btn, TRUE);
   gtk_menu_button_set_popover (menu_btn, popover);
   gtk_menu_button_set_direction (menu_btn, GTK_ARROW_DOWN);
+  
+  g_action_map_add_action_entries(G_ACTION_MAP(window),
+                                  WINDOW_ACTIONS,
+                                  G_N_ELEMENTS(WINDOW_ACTIONS),
+                                  window);
+  
   if (!marker_has_app_menu ())
   {
     GtkWidget *extra_items = GTK_WIDGET (gtk_builder_get_object (builder, "appmenu_popover_items"));
