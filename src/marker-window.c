@@ -98,7 +98,10 @@ action_print (GSimpleAction *action,
               GVariant      *parameter,
               gpointer       user_data)
 {
-
+  MarkerWindow *window = user_data;
+  MarkerEditor *editor = marker_window_get_active_editor (window);
+  MarkerPreview *preview = marker_editor_get_preview (editor);
+  marker_preview_run_print_dialog (preview, GTK_WINDOW (window));
 }
 
 static void
@@ -183,6 +186,10 @@ key_pressed_cb (GtkWidget   *widget,
           marker_window_save_active_file_as (window);
         else
           marker_window_save_active_file (window);
+        break;
+      
+      case GDK_KEY_p:
+        marker_preview_run_print_dialog (marker_editor_get_preview (editor), GTK_WINDOW (window));
         break;
         
       case GDK_KEY_1:
