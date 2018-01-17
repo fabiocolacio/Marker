@@ -78,6 +78,18 @@ buffer_changed_cb (GtkTextBuffer *buffer,
   emit_signal_title_changed (editor);
 }
 
+static gboolean
+preview_window_closed_cb (GtkWindow *preview_window,
+                          GdkEvent  *event,
+                          gpointer   user_data)
+{
+  GtkWidget *preview = user_data;
+  g_object_ref (preview);
+  gtk_container_remove (GTK_CONTAINER (preview_window), preview);
+  gtk_widget_destroy (GTK_WIDGET (preview_window));
+  return TRUE;
+}
+
 static void
 marker_editor_init (MarkerEditor *editor)
 {
@@ -183,6 +195,11 @@ marker_editor_set_view_mode (MarkerEditor   *editor,
   {
     g_object_ref (preview);
     gtk_container_remove (parent, preview);
+    
+    if (GTK_IS_WINDOW (parent))
+    {
+      gtk_widget_destroy (GTK_WIDGET (parent));
+    }
   }
   
   parent = GTK_CONTAINER (gtk_widget_get_parent (source_scroll));
@@ -202,10 +219,20 @@ marker_editor_set_view_mode (MarkerEditor   *editor,
       gtk_paned_add2 (GTK_PANED (paned), preview);
       break;
     
-    case DUAL_WINDOW_MODE:
     case DUAL_PANE_MODE:
       gtk_paned_add1 (GTK_PANED (paned), source_scroll);
       gtk_paned_add2 (GTK_PANED (paned), preview);
+      break;
+    
+    case DUAL_WINDOW_MODE:
+      gtk_paned_add1(GTK_PANED(paned), source_scroll);
+      
+      GtkWindow *preview_window = GTK_WINDOW (gtk_window_new (GTK_WINDOW_TOPLEVEL));
+      g_signal_connect(preview_window, "delete-event", G_CALLBACK (preview_window_closed_cb), preview);
+      gtk_container_add (GTK_CONTAINER (preview_window), preview);
+      gtk_window_set_title (preview_window, "Preview");
+      gtk_window_set_default_size (preview_window, 500, 600);
+      gtk_widget_show_all (GTK_WIDGET (preview_window));
       break;
   }
 }
