@@ -69,13 +69,13 @@ void clean_surface_list(GList * list)
 }
 
 static void
-clear_surface (void)
+clear_surface (cairo_surface_t * surface)
 {
   cairo_t *cr;
 
   cr = cairo_create (surface);
 
-  cairo_set_source_rgba (cr, 1, 1, 1, 0);
+  cairo_set_source_rgba (cr, 1, 1, 1, 1);
   cairo_paint (cr);
 
   cairo_destroy (cr);
@@ -91,12 +91,12 @@ configure_event_cb (GtkWidget         *widget,
     cairo_surface_destroy (surface);
 
   surface = gdk_window_create_similar_surface (gtk_widget_get_window(widget),
-                                               CAIRO_CONTENT_COLOR_ALPHA,
+                                               CAIRO_CONTENT_COLOR,
                                                gtk_widget_get_allocated_width (widget),
                                                gtk_widget_get_allocated_height (widget));
   
 
-  clear_surface ();
+  clear_surface (surface);
   return TRUE;
 }
 
@@ -172,7 +172,7 @@ button_press_event_cb (GtkWidget      *widget,
       if (!status)
       {
         cairo_surface_t * destination = cairo_surface_create_similar(surface, 
-                                                                    CAIRO_CONTENT_COLOR_ALPHA,
+                                                                    CAIRO_CONTENT_COLOR,
                                                                     gtk_widget_get_allocated_width (widget),
                                                                     gtk_widget_get_allocated_height (widget));
         cairo_t *cr = cairo_create (destination);
@@ -192,7 +192,7 @@ button_press_event_cb (GtkWidget      *widget,
   else if (event->button == GDK_BUTTON_SECONDARY)
     {
       status = FALSE;
-      clear_surface ();
+      clear_surface (surface);
       gtk_widget_queue_draw (widget);
     }
 
