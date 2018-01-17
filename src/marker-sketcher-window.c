@@ -95,7 +95,7 @@ configure_event_cb (GtkWidget         *widget,
     cairo_surface_destroy (w->surface);
 
   w->surface = gdk_window_create_similar_surface (gtk_widget_get_window(widget),
-                                                  CAIRO_CONTENT_COLOR,
+                                                  CAIRO_CONTENT_COLOR_ALPHA,
                                                   gtk_widget_get_allocated_width (widget),
                                                   gtk_widget_get_allocated_height (widget));
   clear_surface (w->surface);
@@ -156,8 +156,11 @@ draw_brush (GtkWidget *widget,
   }
   
   cairo_t *cr;
-
   cr = cairo_create (w->surface);
+  if (w->tool == PEN)
+    cairo_set_source_rgba(cr, w->color.red, w->color.green, w->color.blue, w->color.alpha);
+  else if (w->tool == ERASER)
+    cairo_set_source_rgb(cr, 1, 1, 1);
   if (!w->status)
   {
 
@@ -169,10 +172,7 @@ draw_brush (GtkWidget *widget,
   } else
   {
     cairo_set_line_cap(cr, CAIRO_LINE_CAP_ROUND);
-    if (w->tool == PEN)
-      cairo_set_source_rgb(cr, w->color.red, w->color.green, w->color.blue);
-    else if (w->tool == ERASER)
-      cairo_set_source_rgb(cr, 1, 1, 1);
+
     cairo_set_line_width(cr, w->size);
     cairo_move_to(cr, w->pos_x, w->pos_y);
     cairo_line_to(cr, x, y);
@@ -195,7 +195,7 @@ add_history(MarkerSketcherWindow * w)
 {
   GtkWidget * widget = GTK_WIDGET(w->drawing_area);
   cairo_surface_t * destination = cairo_surface_create_similar(w->surface, 
-                                                               CAIRO_CONTENT_COLOR,
+                                                               CAIRO_CONTENT_COLOR_ALPHA,
                                                                gtk_widget_get_allocated_width (widget),
                                                                gtk_widget_get_allocated_height (widget ));
   cairo_t *cr = cairo_create (destination);
@@ -454,6 +454,7 @@ add_text_cb(GtkWidget *button,
   gtk_popover_popdown(w->text_popover);
   add_history(w);
   draw_text(w);
+  gtk_entry_set_text(w->text_entry,"");
 }
 
 static void
@@ -462,6 +463,7 @@ close_text_cb(GtkButton *button,
 {
   MarkerSketcherWindow * w = MARKER_SKETCHER_WINDOW(user_data);
   gtk_popover_popdown(w->text_popover);
+  gtk_entry_set_text(w->text_entry,"");
 }
 
 static void
