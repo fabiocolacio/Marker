@@ -7,10 +7,73 @@
     <property name="can_focus">False</property>
     <property name="icon_name">dialog-ok</property>
   </object>
+  <object class="GtkImage" id="add_text_img">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="icon_name">dialog-ok</property>
+  </object>
   <object class="GtkImage" id="close_img">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="icon_name">dialog-close</property>
+  </object>
+  <object class="GtkImage" id="close_text_img">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="icon_name">dialog-close</property>
+  </object>
+  <object class="GtkPopover" id="text_popover">
+    <property name="can_focus">False</property>
+    <child>
+      <object class="GtkBox">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <child>
+          <object class="GtkEntry" id="text_entry">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <signal name="activate" handler="add_text_cb" swapped="no"/>
+          </object>
+          <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="image">add_text_img</property>
+            <signal name="clicked" handler="add_text_cb" swapped="no"/>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="pack_type">end</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="image">close_text_img</property>
+            <signal name="clicked" handler="close_text_cb" swapped="no"/>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">2</property>
+          </packing>
+        </child>
+        <style>
+          <class name="linked"/>
+        </style>
+      </object>
+    </child>
   </object>
   <object class="GtkImage" id="eraser_img">
     <property name="visible">True</property>
@@ -42,201 +105,191 @@
     <property name="can_focus">False</property>
     <property name="pixbuf">icons/text.svg</property>
   </object>
-  <object class="GtkWindow" id="sketcher-window">
+  <object class="GtkHeaderBar" id="header_bar">
+    <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="modal">True</property>
+    <property name="title">Sketcher</property>
     <child>
-      <object class="GtkBox" id="vbox">
+      <object class="GtkBox" id="box">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="orientation">vertical</property>
+        <property name="homogeneous">True</property>
         <child>
-          <placeholder/>
-        </child>
-      </object>
-    </child>
-    <child type="titlebar">
-      <object class="GtkHeaderBar" id="header_bar">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="title">Sketcher</property>
-        <child>
-          <object class="GtkBox" id="box">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="homogeneous">True</property>
-            <child>
-              <object class="GtkRadioButton" id="pen_radio_button">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="receives_default">False</property>
-                <property name="image">pen_img</property>
-                <property name="active">True</property>
-                <property name="draw_indicator">False</property>
-                <signal name="clicked" handler="pen_cb" swapped="no"/>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkRadioButton" id="eraser_radio_button">
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">False</property>
-                <property name="image">eraser_img</property>
-                <property name="active">True</property>
-                <property name="draw_indicator">False</property>
-                <property name="group">pen_radio_button</property>
-                <signal name="clicked" handler="eraser_cb" swapped="no"/>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">1</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkRadioButton" id="text_radio_button">
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">False</property>
-                <property name="image">text_img</property>
-                <property name="active">True</property>
-                <property name="draw_indicator">False</property>
-                <property name="group">pen_radio_button</property>
-                <signal name="clicked" handler="text_cb" swapped="no"/>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">2</property>
-              </packing>
-            </child>
-            <style>
-              <class name="linked"/>
-            </style>
-          </object>
-        </child>
-        <child>
-          <object class="GtkColorButton" id="color_selection_button">
+          <object class="GtkRadioButton" id="pen_radio_button">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="receives_default">True</property>
-            <property name="use_alpha">True</property>
-            <property name="color">#000000000000</property>
-            <property name="alpha">65535</property>
-            <signal name="color-set" handler="color_set_cb" swapped="no"/>
+            <property name="receives_default">False</property>
+            <property name="image">pen_img</property>
+            <property name="active">True</property>
+            <property name="draw_indicator">False</property>
+            <signal name="clicked" handler="pen_cb" swapped="no"/>
           </object>
           <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkRadioButton" id="eraser_radio_button">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">False</property>
+            <property name="image">eraser_img</property>
+            <property name="draw_indicator">False</property>
+            <property name="group">pen_radio_button</property>
+            <signal name="clicked" handler="eraser_cb" swapped="no"/>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
             <property name="position">1</property>
           </packing>
         </child>
         <child>
-          <object class="GtkBox" id="box1">
+          <object class="GtkRadioButton" id="text_radio_button">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="homogeneous">True</property>
-            <child>
-              <object class="GtkRadioButton" id="small_radio_button">
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">False</property>
-                <property name="image">small_img</property>
-                <property name="draw_indicator">False</property>
-                <property name="group">medium_radio_button</property>
-                <signal name="clicked" handler="small_cb" swapped="no"/>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkRadioButton" id="medium_radio_button">
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">False</property>
-                <property name="image">medium_img</property>
-                <property name="active">True</property>
-                <property name="draw_indicator">False</property>
-                <signal name="clicked" handler="medium_cb" swapped="no"/>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">1</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkRadioButton" id="large_radio_button">
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">False</property>
-                <property name="image">large_img</property>
-                <property name="draw_indicator">False</property>
-                <property name="group">medium_radio_button</property>
-                <signal name="clicked" handler="large_cb" swapped="no"/>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">2</property>
-              </packing>
-            </child>
-            <style>
-              <class name="linked"/>
-            </style>
+            <property name="can_focus">True</property>
+            <property name="receives_default">False</property>
+            <property name="image">text_img</property>
+            <property name="draw_indicator">False</property>
+            <property name="group">pen_radio_button</property>
+            <signal name="clicked" handler="text_cb" swapped="no"/>
           </object>
           <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
             <property name="position">2</property>
           </packing>
         </child>
+        <style>
+          <class name="linked"/>
+        </style>
+      </object>
+    </child>
+    <child>
+      <object class="GtkColorButton" id="color_selection_button">
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="receives_default">True</property>
+        <property name="use_alpha">True</property>
+        <property name="color">#000000000000</property>
+        <property name="alpha">65535</property>
+        <signal name="color-set" handler="color_set_cb" swapped="no"/>
+      </object>
+      <packing>
+        <property name="position">1</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkBox" id="box1">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="homogeneous">True</property>
         <child>
-          <object class="GtkBox">
+          <object class="GtkRadioButton" id="small_radio_button">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <child>
-              <object class="GtkButton" id="insert_button">
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <property name="image">add_img</property>
-                <signal name="clicked" handler="insert_sketch_cb" object="sketcher-window" swapped="no"/>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkButton" id="close_button">
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <property name="image">close_img</property>
-                <signal name="clicked" handler="close_cb" object="sketcher-window" swapped="no"/>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">1</property>
-              </packing>
-            </child>
-            <style>
-              <class name="linked"/>
-            </style>
+            <property name="can_focus">True</property>
+            <property name="receives_default">False</property>
+            <property name="image">small_img</property>
+            <property name="draw_indicator">False</property>
+            <property name="group">medium_radio_button</property>
+            <signal name="clicked" handler="small_cb" swapped="no"/>
           </object>
           <packing>
-            <property name="pack_type">end</property>
-            <property name="position">3</property>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
           </packing>
         </child>
+        <child>
+          <object class="GtkRadioButton" id="medium_radio_button">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">False</property>
+            <property name="image">medium_img</property>
+            <property name="active">True</property>
+            <property name="draw_indicator">False</property>
+            <signal name="clicked" handler="medium_cb" swapped="no"/>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkRadioButton" id="large_radio_button">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">False</property>
+            <property name="image">large_img</property>
+            <property name="draw_indicator">False</property>
+            <property name="group">medium_radio_button</property>
+            <signal name="clicked" handler="large_cb" swapped="no"/>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">2</property>
+          </packing>
+        </child>
+        <style>
+          <class name="linked"/>
+        </style>
       </object>
+      <packing>
+        <property name="position">2</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkBox">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <child>
+          <object class="GtkButton" id="close_button">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="image">close_img</property>
+            <signal name="clicked" handler="close_cb" swapped="no"/>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton" id="insert_button">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="image">add_img</property>
+            <signal name="clicked" handler="insert_sketch_cb" swapped="no"/>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <style>
+          <class name="linked"/>
+        </style>
+      </object>
+      <packing>
+        <property name="pack_type">end</property>
+        <property name="position">3</property>
+      </packing>
+    </child>
+  </object>
+  <object class="GtkBox" id="vbox">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="orientation">vertical</property>
+    <child>
+      <placeholder/>
     </child>
   </object>
 </interface>

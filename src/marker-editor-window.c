@@ -796,7 +796,9 @@ sketch_cb(GSimpleAction* action,
                    GVariant*      parameter,
                    gpointer       user_data)
 {
-  marker_sketcher_window_show(GTK_WINDOW(user_data));
+  MarkerEditorWindow * w = MARKER_EDITOR_WINDOW(user_data);
+  
+  marker_sketcher_window_show(gtk_window_get_application(GTK_WINDOW(user_data)), w->file, w->source_view);
 }
 
 static void

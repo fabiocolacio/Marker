@@ -23,6 +23,8 @@
 #define __MARKER_SKETCHER_WINDOW_H__
 
 #include <gtk/gtk.h>
+#include "marker-source-view.h"
+
 
 enum{
     PEN,
@@ -34,11 +36,12 @@ G_BEGIN_DECLS
 
 #define MARKER_TYPE_SKETCHER_WINDOW (marker_sketcher_window_get_type ())
 
-G_DECLARE_FINAL_TYPE (MarkerSketcherWindow, marker_sketcher_window, MARKER, SKETCHER_WINDOW, GtkApplicationWindow)
+G_DECLARE_FINAL_TYPE (MarkerSketcherWindow, marker_sketcher_window, MARKER, SKETCHER_WINDOW, GtkWindow)
 
 MarkerSketcherWindow*  
 marker_sketcher_window_new (GtkApplication * application);
 
 void
-marker_sketcher_window_show(GtkWindow * parent);
+marker_sketcher_window_show(GtkApplication * app, GFile * file, MarkerSourceView * source_view);
+
 #endif

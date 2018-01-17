@@ -20,6 +20,7 @@
  */
 
 #include <string.h>
+#include <stdlib.h>
 
 #include "marker-source-view.h"
 #include "marker-prefs.h"
@@ -56,6 +57,27 @@ marker_source_view_surround_selection_with(MarkerSourceView* source_view,
     gtk_text_iter_forward_chars(&start, selection_len);
     gtk_text_buffer_insert(buffer, &start, insertion, len);
   }
+}
+
+void
+marker_source_view_insert_image (MarkerSourceView   *source_view,
+                                 const char         *image_path)
+{
+  GtkTextBuffer* buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(source_view));
+  GtkTextIter start ;
+  
+  gtk_text_buffer_get_iter_at_mark(buffer, &start, gtk_text_buffer_get_insert(buffer));
+
+
+  int n = strlen(image_path);
+  char * insertion = malloc((n+7)*sizeof(char));
+  memset(insertion, 0, (n+7));
+  sprintf(insertion, "![](%s)", image_path);
+  
+  size_t len = strlen(insertion);
+  
+  gtk_text_buffer_insert(buffer, &start, insertion, len);
+  free(insertion);
 }
 
 void

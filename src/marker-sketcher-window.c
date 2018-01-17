@@ -21,43 +21,46 @@
 
 
 #include "marker-sketcher-window.h"
+
 #include <math.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define P_SIZE_S 3
+#define P_SIZE_M 6
+#define P_SIZE_L 12
+
+#define F_SIZE_S 12
+#define F_SIZE_M 14
+#define F_SIZE_L 18
 
 struct _MarkerSketcherWindow
 {
-  GtkApplicationWindow        parent_instance;
+  GtkWindow        parent_instance;
+  
+  GtkPopover* text_popover;
+  GtkEntry* text_entry;
+  GtkDrawingArea* drawing_area;
+  cairo_surface_t*  surface;
+  
+  GList* history;
+  GList* future;
+  
+  gboolean status;
+  gdouble pos_x;
+  gdouble pos_y;
+
+  gdouble size;
+  SketchTool tool;
+  GdkRGBA color;
+  
+  char * base_file;
+  MarkerSourceView * source_view;
 };
 
-G_DEFINE_TYPE(MarkerSketcherWindow, marker_sketcher_window, GTK_TYPE_APPLICATION_WINDOW)
+G_DEFINE_TYPE(MarkerSketcherWindow, marker_sketcher_window, GTK_TYPE_WINDOW)
 
-MarkerSketcherWindow*  
-marker_sketcher_window_new (GtkApplication * app)
-{
-    return g_object_new(MARKER_TYPE_SKETCHER_WINDOW, "application", app, NULL);
-}
-
-
-static void
-marker_sketcher_window_class_init(MarkerSketcherWindowClass* class)
-{
-  
-}
-
-static void
-marker_sketcher_window_init (MarkerSketcherWindow *sketcher)
-{
-
-}
-
-static cairo_surface_t *surface = NULL;
-static GList*           history = NULL;
-static GList*           future  = NULL;
-static gboolean         status = FALSE;
-static gdouble          old_x, old_y;
-static guint            size = 6;
-static SketchTool       tool = PEN;
-static GdkRGBA          color;
-
+static char noname[11] = "Untitled.md";
 
 void clean_surface_list(GList * list)
 {
@@ -87,16 +90,15 @@ configure_event_cb (GtkWidget         *widget,
                     GdkEventConfigure *event,
                     gpointer           data)
 {
-  if (surface)
-    cairo_surface_destroy (surface);
+  MarkerSketcherWindow * w = MARKER_SKETCHER_WINDOW(data);
+  if (w->surface)
+    cairo_surface_destroy (w->surface);
 
-  surface = gdk_window_create_similar_surface (gtk_widget_get_window(widget),
-                                               CAIRO_CONTENT_COLOR,
-                                               gtk_widget_get_allocated_width (widget),
-                                               gtk_widget_get_allocated_height (widget));
-  
-
-  clear_surface (surface);
+  w->surface = gdk_window_create_similar_surface (gtk_widget_get_window(widget),
+                                                  CAIRO_CONTENT_COLOR,
+                                                  gtk_widget_get_allocated_width (widget),
+                                                  gtk_widget_get_allocated_height (widget));
+  clear_surface (w->surface);
   return TRUE;
 }
 
@@ -106,30 +108,60 @@ draw_cb (GtkWidget *widget,
          cairo_t   *cr,
          gpointer   data)
 {
-  cairo_set_source_surface (cr, surface, 0, 0);
+  MarkerSketcherWindow * w = MARKER_SKETCHER_WINDOW(data);
+  cairo_set_source_surface (cr, w->surface, 0, 0);
   cairo_paint (cr);
-
   return FALSE;
 }
 
 
 static void
+draw_text(MarkerSketcherWindow *w)
+{
+  GtkWidget* widget = GTK_WIDGET(w->drawing_area);
+  gdouble x = w->pos_x;
+  gdouble y = w->pos_y;
+  const gchar * text = gtk_entry_get_text(w->text_entry);
+  if (!widget || !w->surface)
+  {
+    return;
+  }
+  
+  cairo_t *cr;
+  
+  cr = cairo_create (w->surface);
+  if (w->size == P_SIZE_S)
+    cairo_set_font_size(cr, F_SIZE_S);
+  else if (w->size == P_SIZE_M)
+    cairo_set_font_size(cr, F_SIZE_M);
+  else
+    cairo_set_font_size(cr, F_SIZE_L);
+  cairo_set_source_rgb(cr, w->color.red, w->color.green, w->color.blue);
+  cairo_move_to(cr, x, y);
+  cairo_show_text(cr, text);
+  cairo_destroy(cr);
+  gtk_widget_queue_draw(widget);
+}
+          
+
+static void
 draw_brush (GtkWidget *widget,
             gdouble    x,
-            gdouble    y)
+            gdouble    y,
+            MarkerSketcherWindow * w)
 {
-  if (!widget || !surface)
+  if (!widget || !w->surface)
   {
     return;
   }
   
   cairo_t *cr;
 
-  cr = cairo_create (surface);
-  if (!status)
+  cr = cairo_create (w->surface);
+  if (!w->status)
   {
 
-    cairo_arc(cr, x, y, size/2, 0, 2.0*M_PI) ;
+    cairo_arc(cr, x, y, w->size/2, 0, 2.0*M_PI) ;
     cairo_fill (cr);
 
     cairo_destroy (cr);
@@ -137,25 +169,46 @@ draw_brush (GtkWidget *widget,
   } else
   {
     cairo_set_line_cap(cr, CAIRO_LINE_CAP_ROUND);
-    if (tool == PEN)
-      cairo_set_source_rgb(cr, color.red, color.green, color.blue);
-    else if (tool == ERASER)
+    if (w->tool == PEN)
+      cairo_set_source_rgb(cr, w->color.red, w->color.green, w->color.blue);
+    else if (w->tool == ERASER)
       cairo_set_source_rgb(cr, 1, 1, 1);
-    cairo_set_line_width(cr, size);
-    cairo_move_to(cr, old_x, old_y);
+    cairo_set_line_width(cr, w->size);
+    cairo_move_to(cr, w->pos_x, w->pos_y);
     cairo_line_to(cr, x, y);
     cairo_stroke(cr);
-    gdouble l = x > old_x ? old_x : x;
-    gdouble t = y > old_y ? old_y : y;
+    gdouble l = x > w->pos_x ? w->pos_x : x;
+    gdouble t = y > w->pos_y ? w->pos_y : y;
 
     cairo_destroy(cr);
-    gtk_widget_queue_draw_area (widget, l - size, t - size, fabs(x-old_x) + 2*size, fabs(y-old_y) + 2*size);
+    gtk_widget_queue_draw_area (widget, l - w->size, t - w->size, fabs(x-w->pos_x) + 2*w->size, fabs(y-w->pos_y) + 2*w->size);
 
   }
-  status = TRUE;
+  w->status = TRUE;
 
-  old_x = x;
-  old_y = y;
+  w->pos_x = x;
+  w->pos_y = y;
+}
+
+static void
+add_history(MarkerSketcherWindow * w)
+{
+  GtkWidget * widget = GTK_WIDGET(w->drawing_area);
+  cairo_surface_t * destination = cairo_surface_create_similar(w->surface, 
+                                                               CAIRO_CONTENT_COLOR,
+                                                               gtk_widget_get_allocated_width (widget),
+                                                               gtk_widget_get_allocated_height (widget ));
+  cairo_t *cr = cairo_create (destination);
+  cairo_set_source_surface (cr, w->surface, 0, 0);
+  cairo_paint (cr);
+  
+  w->history = g_list_append(w->history, destination);
+  if (w->future)
+  {
+    clean_surface_list(w->future);
+    g_list_free(w->future);
+    w->future = NULL;
+  }
 }
 
 static gboolean
@@ -163,40 +216,33 @@ button_press_event_cb (GtkWidget      *widget,
                        GdkEventButton *event,
                        gpointer        data)
 {
+  MarkerSketcherWindow * w = MARKER_SKETCHER_WINDOW(data);
   /* paranoia check, in case we haven't gotten a configure event */
-  if (surface == NULL)
+  if (w->surface == NULL)
     return FALSE;
 
   if (event->button == GDK_BUTTON_PRIMARY)
-    {
-      if (!status)
+  {
+    if (w->tool == PEN || w->tool == ERASER){
+      
+      if (!w->status)
       {
-        cairo_surface_t * destination = cairo_surface_create_similar(surface, 
-                                                                    CAIRO_CONTENT_COLOR,
-                                                                    gtk_widget_get_allocated_width (widget),
-                                                                    gtk_widget_get_allocated_height (widget));
-        cairo_t *cr = cairo_create (destination);
-        cairo_set_source_surface (cr, surface, 0, 0);
-        cairo_paint (cr);
-        
-        history = g_list_append(history, destination);
-        if (future)
-        {
-          clean_surface_list(future);
-          g_list_free(future);
-          future = NULL;
-        }
+        add_history(w);
       }
-      draw_brush (widget, event->x, event->y);
+      draw_brush (widget, event->x, event->y, w);
+    } else {
+      GdkRectangle rect;
+      rect.x = event->x;
+      rect.y = event->y;
+      rect.width = 1;
+      rect.height = 1;
+      w->pos_x = event->x;
+      w->pos_y = event->y;
+      gtk_popover_set_pointing_to(w->text_popover, &rect);
+      gtk_popover_popup(w->text_popover);
     }
-  else if (event->button == GDK_BUTTON_SECONDARY)
-    {
-      status = FALSE;
-      clear_surface (surface);
-      gtk_widget_queue_draw (widget);
-    }
+  }
 
-  /* We've handled the event, stop processing */
   return TRUE;
 }
 
@@ -205,10 +251,12 @@ button_release_event_cb (GtkWidget      *widget,
                        GdkEventButton *event,
                        gpointer        data)
 {
+
   if (event->button == GDK_BUTTON_PRIMARY)
-    {
-        status = FALSE;
-    }
+  {
+    MarkerSketcherWindow * w = MARKER_SKETCHER_WINDOW(data);
+    w->status = FALSE;
+  }
   /* We've handled the event, stop processing */
   return TRUE;
 }
@@ -222,47 +270,47 @@ motion_notify_event_cb (GtkWidget      *widget,
                         GdkEventMotion *event,
                         gpointer        data)
 {
+  MarkerSketcherWindow * w = MARKER_SKETCHER_WINDOW(data);
   /* paranoia check, in case we haven't gotten a configure event */
-  if (surface == NULL)
+  if (w->surface == NULL)
     return FALSE;
 
   if (event->state & GDK_BUTTON1_MASK)
-    draw_brush (widget, event->x, event->y);
+    draw_brush (widget, event->x, event->y, w);
 
   /* We've handled it, stop processing */
   return TRUE;
 }
 
 static void
-clean(GtkWidget * window)
+clean(MarkerSketcherWindow * window)
 {
-  if (surface)
-    cairo_surface_destroy (surface);
-  if (history)
+  
+  if (window->surface)
+    cairo_surface_destroy (window->surface);
+  if (window->history)
   {
-    clean_surface_list(history);
-    g_list_free(history);
+    clean_surface_list(window->history);
+    g_list_free(window->history);
   }
   
-  if (future)
+  if (window->future)
   {
-    clean_surface_list(future);
-    g_list_free(future);
+    clean_surface_list(window->future);
+    g_list_free(window->future);
   }
-  gtk_widget_hide(window);
-  gtk_widget_destroy(window);
-  history = NULL;
-  future = NULL;
-  surface = NULL;
-  size = 6;
-  
+  gtk_widget_hide(GTK_WIDGET(window));
+  gtk_widget_destroy(GTK_WIDGET(window));
+  window->history = NULL;
+  window->future = NULL;
+  window->surface = NULL;
 }
 
 static void
 close_cb(GtkButton * widget,
          gpointer    user_data)
 {
-  GtkWidget * window = GTK_WIDGET(user_data);
+  MarkerSketcherWindow * window = MARKER_SKETCHER_WINDOW(user_data);
   clean(window);
 }         
 
@@ -270,89 +318,109 @@ static void
 pen_cb(GtkButton * button,
        gpointer    user_data)
 {
-  tool = PEN;
+  MarkerSketcherWindow * window = MARKER_SKETCHER_WINDOW(user_data);
+  window->tool = PEN;
 }
 
 static void
 eraser_cb(GtkButton * button,
        gpointer    user_data)
 {
-  tool = ERASER;
+  MarkerSketcherWindow * window = MARKER_SKETCHER_WINDOW(user_data);
+  window->tool = ERASER;
 }
 
 static void
 text_cb(GtkButton * button,
        gpointer    user_data)
 {
-  tool = TEXT;
+  MarkerSketcherWindow * window = MARKER_SKETCHER_WINDOW(user_data);
+  window->tool = TEXT;
 }
 
 static void
 small_cb(GtkButton* button,
          gpointer   user_data)
 {
-  size = 3;
+  MarkerSketcherWindow * window = MARKER_SKETCHER_WINDOW(user_data);
+  window->size = P_SIZE_S;
 }
 
 static void
 medium_cb(GtkButton* button,
          gpointer   user_data)
 {
-  size = 6;
+  MarkerSketcherWindow * window = MARKER_SKETCHER_WINDOW(user_data);
+  window->size = P_SIZE_M;
 }
 
 static void
 large_cb(GtkButton* button,
          gpointer   user_data)
 {
-  size = 12;
+  MarkerSketcherWindow * window = MARKER_SKETCHER_WINDOW(user_data);
+  window->size = P_SIZE_L;
 }
 
 static void
 color_set_cb(GtkColorButton*  button,
              gpointer         user_data)
 {
-  gtk_color_chooser_get_rgba (GTK_COLOR_CHOOSER(button), &color);
+  MarkerSketcherWindow * window = MARKER_SKETCHER_WINDOW(user_data);
+  gtk_color_chooser_get_rgba (GTK_COLOR_CHOOSER(button), &window->color);
+}
+
+char *
+create_unic_name(char * base)
+{
+  int n = strlen(base)+10;
+  GRand * rand = g_rand_new();
+  int uuid = g_rand_int_range(rand, 0, 9999);
+  char * buffer = malloc(n*sizeof(char));
+  memset(buffer, 0, n);
+  sprintf(buffer, "%s.%d.png", base, uuid);
+  return buffer;
 }
 
 static void
 insert_sketch_cb(GtkButton *  button,
                  gpointer     user_data)
 {
-  cairo_surface_write_to_png(surface, "temp.png");
-  GtkWidget * window = GTK_WIDGET(user_data);
+  MarkerSketcherWindow * window = MARKER_SKETCHER_WINDOW(user_data);
+
+  char * fpath = create_unic_name(window->base_file);
+  cairo_surface_write_to_png(window->surface, fpath);
+  marker_source_view_insert_image(window->source_view, fpath);
+  free(fpath);
   clean(window);
 }
 
 static void
-redo(GtkWidget* widget)
-{
-  GList * last =  g_list_last(future);
+redo(MarkerSketcherWindow *window)
+{  
+  GList * last =  g_list_last(window->future);
   if (last)
   {
-    history = g_list_append(history, surface);
-    surface = last->data;
-    gtk_widget_queue_draw(widget);
-    future = g_list_remove_link(future, last);
+    window->history = g_list_append(window->history, window->surface);
+    window->surface = last->data;
+    gtk_widget_queue_draw(GTK_WIDGET(window->drawing_area));
+    window->future = g_list_remove_link(window->future, last);
   }
 }
 
 static void
-undo(GtkWidget * widget)
+undo(MarkerSketcherWindow* window)
 {
-
-  GList * last =  g_list_last(history);
+  GList * last =  g_list_last(window->history);
   if (last)
   {
-
-    future = g_list_append(future, surface);
-    surface = last->data;
+    window->future = g_list_append(window->future, window->surface);
+    window->surface = last->data;
     
 
-    gtk_widget_queue_draw(widget);
+    gtk_widget_queue_draw(GTK_WIDGET(window->drawing_area));
     
-    history = g_list_remove_link(history, last);
-
+    window->history = g_list_remove_link(window->history, last);
   }
 }
 
@@ -362,63 +430,83 @@ key_pressed(GtkWidget   *widget,
             gpointer     user_data)
 {
   gboolean ctrl_pressed = (event->state &  GDK_CONTROL_MASK) != 0;
+  MarkerSketcherWindow * window = MARKER_SKETCHER_WINDOW(widget);
   if (ctrl_pressed)
   {
     switch (event->keyval)
-       {
-         case GDK_KEY_z:
-           undo(widget);
-           break;
-         case GDK_KEY_y:
-           redo(widget);
-           break;
-       }
+    {
+    case GDK_KEY_z:
+      undo(window);
+      break;
+    case GDK_KEY_Z:
+      redo(window);
+      break;
+    }
   }
   return FALSE;
 }
 
 static void
-init_ui (GtkWindow * parent)
+add_text_cb(GtkWidget *button,
+            gpointer  *user_data)
 {
-  tool = PEN;
-  color.red=0;
-  color.green=0;
-  color.blue=0;
-  color.alpha=1;
+  MarkerSketcherWindow * w = MARKER_SKETCHER_WINDOW(user_data);
+  gtk_popover_popdown(w->text_popover);
+  add_history(w);
+  draw_text(w);
+}
 
-  GtkWindow *window;
-  GtkDrawingArea *drawing_area;
+static void
+close_text_cb(GtkButton *button,
+              gpointer  *user_data)
+{
+  MarkerSketcherWindow * w = MARKER_SKETCHER_WINDOW(user_data);
+  gtk_popover_popdown(w->text_popover);
+}
 
+static void
+init_ui (MarkerSketcherWindow * window)
+{
   GtkBuilder* builder =
   gtk_builder_new_from_resource(
     "/com/github/fabiocolacio/marker/ui/sketcher-window.ui");
-
-
-  window = GTK_WINDOW(gtk_builder_get_object(builder, "sketcher-window"));
-  gtk_window_set_modal(window, TRUE);
   
-  drawing_area = GTK_DRAWING_AREA(gtk_drawing_area_new());
+  GtkDrawingArea * drawing_area = GTK_DRAWING_AREA(gtk_drawing_area_new());
+  window->drawing_area = drawing_area;
   gtk_widget_set_size_request(GTK_WIDGET(drawing_area), 800, 600);
 
   GtkBox * vbox = GTK_BOX(gtk_builder_get_object(builder, "vbox"));
   gtk_box_pack_start(vbox, GTK_WIDGET(drawing_area),TRUE,TRUE, 5);
 
-
+  GtkHeaderBar * hbar = GTK_HEADER_BAR(gtk_builder_get_object(builder, "header_bar"));
+  
+  GtkPopover * text_popover = GTK_POPOVER(gtk_builder_get_object(builder, "text_popover"));
+  GtkEntry * text_entry = GTK_ENTRY(gtk_builder_get_object(builder, "text_entry"));
+  window->text_entry = text_entry;
+  window->text_popover = text_popover;
+  gtk_popover_set_relative_to(text_popover, GTK_WIDGET(drawing_area));
+  gtk_popover_set_modal (text_popover, TRUE);
+  gtk_popover_set_position(text_popover, GTK_POS_LEFT);
+  
+  gtk_container_add(GTK_CONTAINER(window), GTK_WIDGET(vbox));
+  gtk_window_set_titlebar(GTK_WINDOW(window), GTK_WIDGET(hbar));
+  gtk_widget_show (GTK_WIDGET (hbar));
+  
   /* Signals used to handle the backing surface */
   g_signal_connect (drawing_area, "draw",
-                      G_CALLBACK (draw_cb), NULL);
+                      G_CALLBACK (draw_cb), window);
   g_signal_connect (drawing_area,"configure-event",
-                      G_CALLBACK (configure_event_cb), NULL);
+                      G_CALLBACK (configure_event_cb), window);
 
   /* Event signals */
   g_signal_connect (drawing_area, "motion-notify-event",
-                      G_CALLBACK (motion_notify_event_cb), NULL);
+                      G_CALLBACK (motion_notify_event_cb), window);
   g_signal_connect (drawing_area, "button-press-event",
-                      G_CALLBACK (button_press_event_cb), NULL);
+                      G_CALLBACK (button_press_event_cb), window);
   g_signal_connect (drawing_area, "button-release-event",
-                      G_CALLBACK (button_release_event_cb), NULL);
+                      G_CALLBACK (button_release_event_cb), window);
   g_signal_connect (window, "key-press-event",
-                      G_CALLBACK(key_pressed), NULL);
+                      G_CALLBACK(key_pressed), window);
   /* Ask to receive events the drawing area doesn't normally
   * subscribe to. In particular, we need to ask for the
   * button press and motion notify events that want to handle.
@@ -430,7 +518,6 @@ init_ui (GtkWindow * parent)
 
                                   
   gtk_widget_show_all(GTK_WIDGET(window));
-  gtk_window_present(window);
 
   gtk_builder_add_callback_symbol(builder,
                                   "close_cb",
@@ -459,6 +546,12 @@ init_ui (GtkWindow * parent)
   gtk_builder_add_callback_symbol(builder,
                                   "large_cb",
                                   G_CALLBACK(large_cb));
+  gtk_builder_add_callback_symbol(builder,
+                                  "close_text_cb",
+                                  G_CALLBACK(close_text_cb));
+  gtk_builder_add_callback_symbol(builder,
+                                  "add_text_cb",
+                                  G_CALLBACK(add_text_cb));
 
   gtk_builder_connect_signals(builder, window);
   g_object_unref(builder);
@@ -466,7 +559,54 @@ init_ui (GtkWindow * parent)
 
 
 void
-marker_sketcher_window_show(GtkWindow * parent)
+marker_sketcher_window_show(GtkApplication * app, GFile * file, MarkerSourceView * source_view)
 {
-    init_ui(parent);    
+  MarkerSketcherWindow * w= marker_sketcher_window_new(app);
+  w->source_view = source_view;
+  
+  if (file)
+    w->base_file = g_file_get_path(file);
+  else
+  {
+    char * current_dir = g_get_current_dir ();
+    int n = strlen(current_dir) + 15;
+    w->base_file = malloc(n*sizeof(char));
+    memset(w->base_file, 0, n);
+    sprintf(w->base_file, "%s/%s", current_dir, noname);
+  }
+  
+  gtk_window_present(GTK_WINDOW(w));
+}
+
+MarkerSketcherWindow*  
+marker_sketcher_window_new (GtkApplication * app)
+{
+    return g_object_new(MARKER_TYPE_SKETCHER_WINDOW, "application", app, NULL);
+}
+
+
+static void
+marker_sketcher_window_class_init(MarkerSketcherWindowClass* class)
+{
+  
+}
+
+static void
+marker_sketcher_window_init (MarkerSketcherWindow *sketcher)
+{
+  sketcher->surface = NULL;
+  sketcher->history = NULL;
+  sketcher->future = NULL;
+  sketcher->status = FALSE;
+  sketcher->pos_x = 0;
+  sketcher->pos_y = 0;
+  sketcher->tool = PEN;
+  sketcher->size = P_SIZE_M;
+  
+  sketcher->color.alpha = 1;
+  sketcher->color.blue = 0;
+  sketcher->color.green = 0;
+  sketcher->color.red = 0;
+  
+  init_ui(sketcher);
 }
