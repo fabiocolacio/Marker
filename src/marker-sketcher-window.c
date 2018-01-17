@@ -92,13 +92,26 @@ configure_event_cb (GtkWidget         *widget,
 {
   MarkerSketcherWindow * w = MARKER_SKETCHER_WINDOW(data);
   if (w->surface)
-    cairo_surface_destroy (w->surface);
-
-  w->surface = gdk_window_create_similar_surface (gtk_widget_get_window(widget),
-                                                  CAIRO_CONTENT_COLOR_ALPHA,
-                                                  gtk_widget_get_allocated_width (widget),
-                                                  gtk_widget_get_allocated_height (widget));
-  clear_surface (w->surface);
+  {
+    cairo_surface_t * destination = gdk_window_create_similar_surface (gtk_widget_get_window(widget),
+                                                                        CAIRO_CONTENT_COLOR_ALPHA,
+                                                                        gtk_widget_get_allocated_width (widget),
+                                                                        gtk_widget_get_allocated_height (widget));
+    clear_surface(destination);
+    cairo_t *cr = cairo_create (destination);
+    cairo_set_source_surface (cr, w->surface, 0, 0);
+    cairo_paint (cr);
+    cairo_surface_destroy(w->surface);
+    w->surface = destination;
+  }
+  else{
+    w->surface = gdk_window_create_similar_surface (gtk_widget_get_window(widget),
+                                                    CAIRO_CONTENT_COLOR_ALPHA,
+                                                    gtk_widget_get_allocated_width (widget),
+                                                    gtk_widget_get_allocated_height (widget));
+  
+    clear_surface (w->surface);
+  }
   return TRUE;
 }
 
@@ -475,8 +488,9 @@ init_ui (MarkerSketcherWindow * window)
   
   GtkDrawingArea * drawing_area = GTK_DRAWING_AREA(gtk_drawing_area_new());
   window->drawing_area = drawing_area;
-  gtk_widget_set_size_request(GTK_WIDGET(drawing_area), 800, 600);
 
+  gtk_window_set_default_size(GTK_WINDOW(window), 800, 600);
+  
   GtkBox * vbox = GTK_BOX(gtk_builder_get_object(builder, "vbox"));
   gtk_box_pack_start(vbox, GTK_WIDGET(drawing_area),TRUE,TRUE, 5);
 
