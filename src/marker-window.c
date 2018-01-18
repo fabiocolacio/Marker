@@ -43,9 +43,62 @@ struct _MarkerWindow
 
 G_DEFINE_TYPE (MarkerWindow, marker_window, GTK_TYPE_APPLICATION_WINDOW);
 
+/**
+ * show_unsaved_documents_warning:
+ * @parent The parent window for this dialog to be transient for, or NULL
+ *
+ * Shows a dialog asking the user to proceed closing a document without saving,
+ * or to cancel the close operation
+ * 
+ * Returns: TRUE if the user would like to proceed without saving. FALSE if the user
+ * wants to cancel the operation.
+ */
+static gboolean
+show_unsaved_documents_warning (MarkerWindow *window)
+{
+  g_assert (MARKER_IS_WINDOW (window));
+
+  MarkerEditor *editor = marker_window_get_active_editor (window);
+  GFile *file = marker_editor_get_file (editor);
+  g_autofree gchar *warning_message = NULL;
+  
+  if (G_IS_FILE (file))
+  {
+    g_autofree gchar *filename = g_file_get_basename (file);
+    warning_message = g_strdup_printf ("<span weight='bold' size='larger'>"
+                                       "Discard changes to the document '%s'?"
+                                       "</span>\n\n"
+                                       "The document has unsaved changes "
+                                       "that will be lost if it is closed now.", filename);
+  }
+  else
+  {
+    warning_message = g_strdup ("<span weight='bold' size='larger'>"
+                                "Discard changes to the document?"
+                                "</span>\n\n"
+                                "The document has unsaved changes "
+                                "that will be lost if it is closed now.");
+  }
+
+  GtkWidget *dialog = gtk_message_dialog_new_with_markup(GTK_WINDOW (window),
+                                                         GTK_DIALOG_MODAL,
+                                                         GTK_MESSAGE_QUESTION,
+                                                         GTK_BUTTONS_OK_CANCEL,
+                                                         warning_message);
+                                           
+  gint response = gtk_dialog_run(GTK_DIALOG(dialog));
+  
+  gtk_widget_destroy (GTK_WIDGET (dialog));
+  
+  if (response == GTK_RESPONSE_OK)
+    return TRUE;
+  
+  return FALSE;
+}
+
 static void
-action_zoom_out (GSimpleAction* action,
-                 GVariant*      parameter,
+action_zoom_out (GSimpleAction *action,
+                 GVariant      *parameter,
                  gpointer       user_data)
 {
   MarkerWindow *window = user_data;
@@ -255,6 +308,16 @@ preview_zoom_changed_cb (MarkerPreview *preview,
   gtk_button_set_label (window->zoom_original_btn, zoom_level_str);
 }
 
+static gboolean
+window_deleted_event_cb (GtkWidget *widget,
+                         GdkEvent  *event,
+                         gpointer   user_data)
+{
+  MarkerWindow *window = user_data;
+  marker_window_try_close (window);
+  return TRUE;
+}
+
 void
 marker_window_fullscreen (MarkerWindow *window)
 {
@@ -371,6 +434,7 @@ marker_window_init (MarkerWindow *window)
   gtk_window_set_default_size(GTK_WINDOW(window), 900, 600);
   gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
   g_signal_connect (window, "key-press-event", G_CALLBACK (key_pressed_cb), window);
+  g_signal_connect(window, "delete-event", G_CALLBACK(window_deleted_event_cb), window);
   
   gtk_builder_add_callback_symbol (builder, "save_button_clicked_cb", G_CALLBACK (marker_window_save_active_file));
   gtk_builder_add_callback_symbol (builder, "open_button_clicked_cb", G_CALLBACK (marker_window_open_file));
@@ -509,4 +573,21 @@ marker_window_open_sketcher (MarkerWindow *window)
   MarkerSourceView *source_view = marker_editor_get_source_view (editor);
   
   marker_sketcher_window_show (GTK_WINDOW (window), file, source_view);
+}
+
+gboolean
+marker_window_try_close (MarkerWindow *window)
+{
+  g_assert (MARKER_IS_WINDOW (window));
+  
+  MarkerEditor *editor = marker_window_get_active_editor (window);
+  gboolean status = TRUE;
+  
+  if (marker_editor_has_unsaved_changes (editor))
+    status = show_unsaved_documents_warning (window);
+  
+  if (status)
+    gtk_widget_destroy (GTK_WIDGET (window));
+  
+  return status;
 }
