@@ -42,6 +42,7 @@ MarkerEditor        *marker_window_get_active_editor             (MarkerWindow  
 void                 marker_window_open_file                     (MarkerWindow       *window);
 void                 marker_window_save_active_file              (MarkerWindow       *window);
 void                 marker_window_save_active_file_as           (MarkerWindow       *window);
+void                 marker_window_open_sketcher                 (MarkerWindow       *window);
 
 G_END_DECLS
 

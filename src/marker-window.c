@@ -22,6 +22,7 @@
 #include "marker.h"
 #include "marker-editor.h"
 #include "marker-exporter.h"
+#include "marker-sketcher-window.h"
 
 #include "marker-window.h"
 
@@ -179,6 +180,10 @@ key_pressed_cb (GtkWidget   *widget,
       
       case GDK_KEY_o:
         marker_window_open_file (window);
+        break;
+      
+      case GDK_KEY_k:
+        marker_window_open_sketcher (window);
         break;
       
       case GDK_KEY_s:
@@ -492,4 +497,16 @@ marker_window_is_active_editor (MarkerWindow *window,
   g_assert (MARKER_IS_EDITOR (editor));
   
   return (marker_window_get_active_editor (window) == editor);
+}
+
+void
+marker_window_open_sketcher (MarkerWindow *window)
+{
+  g_assert (MARKER_IS_WINDOW (window));
+  
+  MarkerEditor *editor = marker_window_get_active_editor (window);
+  GFile *file = marker_editor_get_file (editor);
+  MarkerSourceView *source_view = marker_editor_get_source_view (editor);
+  
+  marker_sketcher_window_show (GTK_WINDOW (window), file, source_view);
 }
