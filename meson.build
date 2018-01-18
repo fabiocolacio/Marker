@@ -33,6 +33,7 @@ marker_sources = [
   'src/marker-preview.c',
   'src/marker-string.c',
   'src/marker-widget.c',
+  'src/marker-sketcher-window.c',
   res
 ]
 

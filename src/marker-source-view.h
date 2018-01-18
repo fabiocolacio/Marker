@@ -44,6 +44,8 @@ void                 marker_source_view_set_syntax_theme         (MarkerSourceVi
                                                                   const char         *syntax_theme);
 void                 marker_source_view_surround_selection_with  (MarkerSourceView   *source_view,
                                                                   const char         *insertion);
+void                 marker_source_view_insert_image             (MarkerSourceView   *source_view,
+                                                                  const char         *image_path);
 void                 marker_source_view_set_spell_check          (MarkerSourceView   *source_view,
                                                                   gboolean            state);
 void                 marker_source_view_set_spell_check_lang     (MarkerSourceView   *source_view,

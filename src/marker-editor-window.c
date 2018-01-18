@@ -34,6 +34,7 @@
 #include "marker-markdown.h"
 #include "marker-exporter.h"
 #include "marker-editor.h"
+#include "marker-sketcher-window.h"
 
 #include "marker-editor-window.h"
 
@@ -51,6 +52,7 @@ struct _MarkerEditorWindow
   MarkerSourceView           *source_view;
   GtkWidget                  *source_scroll;
   MarkerPreview              *web_view;
+  MarkerSketcherWindow       *sketcher;
   GtkBox                     *vbox;
   
   GFile                      *file;
@@ -696,6 +698,16 @@ preview_zoom_changed_cb (MarkerPreview *preview,
   g_free (zoom_level_str);
 }
          
+         
+void
+sketch_cb(gpointer       user_data)
+{
+  
+  MarkerEditorWindow * w = MARKER_EDITOR_WINDOW(user_data);
+  w->sketcher = marker_sketcher_window_show(GTK_WINDOW(user_data), w->file, w->source_view);
+}
+
+         
 static gboolean
 key_pressed(GtkWidget   *widget,
             GdkEventKey *event,
@@ -758,7 +770,11 @@ key_pressed(GtkWidget   *widget,
       case GDK_KEY_w:
         marker_editor_window_try_close (window);
         break;
-      
+        
+      case GDK_KEY_k:  
+        sketch_cb(window);
+        break;
+        
       case GDK_KEY_q:
         marker_quit ();
         break;
@@ -790,10 +806,12 @@ marker_editor_window_get_preview(MarkerEditorWindow* window)
   return window->web_view;
 }
 
+
 static void
 init_ui (MarkerEditorWindow *window)
 {
   window->triggered = FALSE;
+  window->sketcher = NULL;
   GtkBuilder* builder =
     gtk_builder_new_from_resource("/com/github/fabiocolacio/marker/ui/editor-window.ui");
 
