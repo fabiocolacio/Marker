@@ -399,7 +399,7 @@ plot * init_bar()
     color[7] = 0;
     memcpy(color, "#000000", 7);
 
-    pref->bar_width = 0.8;
+    pref->bar_width = 35;
     pref->line_color = color; 
     p->extra_data = pref;
     return p; 
