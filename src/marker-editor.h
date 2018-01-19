@@ -59,6 +59,7 @@ gchar               *marker_editor_get_title                     (MarkerEditor  
 gchar               *marker_editor_get_subtitle                  (MarkerEditor       *editor);
 MarkerPreview       *marker_editor_get_preview                   (MarkerEditor       *editor);
 MarkerSourceView    *marker_editor_get_source_view               (MarkerEditor       *editor);
+void                 marker_editor_apply_prefs                   (MarkerEditor       *editor);
 
 G_END_DECLS
 

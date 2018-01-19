@@ -44,7 +44,7 @@ gboolean             marker_prefs_get_auto_indent                (void);
 void                 marker_prefs_set_auto_indent                (gboolean            state);
 gboolean             marker_prefs_get_spell_check                (void);
 void                 marker_prefs_set_spell_check                (gboolean            state);
-gchar*               marker_prefs_get_spell_check_langauge       (void);
+gchar*               marker_prefs_get_spell_check_language       (void);
 void                 marker_prefs_set_spell_check_language       (const gchar        *lang);
 gboolean             marker_prefs_get_show_line_numbers          (void);
 void                 marker_prefs_set_show_line_numbers          (gboolean            state);

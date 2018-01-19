@@ -119,6 +119,8 @@ marker_editor_init (MarkerEditor *editor)
   gtk_widget_show (GTK_WIDGET (editor));
   
   g_timeout_add (20, refresh_timeout_cb, editor);
+  
+  marker_editor_apply_prefs (editor);
 }
 
 static void
@@ -396,4 +398,51 @@ marker_editor_get_source_view (MarkerEditor *editor)
 {
   g_assert (MARKER_IS_EDITOR (editor));
   return editor->source_view;
+}
+
+void
+marker_editor_apply_prefs (MarkerEditor *editor)
+{
+  g_assert (MARKER_IS_EDITOR (editor));
+
+  GtkSourceView * const source_view = GTK_SOURCE_VIEW (marker_editor_get_source_view (editor));
+  
+  gboolean state;
+  
+  state = marker_prefs_get_show_line_numbers ();
+  gtk_source_view_set_show_line_numbers (source_view, state);
+  
+  state = marker_prefs_get_wrap_text ();
+  gtk_text_view_set_wrap_mode (GTK_TEXT_VIEW (source_view), (state) ? GTK_WRAP_WORD : GTK_WRAP_NONE );
+  
+  state = marker_prefs_get_show_right_margin ();
+  gtk_source_view_set_show_right_margin (source_view, state);
+  
+  guint position = marker_prefs_get_right_margin_position ();
+  gtk_source_view_set_right_margin_position (source_view, position);
+  
+  state = marker_prefs_get_spell_check ();
+  marker_source_view_set_spell_check (MARKER_SOURCE_VIEW (source_view), state);
+  
+  g_autofree gchar *lang = marker_prefs_get_spell_check_language ();
+  marker_source_view_set_spell_check_lang (MARKER_SOURCE_VIEW (source_view), lang);
+  
+  state = marker_prefs_get_highlight_current_line ();
+  gtk_source_view_set_highlight_current_line (source_view, state);
+  
+  GtkSourceBuffer *buffer = GTK_SOURCE_BUFFER (gtk_text_view_get_buffer (GTK_TEXT_VIEW (source_view)));
+  state = marker_prefs_get_use_syntax_theme ();
+  gtk_source_buffer_set_highlight_syntax(buffer, state);
+  
+  g_autofree gchar *theme = marker_prefs_get_syntax_theme ();
+  marker_source_view_set_syntax_theme (MARKER_SOURCE_VIEW (source_view), theme);
+  
+  state = marker_prefs_get_auto_indent ();
+  gtk_source_view_set_auto_indent (source_view, state);
+  
+  state = marker_prefs_get_replace_tabs ();
+  gtk_source_view_set_insert_spaces_instead_of_tabs (source_view, state); 
+
+  guint tab_width = marker_prefs_get_tab_width ();
+  gtk_source_view_set_indent_width (source_view, tab_width);
 }

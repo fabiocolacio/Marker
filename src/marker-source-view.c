@@ -81,15 +81,19 @@ marker_source_view_insert_image (MarkerSourceView   *source_view,
 }
 
 void
-marker_source_view_set_spell_check(MarkerSourceView*    source_view,
-                                   gboolean             state)
+marker_source_view_set_spell_check(MarkerSourceView *source_view,
+                                   gboolean          state)
 {
-  if (state)
+  g_assert (MARKER_IS_SOURCE_VIEW (source_view));
+
+  gboolean is_attached =
+    source_view->spell == gtk_spell_checker_get_from_text_view (GTK_TEXT_VIEW (source_view));
+
+  if (state && !is_attached)
   {
     gtk_spell_checker_attach((GtkSpellChecker*)source_view->spell, GTK_TEXT_VIEW(source_view));
-    g_object_unref (source_view->spell);
   }
-  else
+  else if (!state && is_attached)
   {
     g_object_ref (source_view->spell);
     gtk_spell_checker_detach((GtkSpellChecker*)source_view->spell);
@@ -97,9 +101,10 @@ marker_source_view_set_spell_check(MarkerSourceView*    source_view,
 }
 
 void
-marker_source_view_set_spell_check_lang(MarkerSourceView*   source_view,
-                                        const gchar*        lang)
+marker_source_view_set_spell_check_lang (MarkerSourceView *source_view,
+                                         const gchar      *lang)
 {
+  g_assert (MARKER_IS_SOURCE_VIEW (source_view));
   gtk_spell_checker_set_language (source_view->spell, lang, NULL);
 }
 
@@ -200,7 +205,7 @@ marker_source_view_init (MarkerSourceView *source_view)
   gtk_source_view_set_auto_indent (GTK_SOURCE_VIEW (source_view), marker_prefs_get_auto_indent ());
 
   source_view->spell = gtk_spell_checker_new ();
-  gchar* lang = marker_prefs_get_spell_check_langauge();
+  gchar* lang = marker_prefs_get_spell_check_language();
   gtk_spell_checker_set_language (source_view->spell, lang, NULL);
   if (marker_prefs_get_spell_check ()){
     gtk_spell_checker_attach (source_view->spell, GTK_TEXT_VIEW (source_view));

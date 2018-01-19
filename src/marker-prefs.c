@@ -255,7 +255,7 @@ marker_prefs_set_spell_check(gboolean state)
 }
 
 gchar*
-marker_prefs_get_spell_check_langauge()
+marker_prefs_get_spell_check_language()
 {
   return g_settings_get_string(prefs.editor_settings, "spell-check-lang"); 
 }
@@ -420,7 +420,24 @@ marker_prefs_get_available_syntax_themes()
 }
 
 static void
-refresh_preview(){
+update_editors ()
+{
+  GtkApplication *app = marker_get_app();
+  GList *windows = gtk_application_get_windows(app);
+  for (GList *item = windows; item != NULL; item = item->next)
+  {
+    if (MARKER_IS_WINDOW(item->data))
+    {
+      MarkerWindow *window = item->data;
+      MarkerEditor *editor = marker_window_get_active_editor (window);
+      marker_editor_apply_prefs (editor);
+    }
+  }
+}
+
+static void
+refresh_preview ()
+{
   GtkApplication *app = marker_get_app();
   GList *windows = gtk_application_get_windows(app);
   for (GList *item = windows; item != NULL; item = item->next)
@@ -440,6 +457,7 @@ show_line_numbers_toggled(GtkToggleButton* button,
 {
   gboolean state = gtk_toggle_button_get_active(button);
   marker_prefs_set_show_line_numbers(state);
+  update_editors ();
 }
 
 static void
@@ -454,6 +472,8 @@ editor_syntax_toggled(GtkToggleButton* button,
   {
     gtk_widget_set_sensitive(GTK_WIDGET(user_data), state);
   }
+  
+  update_editors ();
 }
 
 static void
@@ -477,6 +497,7 @@ highlight_current_line_toggled(GtkToggleButton* button,
 {
   gboolean state = gtk_toggle_button_get_active(button);
   marker_prefs_set_highlight_current_line(state);
+  update_editors ();
 }
 
 static void
@@ -534,6 +555,7 @@ wrap_text_toggled(GtkToggleButton* button,
 {
   gboolean state = gtk_toggle_button_get_active(button);
   marker_prefs_set_wrap_text(state);
+  update_editors ();
 }
 
 static void
@@ -551,6 +573,7 @@ auto_indent_toggled(GtkToggleButton* button,
 {
   gboolean state = gtk_toggle_button_get_active(button);
   marker_prefs_set_auto_indent(state);
+  update_editors ();
 }
 
 static void
@@ -559,6 +582,7 @@ spell_lang_chosen(GtkComboBox* combo_box,
 {
   char* choice = marker_widget_combo_box_get_active_str(combo_box);
   marker_prefs_set_spell_check_language(choice);
+  update_editors ();
 }
 
 static void
@@ -572,6 +596,8 @@ spell_check_toggled(GtkToggleButton* button,
   {
     gtk_widget_set_sensitive(GTK_WIDGET(user_data), state);
   }
+  
+  update_editors ();
 }
 
 static void
@@ -580,6 +606,7 @@ replace_tabs_toggled(GtkToggleButton* button,
 {
   gboolean state = gtk_toggle_button_get_active(button);
   marker_prefs_set_replace_tabs(state);
+  update_editors ();
 }
 
 static void
@@ -588,6 +615,7 @@ tab_width_value_changed(GtkSpinButton *spin_button,
 {
   guint value = gtk_spin_button_get_value_as_int (spin_button);
   marker_prefs_set_tab_width(value);
+  update_editors ();
 }
 
 static void
@@ -596,6 +624,7 @@ right_margin_position_value_changed(GtkSpinButton* spin_button,
 {
   guint value = gtk_spin_button_get_value_as_int(spin_button);
   marker_prefs_set_right_margin_position(value);
+  update_editors ();
 }
 
 static void
@@ -609,15 +638,17 @@ show_right_margin_toggled(GtkToggleButton* button,
   {
     gtk_widget_set_sensitive(GTK_WIDGET(user_data), state);
   }
+  
+  update_editors ();
 }
 
 static void
 syntax_chosen(GtkComboBox* combo_box,
               gpointer     user_data)
 {
-  char* choice = marker_widget_combo_box_get_active_str(combo_box);
-  marker_prefs_set_syntax_theme(choice);
-  free(choice);
+  g_autofree gchar* choice = marker_widget_combo_box_get_active_str(combo_box);
+  marker_prefs_set_syntax_theme (choice);
+  update_editors ();
 }
 
 static void
@@ -741,7 +772,7 @@ marker_prefs_show_window()
   combo_box = GTK_COMBO_BOX(gtk_builder_get_object(builder, "spell_lang_chooser"));
   list = marker_prefs_get_available_languages();
   marker_widget_populate_combo_box_with_strings(combo_box, list);
-  char* lang = marker_prefs_get_spell_check_langauge();
+  char* lang = marker_prefs_get_spell_check_language();
   marker_widget_combo_box_set_active_str(combo_box, lang, g_list_length(list));
   gtk_widget_set_sensitive(GTK_WIDGET(combo_box), marker_prefs_get_spell_check());
   g_free(lang);
