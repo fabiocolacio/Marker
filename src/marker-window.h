@@ -25,6 +25,8 @@
 #include <gio/gio.h>
 #include <gtk/gtk.h>
 
+#include "marker-editor.h"
+
 G_BEGIN_DECLS
 
 #define MARKER_TYPE_WINDOW (marker_window_get_type ())
