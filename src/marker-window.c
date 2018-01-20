@@ -219,6 +219,7 @@ key_pressed_cb (GtkWidget   *widget,
 {
   MarkerWindow *window = MARKER_WINDOW (widget);
   MarkerEditor *editor = marker_window_get_active_editor (window);
+  MarkerSourceView *source_view = marker_editor_get_source_view (editor);
 
   gboolean ctrl_pressed = (event->state & GDK_CONTROL_MASK);
   gboolean shift_pressed = (event->state & GDK_SHIFT_MASK);
@@ -227,6 +228,30 @@ key_pressed_cb (GtkWidget   *widget,
   {
     switch (event->keyval)
     {
+      case GDK_KEY_i:
+        marker_source_view_surround_selection_with (source_view, "*");
+        break;
+        
+      case GDK_KEY_m:
+        marker_source_view_surround_selection_with (source_view, "``");
+        break;
+        
+      case GDK_KEY_b:
+        marker_source_view_surround_selection_with (source_view, "**");
+        break;
+    
+      case GDK_KEY_q:
+        marker_quit ();
+        break;
+    
+      case GDK_KEY_n:
+        marker_create_new_window ();
+        break;
+      
+      case GDK_KEY_w:
+        marker_window_try_close (window);
+        break;
+    
       case GDK_KEY_r:
         marker_editor_refresh_preview (editor);
         break;

@@ -216,7 +216,16 @@ marker_create_new_window_from_file (GFile *file)
 void
 marker_quit()
 {
-
+  GtkApplication *app = marker_get_app();
+  GList *windows = gtk_application_get_windows(app);
+  for (GList *item = windows; item != NULL; item = item->next)
+  {
+    if (MARKER_IS_WINDOW(item->data))
+    {
+      MarkerWindow *window = item->data;
+      marker_window_try_close (window);
+    }
+  }
 }
 
 int
