@@ -721,7 +721,7 @@ marker_prefs_show_window()
 {
   GtkBuilder* builder =
     gtk_builder_new_from_resource(
-      "/com/github/fabiocolacio/marker/ui/prefs-window.ui");
+      "/com/github/fabiocolacio/marker/ui/marker-prefs-window.ui");
  
   GList *list = NULL;
   GtkComboBox* combo_box;
