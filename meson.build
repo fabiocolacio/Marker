@@ -25,7 +25,6 @@ marker_sources = [
   'src/marker.c',
   'src/marker-editor.c',
   'src/marker-window.c',
-  'src/marker-editor-window.c',
   'src/marker-exporter.c',
   'src/marker-markdown.c',
   'src/marker-prefs.c',
