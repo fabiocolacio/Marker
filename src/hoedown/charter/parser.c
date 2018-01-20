@@ -318,34 +318,39 @@ void* parse_data(char* line, unsigned int *l, dtype  * type)
 void  
 parse_x_data(chart *chart, char* line)
 {
-    unsigned int l = 0 ;
-    dtype t;
-    void * data = parse_data(line, &l, &t);
-    if (t == ND || t == MATH)
-        return;
     plot * p = clist_get_last(chart->plots)->data;
-    if (p->n == 0)
-        p->n = l;
     if (!p->x_data)
+    {
+        unsigned int l = 0 ;
+        dtype t;
+        void * data = parse_data(line, &l, &t);
+        if (t == ND || t == MATH)
+            return;
+        if (p->n == 0)
+            p->n = l;
+        if (!p->x_data)
         p->x_data = data;
+    }
 }
 
 void  
 parse_y_data(chart *chart, char* line)
 {
-    unsigned int l = 0;
-    dtype t;
-    void * data = parse_data(line, &l, &t);
     plot * p = clist_get_last(chart->plots)->data;
-    p->y_type = t; 
-    if (t == ND)
-        return;
-    if (t != MATH)
-    {        
-        p->n = l;
-    }
     if (!p->y_data)
+    {
+        unsigned int l = 0;
+        dtype t;
+        void * data = parse_data(line, &l, &t);
+        p->y_type = t; 
+        if (t == ND)
+            return;
+        if (t != MATH)
+        {        
+            p->n = l;
+        }
         p->y_data = data;
+    }
 }
 
 
