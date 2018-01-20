@@ -170,6 +170,19 @@ marker_prefs_set_use_figure_numbering(gboolean state)
   g_settings_set_boolean(prefs.preview_settings, "figure-numbering-toggle", state);
 }
 
+
+gboolean
+marker_prefs_get_use_charter()
+{
+  return g_settings_get_boolean(prefs.preview_settings, "charter-toggle");
+}
+
+void
+marker_prefs_set_use_charter(gboolean state)
+{
+  g_settings_set_boolean(prefs.preview_settings, "charter-toggle", state);
+}
+
 gboolean
 marker_prefs_get_use_highlight()
 {
@@ -541,6 +554,15 @@ figure_caption_toggled(GtkToggleButton* button,
 }
 
 static void
+enable_charter_toggled(GtkToggleButton* button,
+                       gpointer         user_data)
+{
+  gboolean state = gtk_toggle_button_get_active(button);
+  marker_prefs_set_use_charter(state);
+  refresh_preview();
+}
+
+static void
 figure_numbering_toggled(GtkToggleButton* button,
                        gpointer         user_data)
 {
@@ -804,7 +826,11 @@ marker_prefs_show_window()
   check_button =
     GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "mermaid_check_button"));
   gtk_toggle_button_set_active(check_button, marker_prefs_get_use_mermaid());
-
+  
+  check_button =
+    GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "charter_check_button"));
+  gtk_toggle_button_set_active(check_button, marker_prefs_get_use_charter());
+  
   check_button =
     GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "figure_caption_check_button"));
   gtk_toggle_button_set_active(check_button, marker_prefs_get_use_figure_caption());
@@ -948,6 +974,9 @@ marker_prefs_show_window()
   gtk_builder_add_callback_symbol(builder,
                                   "editor_syntax_toggled",
                                   G_CALLBACK(editor_syntax_toggled));
+  gtk_builder_add_callback_symbol(builder,
+                                  "enable_charter_toggled",
+                                  G_CALLBACK(enable_charter_toggled));
   gtk_builder_connect_signals(builder, NULL);
   
   g_object_unref(builder);

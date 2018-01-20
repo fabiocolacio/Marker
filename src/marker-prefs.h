@@ -76,6 +76,8 @@ gboolean             marker_prefs_get_use_figure_caption         (void);
 void                 marker_prefs_set_use_figure_caption         (gboolean            state);
 gboolean             marker_prefs_get_use_figure_numbering       (void);
 void                 marker_prefs_set_use_figure_numbering       (gboolean            state);
+gboolean             marker_prefs_get_use_charter                (void);
+void                 marker_prefs_set_use_charter                (gboolean            state);
 gboolean             marker_prefs_get_gnome_appmenu              (void);
 void                 marker_prefs_set_gnome_appmenu              (gboolean            state);
 MarkerViewMode       marker_prefs_get_default_view_mode          (void);
