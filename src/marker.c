@@ -169,7 +169,7 @@ marker_shortcuts_cb(GSimpleAction* action,
                     gpointer       user_data)
 {
   GtkBuilder* builder =
-    gtk_builder_new_from_resource("/com/github/fabiocolacio/marker/ui/shortcuts-window.ui");
+    gtk_builder_new_from_resource("/com/github/fabiocolacio/marker/ui/marker-shortcuts-window.ui");
   
   GtkWidget* dialog = GTK_WIDGET(gtk_builder_get_object(builder, "shortcuts"));
   
