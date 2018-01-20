@@ -612,7 +612,9 @@ marker_window_try_close (MarkerWindow *window)
     status = show_unsaved_documents_warning (window);
   
   if (status)
+  {
+    marker_editor_closing(editor);
     gtk_widget_destroy (GTK_WIDGET (window));
-  
+  }
   return status;
 }
