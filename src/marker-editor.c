@@ -40,6 +40,7 @@ struct _MarkerEditor
   MarkerViewMode        view_mode;
   
   gboolean              needs_refresh;
+  guint                 timer_id;
 };
 
 G_DEFINE_TYPE (MarkerEditor, marker_editor, GTK_TYPE_BOX);
@@ -74,7 +75,6 @@ buffer_changed_cb (GtkTextBuffer *buffer,
   MarkerEditor *editor = user_data;
   editor->unsaved_changes = TRUE;
   editor->needs_refresh = TRUE;
-  
   emit_signal_title_changed (editor);
 }
 
@@ -113,12 +113,12 @@ marker_editor_init (MarkerEditor *editor)
   g_signal_connect (buffer, "changed", G_CALLBACK (buffer_changed_cb), editor);
   
   editor->view_mode = marker_prefs_get_default_view_mode ();
-  editor->needs_refresh = TRUE;
+  editor->needs_refresh = FALSE;
   
   marker_editor_set_view_mode (editor, editor->view_mode);
   gtk_widget_show (GTK_WIDGET (editor));
   
-  g_timeout_add (20, refresh_timeout_cb, editor);
+  editor->timer_id = g_timeout_add (20, refresh_timeout_cb, editor);
   
   marker_editor_apply_prefs (editor);
 }
@@ -250,6 +250,7 @@ marker_editor_open_file (MarkerEditor *editor,
     g_object_unref (editor->file);
   
   editor->file = file;
+  editor->needs_refresh = TRUE;
   
   g_autofree gchar *file_contents = NULL;
   gsize file_size = 0;
@@ -445,4 +446,12 @@ marker_editor_apply_prefs (MarkerEditor *editor)
 
   guint tab_width = marker_prefs_get_tab_width ();
   gtk_source_view_set_indent_width (source_view, tab_width);
+}
+
+
+void
+marker_editor_closing(MarkerEditor       *editor)
+{
+  g_source_remove (editor->timer_id);
+  editor->needs_refresh = FALSE;
 }
