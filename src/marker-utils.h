@@ -33,10 +33,10 @@ int                  marker_utils_str_starts_with                (char          
                                                                   char               *sub_str);
 int                  marker_utils_str_ends_with                  (char               *str,
                                                                   char               *sub_str);
-char*                marker_utils_combo_box_get_active_str       (GtkComboBox        *combo_box);
+char                *marker_utils_combo_box_get_active_str       (GtkComboBox        *combo_box);
 void                 marker_utils_combo_box_set_model            (GtkComboBox        *combo_box,
                                                                   GtkTreeModel       *model);
-char*                marker_utils_allocate_string                (char               *str);
-char*                marker_utils_escape_file_path               (char               *filename);
+char                *marker_utils_allocate_string                (char               *str);
+char                *marker_utils_escape_file_path               (char               *filename);
 
 #endif
