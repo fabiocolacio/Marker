@@ -2,7 +2,6 @@
 <gresources>
   <gresource prefix="/com/github/fabiocolacio/marker">
     <file>ui/prefs-window.ui</file>
-    <file>ui/export-dialog.ui</file>
     <file>ui/shortcuts-window.ui</file>
     <file>ui/marker-gear-popover.ui</file>
     <file>ui/marker-headerbar.ui</file>
