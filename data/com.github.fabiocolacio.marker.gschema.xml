@@ -138,6 +138,11 @@
       <summary>Enable numbering of equation in Preview</summary>
       <description>Enable automatic numbering of equations in the live preview.</description>
     </key>
+    <key name="charter-toggle" type="b">
+      <default>false</default>
+      <summary>Enable Charter extension in Preview</summary>
+      <description>Enable Charter extension in the live preview.</description>
+    </key>
     <key name="preview-zoom-level" type="d">
       <default>1.0</default>
       <summary>Zoom level of the preview</summary>
