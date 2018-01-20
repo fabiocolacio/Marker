@@ -210,7 +210,10 @@ marker_create_new_window_from_file (GFile *file)
   gtk_widget_show (GTK_WIDGET (window));
   
   if (preview_mode)
-  { }
+  {
+    MarkerEditor *editor = marker_window_get_active_editor (window);
+    marker_editor_set_view_mode (editor, PREVIEW_ONLY_MODE);
+  }
 }
 
 void
