@@ -81,6 +81,6 @@ For the **Editor**:
 | Editor theme       | Ok     |
 | Tabulation settings| Ok     |
 | Sketcher           | Ok     |
-| Scroll position    | __NOT WORKING__ |
+| Scroll position    | Ok     |
 
 
