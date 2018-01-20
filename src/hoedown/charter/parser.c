@@ -326,7 +326,8 @@ parse_x_data(chart *chart, char* line)
     plot * p = clist_get_last(chart->plots)->data;
     if (p->n == 0)
         p->n = l;
-    p->x_data = data;
+    if (!p->x_data)
+        p->x_data = data;
 }
 
 void  
@@ -343,7 +344,8 @@ parse_y_data(chart *chart, char* line)
     {        
         p->n = l;
     }
-    p->y_data = data;
+    if (!p->y_data)
+        p->y_data = data;
 }
 
 
