@@ -28,6 +28,7 @@
 #include "marker-markdown.h"
 #include "marker-prefs.h"
 #include "marker-preview.h"
+#include "marker-editor.h"
 
 #include "marker-exporter.h"
 
@@ -124,71 +125,72 @@ marker_exporter_export_pandoc(const char*        markdown,
 }
 
 void
-marker_exporter_show_export_dialog(MarkerEditorWindow* window)
+marker_exporter_show_export_dialog(MarkerWindow* window)
 {
-  GtkDialog* dialog;
-  dialog = GTK_DIALOG(gtk_file_chooser_dialog_new("Export",
-                                                  GTK_WINDOW(window),
-                                                  GTK_FILE_CHOOSER_ACTION_SAVE,
-                                                  "Cancel",
-                                                  GTK_RESPONSE_CANCEL,
-                                                  "Export",
-                                                  GTK_RESPONSE_ACCEPT,
-                                                  NULL));
-                                                  
-  GtkFileChooser* chooser = GTK_FILE_CHOOSER(dialog);
-  gtk_file_chooser_set_do_overwrite_confirmation(chooser, TRUE);
-  gtk_file_chooser_set_create_folders(chooser, TRUE);
-  gtk_file_chooser_set_select_multiple(chooser, FALSE);
+  GtkDialog *dialog = GTK_DIALOG(gtk_file_chooser_dialog_new ("Export",
+                                                              GTK_WINDOW(window),
+                                                              GTK_FILE_CHOOSER_ACTION_SAVE,
+                                                              "Cancel", GTK_RESPONSE_CANCEL,
+                                                              "Export", GTK_RESPONSE_ACCEPT,
+                                                              NULL));
   
-  GtkFileFilter* filter = NULL;
+  GtkFileChooser *chooser = GTK_FILE_CHOOSER (dialog);
+  gtk_file_chooser_set_do_overwrite_confirmation (chooser, TRUE);
+  gtk_file_chooser_set_create_folders (chooser, TRUE);
+  gtk_file_chooser_set_select_multiple (chooser, FALSE);
   
-  filter = gtk_file_filter_new();
-  gtk_file_filter_set_name(filter, "HTML");
-  gtk_file_filter_add_pattern(filter, "*.html");
-  gtk_file_chooser_add_filter(chooser, filter);
+  GtkFileFilter *filter = NULL;
   
-  filter = gtk_file_filter_new();
-  gtk_file_filter_set_name(filter, "PDF");
-  gtk_file_filter_add_pattern(filter, "*.pdf");
-  gtk_file_chooser_add_filter(chooser, filter);
+  filter = gtk_file_filter_new ();
+  gtk_file_filter_set_name (filter, "HTML");
+  gtk_file_filter_add_pattern (filter, "*.html");
+  gtk_file_chooser_add_filter (chooser, filter);
   
-  filter = gtk_file_filter_new();
-  gtk_file_filter_set_name(filter, "RTF");
-  gtk_file_filter_add_pattern(filter, "*.rtf");
-  gtk_file_chooser_add_filter(chooser, filter);
+  filter = gtk_file_filter_new ();
+  gtk_file_filter_set_name (filter, "PDF");
+  gtk_file_filter_add_pattern (filter, "*.pdf");
+  gtk_file_chooser_add_filter (chooser, filter);
   
-  filter = gtk_file_filter_new();
-  gtk_file_filter_set_name(filter, "DOCX");
-  gtk_file_filter_add_pattern(filter, "*.docx");
-  gtk_file_chooser_add_filter(chooser, filter);
+  filter = gtk_file_filter_new ();
+  gtk_file_filter_set_name (filter, "RTF");
+  gtk_file_filter_add_pattern (filter, "*.rtf");
+  gtk_file_chooser_add_filter (chooser, filter);
   
-  filter = gtk_file_filter_new();
-  gtk_file_filter_set_name(filter, "ODT");
-  gtk_file_filter_add_pattern(filter, "*.odt");
-  gtk_file_chooser_add_filter(chooser, filter);
+  filter = gtk_file_filter_new ();
+  gtk_file_filter_set_name (filter, "DOCX");
+  gtk_file_filter_add_pattern (filter, "*.docx");
+  gtk_file_chooser_add_filter (chooser, filter);
   
-  filter = gtk_file_filter_new();
-  gtk_file_filter_set_name(filter, "LATEX");
-  gtk_file_filter_add_pattern(filter, "*.tex");
-  gtk_file_chooser_add_filter(chooser, filter);
+  filter = gtk_file_filter_new ();
+  gtk_file_filter_set_name (filter, "ODT");
+  gtk_file_filter_add_pattern (filter, "*.odt");
+  gtk_file_chooser_add_filter (chooser, filter);
+  
+  filter = gtk_file_filter_new ();
+  gtk_file_filter_set_name (filter, "LATEX");
+  gtk_file_filter_add_pattern (filter, "*.tex");
+  gtk_file_chooser_add_filter (chooser, filter);
   
   filter = NULL;
   
-  gint ret = gtk_dialog_run(dialog);
+  gint ret = gtk_dialog_run (dialog);
   if (ret == GTK_RESPONSE_ACCEPT)
   {
-    gchar* filename = gtk_file_chooser_get_filename(chooser);
+    g_autofree gchar *filename = gtk_file_chooser_get_filename(chooser);
+    g_autofree gchar *stylesheet_path = marker_prefs_get_css_theme();
+    g_autofree gchar *markdown = NULL;
     
     filter = gtk_file_chooser_get_filter(chooser);
     const gchar* file_type = gtk_file_filter_get_name(filter);
     MarkerExportFormat fmt = marker_exporter_str_to_fmt(file_type);
     
-    char* stylesheet_path = marker_prefs_get_css_theme();
     
-    char* markdown = marker_editor_window_get_markdown(window);
+    MarkerEditor *editor = marker_window_get_active_editor (window);
     
-    MarkerPreview* preview = marker_editor_window_get_preview(window);
+    MarkerSourceView *source_view = marker_editor_get_source_view (editor);
+    markdown = marker_source_view_get_text (source_view);
+    
+    MarkerPreview *preview = marker_editor_get_preview (editor);
     
     switch (fmt)
     {
@@ -216,10 +218,6 @@ marker_exporter_show_export_dialog(MarkerEditorWindow* window)
         marker_exporter_export_pandoc(markdown, stylesheet_path, filename, fmt);
         break;
     }
-    
-    g_free(filename);
-    g_free(markdown);
-    g_free(stylesheet_path);
   }
   
   gtk_widget_destroy(GTK_WIDGET(dialog));

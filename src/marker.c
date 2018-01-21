@@ -22,7 +22,7 @@
 #include <gtk/gtk.h>
 
 #include "marker-prefs.h"
-#include "marker-editor-window.h"
+#include "marker-window.h"
 
 #include "marker.h"
 
@@ -169,7 +169,7 @@ marker_shortcuts_cb(GSimpleAction* action,
                     gpointer       user_data)
 {
   GtkBuilder* builder =
-    gtk_builder_new_from_resource("/com/github/fabiocolacio/marker/ui/shortcuts-window.ui");
+    gtk_builder_new_from_resource("/com/github/fabiocolacio/marker/ui/marker-shortcuts-window.ui");
   
   GtkWidget* dialog = GTK_WIDGET(gtk_builder_get_object(builder, "shortcuts"));
   
@@ -199,35 +199,34 @@ marker_has_app_menu()
 void
 marker_create_new_window()
 {
-  MarkerEditorWindow* window = marker_editor_window_new(app);
-  gtk_widget_show(GTK_WIDGET(window));
+  MarkerWindow *window = marker_window_new (app);
+  gtk_widget_show (GTK_WIDGET (window));
 }
 
 void
-marker_create_new_window_from_file(GFile* file)
+marker_create_new_window_from_file (GFile *file)
 {
-  MarkerEditorWindow* window = marker_editor_window_new_from_file(app, file);
-  gtk_widget_show(GTK_WIDGET(window));
+  MarkerWindow *window = marker_window_new_from_file (app, file);
+  gtk_widget_show (GTK_WIDGET (window));
+  
   if (preview_mode)
-    marker_editor_window_set_view_mode(window, PREVIEW_ONLY_MODE);
+  {
+    MarkerEditor *editor = marker_window_get_active_editor (window);
+    marker_editor_set_view_mode (editor, PREVIEW_ONLY_MODE);
+  }
 }
 
 void
 marker_quit()
 {
-  GList *windows = gtk_application_get_windows(app), *window = NULL;
-  if (windows)
+  GtkApplication *app = marker_get_app();
+  GList *windows = gtk_application_get_windows(app);
+  for (GList *item = windows; item != NULL; item = item->next)
   {
-    for (window = windows; windows != NULL; windows = windows->next)
+    if (MARKER_IS_WINDOW(item->data))
     {
-      if (MARKER_IS_EDITOR_WINDOW(window->data))
-      {
-        marker_editor_window_try_close(MARKER_EDITOR_WINDOW(window->data));
-      }
-      else
-      {
-        gtk_widget_destroy(GTK_WIDGET(window->data));
-      }
+      MarkerWindow *window = item->data;
+      marker_window_try_close (window);
     }
   }
 }
@@ -238,6 +237,7 @@ main(int    argc,
 {
   app = gtk_application_new("com.github.fabiocolacio.marker",
                             G_APPLICATION_HANDLES_OPEN);
+
 
   g_signal_connect(app, "activate", G_CALLBACK(activate), NULL);
   g_signal_connect(app, "open", G_CALLBACK(marker_open), NULL);

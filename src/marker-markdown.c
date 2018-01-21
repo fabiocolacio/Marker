@@ -187,6 +187,11 @@ get_html_mode(MarkerMermaidMode mermaid_mode)
   {
     mode |= HOEDOWN_HTML_EQCOUNTER;
   }
+  
+  if (marker_prefs_get_use_charter())
+  {
+    mode |= HOEDOWN_HTML_CHARTER;
+  }
 
   return mode;
 }

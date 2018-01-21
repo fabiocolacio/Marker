@@ -42,14 +42,14 @@ typedef enum{
   MERMAID_LOCAL
 } MarkerMermaidMode;
 
-char*                marker_markdown_to_html                     (const char         *markdown,
+char                *marker_markdown_to_html                     (const char         *markdown,
                                                                   size_t              size,
                                                                   MarkerKaTeXMode     katex_mode,
                                                                   MarkerHighlightMode highlight_mode, 
                                                                   MarkerMermaidMode   mermaid_mode,
                                                                   const char         *stylesheet_location);
                                                                   
-char*                marker_markdown_to_html_with_css_inline     (const char         *markdown,
+char                *marker_markdown_to_html_with_css_inline     (const char         *markdown,
                                                                   size_t              size,
                                                                   MarkerKaTeXMode     katex_mode,
                                                                   MarkerHighlightMode highlight_mode, 

@@ -100,7 +100,7 @@ rndr_blockcode(hoedown_buffer *ob, const hoedown_buffer *text, const hoedown_buf
 {
 	if (ob->size) hoedown_buffer_putc(ob, '\n');
 	hoedown_html_renderer_state *state = data->opaque;
-	if (lang && hoedown_buffer_eqs(lang, "charter") != 0){
+	if (lang && (state->flags & HOEDOWN_HTML_CHARTER) != 0 && hoedown_buffer_eqs(lang, "charter") != 0){
 		if (text){
 			if ((state->flags & HOEDOWN_HTML_FIGCAPTION)!=0 && (state->flags & HOEDOWN_HTML_FIGCOUNTER)!=0)
 			{

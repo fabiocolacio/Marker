@@ -24,12 +24,14 @@
 
 #include <gtk/gtk.h>
 
+#include "marker-window.h"
+
 typedef enum
 {
   HTML, PDF, RTF, ODT, DOCX, LATEX
 } MarkerExportFormat;
 
-void                 marker_exporter_show_export_dialog          (MarkerEditorWindow *window);
+void                 marker_exporter_show_export_dialog          (MarkerWindow       *window);
 void                 marker_exporter_export                      (const char         *markdown,
                                                                   const char         *stylesheet,
                                                                   const char         *outfile,

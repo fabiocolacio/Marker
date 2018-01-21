@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gresources>
   <gresource prefix="/com/github/fabiocolacio/marker">
-    <file>ui/editor-window.ui</file>
-    <file>ui/prefs-window.ui</file>
-    <file>ui/export-dialog.ui</file>
-    <file>ui/shortcuts-window.ui</file>
-    <file>ui/gear-popover.ui</file>
-    <file>ui/gear-popover-full.ui</file>
+    <file>ui/marker-prefs-window.ui</file>
+    <file>ui/marker-shortcuts-window.ui</file>
+    <file>ui/marker-gear-popover.ui</file>
+    <file>ui/marker-headerbar.ui</file>
     <file>ui/marker-appmenu.ui</file>
-    <file>ui/sketcher-window.ui</file>
+    <file>ui/marker-sketcher-window.ui</file>
     <file>ui/icons/pen.svg</file>
     <file>ui/icons/eraser.svg</file>
     <file>ui/icons/text.svg</file>

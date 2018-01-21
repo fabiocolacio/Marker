@@ -493,7 +493,7 @@ init_ui (MarkerSketcherWindow * window)
 {
   GtkBuilder* builder =
   gtk_builder_new_from_resource(
-    "/com/github/fabiocolacio/marker/ui/sketcher-window.ui");
+    "/com/github/fabiocolacio/marker/ui/marker-sketcher-window.ui");
   
   GtkDrawingArea * drawing_area = GTK_DRAWING_AREA(gtk_drawing_area_new());
   window->drawing_area = drawing_area;

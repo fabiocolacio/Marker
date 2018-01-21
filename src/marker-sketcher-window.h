@@ -38,10 +38,9 @@ G_BEGIN_DECLS
 
 G_DECLARE_FINAL_TYPE (MarkerSketcherWindow, marker_sketcher_window, MARKER, SKETCHER_WINDOW, GtkWindow)
 
-MarkerSketcherWindow*  
-marker_sketcher_window_new (GtkApplication * application);
-
-MarkerSketcherWindow*  
-marker_sketcher_window_show(GtkWindow* parent, GFile * file, MarkerSourceView * source_view);
+MarkerSketcherWindow *marker_sketcher_window_new                 (GtkApplication     *application);
+MarkerSketcherWindow *marker_sketcher_window_show                (GtkWindow          *parent,
+                                                                  GFile              *file,
+                                                                  MarkerSourceView   *source_view);
 
 #endif
