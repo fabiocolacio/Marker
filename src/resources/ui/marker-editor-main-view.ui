@@ -33,7 +33,7 @@
       <object class="GtkPaned" id="editor_paned">
         <property name="visible">True</property>
         <property name="can_focus">True</property>
-        <property name="position">350</property>
+        <property name="position">450</property>
         <child>
           <object class="GtkStack" id="source_view_stack">
             <property name="visible">True</property>
@@ -43,7 +43,7 @@
             </child>
           </object>
           <packing>
-            <property name="resize">False</property>
+            <property name="resize">True</property>
             <property name="shrink">True</property>
           </packing>
         </child>

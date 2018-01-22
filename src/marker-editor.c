@@ -30,10 +30,15 @@ struct _MarkerEditor
 {
   GtkBox                parent_instance;
   
+  GList                *files;
+  GList                *source_views;
+  gint                  active_view;
   GFile                *file;
   gboolean              unsaved_changes;
   
   GtkPaned             *paned;
+  GtkPaned             *main_view;
+  GtkStack             *stack;
   MarkerPreview        *preview;
   MarkerSourceView     *source_view;
   GtkScrolledWindow    *source_scroll;
@@ -93,25 +98,33 @@ preview_window_closed_cb (GtkWindow *preview_window,
 static void
 marker_editor_init (MarkerEditor *editor)
 {
+  GtkBuilder* builder =
+    gtk_builder_new_from_resource(
+      "/com/github/fabiocolacio/marker/ui/marker-editor-main-view.ui");
+  
   editor->file = NULL;
+  editor->source_scroll = NULL;
+  editor->source_view = NULL;
+  editor->active_view = -1;
+  editor->files = NULL;
+  editor->source_views = NULL;
   editor->unsaved_changes = FALSE;
   
-  editor->paned = GTK_PANED (gtk_paned_new (GTK_ORIENTATION_HORIZONTAL));
+  editor->paned = GTK_PANED(gtk_builder_get_object(builder, "editor_paned"));
   gtk_paned_set_position (editor->paned, 450);
-  gtk_widget_show (GTK_WIDGET (editor->paned));
-  gtk_box_pack_start (GTK_BOX (editor), GTK_WIDGET (editor->paned), TRUE, TRUE, 0);
+
+
+  editor->main_view = GTK_PANED(gtk_builder_get_object(builder, "main_paned"));
+  editor->stack = GTK_STACK(gtk_builder_get_object(builder, "source_view_stack"));
+  gtk_box_pack_start (GTK_BOX (editor), GTK_WIDGET (editor->main_view), TRUE, TRUE, 0);
   
   editor->preview = marker_preview_new ();
   gtk_widget_show (GTK_WIDGET (editor->preview));
   
-  editor->source_view = marker_source_view_new ();
-  gtk_widget_show (GTK_WIDGET (editor->source_view));
-  editor->source_scroll = GTK_SCROLLED_WINDOW (gtk_scrolled_window_new (NULL, NULL));
-  gtk_widget_show (GTK_WIDGET (editor->source_scroll));
-  gtk_container_add (GTK_CONTAINER (editor->source_scroll), GTK_WIDGET (editor->source_view));
-  GtkTextBuffer *buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (editor->source_view));
-  g_signal_connect (buffer, "changed", G_CALLBACK (buffer_changed_cb), editor);
-  
+  gtk_widget_show (GTK_WIDGET (editor->main_view));
+  gtk_widget_show (GTK_WIDGET (editor->stack));
+  gtk_widget_show (GTK_WIDGET (editor->paned));
+   
   editor->view_mode = marker_prefs_get_default_view_mode ();
   editor->needs_refresh = FALSE;
   
@@ -119,6 +132,8 @@ marker_editor_init (MarkerEditor *editor)
   gtk_widget_show (GTK_WIDGET (editor));
   
   editor->timer_id = g_timeout_add (20, refresh_timeout_cb, editor);
+
+  g_print("%d", gtk_widget_is_visible(GTK_WIDGET(editor->stack)));
   
   marker_editor_apply_prefs (editor);
 }
@@ -190,6 +205,7 @@ marker_editor_set_view_mode (MarkerEditor   *editor,
   
   GtkWidget * const paned = GTK_WIDGET (editor->paned);
   GtkWidget * const preview = GTK_WIDGET (editor->preview);
+  GtkWidget * const stack = GTK_WIDGET (editor->stack);
   GtkWidget * const source_scroll = GTK_WIDGET (editor->source_scroll);
   GtkContainer *parent;
   
@@ -215,7 +231,7 @@ marker_editor_set_view_mode (MarkerEditor   *editor,
   switch (view_mode)
   {
     case EDITOR_ONLY_MODE:
-      gtk_paned_add1 (GTK_PANED (paned), source_scroll);
+      gtk_paned_add1 (GTK_PANED (paned), stack);
       break;
     
     case PREVIEW_ONLY_MODE:
@@ -223,7 +239,7 @@ marker_editor_set_view_mode (MarkerEditor   *editor,
       break;
     
     case DUAL_PANE_MODE:
-      gtk_paned_add1 (GTK_PANED (paned), source_scroll);
+      gtk_paned_add1 (GTK_PANED (paned), stack);
       gtk_paned_add2 (GTK_PANED (paned), preview);
       break;
     
@@ -241,15 +257,36 @@ marker_editor_set_view_mode (MarkerEditor   *editor,
 }
 
 void
+marker_editor_new_file (MarkerEditor *editor)
+{
+  editor->file = NULL;
+  editor->needs_refresh = TRUE;
+  MarkerSourceView *source_view = marker_source_view_new(); 
+  editor->source_view = source_view;
+  editor->source_views = g_list_append(editor->source_views, source_view);
+  GtkSourceBuffer *buffer =
+    GTK_SOURCE_BUFFER (gtk_text_view_get_buffer (GTK_TEXT_VIEW (source_view)));
+  g_signal_connect (buffer, "changed", G_CALLBACK (buffer_changed_cb), editor);
+  
+  editor->source_scroll = GTK_SCROLLED_WINDOW (gtk_scrolled_window_new (NULL, NULL));
+  gtk_container_add (GTK_CONTAINER (editor->source_scroll), GTK_WIDGET (editor->source_view));
+  gtk_container_add(GTK_CONTAINER(editor->stack), GTK_WIDGET(editor->source_scroll));
+  gtk_stack_add_named(editor->stack, GTK_WIDGET(editor->source_scroll), "Untitled.md");
+  editor->active_view = g_list_length(editor->files) - 1;
+
+  gtk_widget_show(GTK_WIDGET(source_view));
+  gtk_widget_show(GTK_WIDGET(editor->source_scroll));
+}
+
+void
 marker_editor_open_file (MarkerEditor *editor,
                         GFile        *file)
 {
+  
   g_assert (MARKER_IS_EDITOR (editor));
   
-  if (G_IS_FILE (editor->file))
-    g_object_unref (editor->file);
+
   
-  editor->file = file;
   editor->needs_refresh = TRUE;
   
   g_autofree gchar *file_contents = NULL;
@@ -264,12 +301,31 @@ marker_editor_open_file (MarkerEditor *editor,
   }
   else
   {
-    MarkerSourceView *source_view = editor->source_view;
-    GtkSourceBuffer *buffer =
-      GTK_SOURCE_BUFFER (gtk_text_view_get_buffer (GTK_TEXT_VIEW (source_view)));
-    gtk_source_buffer_begin_not_undoable_action (buffer);
-    marker_source_view_set_text (source_view, file_contents, file_size);
-    gtk_source_buffer_end_not_undoable_action (buffer);
+    if (G_IS_FILE(editor->file)){
+      editor->active_view = g_list_length(editor->files) - 1;
+      // editor->source_view ;
+      MarkerSourceView *source_view = marker_source_view_new(); 
+      editor->source_view = source_view;
+      editor->source_views = g_list_append(editor->source_views, source_view);
+      GtkSourceBuffer *buffer =
+        GTK_SOURCE_BUFFER (gtk_text_view_get_buffer (GTK_TEXT_VIEW (source_view)));
+      g_signal_connect (buffer, "changed", G_CALLBACK (buffer_changed_cb), editor);
+      gtk_source_buffer_begin_not_undoable_action (buffer);
+      marker_source_view_set_text (source_view, file_contents, file_size);
+      gtk_source_buffer_end_not_undoable_action (buffer);
+      editor->source_scroll = GTK_SCROLLED_WINDOW (gtk_scrolled_window_new (NULL, NULL));
+      gtk_container_add (GTK_CONTAINER (editor->source_scroll), GTK_WIDGET (editor->source_view));
+      gtk_stack_add_named(editor->stack, GTK_WIDGET(editor->source_scroll), g_file_get_basename(file));
+    } else {
+      GtkSourceBuffer *buffer =
+        GTK_SOURCE_BUFFER (gtk_text_view_get_buffer (GTK_TEXT_VIEW (editor->source_view)));
+      gtk_source_buffer_begin_not_undoable_action (buffer);
+      marker_source_view_set_text (editor->source_view, file_contents, file_size);
+      gtk_source_buffer_end_not_undoable_action (buffer);
+    }
+    editor->files = g_list_append(editor->files, file);
+    editor->file = file;
+    
   }
   
   editor->unsaved_changes = FALSE;
@@ -406,46 +462,50 @@ marker_editor_apply_prefs (MarkerEditor *editor)
 {
   g_assert (MARKER_IS_EDITOR (editor));
 
-  GtkSourceView * const source_view = GTK_SOURCE_VIEW (marker_editor_get_source_view (editor));
+  GList * el;
+  for (el = editor->source_views; el != NULL; el = g_list_next(el))
+  {
+    GtkSourceView * const source_view = GTK_SOURCE_VIEW (el->data);
+      
+    gboolean state;
+    
+    state = marker_prefs_get_show_line_numbers ();
+    gtk_source_view_set_show_line_numbers (source_view, state);
+    
+    state = marker_prefs_get_wrap_text ();
+    gtk_text_view_set_wrap_mode (GTK_TEXT_VIEW (source_view), (state) ? GTK_WRAP_WORD : GTK_WRAP_NONE );
+    
+    state = marker_prefs_get_show_right_margin ();
+    gtk_source_view_set_show_right_margin (source_view, state);
+    
+    guint position = marker_prefs_get_right_margin_position ();
+    gtk_source_view_set_right_margin_position (source_view, position);
+    
+    state = marker_prefs_get_spell_check ();
+    marker_source_view_set_spell_check (MARKER_SOURCE_VIEW (source_view), state);
+    
+    g_autofree gchar *lang = marker_prefs_get_spell_check_language ();
+    marker_source_view_set_spell_check_lang (MARKER_SOURCE_VIEW (source_view), lang);
+    
+    state = marker_prefs_get_highlight_current_line ();
+    gtk_source_view_set_highlight_current_line (source_view, state);
+    
+    GtkSourceBuffer *buffer = GTK_SOURCE_BUFFER (gtk_text_view_get_buffer (GTK_TEXT_VIEW (source_view)));
+    state = marker_prefs_get_use_syntax_theme ();
+    gtk_source_buffer_set_highlight_syntax(buffer, state);
+    
+    g_autofree gchar *theme = marker_prefs_get_syntax_theme ();
+    marker_source_view_set_syntax_theme (MARKER_SOURCE_VIEW (source_view), theme);
+    
+    state = marker_prefs_get_auto_indent ();
+    gtk_source_view_set_auto_indent (source_view, state);
+    
+    state = marker_prefs_get_replace_tabs ();
+    gtk_source_view_set_insert_spaces_instead_of_tabs (source_view, state); 
   
-  gboolean state;
-  
-  state = marker_prefs_get_show_line_numbers ();
-  gtk_source_view_set_show_line_numbers (source_view, state);
-  
-  state = marker_prefs_get_wrap_text ();
-  gtk_text_view_set_wrap_mode (GTK_TEXT_VIEW (source_view), (state) ? GTK_WRAP_WORD : GTK_WRAP_NONE );
-  
-  state = marker_prefs_get_show_right_margin ();
-  gtk_source_view_set_show_right_margin (source_view, state);
-  
-  guint position = marker_prefs_get_right_margin_position ();
-  gtk_source_view_set_right_margin_position (source_view, position);
-  
-  state = marker_prefs_get_spell_check ();
-  marker_source_view_set_spell_check (MARKER_SOURCE_VIEW (source_view), state);
-  
-  g_autofree gchar *lang = marker_prefs_get_spell_check_language ();
-  marker_source_view_set_spell_check_lang (MARKER_SOURCE_VIEW (source_view), lang);
-  
-  state = marker_prefs_get_highlight_current_line ();
-  gtk_source_view_set_highlight_current_line (source_view, state);
-  
-  GtkSourceBuffer *buffer = GTK_SOURCE_BUFFER (gtk_text_view_get_buffer (GTK_TEXT_VIEW (source_view)));
-  state = marker_prefs_get_use_syntax_theme ();
-  gtk_source_buffer_set_highlight_syntax(buffer, state);
-  
-  g_autofree gchar *theme = marker_prefs_get_syntax_theme ();
-  marker_source_view_set_syntax_theme (MARKER_SOURCE_VIEW (source_view), theme);
-  
-  state = marker_prefs_get_auto_indent ();
-  gtk_source_view_set_auto_indent (source_view, state);
-  
-  state = marker_prefs_get_replace_tabs ();
-  gtk_source_view_set_insert_spaces_instead_of_tabs (source_view, state); 
-
-  guint tab_width = marker_prefs_get_tab_width ();
-  gtk_source_view_set_indent_width (source_view, tab_width);
+    guint tab_width = marker_prefs_get_tab_width ();
+    gtk_source_view_set_indent_width (source_view, tab_width);
+  }
 }
 
 

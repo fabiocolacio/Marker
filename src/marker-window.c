@@ -477,7 +477,9 @@ marker_window_class_init (MarkerWindowClass *class)
 MarkerWindow *
 marker_window_new (GtkApplication *app)
 {
-  return g_object_new (MARKER_TYPE_WINDOW, "application", app, NULL);
+  MarkerWindow *window = g_object_new (MARKER_TYPE_WINDOW, "application", app, NULL);
+  marker_editor_new_file(marker_window_get_active_editor (window));
+  return window;
 }
 
 MarkerWindow *

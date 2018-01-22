@@ -7,6 +7,7 @@
     <file>ui/marker-headerbar.ui</file>
     <file>ui/marker-appmenu.ui</file>
     <file>ui/marker-sketcher-window.ui</file>
+    <file>ui/marker-editor-main-view.ui</file>
     <file>ui/icons/pen.svg</file>
     <file>ui/icons/eraser.svg</file>
     <file>ui/icons/text.svg</file>
