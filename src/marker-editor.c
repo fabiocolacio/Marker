@@ -20,6 +20,7 @@
  */
 
 #include <string.h>
+#include <stdlib.h>
 
 #include "marker-prefs.h"
 #include "marker-string.h"
@@ -54,6 +55,7 @@ struct _MarkerEditor
   
   gboolean              needs_refresh;
   guint                 timer_id;
+  guint                 untitled_counter;
 };
 
 G_DEFINE_TYPE (MarkerEditor, marker_editor, GTK_TYPE_BOX);
@@ -110,6 +112,7 @@ marker_editor_init (MarkerEditor *editor)
     gtk_builder_new_from_resource(
       "/com/github/fabiocolacio/marker/ui/marker-editor-main-view.ui");
   
+  editor->untitled_counter = 0;
   editor->file = NULL;
   editor->source_scroll = NULL;
   editor->source_view = NULL;
@@ -294,20 +297,32 @@ marker_editor_new_file (MarkerEditor *editor)
   
   editor->source_scroll = GTK_SCROLLED_WINDOW (gtk_scrolled_window_new (NULL, NULL));
   gtk_container_add (GTK_CONTAINER (editor->source_scroll), GTK_WIDGET (editor->source_view));
-  gtk_container_add(GTK_CONTAINER(editor->stack), GTK_WIDGET(editor->source_scroll));
-  gtk_stack_add_named(editor->stack, GTK_WIDGET(editor->source_scroll), "Untitled.md");
+  
+  char * name = malloc(16*sizeof(char));
+  memset(name, 0, 16);
+  if (editor->untitled_counter)
+  {
+    sprintf(name, "Untitled_%u.md", editor->untitled_counter);
+  } else
+  {
+    sprintf(name, "Untitled.md");
+  }
+  gtk_stack_add_named(editor->stack, GTK_WIDGET(editor->source_scroll), name);
+  
+  editor->untitled_counter ++;
   editor->active_view = g_list_length(editor->files) - 1;
 
   gtk_widget_show(GTK_WIDGET(source_view));
   gtk_widget_show(GTK_WIDGET(editor->source_scroll));
-  
+  gtk_stack_set_visible_child_full(editor->stack, name, GTK_STACK_TRANSITION_TYPE_SLIDE_UP);
   GtkTreeIter   iter;
   
   gtk_tree_store_append (editor->tree_store, &iter, NULL);  /* Acquire an iterator */
   
   gtk_tree_store_set (editor->tree_store, &iter,
-                      NAME_COLUMN, "Untitled.md",
+                      NAME_COLUMN, name,
                       -1);
+  gtk_tree_selection_select_iter(gtk_tree_view_get_selection(editor->tree_view), &iter);
 }
 
 void
