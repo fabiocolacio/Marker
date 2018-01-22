@@ -26,6 +26,11 @@
 
 #include "marker-editor.h"
 
+enum {
+  NAME_COLUMN,
+  N_COLUMNS
+};
+
 struct _MarkerEditor
 {
   GtkBox                parent_instance;
@@ -42,7 +47,10 @@ struct _MarkerEditor
   MarkerPreview        *preview;
   MarkerSourceView     *source_view;
   GtkScrolledWindow    *source_scroll;
+  GtkTreeView          *tree_view;
+  GtkTreeStore         *tree_store;
   MarkerViewMode        view_mode;
+  
   
   gboolean              needs_refresh;
   guint                 timer_id;
@@ -112,6 +120,22 @@ marker_editor_init (MarkerEditor *editor)
   
   editor->paned = GTK_PANED(gtk_builder_get_object(builder, "editor_paned"));
   gtk_paned_set_position (editor->paned, 450);
+  
+  editor->tree_view = GTK_TREE_VIEW(gtk_builder_get_object(builder, "document_tree_view"));
+  GtkTreeStore *store = gtk_tree_store_new (N_COLUMNS,       /* Total number of columns */
+                                            G_TYPE_STRING);   /* dcoument title              */
+ 
+  gtk_tree_view_set_model(editor->tree_view, GTK_TREE_MODEL(store));
+  GtkCellRenderer *renderer;
+  GtkTreeViewColumn *column;
+  
+  renderer = gtk_cell_renderer_text_new ();
+  column = gtk_tree_view_column_new_with_attributes ("Document",
+                                                     renderer,
+                                                     "text", NAME_COLUMN,
+                                                     NULL);
+  gtk_tree_view_append_column (GTK_TREE_VIEW (editor->tree_view), column);
+  editor->tree_store = store;
 
 
   editor->main_view = GTK_PANED(gtk_builder_get_object(builder, "main_paned"));
@@ -276,6 +300,14 @@ marker_editor_new_file (MarkerEditor *editor)
 
   gtk_widget_show(GTK_WIDGET(source_view));
   gtk_widget_show(GTK_WIDGET(editor->source_scroll));
+  
+  GtkTreeIter   iter;
+  
+  gtk_tree_store_append (editor->tree_store, &iter, NULL);  /* Acquire an iterator */
+  
+  gtk_tree_store_set (editor->tree_store, &iter,
+                      NAME_COLUMN, "Untitled.md",
+                      -1);
 }
 
 void
@@ -325,6 +357,13 @@ marker_editor_open_file (MarkerEditor *editor,
     }
     editor->files = g_list_append(editor->files, file);
     editor->file = file;
+    GtkTreeIter   iter;
+    
+    gtk_tree_store_append (editor->tree_store, &iter, NULL);  /* Acquire an iterator */
+    
+    gtk_tree_store_set (editor->tree_store, &iter,
+                        NAME_COLUMN, g_file_get_basename(file),
+                        -1);
     
   }
   
