@@ -123,6 +123,7 @@
             <property name="image">pen_img</property>
             <property name="active">True</property>
             <property name="draw_indicator">False</property>
+            <property name="tooltip-text">Pen Tool</property>
             <signal name="clicked" handler="pen_cb" swapped="no"/>
           </object>
           <packing>
@@ -139,6 +140,7 @@
             <property name="image">eraser_img</property>
             <property name="draw_indicator">False</property>
             <property name="group">pen_radio_button</property>
+            <property name="tooltip-text">Eraser Tool</property>
             <signal name="clicked" handler="eraser_cb" swapped="no"/>
           </object>
           <packing>
@@ -155,6 +157,7 @@
             <property name="image">text_img</property>
             <property name="draw_indicator">False</property>
             <property name="group">pen_radio_button</property>
+            <property name="tooltip-text">Text Insertion Tool</property>
             <signal name="clicked" handler="text_cb" swapped="no"/>
           </object>
           <packing>
@@ -176,6 +179,7 @@
         <property name="use_alpha">True</property>
         <property name="color">#000000000000</property>
         <property name="alpha">65535</property>
+        <property name="tooltip-text">Color Chooser</property>
         <signal name="color-set" handler="color_set_cb" swapped="no"/>
       </object>
       <packing>
@@ -253,6 +257,7 @@
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
             <property name="image">close_img</property>
+            <property name="tooltip-text">Cancel the sketch</property>
             <signal name="clicked" handler="close_cb" swapped="no"/>
           </object>
           <packing>
@@ -267,6 +272,7 @@
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
             <property name="image">add_img</property>
+            <property name="tooltip-text">Insert the sketch</property>
             <signal name="clicked" handler="insert_sketch_cb" swapped="no"/>
           </object>
           <packing>
