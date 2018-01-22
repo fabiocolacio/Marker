@@ -222,8 +222,6 @@ key_pressed_cb (GtkWidget   *widget,
   MarkerSourceView *source_view = marker_editor_get_source_view (editor);
 
   gboolean ctrl_pressed = (event->state & GDK_CONTROL_MASK);
-  gboolean shift_pressed = (event->state & GDK_SHIFT_MASK);
-
   if (ctrl_pressed)
   {
     switch (event->keyval)
@@ -245,6 +243,10 @@ key_pressed_cb (GtkWidget   *widget,
         break;
     
       case GDK_KEY_n:
+        marker_editor_new_file(editor);
+        break;
+      
+      case GDK_KEY_N:
         marker_create_new_window ();
         break;
       
@@ -264,11 +266,12 @@ key_pressed_cb (GtkWidget   *widget,
         marker_window_open_sketcher (window);
         break;
       
+      case GDK_KEY_S:
+        marker_window_save_active_file_as (window);
+        break;
+      
       case GDK_KEY_s:
-        if (shift_pressed)
-          marker_window_save_active_file_as (window);
-        else
-          marker_window_save_active_file (window);
+        marker_window_save_active_file (window);
         break;
       
       case GDK_KEY_p:
