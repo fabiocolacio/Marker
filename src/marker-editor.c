@@ -21,6 +21,7 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <glib/gprintf.h>
 
 #include "marker-prefs.h"
 #include "marker-string.h"
@@ -36,6 +37,7 @@ struct _MarkerEditor
 {
   GtkBox                parent_instance;
   
+  GList                *names;
   GList                *files;
   GList                *source_views;
   gint                  active_view;
@@ -106,6 +108,30 @@ preview_window_closed_cb (GtkWindow *preview_window,
 }
 
 static void
+tree_selection_changed_cb(GtkTreeSelection *selection,
+                          gpointer          data)
+{
+  MarkerEditor * editor = MARKER_EDITOR(data);
+  editor->needs_refresh = TRUE;
+  GtkTreeIter iter;
+  GtkTreeModel *model;
+  gchar *name;
+
+  if (gtk_tree_selection_get_selected (selection, &model, &iter))
+  {
+    gtk_tree_model_get (model, &iter, NAME_COLUMN, &name, -1);
+    gtk_stack_set_visible_child_full(editor->stack, name, GTK_STACK_TRANSITION_TYPE_CROSSFADE);
+    editor->source_scroll = GTK_SCROLLED_WINDOW(gtk_stack_get_visible_child(editor->stack));
+    editor->source_view = MARKER_SOURCE_VIEW(gtk_bin_get_child(GTK_BIN(editor->source_scroll)));
+    GList * el = g_list_find(editor->names, name);
+    gint pos = g_list_position(editor->names, el);
+    editor->file = g_list_nth_data(editor->files, pos);
+    editor->active_view = pos;
+    g_free (name);
+  }
+}
+
+static void
 marker_editor_init (MarkerEditor *editor)
 {
   GtkBuilder* builder =
@@ -139,6 +165,14 @@ marker_editor_init (MarkerEditor *editor)
                                                      NULL);
   gtk_tree_view_append_column (GTK_TREE_VIEW (editor->tree_view), column);
   editor->tree_store = store;
+  
+  GtkTreeSelection *select;
+  select = gtk_tree_view_get_selection (editor->tree_view);
+  
+  gtk_tree_selection_set_mode (select, GTK_SELECTION_SINGLE);
+  g_signal_connect (G_OBJECT (select), "changed",
+                    G_CALLBACK (tree_selection_changed_cb),
+                    editor);
 
 
   editor->main_view = GTK_PANED(gtk_builder_get_object(builder, "main_paned"));
@@ -298,15 +332,19 @@ marker_editor_new_file (MarkerEditor *editor)
   editor->source_scroll = GTK_SCROLLED_WINDOW (gtk_scrolled_window_new (NULL, NULL));
   gtk_container_add (GTK_CONTAINER (editor->source_scroll), GTK_WIDGET (editor->source_view));
   
-  char * name = malloc(16*sizeof(char));
-  memset(name, 0, 16);
+  gchar * name = g_strnfill(16, 0);
+  
   if (editor->untitled_counter)
   {
-    sprintf(name, "Untitled_%u.md", editor->untitled_counter);
+    g_sprintf(name, "Untitled_%u.md", editor->untitled_counter);
   } else
   {
-    sprintf(name, "Untitled.md");
+    g_sprintf(name, "Untitled.md");
   }
+  
+  editor->names = g_list_append(editor->names, name);
+  editor->files = g_list_append(editor->files, NULL);
+  
   gtk_stack_add_named(editor->stack, GTK_WIDGET(editor->source_scroll), name);
   
   editor->untitled_counter ++;
@@ -314,7 +352,7 @@ marker_editor_new_file (MarkerEditor *editor)
 
   gtk_widget_show(GTK_WIDGET(source_view));
   gtk_widget_show(GTK_WIDGET(editor->source_scroll));
-  gtk_stack_set_visible_child_full(editor->stack, name, GTK_STACK_TRANSITION_TYPE_OVER_UP_DOWN);
+  gtk_stack_set_visible_child_full(editor->stack, name, GTK_STACK_TRANSITION_TYPE_CROSSFADE);
   GtkTreeIter   iter;
   
   gtk_tree_store_append (editor->tree_store, &iter, NULL);  /* Acquire an iterator */
@@ -331,8 +369,6 @@ marker_editor_open_file (MarkerEditor *editor,
 {
   
   g_assert (MARKER_IS_EDITOR (editor));
-  
-
   
   editor->needs_refresh = TRUE;
   
@@ -367,10 +403,12 @@ marker_editor_open_file (MarkerEditor *editor,
     
     gtk_widget_show(GTK_WIDGET(source_view));
     gtk_widget_show(GTK_WIDGET(editor->source_scroll));
-    gtk_stack_set_visible_child_full(editor->stack, g_file_get_basename(file), GTK_STACK_TRANSITION_TYPE_OVER_UP_DOWN);
+    gtk_stack_set_visible_child_full(editor->stack, g_file_get_basename(file), GTK_STACK_TRANSITION_TYPE_CROSSFADE);
    
     editor->files = g_list_append(editor->files, file);
     editor->file = file;
+    editor->names = g_list_append(editor->names, g_file_get_basename(file));
+    
     GtkTreeIter   iter;
     
     gtk_tree_store_append (editor->tree_store, &iter, NULL);  /* Acquire an iterator */
