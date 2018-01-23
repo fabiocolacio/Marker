@@ -779,16 +779,23 @@ marker_window_close_current_document (MarkerWindow *window)
 {
   g_assert (MARKER_IS_WINDOW (window));
   
-  // MarkerEditor *editor = marker_window_get_active_editor (window);
-  // gboolean status = TRUE;
+  MarkerEditor *editor = marker_window_get_active_editor (window);
+  gboolean status = TRUE;
   
-  // if (marker_editor_document_has_unsaved_changes (editor))
-  //   status = show_unsaved_documents_warning (window);
-  // if (status)
-  // {
-  //   if (marker_editor_close_current_document(editor))
-  //   {
-  //     gtk_widget_destroy (GTK_WIDGET (window));
-  //   }
-  // }
+  if (marker_editor_has_unsaved_changes (editor))
+    status = show_unsaved_documents_warning (window);
+  
+  if (status)
+  {
+    GtkTreeIter iter;
+    GtkTreeModel *model;
+    GtkTreeSelection * selection = gtk_tree_view_get_selection(window->documents_tree_view);
+    
+    if (gtk_tree_selection_get_selected (selection, &model, &iter))
+    {
+      marker_editor_closing(editor);
+      gtk_tree_store_remove(window->documents_tree_store, &iter);
+      gtk_widget_destroy (GTK_WIDGET (editor));
+    }
+  }
 }
