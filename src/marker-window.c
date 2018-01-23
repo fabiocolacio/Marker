@@ -510,7 +510,8 @@ marker_window_open_file (MarkerWindow *window)
   if (response == GTK_RESPONSE_ACCEPT)
   {
     GFile *file = gtk_file_chooser_get_file (GTK_FILE_CHOOSER (dialog));
-    marker_create_new_window_from_file (file);
+    // marker_create_new_window_from_file (file);
+    marker_editor_open_file(marker_window_get_active_editor(window), file);
   }
   
   gtk_widget_destroy (dialog);

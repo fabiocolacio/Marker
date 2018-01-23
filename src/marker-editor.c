@@ -314,7 +314,7 @@ marker_editor_new_file (MarkerEditor *editor)
 
   gtk_widget_show(GTK_WIDGET(source_view));
   gtk_widget_show(GTK_WIDGET(editor->source_scroll));
-  gtk_stack_set_visible_child_full(editor->stack, name, GTK_STACK_TRANSITION_TYPE_SLIDE_UP);
+  gtk_stack_set_visible_child_full(editor->stack, name, GTK_STACK_TRANSITION_TYPE_OVER_UP_DOWN);
   GtkTreeIter   iter;
   
   gtk_tree_store_append (editor->tree_store, &iter, NULL);  /* Acquire an iterator */
@@ -348,28 +348,27 @@ marker_editor_open_file (MarkerEditor *editor,
   }
   else
   {
-    if (G_IS_FILE(editor->file)){
-      editor->active_view = g_list_length(editor->files) - 1;
-      // editor->source_view ;
-      MarkerSourceView *source_view = marker_source_view_new(); 
-      editor->source_view = source_view;
-      editor->source_views = g_list_append(editor->source_views, source_view);
-      GtkSourceBuffer *buffer =
-        GTK_SOURCE_BUFFER (gtk_text_view_get_buffer (GTK_TEXT_VIEW (source_view)));
-      g_signal_connect (buffer, "changed", G_CALLBACK (buffer_changed_cb), editor);
-      gtk_source_buffer_begin_not_undoable_action (buffer);
-      marker_source_view_set_text (source_view, file_contents, file_size);
-      gtk_source_buffer_end_not_undoable_action (buffer);
-      editor->source_scroll = GTK_SCROLLED_WINDOW (gtk_scrolled_window_new (NULL, NULL));
-      gtk_container_add (GTK_CONTAINER (editor->source_scroll), GTK_WIDGET (editor->source_view));
-      gtk_stack_add_named(editor->stack, GTK_WIDGET(editor->source_scroll), g_file_get_basename(file));
-    } else {
-      GtkSourceBuffer *buffer =
-        GTK_SOURCE_BUFFER (gtk_text_view_get_buffer (GTK_TEXT_VIEW (editor->source_view)));
-      gtk_source_buffer_begin_not_undoable_action (buffer);
-      marker_source_view_set_text (editor->source_view, file_contents, file_size);
-      gtk_source_buffer_end_not_undoable_action (buffer);
-    }
+
+    editor->active_view = g_list_length(editor->files) - 1;
+    // editor->source_view ;
+    MarkerSourceView *source_view = marker_source_view_new(); 
+    editor->source_view = source_view;
+    editor->source_views = g_list_append(editor->source_views, source_view);
+    GtkSourceBuffer *buffer =
+      GTK_SOURCE_BUFFER (gtk_text_view_get_buffer (GTK_TEXT_VIEW (source_view)));
+    g_signal_connect (buffer, "changed", G_CALLBACK (buffer_changed_cb), editor);
+    gtk_source_buffer_begin_not_undoable_action (buffer);
+    marker_source_view_set_text (source_view, file_contents, file_size);
+    gtk_source_buffer_end_not_undoable_action (buffer);
+    editor->source_scroll = GTK_SCROLLED_WINDOW (gtk_scrolled_window_new (NULL, NULL));
+    gtk_container_add (GTK_CONTAINER (editor->source_scroll), GTK_WIDGET (editor->source_view));
+    
+    gtk_stack_add_named(editor->stack, GTK_WIDGET(editor->source_scroll), g_file_get_basename(file));
+    
+    gtk_widget_show(GTK_WIDGET(source_view));
+    gtk_widget_show(GTK_WIDGET(editor->source_scroll));
+    gtk_stack_set_visible_child_full(editor->stack, g_file_get_basename(file), GTK_STACK_TRANSITION_TYPE_OVER_UP_DOWN);
+   
     editor->files = g_list_append(editor->files, file);
     editor->file = file;
     GtkTreeIter   iter;
@@ -379,6 +378,7 @@ marker_editor_open_file (MarkerEditor *editor,
     gtk_tree_store_set (editor->tree_store, &iter,
                         NAME_COLUMN, g_file_get_basename(file),
                         -1);
+    gtk_tree_selection_select_iter(gtk_tree_view_get_selection(editor->tree_view), &iter);
     
   }
   
