@@ -80,32 +80,35 @@ show_unsaved_documents_warning (MarkerWindow *window)
 
   MarkerEditor *editor = marker_window_get_active_editor (window);
   GFile *file = marker_editor_get_file (editor);
-  g_autofree gchar *warning_message = NULL;
-  
+
+  GtkWidget *dialog;
   if (G_IS_FILE (file))
   {
     g_autofree gchar *filename = g_file_get_basename (file);
-    warning_message = g_strdup_printf ("<span weight='bold' size='larger'>"
-                                       "Discard changes to the document '%s'?"
-                                       "</span>\n\n"
-                                       "The document has unsaved changes "
-                                       "that will be lost if it is closed now.", filename);
+    dialog = gtk_message_dialog_new_with_markup(GTK_WINDOW (window),
+                                                GTK_DIALOG_MODAL,
+                                                GTK_MESSAGE_QUESTION,
+                                                GTK_BUTTONS_OK_CANCEL,
+                                                "<span weight='bold' size='larger'>"
+                                                "Discard changes to the document '%s'?"
+                                                "</span>\n\n"
+                                                "The document has unsaved changes "
+                                                "that will be lost if it is closed now.",
+                                                filename);
   }
   else
   {
-    warning_message = g_strdup ("<span weight='bold' size='larger'>"
-                                "Discard changes to the document?"
-                                "</span>\n\n"
-                                "The document has unsaved changes "
-                                "that will be lost if it is closed now.");
+    dialog = gtk_message_dialog_new_with_markup(GTK_WINDOW (window),
+                                                GTK_DIALOG_MODAL,
+                                                GTK_MESSAGE_QUESTION,
+                                                GTK_BUTTONS_OK_CANCEL,
+                                                "<span weight='bold' size='larger'>"
+                                                "Discard changes to the document?"
+                                                "</span>\n\n"
+                                                "The document has unsaved changes "
+                                                "that will be lost if it is closed now.");
   }
-
-  GtkWidget *dialog = gtk_message_dialog_new_with_markup(GTK_WINDOW (window),
-                                                         GTK_DIALOG_MODAL,
-                                                         GTK_MESSAGE_QUESTION,
-                                                         GTK_BUTTONS_OK_CANCEL,
-                                                         warning_message);
-                                           
+  
   gint response = gtk_dialog_run(GTK_DIALOG(dialog));
   
   gtk_widget_destroy (GTK_WIDGET (dialog));
