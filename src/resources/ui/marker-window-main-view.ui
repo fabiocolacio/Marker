@@ -5,7 +5,7 @@
   <object class="GtkPaned" id="main_paned">
     <property name="visible">True</property>
     <property name="can_focus">True</property>
-    <property name="position">200</property>
+    <property name="position">0</property>
     <child>
       <object class="GtkTreeView" id="documents_tree_view">
         <property name="visible">True</property>
