@@ -259,7 +259,7 @@ key_pressed_cb (GtkWidget   *widget,
         break;
     
       case GDK_KEY_n:
-        //marker_editor_new_file(editor);
+        marker_window_new_editor(window);
         break;
       
       case GDK_KEY_N:
@@ -417,6 +417,26 @@ static void
 tree_selection_changed_cb(GtkTreeSelection *selection,
                           gpointer          data)
 {
+  MarkerWindow * window = MARKER_WINDOW(data);
+  GtkTreeIter iter;
+  GtkTreeModel *model;
+  gchar *name;
+  MarkerEditor * editor;
+  
+  if (gtk_tree_selection_get_selected (selection, &model, &iter))
+  {
+    gtk_tree_model_get (model, &iter, NAME_COLUMN, &name, -1);
+    gtk_tree_model_get (model, &iter, EDITOR_COLUMN, &editor, -1);
+    gtk_stack_set_visible_child_full(window->editors_stack, name, GTK_STACK_TRANSITION_TYPE_CROSSFADE);
+    
+    window->active_editor = editor;
+    g_autofree gchar *title = marker_editor_get_title (marker_window_get_active_editor (window));
+    g_autofree gchar *subtitle = marker_editor_get_subtitle (marker_window_get_active_editor (window));
+    gtk_header_bar_set_title (window->header_bar, title);
+    gtk_header_bar_set_subtitle (window->header_bar, subtitle);
+    
+    g_free (name);
+  }
 }
 
 static void
@@ -450,7 +470,7 @@ marker_window_init (MarkerWindow *window)
    GtkTreeViewColumn *column;
    
    renderer = gtk_cell_renderer_text_new ();
-   column = gtk_tree_view_column_new_with_attributes ("Document",
+   column = gtk_tree_view_column_new_with_attributes ("Documents",
                                                       renderer,
                                                       "text", TITLE_COLUMN,
                                                       NULL);
@@ -551,6 +571,18 @@ marker_window_add_editor(MarkerWindow *window,
   gtk_header_bar_set_title (window->header_bar, title);
   gtk_header_bar_set_subtitle (window->header_bar, subtitle);
   
+  
+  GtkTreeIter   iter;
+  
+  gtk_tree_store_append (window->documents_tree_store, &iter, NULL);  /* Acquire an iterator */
+  
+  gtk_tree_store_set (window->documents_tree_store, &iter,
+                      TITLE_COLUMN, marker_editor_get_title(editor),
+                      NAME_COLUMN, name,
+                      EDITOR_COLUMN, editor,
+                      -1);
+  gtk_tree_selection_select_iter(gtk_tree_view_get_selection(window->documents_tree_view), &iter);
+  
   window->editors_counter ++;
 }
 
@@ -604,8 +636,7 @@ marker_window_open_file (MarkerWindow *window)
   if (response == GTK_RESPONSE_ACCEPT)
   {
     GFile *file = gtk_file_chooser_get_file (GTK_FILE_CHOOSER (dialog));
-    // marker_create_new_window_from_file (file);
-    marker_editor_open_file(marker_window_get_active_editor(window), file);
+    marker_window_new_editor_from_file(window, file);
   }
   
   gtk_widget_destroy (dialog);
