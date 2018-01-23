@@ -46,6 +46,7 @@ void                 marker_window_save_active_file              (MarkerWindow  
 void                 marker_window_save_active_file_as           (MarkerWindow       *window);
 void                 marker_window_open_sketcher                 (MarkerWindow       *window);
 gboolean             marker_window_try_close                     (MarkerWindow       *window);
+void                 marker_window_close_current_document        (MarkerWindow       *window);
 
 G_END_DECLS
 

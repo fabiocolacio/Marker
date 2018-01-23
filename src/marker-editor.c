@@ -42,7 +42,7 @@ struct _MarkerEditor
   GList                *source_views;
   gint                  active_view;
   GFile                *file;
-  gboolean              unsaved_changes;
+  GList                *unsaved_files;
   
   GtkPaned             *paned;
   GtkPaned             *main_view;
@@ -61,6 +61,22 @@ struct _MarkerEditor
 };
 
 G_DEFINE_TYPE (MarkerEditor, marker_editor, GTK_TYPE_BOX);
+
+
+static gint
+search(GList *list,
+       gchar *data)
+{
+  GList * el;
+  gint index = -1;
+  for (el = list; el != NULL;  el = g_list_next(el))
+  {
+    index ++;
+    if (g_str_equal(el->data, data))
+      return index;
+  }
+  return index;
+}
 
 static void
 emit_signal_title_changed (MarkerEditor *editor)
@@ -90,7 +106,7 @@ buffer_changed_cb (GtkTextBuffer *buffer,
                    gpointer user_data)
 {
   MarkerEditor *editor = user_data;
-  editor->unsaved_changes = TRUE;
+  *(gboolean*)g_list_nth_data(editor->unsaved_files, editor->active_view) = TRUE;
   editor->needs_refresh = TRUE;
   emit_signal_title_changed (editor);
 }
@@ -123,8 +139,8 @@ tree_selection_changed_cb(GtkTreeSelection *selection,
     gtk_stack_set_visible_child_full(editor->stack, name, GTK_STACK_TRANSITION_TYPE_CROSSFADE);
     editor->source_scroll = GTK_SCROLLED_WINDOW(gtk_stack_get_visible_child(editor->stack));
     editor->source_view = MARKER_SOURCE_VIEW(gtk_bin_get_child(GTK_BIN(editor->source_scroll)));
-    GList * el = g_list_find(editor->names, name);
-    gint pos = g_list_position(editor->names, el);
+    
+    gint pos = search(editor->names, name);
     editor->file = g_list_nth_data(editor->files, pos);
     editor->active_view = pos;
     g_free (name);
@@ -145,7 +161,7 @@ marker_editor_init (MarkerEditor *editor)
   editor->active_view = -1;
   editor->files = NULL;
   editor->source_views = NULL;
-  editor->unsaved_changes = FALSE;
+  editor->unsaved_files = NULL;
   
   editor->paned = GTK_PANED(gtk_builder_get_object(builder, "editor_paned"));
   gtk_paned_set_position (editor->paned, 450);
@@ -193,8 +209,6 @@ marker_editor_init (MarkerEditor *editor)
   gtk_widget_show (GTK_WIDGET (editor));
   
   editor->timer_id = g_timeout_add (20, refresh_timeout_cb, editor);
-
-  g_print("%d", gtk_widget_is_visible(GTK_WIDGET(editor->stack)));
   
   marker_editor_apply_prefs (editor);
 }
@@ -349,6 +363,10 @@ marker_editor_new_file (MarkerEditor *editor)
   
   editor->untitled_counter ++;
   editor->active_view = g_list_length(editor->files) - 1;
+  
+  gboolean * b = g_new(gboolean, 1);
+  *b = FALSE;
+  editor->unsaved_files = g_list_append(editor->unsaved_files, b);
 
   gtk_widget_show(GTK_WIDGET(source_view));
   gtk_widget_show(GTK_WIDGET(editor->source_scroll));
@@ -408,6 +426,7 @@ marker_editor_open_file (MarkerEditor *editor,
     editor->files = g_list_append(editor->files, file);
     editor->file = file;
     editor->names = g_list_append(editor->names, g_file_get_basename(file));
+    editor->unsaved_files = g_list_append(editor->unsaved_files, g_new(gboolean, 1));
     
     GtkTreeIter   iter;
     
@@ -420,7 +439,7 @@ marker_editor_open_file (MarkerEditor *editor,
     
   }
   
-  editor->unsaved_changes = FALSE;
+  *(gboolean*)g_list_nth_data(editor->unsaved_files, editor->active_view) = FALSE;
   
   emit_signal_title_changed (editor);
   emit_signal_subtitle_changed (editor);
@@ -443,7 +462,7 @@ marker_editor_save_file (MarkerEditor *editor)
     fclose (fp);
   }
   
-  editor->unsaved_changes = FALSE;
+  *(gboolean*)g_list_nth_data(editor->unsaved_files, editor->active_view) = FALSE;
   emit_signal_title_changed (editor);
 }
 
@@ -478,7 +497,21 @@ gboolean
 marker_editor_has_unsaved_changes (MarkerEditor *editor)
 {
   g_assert (MARKER_IS_EDITOR (editor));
-  return editor->unsaved_changes;
+  gboolean unsaved = FALSE;
+  GList * el ;
+  for (el = editor->unsaved_files; el != NULL; el = g_list_next(el))
+  {
+    unsaved = unsaved || *(gboolean*)el->data;
+  }
+  return unsaved;
+}
+
+gboolean
+marker_editor_document_has_unsaved_changes (MarkerEditor *editor)
+{
+  if (editor->unsaved_files == NULL)
+    return FALSE;
+  return *(gboolean*)g_list_nth_data(editor->unsaved_files, editor->active_view);
 }
 
 gchar *
@@ -493,7 +526,7 @@ marker_editor_get_title (MarkerEditor *editor)
   {
     gchar *basename = g_file_get_basename (file);
     
-    if (marker_editor_has_unsaved_changes (editor))
+    if (marker_editor_document_has_unsaved_changes (editor))
     {
       title = g_strdup_printf ("*%s", basename);
       g_free (basename);
@@ -505,7 +538,7 @@ marker_editor_get_title (MarkerEditor *editor)
   }
   else
   {
-    if (marker_editor_has_unsaved_changes (editor))
+    if (marker_editor_document_has_unsaved_changes (editor))
     {
       title = g_strdup ("*Untitled.md");
     }
@@ -606,4 +639,41 @@ marker_editor_closing(MarkerEditor       *editor)
 {
   g_source_remove (editor->timer_id);
   editor->needs_refresh = FALSE;
+}
+
+
+gboolean
+marker_editor_close_current_document (MarkerEditor *editor)
+{
+
+  editor->needs_refresh = FALSE;
+  if (g_list_length(editor->names) > 1)
+  {
+
+      
+    GtkTreeSelection * selection = gtk_tree_view_get_selection(editor->tree_view);
+
+    GtkTreeIter iter;
+    GtkTreeModel *model;
+    gchar * name;
+    if (gtk_tree_selection_get_selected (selection, &model, &iter))
+    {
+      gtk_tree_model_get (model, &iter, NAME_COLUMN, &name, -1);
+
+      editor->files = g_list_remove(editor->files, editor->file);
+      editor->names = g_list_remove(editor->names, g_list_nth_data(editor->names, editor->active_view));
+      editor->source_views = g_list_remove(editor->source_views, editor->source_view);
+
+      if (editor->active_view >= g_list_length(editor->names))
+      {
+        editor->active_view = g_list_length(editor->names) - 1;
+      }
+      g_free(name);
+      gtk_tree_store_remove(editor->tree_store, &iter);
+    }
+    return FALSE;
+  } else {
+    marker_editor_closing(editor);
+  }
+  return TRUE;
 }

@@ -251,9 +251,13 @@ key_pressed_cb (GtkWidget   *widget,
         break;
       
       case GDK_KEY_w:
+        marker_window_close_current_document (window);
+        break;
+        
+      case GDK_KEY_W:
         marker_window_try_close (window);
         break;
-    
+        
       case GDK_KEY_r:
         marker_editor_refresh_preview (editor);
         break;
@@ -623,4 +627,23 @@ marker_window_try_close (MarkerWindow *window)
     gtk_widget_destroy (GTK_WIDGET (window));
   }
   return status;
+}
+
+void
+marker_window_close_current_document (MarkerWindow *window)
+{
+  g_assert (MARKER_IS_WINDOW (window));
+  
+  MarkerEditor *editor = marker_window_get_active_editor (window);
+  gboolean status = TRUE;
+  
+  if (marker_editor_document_has_unsaved_changes (editor))
+    status = show_unsaved_documents_warning (window);
+  if (status)
+  {
+    if (marker_editor_close_current_document(editor))
+    {
+      gtk_widget_destroy (GTK_WIDGET (window));
+    }
+  }
 }

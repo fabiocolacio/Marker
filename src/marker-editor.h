@@ -63,7 +63,8 @@ MarkerPreview       *marker_editor_get_preview                   (MarkerEditor  
 MarkerSourceView    *marker_editor_get_source_view               (MarkerEditor       *editor);
 void                 marker_editor_apply_prefs                   (MarkerEditor       *editor);
 void                 marker_editor_closing                       (MarkerEditor       *editor);
-
+gboolean             marker_editor_close_current_document        (MarkerEditor       *editor);
+gboolean             marker_editor_document_has_unsaved_changes  (MarkerEditor       *editor);
 
 G_END_DECLS
 
