@@ -10,7 +10,7 @@ STYLES_DIR = join_paths(APP_DIR, 'styles')
 SCRIPTS_DIR = join_paths(APP_DIR, 'scripts')
 HIGHLIGHT_STYLES_DIR = join_paths(join_paths(SCRIPTS_DIR, 'highlight'),'styles')
 WEB_EXTENSIONS_DIRECTORY = join_paths(APP_DIR, 'extensions')
-FLAT_DIR = '/usr/share/metainfo/'
+APPDATA_DIR = join_paths(DATA_DIR, 'appdata')
 
 EXECUTABLE_NAME = 'com.github.fabiocolacio.marker'
 
@@ -132,7 +132,7 @@ install_data(
 
 install_data(
   'data/com.github.fabiocolaccio.marker.appdata.xml',
-  install_dir : FLAT_DIR
+  install_dir : APPDATA_DIR
 )
 
 install_subdir(
