@@ -52,8 +52,7 @@ struct _MarkerWindow
   
   GtkBox               *vbox;
   MarkerEditor         *active_editor;
-  
-  GList                *editors;
+
   GtkStack             *editors_stack;
   GtkTreeView          *documents_tree_view;
   GtkTreeStore         *documents_tree_store;
@@ -858,7 +857,7 @@ void
 marker_window_close_current_document (MarkerWindow *window)
 {
   g_assert (MARKER_IS_WINDOW (window));
-  
+    
   MarkerEditor *editor = marker_window_get_active_editor (window);
   gboolean status = TRUE;
   
@@ -876,6 +875,12 @@ marker_window_close_current_document (MarkerWindow *window)
       marker_editor_closing(editor);
       gtk_tree_store_remove(window->documents_tree_store, &iter);
       gtk_widget_destroy (GTK_WIDGET (editor));
+    }
+    else{
+      if (!gtk_tree_model_get_iter_first(GTK_TREE_MODEL(window->documents_tree_store), &iter))
+      {
+        marker_window_try_close(window);
+      }
     }
   }
 }
