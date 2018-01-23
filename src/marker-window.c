@@ -615,8 +615,6 @@ marker_window_new_from_file (GtkApplication *app,
 {
   MarkerWindow *window = g_object_new (MARKER_TYPE_WINDOW, "application", app, NULL);
   marker_window_new_editor_from_file(window, file);
-    
-  marker_editor_open_file (marker_window_get_active_editor (window), file);
   return window;
 }
 
