@@ -1,27 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright 2013 First Lastname <your@email.com> -->
+<!-- Copyright 2018 Fabio Colacio <fabio.colacio.dev@gmail.com> -->
 <component type="desktop-application">
   <id>com.github.fabiocolacio.marker</id>
   <metadata_license>FSFAP</metadata_license>
   <project_license>GPL-3.0</project_license>
   <name>Marker</name>
-  <summary>The Markdown Editor</summary>
+  <summary>Powerful markdown editor</summary>
 
   <description>
-    <p>
-      Markdown is a powerful Markdown editor for Gnome.
-    </p>
-    <p>Features list:</p>
+    <p>Features:</p>
     <ul>
       <li>View and edit markdown documents</li>
-      <li>HTML conversion of markdown documents</li>
+      <li>Convert markdown documents to HTML</li>
       <li>Tex math rendering</li>
-      <!--NEED FIX <li>Support for <a href="https://mermaidjs.github.io/">mermaid</a> diagrams</li>
-      <li>Support for <a href="https://github.com/Mandarancio/charter">charter</a> plots</li>
-      -->
+      <li>Support for mermaid diagrams</li>
+      <li>Support for charter plots</li>
       <li>Syntax highlighting for code blocks</li>
       <li>Integrated sketch editor</li>
-      <li>Flexible export options
+      <li>Exports to
         <ul>
           <li>PDF</li>
           <li>RTF</li>
@@ -63,7 +59,7 @@
   <releases>
     <release version="2018.01.23" date="2018-01-23">
       <description>
-        <p>First release for flathub.</p>
+        <p>Initial Flathub release</p>
       </description>
     </release>
   </releases>
