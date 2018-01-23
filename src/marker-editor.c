@@ -1,4 +1,4 @@
-/*
+*
  * marker-editor.c
  *
  * Copyright (C) 2017 - 2018 Fabio Colacio
@@ -20,63 +20,30 @@
  */
 
 #include <string.h>
-#include <stdlib.h>
-#include <glib/gprintf.h>
 
 #include "marker-prefs.h"
 #include "marker-string.h"
 
 #include "marker-editor.h"
 
-enum {
-  NAME_COLUMN,
-  N_COLUMNS
-};
-
 struct _MarkerEditor
 {
   GtkBox                parent_instance;
   
-  GList                *names;
-  GList                *files;
-  GList                *source_views;
-  gint                  active_view;
   GFile                *file;
-  GList                *unsaved_files;
+  gboolean              unsaved_changes;
   
   GtkPaned             *paned;
-  GtkPaned             *main_view;
-  GtkStack             *stack;
   MarkerPreview        *preview;
   MarkerSourceView     *source_view;
   GtkScrolledWindow    *source_scroll;
-  GtkTreeView          *tree_view;
-  GtkTreeStore         *tree_store;
   MarkerViewMode        view_mode;
-  
   
   gboolean              needs_refresh;
   guint                 timer_id;
-  guint                 untitled_counter;
 };
 
 G_DEFINE_TYPE (MarkerEditor, marker_editor, GTK_TYPE_BOX);
-
-
-static gint
-search(GList *list,
-       gchar *data)
-{
-  GList * el;
-  gint index = -1;
-  for (el = list; el != NULL;  el = g_list_next(el))
-  {
-    index ++;
-    if (g_str_equal(el->data, data))
-      return index;
-  }
-  return index;
-}
 
 static void
 emit_signal_title_changed (MarkerEditor *editor)
@@ -106,7 +73,7 @@ buffer_changed_cb (GtkTextBuffer *buffer,
                    gpointer user_data)
 {
   MarkerEditor *editor = user_data;
-  *(gboolean*)g_list_nth_data(editor->unsaved_files, editor->active_view) = TRUE;
+  editor->unsaved_changes = TRUE;
   editor->needs_refresh = TRUE;
   emit_signal_title_changed (editor);
 }
@@ -124,84 +91,27 @@ preview_window_closed_cb (GtkWindow *preview_window,
 }
 
 static void
-tree_selection_changed_cb(GtkTreeSelection *selection,
-                          gpointer          data)
-{
-  MarkerEditor * editor = MARKER_EDITOR(data);
-  editor->needs_refresh = TRUE;
-  GtkTreeIter iter;
-  GtkTreeModel *model;
-  gchar *name;
-
-  if (gtk_tree_selection_get_selected (selection, &model, &iter))
-  {
-    gtk_tree_model_get (model, &iter, NAME_COLUMN, &name, -1);
-    gtk_stack_set_visible_child_full(editor->stack, name, GTK_STACK_TRANSITION_TYPE_CROSSFADE);
-    editor->source_scroll = GTK_SCROLLED_WINDOW(gtk_stack_get_visible_child(editor->stack));
-    editor->source_view = MARKER_SOURCE_VIEW(gtk_bin_get_child(GTK_BIN(editor->source_scroll)));
-    
-    gint pos = search(editor->names, name);
-    editor->file = g_list_nth_data(editor->files, pos);
-    editor->active_view = pos;
-    g_free (name);
-  }
-}
-
-static void
 marker_editor_init (MarkerEditor *editor)
 {
-  GtkBuilder* builder =
-    gtk_builder_new_from_resource(
-      "/com/github/fabiocolacio/marker/ui/marker-editor-main-view.ui");
-  
-  editor->untitled_counter = 0;
   editor->file = NULL;
-  editor->source_scroll = NULL;
-  editor->source_view = NULL;
-  editor->active_view = -1;
-  editor->files = NULL;
-  editor->source_views = NULL;
-  editor->unsaved_files = NULL;
+  editor->unsaved_changes = FALSE;
   
-  editor->paned = GTK_PANED(gtk_builder_get_object(builder, "editor_paned"));
+  editor->paned = GTK_PANED (gtk_paned_new (GTK_ORIENTATION_HORIZONTAL));
   gtk_paned_set_position (editor->paned, 450);
-  
-  editor->tree_view = GTK_TREE_VIEW(gtk_builder_get_object(builder, "document_tree_view"));
-  GtkTreeStore *store = gtk_tree_store_new (N_COLUMNS,       /* Total number of columns */
-                                            G_TYPE_STRING);   /* dcoument title              */
- 
-  gtk_tree_view_set_model(editor->tree_view, GTK_TREE_MODEL(store));
-  GtkCellRenderer *renderer;
-  GtkTreeViewColumn *column;
-  
-  renderer = gtk_cell_renderer_text_new ();
-  column = gtk_tree_view_column_new_with_attributes ("Document",
-                                                     renderer,
-                                                     "text", NAME_COLUMN,
-                                                     NULL);
-  gtk_tree_view_append_column (GTK_TREE_VIEW (editor->tree_view), column);
-  editor->tree_store = store;
-  
-  GtkTreeSelection *select;
-  select = gtk_tree_view_get_selection (editor->tree_view);
-  
-  gtk_tree_selection_set_mode (select, GTK_SELECTION_SINGLE);
-  g_signal_connect (G_OBJECT (select), "changed",
-                    G_CALLBACK (tree_selection_changed_cb),
-                    editor);
-
-
-  editor->main_view = GTK_PANED(gtk_builder_get_object(builder, "main_paned"));
-  editor->stack = GTK_STACK(gtk_builder_get_object(builder, "source_view_stack"));
-  gtk_box_pack_start (GTK_BOX (editor), GTK_WIDGET (editor->main_view), TRUE, TRUE, 0);
+  gtk_widget_show (GTK_WIDGET (editor->paned));
+  gtk_box_pack_start (GTK_BOX (editor), GTK_WIDGET (editor->paned), TRUE, TRUE, 0);
   
   editor->preview = marker_preview_new ();
   gtk_widget_show (GTK_WIDGET (editor->preview));
   
-  gtk_widget_show (GTK_WIDGET (editor->main_view));
-  gtk_widget_show (GTK_WIDGET (editor->stack));
-  gtk_widget_show (GTK_WIDGET (editor->paned));
-   
+  editor->source_view = marker_source_view_new ();
+  gtk_widget_show (GTK_WIDGET (editor->source_view));
+  editor->source_scroll = GTK_SCROLLED_WINDOW (gtk_scrolled_window_new (NULL, NULL));
+  gtk_widget_show (GTK_WIDGET (editor->source_scroll));
+  gtk_container_add (GTK_CONTAINER (editor->source_scroll), GTK_WIDGET (editor->source_view));
+  GtkTextBuffer *buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (editor->source_view));
+  g_signal_connect (buffer, "changed", G_CALLBACK (buffer_changed_cb), editor);
+  
   editor->view_mode = marker_prefs_get_default_view_mode ();
   editor->needs_refresh = FALSE;
   
@@ -280,7 +190,6 @@ marker_editor_set_view_mode (MarkerEditor   *editor,
   
   GtkWidget * const paned = GTK_WIDGET (editor->paned);
   GtkWidget * const preview = GTK_WIDGET (editor->preview);
-  GtkWidget * const stack = GTK_WIDGET (editor->stack);
   GtkWidget * const source_scroll = GTK_WIDGET (editor->source_scroll);
   GtkContainer *parent;
   
@@ -306,7 +215,7 @@ marker_editor_set_view_mode (MarkerEditor   *editor,
   switch (view_mode)
   {
     case EDITOR_ONLY_MODE:
-      gtk_paned_add1 (GTK_PANED (paned), stack);
+      gtk_paned_add1 (GTK_PANED (paned), source_scroll);
       break;
     
     case PREVIEW_ONLY_MODE:
@@ -314,7 +223,7 @@ marker_editor_set_view_mode (MarkerEditor   *editor,
       break;
     
     case DUAL_PANE_MODE:
-      gtk_paned_add1 (GTK_PANED (paned), stack);
+      gtk_paned_add1 (GTK_PANED (paned), source_scroll);
       gtk_paned_add2 (GTK_PANED (paned), preview);
       break;
     
@@ -332,62 +241,15 @@ marker_editor_set_view_mode (MarkerEditor   *editor,
 }
 
 void
-marker_editor_new_file (MarkerEditor *editor)
-{
-  editor->file = NULL;
-  editor->needs_refresh = TRUE;
-  MarkerSourceView *source_view = marker_source_view_new(); 
-  editor->source_view = source_view;
-  editor->source_views = g_list_append(editor->source_views, source_view);
-  GtkSourceBuffer *buffer =
-    GTK_SOURCE_BUFFER (gtk_text_view_get_buffer (GTK_TEXT_VIEW (source_view)));
-  g_signal_connect (buffer, "changed", G_CALLBACK (buffer_changed_cb), editor);
-  
-  editor->source_scroll = GTK_SCROLLED_WINDOW (gtk_scrolled_window_new (NULL, NULL));
-  gtk_container_add (GTK_CONTAINER (editor->source_scroll), GTK_WIDGET (editor->source_view));
-  
-  gchar * name = g_strnfill(16, 0);
-  
-  if (editor->untitled_counter)
-  {
-    g_sprintf(name, "Untitled_%u.md", editor->untitled_counter);
-  } else
-  {
-    g_sprintf(name, "Untitled.md");
-  }
-  
-  editor->names = g_list_append(editor->names, name);
-  editor->files = g_list_append(editor->files, NULL);
-  
-  gtk_stack_add_named(editor->stack, GTK_WIDGET(editor->source_scroll), name);
-  
-  editor->untitled_counter ++;
-  editor->active_view = g_list_length(editor->files) - 1;
-  
-  gboolean * b = g_new(gboolean, 1);
-  *b = FALSE;
-  editor->unsaved_files = g_list_append(editor->unsaved_files, b);
-
-  gtk_widget_show(GTK_WIDGET(source_view));
-  gtk_widget_show(GTK_WIDGET(editor->source_scroll));
-  gtk_stack_set_visible_child_full(editor->stack, name, GTK_STACK_TRANSITION_TYPE_CROSSFADE);
-  GtkTreeIter   iter;
-  
-  gtk_tree_store_append (editor->tree_store, &iter, NULL);  /* Acquire an iterator */
-  
-  gtk_tree_store_set (editor->tree_store, &iter,
-                      NAME_COLUMN, name,
-                      -1);
-  gtk_tree_selection_select_iter(gtk_tree_view_get_selection(editor->tree_view), &iter);
-}
-
-void
 marker_editor_open_file (MarkerEditor *editor,
                         GFile        *file)
 {
-  
   g_assert (MARKER_IS_EDITOR (editor));
   
+  if (G_IS_FILE (editor->file))
+    g_object_unref (editor->file);
+  
+  editor->file = file;
   editor->needs_refresh = TRUE;
   
   g_autofree gchar *file_contents = NULL;
@@ -402,44 +264,15 @@ marker_editor_open_file (MarkerEditor *editor,
   }
   else
   {
-
-    editor->active_view = g_list_length(editor->files) - 1;
-    // editor->source_view ;
-    MarkerSourceView *source_view = marker_source_view_new(); 
-    editor->source_view = source_view;
-    editor->source_views = g_list_append(editor->source_views, source_view);
+    MarkerSourceView *source_view = editor->source_view;
     GtkSourceBuffer *buffer =
       GTK_SOURCE_BUFFER (gtk_text_view_get_buffer (GTK_TEXT_VIEW (source_view)));
-    g_signal_connect (buffer, "changed", G_CALLBACK (buffer_changed_cb), editor);
     gtk_source_buffer_begin_not_undoable_action (buffer);
     marker_source_view_set_text (source_view, file_contents, file_size);
     gtk_source_buffer_end_not_undoable_action (buffer);
-    editor->source_scroll = GTK_SCROLLED_WINDOW (gtk_scrolled_window_new (NULL, NULL));
-    gtk_container_add (GTK_CONTAINER (editor->source_scroll), GTK_WIDGET (editor->source_view));
-    
-    gtk_stack_add_named(editor->stack, GTK_WIDGET(editor->source_scroll), g_file_get_basename(file));
-    
-    gtk_widget_show(GTK_WIDGET(source_view));
-    gtk_widget_show(GTK_WIDGET(editor->source_scroll));
-    gtk_stack_set_visible_child_full(editor->stack, g_file_get_basename(file), GTK_STACK_TRANSITION_TYPE_CROSSFADE);
-   
-    editor->files = g_list_append(editor->files, file);
-    editor->file = file;
-    editor->names = g_list_append(editor->names, g_file_get_basename(file));
-    editor->unsaved_files = g_list_append(editor->unsaved_files, g_new(gboolean, 1));
-    
-    GtkTreeIter   iter;
-    
-    gtk_tree_store_append (editor->tree_store, &iter, NULL);  /* Acquire an iterator */
-    
-    gtk_tree_store_set (editor->tree_store, &iter,
-                        NAME_COLUMN, g_file_get_basename(file),
-                        -1);
-    gtk_tree_selection_select_iter(gtk_tree_view_get_selection(editor->tree_view), &iter);
-    
   }
   
-  *(gboolean*)g_list_nth_data(editor->unsaved_files, editor->active_view) = FALSE;
+  editor->unsaved_changes = FALSE;
   
   emit_signal_title_changed (editor);
   emit_signal_subtitle_changed (editor);
@@ -462,7 +295,7 @@ marker_editor_save_file (MarkerEditor *editor)
     fclose (fp);
   }
   
-  *(gboolean*)g_list_nth_data(editor->unsaved_files, editor->active_view) = FALSE;
+  editor->unsaved_changes = FALSE;
   emit_signal_title_changed (editor);
 }
 
@@ -497,21 +330,7 @@ gboolean
 marker_editor_has_unsaved_changes (MarkerEditor *editor)
 {
   g_assert (MARKER_IS_EDITOR (editor));
-  gboolean unsaved = FALSE;
-  GList * el ;
-  for (el = editor->unsaved_files; el != NULL; el = g_list_next(el))
-  {
-    unsaved = unsaved || *(gboolean*)el->data;
-  }
-  return unsaved;
-}
-
-gboolean
-marker_editor_document_has_unsaved_changes (MarkerEditor *editor)
-{
-  if (editor->unsaved_files == NULL)
-    return FALSE;
-  return *(gboolean*)g_list_nth_data(editor->unsaved_files, editor->active_view);
+  return editor->unsaved_changes;
 }
 
 gchar *
@@ -526,7 +345,7 @@ marker_editor_get_title (MarkerEditor *editor)
   {
     gchar *basename = g_file_get_basename (file);
     
-    if (marker_editor_document_has_unsaved_changes (editor))
+    if (marker_editor_has_unsaved_changes (editor))
     {
       title = g_strdup_printf ("*%s", basename);
       g_free (basename);
@@ -538,7 +357,7 @@ marker_editor_get_title (MarkerEditor *editor)
   }
   else
   {
-    if (marker_editor_document_has_unsaved_changes (editor))
+    if (marker_editor_has_unsaved_changes (editor))
     {
       title = g_strdup ("*Untitled.md");
     }
@@ -587,50 +406,46 @@ marker_editor_apply_prefs (MarkerEditor *editor)
 {
   g_assert (MARKER_IS_EDITOR (editor));
 
-  GList * el;
-  for (el = editor->source_views; el != NULL; el = g_list_next(el))
-  {
-    GtkSourceView * const source_view = GTK_SOURCE_VIEW (el->data);
-      
-    gboolean state;
-    
-    state = marker_prefs_get_show_line_numbers ();
-    gtk_source_view_set_show_line_numbers (source_view, state);
-    
-    state = marker_prefs_get_wrap_text ();
-    gtk_text_view_set_wrap_mode (GTK_TEXT_VIEW (source_view), (state) ? GTK_WRAP_WORD : GTK_WRAP_NONE );
-    
-    state = marker_prefs_get_show_right_margin ();
-    gtk_source_view_set_show_right_margin (source_view, state);
-    
-    guint position = marker_prefs_get_right_margin_position ();
-    gtk_source_view_set_right_margin_position (source_view, position);
-    
-    state = marker_prefs_get_spell_check ();
-    marker_source_view_set_spell_check (MARKER_SOURCE_VIEW (source_view), state);
-    
-    g_autofree gchar *lang = marker_prefs_get_spell_check_language ();
-    marker_source_view_set_spell_check_lang (MARKER_SOURCE_VIEW (source_view), lang);
-    
-    state = marker_prefs_get_highlight_current_line ();
-    gtk_source_view_set_highlight_current_line (source_view, state);
-    
-    GtkSourceBuffer *buffer = GTK_SOURCE_BUFFER (gtk_text_view_get_buffer (GTK_TEXT_VIEW (source_view)));
-    state = marker_prefs_get_use_syntax_theme ();
-    gtk_source_buffer_set_highlight_syntax(buffer, state);
-    
-    g_autofree gchar *theme = marker_prefs_get_syntax_theme ();
-    marker_source_view_set_syntax_theme (MARKER_SOURCE_VIEW (source_view), theme);
-    
-    state = marker_prefs_get_auto_indent ();
-    gtk_source_view_set_auto_indent (source_view, state);
-    
-    state = marker_prefs_get_replace_tabs ();
-    gtk_source_view_set_insert_spaces_instead_of_tabs (source_view, state); 
+  GtkSourceView * const source_view = GTK_SOURCE_VIEW (marker_editor_get_source_view (editor));
   
-    guint tab_width = marker_prefs_get_tab_width ();
-    gtk_source_view_set_indent_width (source_view, tab_width);
-  }
+  gboolean state;
+  
+  state = marker_prefs_get_show_line_numbers ();
+  gtk_source_view_set_show_line_numbers (source_view, state);
+  
+  state = marker_prefs_get_wrap_text ();
+  gtk_text_view_set_wrap_mode (GTK_TEXT_VIEW (source_view), (state) ? GTK_WRAP_WORD : GTK_WRAP_NONE );
+  
+  state = marker_prefs_get_show_right_margin ();
+  gtk_source_view_set_show_right_margin (source_view, state);
+  
+  guint position = marker_prefs_get_right_margin_position ();
+  gtk_source_view_set_right_margin_position (source_view, position);
+  
+  state = marker_prefs_get_spell_check ();
+  marker_source_view_set_spell_check (MARKER_SOURCE_VIEW (source_view), state);
+  
+  g_autofree gchar *lang = marker_prefs_get_spell_check_language ();
+  marker_source_view_set_spell_check_lang (MARKER_SOURCE_VIEW (source_view), lang);
+  
+  state = marker_prefs_get_highlight_current_line ();
+  gtk_source_view_set_highlight_current_line (source_view, state);
+  
+  GtkSourceBuffer *buffer = GTK_SOURCE_BUFFER (gtk_text_view_get_buffer (GTK_TEXT_VIEW (source_view)));
+  state = marker_prefs_get_use_syntax_theme ();
+  gtk_source_buffer_set_highlight_syntax(buffer, state);
+  
+  g_autofree gchar *theme = marker_prefs_get_syntax_theme ();
+  marker_source_view_set_syntax_theme (MARKER_SOURCE_VIEW (source_view), theme);
+  
+  state = marker_prefs_get_auto_indent ();
+  gtk_source_view_set_auto_indent (source_view, state);
+  
+  state = marker_prefs_get_replace_tabs ();
+  gtk_source_view_set_insert_spaces_instead_of_tabs (source_view, state); 
+
+  guint tab_width = marker_prefs_get_tab_width ();
+  gtk_source_view_set_indent_width (source_view, tab_width);
 }
 
 
@@ -639,41 +454,4 @@ marker_editor_closing(MarkerEditor       *editor)
 {
   g_source_remove (editor->timer_id);
   editor->needs_refresh = FALSE;
-}
-
-
-gboolean
-marker_editor_close_current_document (MarkerEditor *editor)
-{
-
-  editor->needs_refresh = FALSE;
-  if (g_list_length(editor->names) > 1)
-  {
-
-      
-    GtkTreeSelection * selection = gtk_tree_view_get_selection(editor->tree_view);
-
-    GtkTreeIter iter;
-    GtkTreeModel *model;
-    gchar * name;
-    if (gtk_tree_selection_get_selected (selection, &model, &iter))
-    {
-      gtk_tree_model_get (model, &iter, NAME_COLUMN, &name, -1);
-
-      editor->files = g_list_remove(editor->files, editor->file);
-      editor->names = g_list_remove(editor->names, g_list_nth_data(editor->names, editor->active_view));
-      editor->source_views = g_list_remove(editor->source_views, editor->source_view);
-
-      if (editor->active_view >= g_list_length(editor->names))
-      {
-        editor->active_view = g_list_length(editor->names) - 1;
-      }
-      g_free(name);
-      gtk_tree_store_remove(editor->tree_store, &iter);
-    }
-    return FALSE;
-  } else {
-    marker_editor_closing(editor);
-  }
-  return TRUE;
 }

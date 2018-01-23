@@ -50,8 +50,6 @@ void                 marker_editor_set_view_mode                 (MarkerEditor  
 void                 marker_editor_refresh_preview               (MarkerEditor       *editor);
 void                 marker_editor_open_file                     (MarkerEditor       *editor,
                                                                   GFile              *file);
-void                 marker_editor_new_file                      (MarkerEditor       *editor);
-
 void                 marker_editor_save_file                     (MarkerEditor       *editor);
 void                 marker_editor_save_file_as                  (MarkerEditor       *editor,
                                                                   GFile              *file);
@@ -63,8 +61,6 @@ MarkerPreview       *marker_editor_get_preview                   (MarkerEditor  
 MarkerSourceView    *marker_editor_get_source_view               (MarkerEditor       *editor);
 void                 marker_editor_apply_prefs                   (MarkerEditor       *editor);
 void                 marker_editor_closing                       (MarkerEditor       *editor);
-gboolean             marker_editor_close_current_document        (MarkerEditor       *editor);
-gboolean             marker_editor_document_has_unsaved_changes  (MarkerEditor       *editor);
 
 G_END_DECLS
 
