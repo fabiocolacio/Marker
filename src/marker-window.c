@@ -29,8 +29,11 @@
 #include <glib/gprintf.h>
 
 
+
+
 enum {
   TITLE_COLUMN,
+  ICON_COLUMN,
   NAME_COLUMN,
   EDITOR_COLUMN,
   N_COLUMNS
@@ -446,6 +449,8 @@ rename_file_action_cb(GtkCellRendererText *cell,
   }
 }
 
+
+
 static void
 tree_selection_changed_cb(GtkTreeSelection *selection,
                           gpointer          data)
@@ -493,6 +498,7 @@ marker_window_init (MarkerWindow *window)
   GtkTreeStore 
   *documents_store = gtk_tree_store_new(N_COLUMNS,
                                         G_TYPE_STRING,
+                                        GDK_TYPE_PIXBUF,
                                         G_TYPE_STRING,
                                         MARKER_TYPE_EDITOR);
    
@@ -502,14 +508,28 @@ marker_window_init (MarkerWindow *window)
    GtkCellRenderer *renderer;
    GtkTreeViewColumn *column;
    
-   renderer = gtk_cell_renderer_text_new ();
-   g_object_set(renderer, "editable", TRUE, NULL);
+   column = gtk_tree_view_column_new();
+   gtk_tree_view_column_set_title(column, "Documents");
    
-   column = gtk_tree_view_column_new_with_attributes ("Documents",
-                                                      renderer,
-                                                      "text", TITLE_COLUMN,
-                                                      NULL);
+   renderer = gtk_cell_renderer_text_new();
+   g_object_set(renderer, "editable", TRUE, NULL);
+   gtk_tree_view_column_pack_start(column, renderer, TRUE);
+   gtk_tree_view_column_set_attributes(column, renderer,
+                                       "text", TITLE_COLUMN,
+                                       NULL);
+   
+   g_signal_connect (renderer, "edited",
+                      G_CALLBACK(rename_file_action_cb),
+                      window);
+   
+   renderer = gtk_cell_renderer_pixbuf_new();
+   gtk_tree_view_column_pack_start(column, renderer, FALSE);
+   gtk_tree_view_column_set_attributes(column, renderer,
+                                        "pixbuf", ICON_COLUMN,
+                                        NULL);
+   
    gtk_tree_view_append_column (documents_tree_view, column);
+   
    window->documents_tree_store = documents_store;
    window->documents_tree_view = documents_tree_view;
    
@@ -521,9 +541,7 @@ marker_window_init (MarkerWindow *window)
    g_signal_connect (G_OBJECT (select), "changed",
                      G_CALLBACK (tree_selection_changed_cb),
                      window);
-   g_signal_connect (renderer, "edited",
-                     G_CALLBACK(rename_file_action_cb),
-                     window);
+ 
   
   /** EDITOR STACKS **/
   window->editors_stack = GTK_STACK(gtk_builder_get_object(builder, "documents_stack"));
@@ -612,14 +630,21 @@ marker_window_add_editor(MarkerWindow *window,
   
   
   GtkTreeIter   iter;
-  
+
   gtk_tree_store_append (window->documents_tree_store, &iter, NULL);  /* Acquire an iterator */
+  
+  GdkPixbuf * icon = gtk_icon_theme_load_icon(gtk_icon_theme_get_default(),
+                                              "window-close",
+                                              16,
+                                              GTK_ICON_LOOKUP_FORCE_SYMBOLIC, NULL);
   
   gtk_tree_store_set (window->documents_tree_store, &iter,
                       TITLE_COLUMN, marker_editor_get_title(editor),
+                      ICON_COLUMN, icon,
                       NAME_COLUMN, name,
                       EDITOR_COLUMN, editor,
                       -1);
+  
   gtk_tree_selection_select_iter(gtk_tree_view_get_selection(window->documents_tree_view), &iter);
   
   if (window->editors_counter == 1 &&
