@@ -5,14 +5,20 @@
   <object class="GtkPaned" id="main_paned">
     <property name="visible">True</property>
     <property name="can_focus">True</property>
-    <property name="position">0</property>
     <child>
-      <object class="GtkTreeView" id="documents_tree_view">
+      <object class="GtkScrolledWindow">
         <property name="visible">True</property>
         <property name="can_focus">True</property>
-        <property name="enable_grid_lines">horizontal</property>
-        <child internal-child="selection">
-          <object class="GtkTreeSelection"/>
+        <property name="shadow_type">in</property>
+        <child>
+          <object class="GtkTreeView" id="documents_tree_view">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="enable_grid_lines">horizontal</property>
+            <child internal-child="selection">
+              <object class="GtkTreeSelection"/>
+            </child>
+          </object>
         </child>
       </object>
       <packing>

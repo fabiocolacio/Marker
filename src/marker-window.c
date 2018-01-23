@@ -550,7 +550,9 @@ marker_window_init (MarkerWindow *window)
   /** MAIN PANED **/
   GtkWidget * main_paned = GTK_WIDGET(gtk_builder_get_object(builder, "main_paned"));
   gtk_box_pack_start (vbox, main_paned, TRUE, TRUE, 0);
+  gtk_paned_set_position(GTK_PANED(main_paned), 0);
   gtk_widget_show(main_paned);
+  
   window->main_paned = GTK_PANED(main_paned);
   
   /** HeaderBar **/
