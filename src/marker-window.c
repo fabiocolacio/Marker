@@ -621,13 +621,13 @@ marker_window_add_editor(MarkerWindow *window,
                       -1);
   gtk_tree_selection_select_iter(gtk_tree_view_get_selection(window->documents_tree_view), &iter);
   
-  if (window->editors_counter == 1)
+  if (window->editors_counter == 1 &&
+      gtk_paned_get_position(window->main_paned) == 0)
   {
     gtk_paned_set_position(window->main_paned, 200);
   }
   
   window->editors_counter ++;
-    
 }
 
 void
