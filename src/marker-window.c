@@ -26,9 +26,13 @@
 
 #include "marker-window.h"
 
+#include <glib/gprintf.h>
+
+
 enum {
-  TITLE_COLUMNS,
-  EDITOR_COLUMNS,
+  TITLE_COLUMN,
+  NAME_COLUMN,
+  EDITOR_COLUMN,
   N_COLUMNS
 };
 
@@ -50,6 +54,7 @@ struct _MarkerWindow
   GtkStack             *editors_stack;
   GtkTreeView          *documents_tree_view;
   GtkTreeStore         *documents_tree_store;
+  guint                 editors_counter;
 };
 
 G_DEFINE_TYPE (MarkerWindow, marker_window, GTK_TYPE_APPLICATION_WINDOW);
@@ -418,6 +423,7 @@ static void
 marker_window_init (MarkerWindow *window)
 {
   window->is_fullscreen = FALSE;
+  window->editors_counter = 0;
   
   GtkBuilder *builder = gtk_builder_new ();
 
@@ -434,6 +440,7 @@ marker_window_init (MarkerWindow *window)
   GtkTreeStore 
   *documents_store = gtk_tree_store_new(N_COLUMNS,
                                         G_TYPE_STRING,
+                                        G_TYPE_STRING,
                                         MARKER_TYPE_EDITOR);
    
    
@@ -445,7 +452,7 @@ marker_window_init (MarkerWindow *window)
    renderer = gtk_cell_renderer_text_new ();
    column = gtk_tree_view_column_new_with_attributes ("Document",
                                                       renderer,
-                                                      "text", TITLE_COLUMNS,
+                                                      "text", TITLE_COLUMN,
                                                       NULL);
    gtk_tree_view_append_column (documents_tree_view, column);
    window->documents_tree_store = documents_store;
@@ -460,6 +467,10 @@ marker_window_init (MarkerWindow *window)
                      G_CALLBACK (tree_selection_changed_cb),
                      window);
   
+  /** EDITOR STACKS **/
+  window->editors_stack = GTK_STACK(gtk_builder_get_object(builder, "documents_stack"));
+  gtk_widget_show(GTK_WIDGET(window->editors_stack));
+  
   /** MAIN PANED **/
   GtkWidget * main_paned = GTK_WIDGET(gtk_builder_get_object(builder, "main_paned"));
   gtk_box_pack_start (vbox, main_paned, TRUE, TRUE, 0);
@@ -472,10 +483,7 @@ marker_window_init (MarkerWindow *window)
   gtk_builder_add_from_resource (builder, "/com/github/fabiocolacio/marker/ui/marker-headerbar.ui", NULL);
   GtkHeaderBar *header_bar = GTK_HEADER_BAR (gtk_builder_get_object (builder, "header_bar"));
   window->header_bar = header_bar;
-  g_autofree gchar *title = marker_editor_get_title (marker_window_get_active_editor (window));
-  g_autofree gchar *subtitle = marker_editor_get_subtitle (marker_window_get_active_editor (window));
-  gtk_header_bar_set_title (header_bar, title);
-  gtk_header_bar_set_subtitle (header_bar, subtitle);
+
   GtkButton *unfullscreen_btn = GTK_BUTTON (gtk_builder_get_object (builder, "unfullscreen_btn"));
   window->unfullscreen_btn = unfullscreen_btn;
   g_signal_connect_swapped (unfullscreen_btn, "clicked", G_CALLBACK (marker_window_unfullscreen), window);
@@ -525,11 +533,47 @@ marker_window_class_init (MarkerWindowClass *class)
 
 }
 
+
+void
+marker_window_add_editor(MarkerWindow *window,
+                         MarkerEditor *editor)
+{
+  window->active_editor = editor;
+  gchar * name = g_strnfill(8,0);
+  g_sprintf(name, "edit%u", window->editors_counter);
+  
+  gtk_stack_add_named(window->editors_stack, GTK_WIDGET(editor), name);
+  gtk_widget_show(GTK_WIDGET(editor));
+  gtk_stack_set_visible_child_full(window->editors_stack, name, GTK_STACK_TRANSITION_TYPE_CROSSFADE);
+  
+  g_autofree gchar *title = marker_editor_get_title (marker_window_get_active_editor (window));
+  g_autofree gchar *subtitle = marker_editor_get_subtitle (marker_window_get_active_editor (window));
+  gtk_header_bar_set_title (window->header_bar, title);
+  gtk_header_bar_set_subtitle (window->header_bar, subtitle);
+  
+  window->editors_counter ++;
+}
+
+void
+marker_window_new_editor (MarkerWindow *window)
+{
+  MarkerEditor * editor = marker_editor_new();
+  marker_window_add_editor(window, editor);
+}
+
+void
+marker_window_new_editor_from_file (MarkerWindow *window,
+                                    GFile        *file)
+{
+  MarkerEditor * editor = marker_editor_new_from_file(file);
+  marker_window_add_editor(window, editor);
+}
+
 MarkerWindow *
 marker_window_new (GtkApplication *app)
 {
   MarkerWindow *window = g_object_new (MARKER_TYPE_WINDOW, "application", app, NULL);
-  //marker_editor_new_file(marker_window_get_active_editor (window));
+  marker_window_new_editor(window);
   return window;
 }
 
@@ -538,6 +582,8 @@ marker_window_new_from_file (GtkApplication *app,
                              GFile          *file)
 {
   MarkerWindow *window = g_object_new (MARKER_TYPE_WINDOW, "application", app, NULL);
+  marker_window_new_editor_from_file(window, file);
+    
   marker_editor_open_file (marker_window_get_active_editor (window), file);
   return window;
 }

@@ -23,7 +23,6 @@
 #define __MARKER_SOURCE_VIEW_H__
 
 #include <gtksourceview/gtksource.h>
-#include <string.h>
 
 G_BEGIN_DECLS
 

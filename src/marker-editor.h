@@ -24,7 +24,6 @@
 
 #include <gio/gio.h>
 #include <gtk/gtk.h>
-#include <string.h>
 
 #include "marker-preview.h"
 #include "marker-source-view.h"

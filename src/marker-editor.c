@@ -1,4 +1,4 @@
-*
+/*
  * marker-editor.c
  *
  * Copyright (C) 2017 - 2018 Fabio Colacio

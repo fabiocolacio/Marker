@@ -48,6 +48,11 @@ void                 marker_window_open_sketcher                 (MarkerWindow  
 gboolean             marker_window_try_close                     (MarkerWindow       *window);
 void                 marker_window_close_current_document        (MarkerWindow       *window);
 
+
+void                 marker_window_new_editor                    (MarkerWindow       *window);
+void                 marker_window_new_editor_from_file          (MarkerWindow       *window,
+                                                                  GFile              *file);
+
 G_END_DECLS
 
 #endif
