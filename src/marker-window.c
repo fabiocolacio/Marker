@@ -386,18 +386,18 @@ marker_window_fullscreen (MarkerWindow *window)
   GtkBox * const header_box = window->header_box;
   GtkBox * const vbox = window->vbox;
   GtkWidget * const header_bar = GTK_WIDGET (window->header_bar);
-  GtkWidget * const editor = GTK_WIDGET (window->active_editor);
+  GtkWidget * const main_paned = GTK_WIDGET (window->main_paned);
   
   g_object_ref (header_bar);
   gtk_container_remove (GTK_CONTAINER (header_box), header_bar);
   gtk_header_bar_set_show_close_button (GTK_HEADER_BAR (header_bar), FALSE);
   gtk_widget_show (GTK_WIDGET (window->unfullscreen_btn));
   
-  g_object_ref (editor);
-  gtk_container_remove (GTK_CONTAINER (vbox), editor);
+  g_object_ref (main_paned);
+  gtk_container_remove (GTK_CONTAINER (vbox), main_paned);
   
   gtk_box_pack_start (vbox, header_bar, FALSE, TRUE, 0);
-  gtk_box_pack_start (vbox, editor, TRUE, TRUE, 0);
+  gtk_box_pack_start (vbox, main_paned, TRUE, TRUE, 0);
 }
 
 void
@@ -877,6 +877,7 @@ marker_window_close_current_document (MarkerWindow *window)
       gtk_widget_destroy (GTK_WIDGET (editor));
     }
     else{
+      /** close if model is empty **/
       if (!gtk_tree_model_get_iter_first(GTK_TREE_MODEL(window->documents_tree_store), &iter))
       {
         marker_window_try_close(window);
