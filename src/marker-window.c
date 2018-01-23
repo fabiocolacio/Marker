@@ -56,6 +56,7 @@ struct _MarkerWindow
   GtkTreeStore         *documents_tree_store;
   GtkPaned             *main_paned;
   guint                 editors_counter;
+  guint                 untitled_files;
 };
 
 G_DEFINE_TYPE (MarkerWindow, marker_window, GTK_TYPE_APPLICATION_WINDOW);
@@ -634,6 +635,11 @@ void
 marker_window_new_editor (MarkerWindow *window)
 {
   MarkerEditor * editor = marker_editor_new();
+  if (window->untitled_files)
+  {
+    marker_editor_rename_file(editor, g_strdup_printf("Untitled_%u.md", window->untitled_files));
+  }
+  window->untitled_files ++;
   marker_window_add_editor(window, editor);
 }
 
