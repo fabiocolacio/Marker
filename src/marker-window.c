@@ -479,6 +479,69 @@ tree_selection_changed_cb(GtkTreeSelection *selection,
   }
 }
 
+
+
+static gboolean
+close_button_clicked(GtkTreeView *view, guint x, guint y, GtkCellRenderer * cell)
+{
+	GtkTreeViewColumn *col = NULL;
+	GList             *columns;
+	gint               colw = 0;
+
+	g_return_val_if_fail ( view != NULL, FALSE );
+
+	/* (1) find column and column x relative to tree view coordinates */
+
+	columns = gtk_tree_view_get_columns(view);
+    col = GTK_TREE_VIEW_COLUMN(columns->data);
+	g_list_free(columns);
+
+	if (col == NULL)
+		return FALSE; /* not found */
+
+	/* (2) find the cell renderer within the column */
+
+    GtkCellRenderer *checkcell = cell;
+    gint min_width=0, nat_width=0;
+    gtk_cell_renderer_get_preferred_width(checkcell, GTK_WIDGET(view), &min_width, &nat_width);
+    
+    GValue value = G_VALUE_INIT;
+    g_value_init(&value, G_TYPE_INT);
+    g_object_get_property(G_OBJECT(col), "width", &value);
+    colw = g_value_get_int(&value);
+    
+    
+    if (x >= colw-nat_width && x < colw)
+    {
+    	return TRUE;
+    }
+	return FALSE; /* not found */
+}
+
+static gboolean
+button_pressed_cb (GtkWidget *view,
+                   GdkEventButton *bevent,
+                   gpointer data)
+{
+
+  GtkCellRenderer * cell_renderer = GTK_CELL_RENDERER(data);
+  
+  GtkTreePath * path = gtk_tree_path_new();
+  gtk_tree_view_get_path_at_pos (GTK_TREE_VIEW(view),
+                                 bevent->x,
+                                 bevent->y,
+                                 &path,
+                                 NULL,
+                                 NULL, NULL);
+  
+  gtk_tree_selection_select_path(gtk_tree_view_get_selection(GTK_TREE_VIEW(view)),
+                                 path);
+  
+  if (close_button_clicked(GTK_TREE_VIEW(view), bevent->x, bevent->y, cell_renderer))
+    marker_window_close_current_document(MARKER_WINDOW(gtk_widget_get_ancestor(view, MARKER_TYPE_WINDOW)));
+  return FALSE;
+}
+
 static void
 marker_window_init (MarkerWindow *window)
 {
@@ -543,6 +606,10 @@ marker_window_init (MarkerWindow *window)
    g_signal_connect (G_OBJECT (select), "changed",
                      G_CALLBACK (tree_selection_changed_cb),
                      window);
+   
+   g_signal_connect (documents_tree_view, "button-press-event",
+                     G_CALLBACK(button_pressed_cb),
+                     renderer);
  
   
   /** EDITOR STACKS **/
@@ -878,6 +945,13 @@ marker_window_close_current_document (MarkerWindow *window)
       marker_editor_closing(editor);
       gtk_tree_store_remove(window->documents_tree_store, &iter);
       gtk_widget_destroy (GTK_WIDGET (editor));
+      /** TODO When closing last element select the previous
+       *  After adding a document if it is closed no documents will be selected in
+       *  the model tree.
+       *  If instead the editor is user selected (even if is the last) the issue does
+       *  not appear.
+       *  I do not understand why...
+       ***/
     }
     else{
       /** close if model is empty **/
