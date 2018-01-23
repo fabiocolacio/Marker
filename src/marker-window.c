@@ -282,6 +282,10 @@ key_pressed_cb (GtkWidget   *widget,
         marker_window_open_file (window);
         break;
       
+    case GDK_KEY_O:
+        marker_window_open_file_in_new_window(window);
+        break;
+      
       case GDK_KEY_k:
         marker_window_open_sketcher (window);
         break;
@@ -635,6 +639,28 @@ marker_window_open_file (MarkerWindow *window)
   {
     GFile *file = gtk_file_chooser_get_file (GTK_FILE_CHOOSER (dialog));
     marker_window_new_editor_from_file(window, file);
+  }
+  
+  gtk_widget_destroy (dialog);
+}
+
+void
+marker_window_open_file_in_new_window (MarkerWindow *window)
+{
+  g_assert (MARKER_IS_WINDOW (window));
+  GtkWidget *dialog = gtk_file_chooser_dialog_new ("Open",
+                                                   GTK_WINDOW (window),
+                                                   GTK_FILE_CHOOSER_ACTION_OPEN,
+                                                   "Cancel", GTK_RESPONSE_CANCEL,
+                                                   "Open", GTK_RESPONSE_ACCEPT,
+                                                   NULL);
+
+  gint response = gtk_dialog_run (GTK_DIALOG (dialog));
+  
+  if (response == GTK_RESPONSE_ACCEPT)
+  {
+    GFile *file = gtk_file_chooser_get_file (GTK_FILE_CHOOSER (dialog));
+    marker_create_new_window_from_file(file);
   }
   
   gtk_widget_destroy (dialog);
