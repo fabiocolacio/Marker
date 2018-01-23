@@ -32,6 +32,8 @@ unfinished features.
 
 ![scrot2.png](scrot2.png)
 
+![sketcher.png](sketcher.png)
+
 ## Packages
 
 * [Arch Linux (thanks to @mmetak)](https://aur.archlinux.org/packages/marker-git/)
