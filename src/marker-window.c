@@ -26,6 +26,12 @@
 
 #include "marker-window.h"
 
+enum {
+  TITLE_COLUMNS,
+  EDITOR_COLUMNS,
+  N_COLUMNS
+};
+
 struct _MarkerWindow
 {
   GtkApplicationWindow  parent_instance;
@@ -38,7 +44,12 @@ struct _MarkerWindow
   GtkButton            *unfullscreen_btn;
   
   GtkBox               *vbox;
-  MarkerEditor         *editor;
+  MarkerEditor         *active_editor;
+  
+  GList                *editors;
+  GtkStack             *editors_stack;
+  GtkTreeView          *documents_tree_view;
+  GtkTreeStore         *documents_tree_store;
 };
 
 G_DEFINE_TYPE (MarkerWindow, marker_window, GTK_TYPE_APPLICATION_WINDOW);
@@ -243,7 +254,7 @@ key_pressed_cb (GtkWidget   *widget,
         break;
     
       case GDK_KEY_n:
-        marker_editor_new_file(editor);
+        //marker_editor_new_file(editor);
         break;
       
       case GDK_KEY_N:
@@ -362,7 +373,7 @@ marker_window_fullscreen (MarkerWindow *window)
   GtkBox * const header_box = window->header_box;
   GtkBox * const vbox = window->vbox;
   GtkWidget * const header_bar = GTK_WIDGET (window->header_bar);
-  GtkWidget * const editor = GTK_WIDGET (window->editor);
+  GtkWidget * const editor = GTK_WIDGET (window->active_editor);
   
   g_object_ref (header_bar);
   gtk_container_remove (GTK_CONTAINER (header_box), header_bar);
@@ -398,6 +409,12 @@ marker_window_unfullscreen (MarkerWindow *window)
 }
 
 static void
+tree_selection_changed_cb(GtkTreeSelection *selection,
+                          gpointer          data)
+{
+}
+
+static void
 marker_window_init (MarkerWindow *window)
 {
   window->is_fullscreen = FALSE;
@@ -410,15 +427,43 @@ marker_window_init (MarkerWindow *window)
   gtk_container_add (GTK_CONTAINER (window), GTK_WIDGET (vbox));
   gtk_widget_show (GTK_WIDGET (vbox));
   
-  /** Editor **/
-  MarkerEditor *editor = marker_editor_new ();
-  window->editor = editor;
-  gtk_box_pack_start (vbox, GTK_WIDGET (editor), TRUE, TRUE, 0);
-  gtk_widget_show (GTK_WIDGET (editor));
-  g_signal_connect (editor, "title-changed", G_CALLBACK (title_changed_cb), window);
-  g_signal_connect (editor, "subtitle-changed", G_CALLBACK (subtitle_changed_cb), window);
-  MarkerPreview *preview = marker_editor_get_preview (editor);
-  g_signal_connect (preview, "zoom-changed", G_CALLBACK (preview_zoom_changed_cb), window);
+  gtk_builder_add_from_resource (builder, "/com/github/fabiocolacio/marker/ui/marker-window-main-view.ui", NULL);
+  
+  /** DOCUMENTS TREE **/
+  GtkTreeView * documents_tree_view = GTK_TREE_VIEW(gtk_builder_get_object(builder, "documents_tree_view"));
+  GtkTreeStore 
+  *documents_store = gtk_tree_store_new(N_COLUMNS,
+                                        G_TYPE_STRING,
+                                        MARKER_TYPE_EDITOR);
+   
+   
+  
+   gtk_tree_view_set_model(documents_tree_view, GTK_TREE_MODEL(documents_store));
+   GtkCellRenderer *renderer;
+   GtkTreeViewColumn *column;
+   
+   renderer = gtk_cell_renderer_text_new ();
+   column = gtk_tree_view_column_new_with_attributes ("Document",
+                                                      renderer,
+                                                      "text", TITLE_COLUMNS,
+                                                      NULL);
+   gtk_tree_view_append_column (documents_tree_view, column);
+   window->documents_tree_store = documents_store;
+   window->documents_tree_view = documents_tree_view;
+   
+   
+   GtkTreeSelection *select;
+   select = gtk_tree_view_get_selection (documents_tree_view);
+   
+   gtk_tree_selection_set_mode (select, GTK_SELECTION_SINGLE);
+   g_signal_connect (G_OBJECT (select), "changed",
+                     G_CALLBACK (tree_selection_changed_cb),
+                     window);
+  
+  /** MAIN PANED **/
+  GtkWidget * main_paned = GTK_WIDGET(gtk_builder_get_object(builder, "main_paned"));
+  gtk_box_pack_start (vbox, main_paned, TRUE, TRUE, 0);
+  gtk_widget_show(main_paned);
   
   /** HeaderBar **/
   GtkBox *header_box = GTK_BOX (gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
@@ -446,7 +491,6 @@ marker_window_init (MarkerWindow *window)
   gtk_menu_button_set_use_popover (menu_btn, TRUE);
   gtk_menu_button_set_popover (menu_btn, popover);
   gtk_menu_button_set_direction (menu_btn, GTK_ARROW_DOWN);
-  preview_zoom_changed_cb (preview, window);
   
   g_action_map_add_action_entries(G_ACTION_MAP(window), WINDOW_ACTIONS, G_N_ELEMENTS(WINDOW_ACTIONS), window);
   
@@ -485,7 +529,7 @@ MarkerWindow *
 marker_window_new (GtkApplication *app)
 {
   MarkerWindow *window = g_object_new (MARKER_TYPE_WINDOW, "application", app, NULL);
-  marker_editor_new_file(marker_window_get_active_editor (window));
+  //marker_editor_new_file(marker_window_get_active_editor (window));
   return window;
 }
 
@@ -585,7 +629,7 @@ MarkerEditor *
 marker_window_get_active_editor (MarkerWindow *window)
 {
   g_return_val_if_fail (MARKER_IS_WINDOW (window), NULL);
-  return window->editor;
+  return window->active_editor;
 }
 
 gboolean
@@ -634,16 +678,16 @@ marker_window_close_current_document (MarkerWindow *window)
 {
   g_assert (MARKER_IS_WINDOW (window));
   
-  MarkerEditor *editor = marker_window_get_active_editor (window);
-  gboolean status = TRUE;
+  // MarkerEditor *editor = marker_window_get_active_editor (window);
+  // gboolean status = TRUE;
   
-  if (marker_editor_document_has_unsaved_changes (editor))
-    status = show_unsaved_documents_warning (window);
-  if (status)
-  {
-    if (marker_editor_close_current_document(editor))
-    {
-      gtk_widget_destroy (GTK_WIDGET (window));
-    }
-  }
+  // if (marker_editor_document_has_unsaved_changes (editor))
+  //   status = show_unsaved_documents_warning (window);
+  // if (status)
+  // {
+  //   if (marker_editor_close_current_document(editor))
+  //   {
+  //     gtk_widget_destroy (GTK_WIDGET (window));
+  //   }
+  // }
 }

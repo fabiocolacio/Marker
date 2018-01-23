@@ -7,7 +7,7 @@
     <property name="can_focus">True</property>
     <property name="position">200</property>
     <child>
-      <object class="GtkTreeView" id="document_tree_view">
+      <object class="GtkTreeView" id="documents_tree_view">
         <property name="visible">True</property>
         <property name="can_focus">True</property>
         <property name="enable_grid_lines">horizontal</property>
@@ -21,23 +21,9 @@
       </packing>
     </child>
     <child>
-      <object class="GtkPaned" id="editor_paned">
+      <object class="GtkStack" id="documents_stack">
         <property name="visible">True</property>
-        <property name="can_focus">True</property>
-        <property name="position">450</property>
-        <child>
-          <object class="GtkStack" id="source_view_stack">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <child>
-              <placeholder/>
-            </child>
-          </object>
-          <packing>
-            <property name="resize">True</property>
-            <property name="shrink">True</property>
-          </packing>
-        </child>
+        <property name="can_focus">False</property>
         <child>
           <placeholder/>
         </child>
