@@ -31,6 +31,7 @@ struct _MarkerEditor
   GtkBox                parent_instance;
   
   GFile                *file;
+  gchar*                title;
   gboolean              unsaved_changes;
   
   GtkPaned             *paned;
@@ -94,6 +95,7 @@ static void
 marker_editor_init (MarkerEditor *editor)
 {
   editor->file = NULL;
+  editor->title = g_strdup("Untitled.md");
   editor->unsaved_changes = FALSE;
   
   editor->paned = GTK_PANED (gtk_paned_new (GTK_ORIENTATION_HORIZONTAL));
@@ -250,6 +252,7 @@ marker_editor_open_file (MarkerEditor *editor,
     g_object_unref (editor->file);
   
   editor->file = file;
+  editor->title = g_file_get_basename(file);
   editor->needs_refresh = TRUE;
   
   g_autofree gchar *file_contents = NULL;
@@ -309,7 +312,7 @@ marker_editor_save_file_as (MarkerEditor *editor,
   {
     g_object_unref (editor->file);
   }
-  
+  editor->title = g_file_get_basename(file);
   editor->file = file;
   marker_editor_save_file (editor);
   emit_signal_subtitle_changed (editor);
@@ -339,32 +342,14 @@ marker_editor_get_title (MarkerEditor *editor)
   g_assert (MARKER_IS_EDITOR (editor));
   
   gchar *title = NULL;
-  GFile *file = marker_editor_get_file (editor);
   
-  if (G_IS_FILE (file))
+  if (marker_editor_has_unsaved_changes (editor))
   {
-    gchar *basename = g_file_get_basename (file);
-    
-    if (marker_editor_has_unsaved_changes (editor))
-    {
-      title = g_strdup_printf ("*%s", basename);
-      g_free (basename);
-    }
-    else
-    {
-      title = basename;
-    }
+    title = g_strdup_printf ("*%s", editor->title);
   }
   else
   {
-    if (marker_editor_has_unsaved_changes (editor))
-    {
-      title = g_strdup ("*Untitled.md");
-    }
-    else
-    {
-      title = g_strdup ("Untitled.md");
-    }
+    title = g_strdup(editor->title);
   }
   
   return title;
@@ -454,4 +439,33 @@ marker_editor_closing(MarkerEditor       *editor)
 {
   g_source_remove (editor->timer_id);
   editor->needs_refresh = FALSE;
+}
+
+gboolean
+marker_editor_rename_file (MarkerEditor *editor,
+                           gchar*        name)
+{
+  if (G_IS_FILE (editor->file))
+  {
+    /** Get new path **/
+    gchar * parent = marker_editor_get_subtitle(editor);
+    gchar * path =  g_strdup_printf("%s/%s",
+                    parent,
+                    name);
+
+    /** Delete old file **/
+    g_file_delete(editor->file,
+                  NULL,
+                  NULL);
+    
+    /** Save file in new destination **/
+    GFile * file = g_file_new_for_path(path);
+    marker_editor_save_file_as(editor, file);
+    g_free(parent);
+    g_free(path);
+  }else {
+    /** Just change the title... **/
+    editor->title = name;
+  }
+  return TRUE;
 }
