@@ -337,6 +337,34 @@ key_pressed_cb (GtkWidget   *widget,
   return FALSE;
 }
 
+static void
+title_changed_cb (MarkerEditor *editor,
+                  const gchar  *title,
+                  gpointer      user_data)
+{
+  MarkerWindow *window = user_data;
+  gtk_header_bar_set_title (window->header_bar, title);
+}
+
+static void
+subtitle_changed_cb (MarkerEditor *editor,
+                     const gchar  *subtitle,
+                     gpointer      user_data)
+{
+  MarkerWindow *window = user_data;
+  gtk_header_bar_set_subtitle (window->header_bar, subtitle);
+}
+
+static void
+preview_zoom_changed_cb (MarkerPreview *preview,
+                         gpointer       user_data)
+{
+  MarkerWindow *window = user_data;
+  const gdouble zoom_percentage = 100 * webkit_web_view_get_zoom_level (WEBKIT_WEB_VIEW (preview));
+  g_autofree gchar *zoom_level_str = g_strdup_printf ("%.0f%%", zoom_percentage);
+  gtk_button_set_label (window->zoom_original_btn, zoom_level_str);
+}
+
 static gboolean
 window_deleted_event_cb (GtkWidget *widget,
                          GdkEvent  *event,
@@ -626,6 +654,13 @@ marker_window_add_editor(MarkerWindow *window,
   {
     gtk_paned_set_position(window->main_paned, 200);
   }
+  
+  g_signal_connect(editor, "title-changed",
+                   G_CALLBACK(title_changed_cb),
+                   window);
+  g_signal_connect(editor, "subtitle-changed",
+                   G_CALLBACK(subtitle_changed_cb),
+                   window);
   
   window->editors_counter ++;
 }
