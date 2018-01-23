@@ -11,7 +11,7 @@
     <p>Features:</p>
     <ul>
       <li>View and edit markdown documents</li>
-      <li>Covert markdown documents to HTML</li>
+      <li>Convert markdown documents to HTML</li>
       <li>Tex math rendering</li>
       <li>Support for mermaid diagrams</li>
       <li>Support for charter plots</li>
