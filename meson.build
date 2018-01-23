@@ -131,7 +131,7 @@ install_data(
 )
 
 install_data(
-  'data/com.github.fabiocolaccio.marker.appdata.xml',
+  'data/com.github.fabiocolacio.marker.appdata.xml',
   install_dir : APPDATA_DIR
 )
 
