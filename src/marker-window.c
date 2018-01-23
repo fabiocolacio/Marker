@@ -54,6 +54,7 @@ struct _MarkerWindow
   GtkStack             *editors_stack;
   GtkTreeView          *documents_tree_view;
   GtkTreeStore         *documents_tree_store;
+  GtkPaned             *main_paned;
   guint                 editors_counter;
 };
 
@@ -417,6 +418,33 @@ marker_window_unfullscreen (MarkerWindow *window)
   gtk_box_pack_start (header_box, header_bar, FALSE, TRUE, 0);
 }
 
+void
+rename_file_action_cb(GtkCellRendererText *cell,
+                      gchar               *path_string,
+                      gchar               *new_text,
+                      gpointer             user_data)
+{
+  MarkerWindow * window = MARKER_WINDOW(user_data);
+  GtkTreeIter iter;
+  GtkTreeModel *model = GTK_TREE_MODEL(window->documents_tree_store);
+  
+  if (gtk_tree_model_get_iter_from_string(model, &iter, path_string))
+  {
+    if (marker_editor_rename_file(window->active_editor, new_text))
+    {
+      g_autofree gchar *title = marker_editor_get_title (window->active_editor);
+      g_autofree gchar *subtitle = marker_editor_get_subtitle (window->active_editor);
+  
+      gtk_header_bar_set_title (window->header_bar, title);
+      gtk_header_bar_set_subtitle (window->header_bar, subtitle);
+      gtk_tree_store_set(window->documents_tree_store,
+                         &iter,
+                         TITLE_COLUMN,
+                         new_text);
+    }
+  }
+}
+
 static void
 tree_selection_changed_cb(GtkTreeSelection *selection,
                           gpointer          data)
@@ -474,6 +502,8 @@ marker_window_init (MarkerWindow *window)
    GtkTreeViewColumn *column;
    
    renderer = gtk_cell_renderer_text_new ();
+   g_object_set(renderer, "editable", TRUE, NULL);
+   
    column = gtk_tree_view_column_new_with_attributes ("Documents",
                                                       renderer,
                                                       "text", TITLE_COLUMN,
@@ -490,6 +520,9 @@ marker_window_init (MarkerWindow *window)
    g_signal_connect (G_OBJECT (select), "changed",
                      G_CALLBACK (tree_selection_changed_cb),
                      window);
+   g_signal_connect (renderer, "edited",
+                     G_CALLBACK(rename_file_action_cb),
+                     window);
   
   /** EDITOR STACKS **/
   window->editors_stack = GTK_STACK(gtk_builder_get_object(builder, "documents_stack"));
@@ -499,6 +532,7 @@ marker_window_init (MarkerWindow *window)
   GtkWidget * main_paned = GTK_WIDGET(gtk_builder_get_object(builder, "main_paned"));
   gtk_box_pack_start (vbox, main_paned, TRUE, TRUE, 0);
   gtk_widget_show(main_paned);
+  window->main_paned = GTK_PANED(main_paned);
   
   /** HeaderBar **/
   GtkBox *header_box = GTK_BOX (gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
@@ -587,7 +621,13 @@ marker_window_add_editor(MarkerWindow *window,
                       -1);
   gtk_tree_selection_select_iter(gtk_tree_view_get_selection(window->documents_tree_view), &iter);
   
+  if (window->editors_counter == 1)
+  {
+    gtk_paned_set_position(window->main_paned, 200);
+  }
+  
   window->editors_counter ++;
+    
 }
 
 void
