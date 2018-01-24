@@ -61,18 +61,18 @@ marker_init(GtkApplication* app)
   {
     GtkBuilder* builder =
       gtk_builder_new_from_resource("/com/github/fabiocolacio/marker/ui/marker-appmenu.ui");
-      
+
     GMenuModel* app_menu =
-      G_MENU_MODEL(gtk_builder_get_object(builder, "app_menu"));  
+      G_MENU_MODEL(gtk_builder_get_object(builder, "app_menu"));
     gtk_application_set_app_menu(app, app_menu);
     g_action_map_add_action_entries(G_ACTION_MAP(app),
                                     APP_MENU_ACTION_ENTRIES,
                                     APP_MENU_ACTION_ENTRIES_LEN,
                                     app);
-    
+
     g_object_unref(builder);
   }
-  
+
   g_object_set(gtk_settings_get_default(),
                "gtk-application-prefer-dark-theme",
                marker_prefs_get_use_dark_theme(),
@@ -135,7 +135,7 @@ marker_about_cb(GSimpleAction* action,
   };
 
   GtkAboutDialog* dialog = GTK_ABOUT_DIALOG(gtk_about_dialog_new());
-  
+
   gtk_about_dialog_set_logo_icon_name(dialog, "com.github.fabiocolacio.marker");
   gtk_about_dialog_set_program_name(dialog, "Marker");
   gtk_about_dialog_set_version(dialog, MARKER_VERSION);
@@ -146,11 +146,11 @@ marker_about_cb(GSimpleAction* action,
   gtk_about_dialog_set_license_type(dialog, GTK_LICENSE_GPL_3_0);
   gtk_about_dialog_set_authors(dialog, authors);
   gtk_about_dialog_set_artists(dialog, artists);
-  
+
   GtkWindow* window = gtk_application_get_active_window(app);
   gtk_window_set_transient_for(GTK_WINDOW(dialog), window);
   gtk_window_set_modal(GTK_WINDOW(dialog), TRUE);
-  
+
   gtk_dialog_run(GTK_DIALOG(dialog));
   gtk_widget_destroy(GTK_WIDGET(dialog));
 }
@@ -170,11 +170,11 @@ marker_shortcuts_cb(GSimpleAction* action,
 {
   GtkBuilder* builder =
     gtk_builder_new_from_resource("/com/github/fabiocolacio/marker/ui/marker-shortcuts-window.ui");
-  
+
   GtkWidget* dialog = GTK_WIDGET(gtk_builder_get_object(builder, "shortcuts"));
-  
+
   GtkWindow* parent = gtk_application_get_active_window(app);
-  
+
 	if (GTK_WINDOW(parent) != gtk_window_get_transient_for(GTK_WINDOW(dialog)))
 	{
 		gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(parent));
@@ -182,7 +182,7 @@ marker_shortcuts_cb(GSimpleAction* action,
 
 	gtk_widget_show_all(dialog);
   gtk_window_present(GTK_WINDOW(dialog));
-  
+
   g_object_unref(builder);
 }
 
@@ -208,7 +208,7 @@ marker_create_new_window_from_file (GFile *file)
 {
   MarkerWindow *window = marker_window_new_from_file (app, file);
   gtk_widget_show (GTK_WIDGET (window));
-  
+
   if (preview_mode)
   {
     MarkerEditor *editor = marker_window_get_active_editor (window);
@@ -237,13 +237,11 @@ main(int    argc,
 {
   app = gtk_application_new("com.github.fabiocolacio.marker",
                             G_APPLICATION_HANDLES_OPEN);
-
-
   g_signal_connect(app, "activate", G_CALLBACK(activate), NULL);
   g_signal_connect(app, "open", G_CALLBACK(marker_open), NULL);
-  
+
   g_application_add_main_option_entries (G_APPLICATION(app), CLI_OPTIONS);
-  
+
   int status = g_application_run(G_APPLICATION(app), argc, argv);
   g_object_unref(app);
 

@@ -45,21 +45,6 @@
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
-            <property name="image">add_text_img</property>
-            <signal name="clicked" handler="add_text_cb" swapped="no"/>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="pack_type">end</property>
-            <property name="position">2</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkButton">
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="receives_default">True</property>
             <property name="image">close_text_img</property>
             <signal name="clicked" handler="close_text_cb" swapped="no"/>
           </object>
@@ -68,6 +53,21 @@
             <property name="fill">True</property>
             <property name="pack_type">end</property>
             <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="image">add_text_img</property>
+            <signal name="clicked" handler="add_text_cb" swapped="no"/>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="pack_type">end</property>
+            <property name="position">2</property>
           </packing>
         </child>
         <style>
@@ -79,32 +79,32 @@
   <object class="GtkImage" id="eraser_img">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="pixbuf">icons/eraser.svg</property>
+    <property name="icon_name">marker-eraser</property>
   </object>
   <object class="GtkImage" id="large_img">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="pixbuf">icons/large.svg</property>
+    <property name="icon_name">marker-large</property>
   </object>
   <object class="GtkImage" id="medium_img">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="pixbuf">icons/medium.svg</property>
+    <property name="icon_name">marker-medium</property>
   </object>
   <object class="GtkImage" id="pen_img">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="pixbuf">icons/pen.svg</property>
+    <property name="icon_name">marker-pen</property>
   </object>
   <object class="GtkImage" id="small_img">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="pixbuf">icons/small.svg</property>
+    <property name="icon_name">marker-small</property>
   </object>
   <object class="GtkImage" id="text_img">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="pixbuf">icons/text.svg</property>
+    <property name="icon_name">marker-text</property>
   </object>
   <object class="GtkHeaderBar" id="header_bar">
     <property name="visible">True</property>
@@ -120,10 +120,10 @@
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">False</property>
+            <property name="tooltip_text">Pen Tool</property>
             <property name="image">pen_img</property>
             <property name="active">True</property>
             <property name="draw_indicator">False</property>
-            <property name="tooltip-text">Pen Tool</property>
             <signal name="clicked" handler="pen_cb" swapped="no"/>
           </object>
           <packing>
@@ -137,10 +137,10 @@
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">False</property>
+            <property name="tooltip_text">Eraser Tool</property>
             <property name="image">eraser_img</property>
             <property name="draw_indicator">False</property>
             <property name="group">pen_radio_button</property>
-            <property name="tooltip-text">Eraser Tool</property>
             <signal name="clicked" handler="eraser_cb" swapped="no"/>
           </object>
           <packing>
@@ -154,10 +154,10 @@
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">False</property>
+            <property name="tooltip_text">Text Insertion Tool</property>
             <property name="image">text_img</property>
             <property name="draw_indicator">False</property>
             <property name="group">pen_radio_button</property>
-            <property name="tooltip-text">Text Insertion Tool</property>
             <signal name="clicked" handler="text_cb" swapped="no"/>
           </object>
           <packing>
@@ -176,10 +176,10 @@
         <property name="visible">True</property>
         <property name="can_focus">True</property>
         <property name="receives_default">True</property>
+        <property name="tooltip_text">Color Chooser</property>
         <property name="use_alpha">True</property>
         <property name="color">#000000000000</property>
         <property name="alpha">65535</property>
-        <property name="tooltip-text">Color Chooser</property>
         <signal name="color-set" handler="color_set_cb" swapped="no"/>
       </object>
       <packing>
@@ -200,6 +200,10 @@
             <property name="draw_indicator">False</property>
             <property name="group">medium_radio_button</property>
             <signal name="clicked" handler="small_cb" swapped="no"/>
+            <style>
+              <class name="image-button"/>
+              <class name="linked"/>
+            </style>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -216,6 +220,10 @@
             <property name="active">True</property>
             <property name="draw_indicator">False</property>
             <signal name="clicked" handler="medium_cb" swapped="no"/>
+            <style>
+              <class name="image-button"/>
+              <class name="linked"/>
+            </style>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -232,6 +240,10 @@
             <property name="draw_indicator">False</property>
             <property name="group">medium_radio_button</property>
             <signal name="clicked" handler="large_cb" swapped="no"/>
+            <style>
+              <class name="linked"/>
+              <class name="image-button"/>
+            </style>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -252,33 +264,33 @@
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <child>
-          <object class="GtkButton" id="close_button">
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="receives_default">True</property>
-            <property name="image">close_img</property>
-            <property name="tooltip-text">Cancel the sketch</property>
-            <signal name="clicked" handler="close_cb" swapped="no"/>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">1</property>
-          </packing>
-        </child>
-        <child>
           <object class="GtkButton" id="insert_button">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
+            <property name="tooltip_text">Insert the sketch</property>
             <property name="image">add_img</property>
-            <property name="tooltip-text">Insert the sketch</property>
             <signal name="clicked" handler="insert_sketch_cb" swapped="no"/>
           </object>
           <packing>
             <property name="expand">False</property>
             <property name="fill">True</property>
             <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton" id="close_button">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="tooltip_text">Cancel the sketch</property>
+            <property name="image">close_img</property>
+            <signal name="clicked" handler="close_cb" swapped="no"/>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
           </packing>
         </child>
         <style>

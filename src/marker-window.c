@@ -29,14 +29,14 @@
 struct _MarkerWindow
 {
   GtkApplicationWindow  parent_instance;
-  
+
   GtkBox               *header_box;
   GtkHeaderBar         *header_bar;
   GtkButton            *zoom_original_btn;
-  
+
   gboolean              is_fullscreen;
   GtkButton            *unfullscreen_btn;
-  
+
   GtkBox               *vbox;
   MarkerEditor         *editor;
 };
@@ -49,7 +49,7 @@ G_DEFINE_TYPE (MarkerWindow, marker_window, GTK_TYPE_APPLICATION_WINDOW);
  *
  * Shows a dialog asking the user to proceed closing a document without saving,
  * or to cancel the close operation
- * 
+ *
  * Returns: TRUE if the user would like to proceed without saving. FALSE if the user
  * wants to cancel the operation.
  */
@@ -61,7 +61,7 @@ show_unsaved_documents_warning (MarkerWindow *window)
   MarkerEditor *editor = marker_window_get_active_editor (window);
   GFile *file = marker_editor_get_file (editor);
   g_autofree gchar *warning_message = NULL;
-  
+
   if (G_IS_FILE (file))
   {
     g_autofree gchar *filename = g_file_get_basename (file);
@@ -85,14 +85,14 @@ show_unsaved_documents_warning (MarkerWindow *window)
                                                          GTK_MESSAGE_QUESTION,
                                                          GTK_BUTTONS_OK_CANCEL,
                                                          warning_message);
-                                           
+
   gint response = gtk_dialog_run(GTK_DIALOG(dialog));
-  
+
   gtk_widget_destroy (GTK_WIDGET (dialog));
-  
+
   if (response == GTK_RESPONSE_OK)
     return TRUE;
-  
+
   return FALSE;
 }
 
@@ -231,62 +231,62 @@ key_pressed_cb (GtkWidget   *widget,
       case GDK_KEY_i:
         marker_source_view_surround_selection_with (source_view, "*");
         break;
-        
+
       case GDK_KEY_m:
         marker_source_view_surround_selection_with (source_view, "``");
         break;
-        
+
       case GDK_KEY_b:
         marker_source_view_surround_selection_with (source_view, "**");
         break;
-    
+
       case GDK_KEY_q:
         marker_quit ();
         break;
-    
+
       case GDK_KEY_n:
         marker_create_new_window ();
         break;
-      
+
       case GDK_KEY_w:
         marker_window_try_close (window);
         break;
-    
+
       case GDK_KEY_r:
         marker_editor_refresh_preview (editor);
         break;
-      
+
       case GDK_KEY_o:
         marker_window_open_file (window);
         break;
-      
+
       case GDK_KEY_k:
         marker_window_open_sketcher (window);
         break;
-      
+
       case GDK_KEY_s:
         if (shift_pressed)
           marker_window_save_active_file_as (window);
         else
           marker_window_save_active_file (window);
         break;
-      
+
       case GDK_KEY_p:
         marker_preview_run_print_dialog (marker_editor_get_preview (editor), GTK_WINDOW (window));
         break;
-        
+
       case GDK_KEY_1:
         marker_editor_set_view_mode (editor, EDITOR_ONLY_MODE);
         break;
-      
+
       case GDK_KEY_2:
         marker_editor_set_view_mode (editor, PREVIEW_ONLY_MODE);
         break;
-      
+
       case GDK_KEY_3:
         marker_editor_set_view_mode (editor, DUAL_PANE_MODE);
         break;
-      
+
       case GDK_KEY_4:
         marker_editor_set_view_mode (editor, DUAL_WINDOW_MODE);
         break;
@@ -346,25 +346,25 @@ window_deleted_event_cb (GtkWidget *widget,
 void
 marker_window_fullscreen (MarkerWindow *window)
 {
-  g_return_if_fail (MARKER_IS_WINDOW (window));  
+  g_return_if_fail (MARKER_IS_WINDOW (window));
   g_return_if_fail (!marker_window_is_fullscreen (window));
-  
+
   window->is_fullscreen = TRUE;
   gtk_window_fullscreen (GTK_WINDOW (window));
-  
+
   GtkBox * const header_box = window->header_box;
   GtkBox * const vbox = window->vbox;
   GtkWidget * const header_bar = GTK_WIDGET (window->header_bar);
   GtkWidget * const editor = GTK_WIDGET (window->editor);
-  
+
   g_object_ref (header_bar);
   gtk_container_remove (GTK_CONTAINER (header_box), header_bar);
   gtk_header_bar_set_show_close_button (GTK_HEADER_BAR (header_bar), FALSE);
   gtk_widget_show (GTK_WIDGET (window->unfullscreen_btn));
-  
+
   g_object_ref (editor);
   gtk_container_remove (GTK_CONTAINER (vbox), editor);
-  
+
   gtk_box_pack_start (vbox, header_bar, FALSE, TRUE, 0);
   gtk_box_pack_start (vbox, editor, TRUE, TRUE, 0);
 }
@@ -374,27 +374,30 @@ marker_window_unfullscreen (MarkerWindow *window)
 {
   g_return_if_fail (MARKER_IS_WINDOW (window));
   g_return_if_fail (marker_window_is_fullscreen (window));
-  
+
   window->is_fullscreen = FALSE;
   gtk_window_unfullscreen (GTK_WINDOW (window));
-  
+
   GtkBox * const vbox = window->vbox;
   GtkBox * const header_box = window->header_box;
   GtkWidget * const header_bar = GTK_WIDGET (window->header_bar);
-  
+
   g_object_ref (header_bar);
   gtk_container_remove (GTK_CONTAINER (vbox), header_bar);
   gtk_header_bar_set_show_close_button (GTK_HEADER_BAR (header_bar), TRUE);
   gtk_widget_hide (GTK_WIDGET (window->unfullscreen_btn));
-  
+
   gtk_box_pack_start (header_box, header_bar, FALSE, TRUE, 0);
 }
 
 static void
 marker_window_init (MarkerWindow *window)
 {
+  /** Add marker icon theme to the default icon theme **/
+  gtk_icon_theme_append_search_path (gtk_icon_theme_get_default(), ICONS_DIR);
+
   window->is_fullscreen = FALSE;
-  
+
   GtkBuilder *builder = gtk_builder_new ();
 
   /** VBox **/
@@ -402,7 +405,7 @@ marker_window_init (MarkerWindow *window)
   window->vbox = vbox;
   gtk_container_add (GTK_CONTAINER (window), GTK_WIDGET (vbox));
   gtk_widget_show (GTK_WIDGET (vbox));
-  
+
   /** Editor **/
   MarkerEditor *editor = marker_editor_new ();
   window->editor = editor;
@@ -412,7 +415,7 @@ marker_window_init (MarkerWindow *window)
   g_signal_connect (editor, "subtitle-changed", G_CALLBACK (subtitle_changed_cb), window);
   MarkerPreview *preview = marker_editor_get_preview (editor);
   g_signal_connect (preview, "zoom-changed", G_CALLBACK (preview_zoom_changed_cb), window);
-  
+
   /** HeaderBar **/
   GtkBox *header_box = GTK_BOX (gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
   window->header_box = header_box;
@@ -430,9 +433,9 @@ marker_window_init (MarkerWindow *window)
   gtk_header_bar_set_show_close_button (header_bar, TRUE);
   gtk_box_pack_start (header_box, GTK_WIDGET (header_bar), FALSE, TRUE, 0);
   gtk_widget_show (GTK_WIDGET (header_box));
-  
+
   /** Popover **/
-  GtkMenuButton *menu_btn = GTK_MENU_BUTTON(gtk_builder_get_object(builder, "menu_btn")); 
+  GtkMenuButton *menu_btn = GTK_MENU_BUTTON(gtk_builder_get_object(builder, "menu_btn"));
   gtk_builder_add_from_resource (builder, "/com/github/fabiocolacio/marker/ui/marker-gear-popover.ui", NULL);
   GtkWidget *popover = GTK_WIDGET (gtk_builder_get_object (builder, "gear_menu_popover"));
   window->zoom_original_btn = GTK_BUTTON (gtk_builder_get_object (builder, "zoom_original_btn"));
@@ -440,9 +443,9 @@ marker_window_init (MarkerWindow *window)
   gtk_menu_button_set_popover (menu_btn, popover);
   gtk_menu_button_set_direction (menu_btn, GTK_ARROW_DOWN);
   preview_zoom_changed_cb (preview, window);
-  
+
   g_action_map_add_action_entries(G_ACTION_MAP(window), WINDOW_ACTIONS, G_N_ELEMENTS(WINDOW_ACTIONS), window);
-  
+
   if (!marker_has_app_menu ())
   {
     GtkWidget *extra_items = GTK_WIDGET (gtk_builder_get_object (builder, "appmenu_popover_items"));
@@ -454,17 +457,17 @@ marker_window_init (MarkerWindow *window)
                                      APP_MENU_ACTION_ENTRIES_LEN,
                                      window);
   }
-  
+
   /** Window **/
   gtk_window_set_default_size(GTK_WINDOW(window), 900, 600);
   gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
   g_signal_connect (window, "key-press-event", G_CALLBACK (key_pressed_cb), window);
   g_signal_connect(window, "delete-event", G_CALLBACK(window_deleted_event_cb), window);
-  
+
   gtk_builder_add_callback_symbol (builder, "save_button_clicked_cb", G_CALLBACK (marker_window_save_active_file));
   gtk_builder_add_callback_symbol (builder, "open_button_clicked_cb", G_CALLBACK (marker_window_open_file));
   gtk_builder_connect_signals (builder, window);
-  
+
   g_object_unref (builder);
 }
 
@@ -501,13 +504,13 @@ marker_window_open_file (MarkerWindow *window)
                                                    NULL);
 
   gint response = gtk_dialog_run (GTK_DIALOG (dialog));
-  
+
   if (response == GTK_RESPONSE_ACCEPT)
   {
     GFile *file = gtk_file_chooser_get_file (GTK_FILE_CHOOSER (dialog));
     marker_create_new_window_from_file (file);
   }
-  
+
   gtk_widget_destroy (dialog);
 }
 
@@ -525,13 +528,13 @@ marker_window_save_active_file_as (MarkerWindow *window)
   gtk_file_chooser_set_do_overwrite_confirmation(GTK_FILE_CHOOSER(dialog), TRUE);
 
   gint response = gtk_dialog_run (GTK_DIALOG (dialog));
-  
+
   if (response == GTK_RESPONSE_ACCEPT)
   {
-    GFile *file = gtk_file_chooser_get_file (GTK_FILE_CHOOSER (dialog)); 
+    GFile *file = gtk_file_chooser_get_file (GTK_FILE_CHOOSER (dialog));
     marker_editor_save_file_as (marker_window_get_active_editor (window), file);
   }
-  
+
   gtk_widget_destroy (dialog);
 }
 
@@ -584,7 +587,7 @@ marker_window_is_active_editor (MarkerWindow *window,
 {
   g_assert (MARKER_IS_WINDOW (window));
   g_assert (MARKER_IS_EDITOR (editor));
-  
+
   return (marker_window_get_active_editor (window) == editor);
 }
 
@@ -592,11 +595,11 @@ void
 marker_window_open_sketcher (MarkerWindow *window)
 {
   g_assert (MARKER_IS_WINDOW (window));
-  
+
   MarkerEditor *editor = marker_window_get_active_editor (window);
   GFile *file = marker_editor_get_file (editor);
   MarkerSourceView *source_view = marker_editor_get_source_view (editor);
-  
+
   marker_sketcher_window_show (GTK_WINDOW (window), file, source_view);
 }
 
@@ -604,13 +607,13 @@ gboolean
 marker_window_try_close (MarkerWindow *window)
 {
   g_assert (MARKER_IS_WINDOW (window));
-  
+
   MarkerEditor *editor = marker_window_get_active_editor (window);
   gboolean status = TRUE;
-  
+
   if (marker_editor_has_unsaved_changes (editor))
     status = show_unsaved_documents_warning (window);
-  
+
   if (status)
   {
     marker_editor_closing(editor);

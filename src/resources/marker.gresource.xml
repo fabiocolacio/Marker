@@ -7,11 +7,5 @@
     <file>ui/marker-headerbar.ui</file>
     <file>ui/marker-appmenu.ui</file>
     <file>ui/marker-sketcher-window.ui</file>
-    <file>ui/icons/pen.svg</file>
-    <file>ui/icons/eraser.svg</file>
-    <file>ui/icons/text.svg</file>
-    <file>ui/icons/small.svg</file>
-    <file>ui/icons/medium.svg</file>
-    <file>ui/icons/large.svg</file>
   </gresource>
 </gresources>
