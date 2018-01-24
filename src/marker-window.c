@@ -424,29 +424,36 @@ marker_window_unfullscreen (MarkerWindow *window)
   gtk_box_pack_start (header_box, header_bar, FALSE, TRUE, 0);
 }
 
-void
+static void
 rename_file_action_cb(GtkCellRendererText *cell,
                       gchar               *path_string,
                       gchar               *new_text,
                       gpointer             user_data)
 {
+  if (!new_text || sizeof(new_text) == 0)
+    return;
   MarkerWindow * window = MARKER_WINDOW(user_data);
   GtkTreeIter iter;
   GtkTreeModel *model = GTK_TREE_MODEL(window->documents_tree_store);
+  MarkerEditor * editor;
   
   if (gtk_tree_model_get_iter_from_string(model, &iter, path_string))
   {
-    if (marker_editor_rename_file(window->active_editor, new_text))
+    gtk_tree_model_get (model, &iter, EDITOR_COLUMN, &editor, -1);
+    if (marker_editor_rename_file(editor, g_strdup(new_text)))
     {
-      g_autofree gchar *title = marker_editor_get_title (window->active_editor);
-      g_autofree gchar *subtitle = marker_editor_get_subtitle (window->active_editor);
-  
-      gtk_header_bar_set_title (window->header_bar, title);
-      gtk_header_bar_set_subtitle (window->header_bar, subtitle);
       gtk_tree_store_set(window->documents_tree_store,
                          &iter,
                          TITLE_COLUMN,
                          new_text);
+      if (editor == window->active_editor)
+      {
+        g_autofree gchar *title = marker_editor_get_title (editor);
+        g_autofree gchar *subtitle = marker_editor_get_subtitle (editor);
+    
+        gtk_header_bar_set_title (window->header_bar, title);
+        gtk_header_bar_set_subtitle (window->header_bar, subtitle);
+      }
     }
   }
 }
@@ -474,7 +481,8 @@ tree_selection_changed_cb(GtkTreeSelection *selection,
     g_autofree gchar *subtitle = marker_editor_get_subtitle (marker_window_get_active_editor (window));
     gtk_header_bar_set_title (window->header_bar, title);
     gtk_header_bar_set_subtitle (window->header_bar, subtitle);
-    
+    preview_zoom_changed_cb(marker_editor_get_preview(editor),
+                            window);
     g_free (name);
   }
 }
@@ -482,19 +490,12 @@ tree_selection_changed_cb(GtkTreeSelection *selection,
 
 
 static gboolean
-close_button_clicked(GtkTreeView *view, guint x, guint y, GtkCellRenderer * cell)
+close_button_clicked(GtkTreeView *view, GtkTreeViewColumn *col, guint x, GtkCellRenderer * cell)
 {
-	GtkTreeViewColumn *col = NULL;
-	GList             *columns;
+	
 	gint               colw = 0;
 
 	g_return_val_if_fail ( view != NULL, FALSE );
-
-	/* (1) find column and column x relative to tree view coordinates */
-
-	columns = gtk_tree_view_get_columns(view);
-    col = GTK_TREE_VIEW_COLUMN(columns->data);
-	g_list_free(columns);
 
 	if (col == NULL)
 		return FALSE; /* not found */
@@ -526,18 +527,22 @@ button_pressed_cb (GtkWidget *view,
 
   GtkCellRenderer * cell_renderer = GTK_CELL_RENDERER(data);
   
+  gint x;
+  
   GtkTreePath * path = gtk_tree_path_new();
+  GtkTreeViewColumn * col = gtk_tree_view_column_new();
+    
   gtk_tree_view_get_path_at_pos (GTK_TREE_VIEW(view),
                                  bevent->x,
                                  bevent->y,
                                  &path,
-                                 NULL,
-                                 NULL, NULL);
+                                 &col,
+                                 &x, NULL);
   
   gtk_tree_selection_select_path(gtk_tree_view_get_selection(GTK_TREE_VIEW(view)),
                                  path);
   
-  if (close_button_clicked(GTK_TREE_VIEW(view), bevent->x, bevent->y, cell_renderer))
+  if (close_button_clicked(GTK_TREE_VIEW(view), col, x, cell_renderer))
     marker_window_close_current_document(MARKER_WINDOW(gtk_widget_get_ancestor(view, MARKER_TYPE_WINDOW)));
   return FALSE;
 }
@@ -582,7 +587,7 @@ marker_window_init (MarkerWindow *window)
    gtk_tree_view_column_set_attributes(column, renderer,
                                        "text", TITLE_COLUMN,
                                        NULL);
-   
+
    g_signal_connect (renderer, "edited",
                       G_CALLBACK(rename_file_action_cb),
                       window);
@@ -730,7 +735,11 @@ marker_window_add_editor(MarkerWindow *window,
   g_signal_connect(editor, "subtitle-changed",
                    G_CALLBACK(subtitle_changed_cb),
                    window);
-  
+  g_signal_connect(marker_editor_get_preview(editor), "zoom-changed",
+                   G_CALLBACK(preview_zoom_changed_cb),
+                   window);
+  preview_zoom_changed_cb(marker_editor_get_preview(editor),
+                          window);
   window->editors_counter ++;
 }
 

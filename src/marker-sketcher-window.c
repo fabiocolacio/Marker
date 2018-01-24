@@ -212,7 +212,7 @@ add_history(MarkerSketcherWindow * w)
   cairo_surface_t * destination = cairo_surface_create_similar(w->surface, 
                                                                CAIRO_CONTENT_COLOR_ALPHA,
                                                                gtk_widget_get_allocated_width (widget),
-                                                               gtk_widget_get_allocated_height (widget ));
+                                                               gtk_widget_get_allocated_height (widget));
   cairo_t *cr = cairo_create (destination);
   cairo_set_source_surface (cr, w->surface, 0, 0);
   cairo_paint (cr);
