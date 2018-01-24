@@ -722,8 +722,9 @@ marker_window_add_editor(MarkerWindow *window,
                       NAME_COLUMN, name,
                       EDITOR_COLUMN, editor,
                       -1);
-  
-  gtk_tree_selection_select_iter(gtk_tree_view_get_selection(window->documents_tree_view), &iter);
+
+  gtk_tree_selection_select_iter(gtk_tree_view_get_selection(window->documents_tree_view),
+                                 &iter);
   
   if (window->editors_counter == 1 &&
       gtk_paned_get_position(window->main_paned) == 0)
@@ -963,6 +964,14 @@ marker_window_close_current_document (MarkerWindow *window)
        *  not appear.
        *  I do not understand why...
        ***/
+       if (!gtk_tree_selection_get_selected(selection, &model, &iter)){
+         gint rows = gtk_tree_model_iter_n_children(GTK_TREE_MODEL(window->documents_tree_store), NULL);
+         if (rows)
+         {
+           gtk_tree_selection_select_path(selection,
+                                          gtk_tree_path_new_from_indices(rows - 1, -1));
+         }
+       }
     }
     else{
       /** close if model is empty **/
