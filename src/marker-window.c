@@ -697,7 +697,7 @@ marker_window_add_editor(MarkerWindow *window,
   g_sprintf(name, "edit%u", window->editors_counter);
   
   gtk_stack_add_named(window->editors_stack, GTK_WIDGET(editor), name);
-  marker_editor_set_view_mode(editor, marker_prefs_get_default_view_mode());
+  marker_editor_refresh_preview(editor);
   gtk_widget_show(GTK_WIDGET(editor));
   gtk_stack_set_visible_child_full(window->editors_stack, name, GTK_STACK_TRANSITION_TYPE_CROSSFADE);
   
