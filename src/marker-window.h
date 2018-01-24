@@ -42,10 +42,17 @@ void                 marker_window_toggle_fullscreen             (MarkerWindow  
 gboolean             marker_window_is_fullscreen                 (MarkerWindow       *window);
 MarkerEditor        *marker_window_get_active_editor             (MarkerWindow       *window);
 void                 marker_window_open_file                     (MarkerWindow       *window);
+void                 marker_window_open_file_in_new_window       (MarkerWindow       *window);
 void                 marker_window_save_active_file              (MarkerWindow       *window);
 void                 marker_window_save_active_file_as           (MarkerWindow       *window);
 void                 marker_window_open_sketcher                 (MarkerWindow       *window);
 gboolean             marker_window_try_close                     (MarkerWindow       *window);
+void                 marker_window_close_current_document        (MarkerWindow       *window);
+
+
+void                 marker_window_new_editor                    (MarkerWindow       *window);
+void                 marker_window_new_editor_from_file          (MarkerWindow       *window,
+                                                                  GFile              *file);
 
 G_END_DECLS
 
