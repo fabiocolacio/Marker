@@ -58,6 +58,7 @@ gboolean             marker_editor_rename_file                   (MarkerEditor  
 GFile               *marker_editor_get_file                      (MarkerEditor       *editor);
 gboolean             marker_editor_has_unsaved_changes           (MarkerEditor       *editor);
 gchar               *marker_editor_get_title                     (MarkerEditor       *editor);
+gchar               *marker_editor_get_raw_title                 (MarkerEditor       *editor);
 gchar               *marker_editor_get_subtitle                  (MarkerEditor       *editor);
 MarkerPreview       *marker_editor_get_preview                   (MarkerEditor       *editor);
 MarkerSourceView    *marker_editor_get_source_view               (MarkerEditor       *editor);
