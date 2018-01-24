@@ -51,7 +51,6 @@ emit_signal_title_changed (MarkerEditor *editor)
 {
   g_autofree gchar *title = marker_editor_get_title (editor);
   g_autofree gchar *raw_title = marker_editor_get_raw_title(editor);
-  g_print("%s %s\n", title, raw_title);
   g_signal_emit_by_name (editor, "title-changed", title, raw_title);
 }
 

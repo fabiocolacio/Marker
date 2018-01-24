@@ -27,6 +27,7 @@
 GtkApplication      *marker_get_app                              (void);
 void                 marker_create_new_window                    (void);
 void                 marker_create_new_window_from_file          (GFile              *file);
+void                 marker_open_file                            (GFile              *file);
 void                 marker_quit                                 (void);
 void                 marker_prefs_cb                             (GSimpleAction      *action,
                                                                   GVariant           *parameter,
