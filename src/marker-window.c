@@ -60,6 +60,8 @@ struct _MarkerWindow
   GtkPaned             *main_paned;
   guint                 editors_counter;
   guint                 untitled_files;
+
+  guint32               last_click_;
 };
 
 G_DEFINE_TYPE (MarkerWindow, marker_window, GTK_TYPE_APPLICATION_WINDOW);
@@ -564,7 +566,7 @@ button_pressed_cb (GtkWidget *view,
 {
 
   GtkCellRenderer * cell_renderer = GTK_CELL_RENDERER(data);
-
+  MarkerWindow * window = MARKER_WINDOW(gtk_widget_get_ancestor(view, MARKER_TYPE_WINDOW));
   gint x;
 
   GtkTreePath * path = gtk_tree_path_new();
@@ -581,8 +583,14 @@ button_pressed_cb (GtkWidget *view,
                                  path);
 
   if (close_button_clicked(GTK_TREE_VIEW(view), col, x, cell_renderer))
-    marker_window_close_current_document(MARKER_WINDOW(gtk_widget_get_ancestor(view, MARKER_TYPE_WINDOW)));
-  return FALSE;
+    marker_window_close_current_document(window);
+  guint32 delta = bevent->time - window->last_click_;
+  window->last_click_ = bevent->time;
+  if (bevent->type == GDK_2BUTTON_PRESS || delta < 500)
+  {
+    return FALSE;
+  }
+  return TRUE;
 }
 
 static void
@@ -590,6 +598,7 @@ marker_window_init (MarkerWindow *window)
 {
   window->is_fullscreen = FALSE;
   window->editors_counter = 0;
+  window->last_click_ = 0;
 
   GtkBuilder *builder = gtk_builder_new ();
 
@@ -612,48 +621,47 @@ marker_window_init (MarkerWindow *window)
 
 
 
-   gtk_tree_view_set_model(documents_tree_view, GTK_TREE_MODEL(documents_store));
-   GtkCellRenderer *renderer;
-   GtkTreeViewColumn *column;
+  gtk_tree_view_set_model(documents_tree_view, GTK_TREE_MODEL(documents_store));
+  GtkCellRenderer *renderer;
+  GtkTreeViewColumn *column;
 
-   column = gtk_tree_view_column_new();
-   gtk_tree_view_column_set_title(column, "Documents");
+  column = gtk_tree_view_column_new();
+  gtk_tree_view_column_set_title(column, "Documents");
 
-   renderer = gtk_cell_renderer_text_new();
-   g_object_set(renderer, "editable", TRUE, NULL);
-   gtk_tree_view_column_pack_start(column, renderer, TRUE);
-   gtk_tree_view_column_set_attributes(column, renderer,
-                                       "markup", TITLE_COLUMN,
-                                       NULL);
+  renderer = gtk_cell_renderer_text_new();
+  g_object_set(renderer, "editable", TRUE, NULL);
+  gtk_tree_view_column_pack_start(column, renderer, TRUE);
+  gtk_tree_view_column_set_attributes(column, renderer,
+                                      "markup", TITLE_COLUMN,
+                                      NULL);
 
-   g_signal_connect (renderer, "edited",
-                      G_CALLBACK(rename_file_action_cb),
-                      window);
-
-   renderer = gtk_cell_renderer_pixbuf_new();
-   gtk_tree_view_column_pack_start(column, renderer, FALSE);
-   gtk_tree_view_column_set_attributes(column, renderer,
-                                        "pixbuf", ICON_COLUMN,
-                                        NULL);
-
-   gtk_tree_view_append_column (documents_tree_view, column);
-
-   window->documents_tree_store = documents_store;
-   window->documents_tree_view = documents_tree_view;
-
-
-   GtkTreeSelection *select;
-   select = gtk_tree_view_get_selection (documents_tree_view);
-
-   gtk_tree_selection_set_mode (select, GTK_SELECTION_SINGLE);
-   g_signal_connect (G_OBJECT (select), "changed",
-                     G_CALLBACK (tree_selection_changed_cb),
+  g_signal_connect (renderer, "edited",
+                     G_CALLBACK(rename_file_action_cb),
                      window);
 
-   g_signal_connect (documents_tree_view, "button-press-event",
-                     G_CALLBACK(button_pressed_cb),
-                     renderer);
+  renderer = gtk_cell_renderer_pixbuf_new();
+  gtk_tree_view_column_pack_start(column, renderer, FALSE);
+  gtk_tree_view_column_set_attributes(column, renderer,
+                                       "pixbuf", ICON_COLUMN,
+                                       NULL);
 
+  gtk_tree_view_append_column (documents_tree_view, column);
+
+  window->documents_tree_store = documents_store;
+  window->documents_tree_view = documents_tree_view;
+
+
+  GtkTreeSelection *select;
+  select = gtk_tree_view_get_selection (documents_tree_view);
+
+  gtk_tree_selection_set_mode (select, GTK_SELECTION_SINGLE);
+  g_signal_connect (G_OBJECT (select), "changed",
+                    G_CALLBACK (tree_selection_changed_cb),
+                    window);
+
+  g_signal_connect (documents_tree_view, "button-press-event",
+                    G_CALLBACK(button_pressed_cb),
+                    renderer);
 
   /** EDITOR STACKS **/
   window->editors_stack = GTK_STACK(gtk_builder_get_object(builder, "documents_stack"));
