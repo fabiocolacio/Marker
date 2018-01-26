@@ -94,14 +94,6 @@ shared_library(
   install_dir: WEB_EXTENSIONS_DIRECTORY
 )
 
-# shared_library(
-#   'click-extension',
-#   sources : [click_extension],
-#   dependencies : ext_deps,
-#   install : true,
-#   install_dir: WEB_EXTENSIONS_DIRECTORY
-# )
-
 executable(
   EXECUTABLE_NAME,
   sources : [marker_sources, hoedown_sources],
