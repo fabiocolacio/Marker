@@ -36,6 +36,7 @@ unfinished features.
 
 ## Packages
 
+* [Flathub (thanks to @jsparber and @bertob)](https://beta.flathub.org/apps/details/com.github.fabiocolacio.marker)
 * [Arch Linux (thanks to @mmetak)](https://aur.archlinux.org/packages/marker-git/)
 
 ## Installation From Source
