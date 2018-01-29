@@ -12,7 +12,7 @@ HIGHLIGHT_STYLES_DIR = join_paths(join_paths(SCRIPTS_DIR, 'highlight'),'styles')
 WEB_EXTENSIONS_DIRECTORY = join_paths(APP_DIR, 'extensions')
 APPDATA_DIR = join_paths(DATA_DIR, 'appdata')
 
-EXECUTABLE_NAME = 'com.github.fabiocolacio.marker'
+EXECUTABLE_NAME = 'marker'
 
 gnome = import('gnome')
 
