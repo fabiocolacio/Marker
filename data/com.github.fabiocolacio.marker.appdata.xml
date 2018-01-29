@@ -53,7 +53,7 @@
   <project_group>Marker</project_group>
 
   <provides>
-    <binary>com.github.fabiocolacio.marker</binary>
+    <binary>marker</binary>
   </provides>
 
   <releases>
