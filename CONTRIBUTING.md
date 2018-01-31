@@ -12,12 +12,12 @@ There are only a few rules:
    separate pull requests.
 4. Follow the coding style below when submitting code
 
-# Coding Style
+## Coding Style
 
 The following guidelines only apply for the core parts of the app. Changes
 to upstream libraries such as *hoedown* and *charter* should try to match the styles of those projects.
 
-## General
+### General
 
 * Indentations are done with 2 spaces
 * There is always a space before opening parenthases
@@ -33,7 +33,7 @@ to upstream libraries such as *hoedown* and *charter* should try to match the st
   * All public types are prefaced with ``Marker``
   * All other public symbols are prefaced with ``marker_``
 
-## Header (.h) files
+### Header (.h) files
 
 Function prototypes have the function name start at column 22, the the opening
 parenthases at column 66, and the last asterisk for pointer types, at column 86:
@@ -43,7 +43,7 @@ void                 marker_editor_window_set_tab_width          (MarkerEditorWi
                                                                   guint               value);
 ```
 
-## Source (.c) files
+### Source (.c) files
 
 In order to keep the code predictable and easy-to-navigate, items should
 appear in the following order:
@@ -72,7 +72,7 @@ static void
 action_zoom_in (GSimpleAction *action,
                 GVariant      *parameter,
                 gpointer       user_data)
-{  
+{
   /* ... */
 }
 ```
@@ -105,3 +105,27 @@ size_allocated_cb (GtkWidget     *widget,
 }
 
 ```
+## Releases
+
+When making a release, do all of the following:
+
+1. Update the version number in the ``meson.build``
+2. Create a release on GitHub (see guidelines for release notes below).
+3. Update the tag name in the flatpak manifest of the [flathub repo](https://github.com/flathub/com.github.fabiocolacio.marker)
+    * If you do not have push access, create a pull request.
+      Someone who has push access will merge it for you.
+
+### Version Numbering
+
+We use dates for version numbers in the format ``YYYY.MM.DD``
+
+e.g. ``2018.01.28``.
+
+### Release Notes
+
+When making a release on GitHub, you will be prompted to write
+release notes. The notes should list every change between the
+previous release and the new one. The first section should list new features, and the second section should list bug fixes.
+
+An easy way to check what has been changed since the previous release is by finding the previous release in GitHub, and clicking the link that says
+"X commits to master since this release".
