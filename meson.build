@@ -91,6 +91,7 @@ shared_library(
   sources : [scroll_extension],
   dependencies : ext_deps,
   install : true,
+  link_args: '-lm',
   install_dir: WEB_EXTENSIONS_DIRECTORY
 )
 

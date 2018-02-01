@@ -314,9 +314,13 @@ marker_preview_render_markdown(MarkerPreview* preview,
                    G_CALLBACK(context_menu_cb),
                    NULL);
 
+  gchar * uri = g_strdup_printf("file://%s", (base_uri) ? g_locale_from_utf8(base_uri, strlen(base_uri), NULL, NULL, NULL) : "internal.md");
+
   GBytes *bhtml = g_string_free_to_bytes(g_string_new(html));
   webkit_web_view_load_bytes(web_view, bhtml, "text/html", "UTF-8",
-                             (base_uri) ? base_uri : "file://");
+                             uri);
+
+  g_free(uri);
   free(html);
 }
 
