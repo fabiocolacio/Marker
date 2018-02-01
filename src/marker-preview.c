@@ -303,12 +303,6 @@ marker_preview_render_markdown(MarkerPreview* preview,
                                        mermaid_mode,
                                        css_theme);
 
-
-  /** TODO I fixed the URI to avoid UTF8 conversion
-   *  However a conversion should be better (base_uri) ? base_uri : "file://unnamed.md";
-   * **/
-  const char* uri = "file://internal.md";
-
   WebKitWebView* web_view = WEBKIT_WEB_VIEW(preview);
 
   g_signal_connect(web_view,
@@ -320,12 +314,9 @@ marker_preview_render_markdown(MarkerPreview* preview,
                    G_CALLBACK(context_menu_cb),
                    NULL);
 
-  GBytes * bhtml = g_string_free_to_bytes(g_string_new(html));
-  webkit_web_view_load_bytes(web_view,
-                            bhtml,
-                            "text/html",
-                            "UTF-8",
-                            uri);
+  GBytes *bhtml = g_string_free_to_bytes(g_string_new(html));
+  webkit_web_view_load_bytes(web_view, bhtml, "text/html", "UTF-8",
+                             (base_uri) ? base_uri : "file://");
   free(html);
 }
 
