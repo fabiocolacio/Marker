@@ -63,6 +63,28 @@ void strip(char* str, char c) {
     *pw = '\0';
 }
 
+void strip_starts(char* str, char c)
+{
+    cbool x = FALSE;
+    char *pr = str, *pw = str;
+    while (*pr) {
+        *pw = *pr++;
+        if (*pw != c)
+        {
+            x = TRUE;
+        }
+        if (!x)
+        {
+            pw += (*pw != c);
+        }
+        else
+        {
+            pw ++;
+        }
+    }
+    *pw = '\0';
+}
+
 axisMode
 parse_mode(char *line)
 {
@@ -139,11 +161,14 @@ clist* parse_csv(char * link, unsigned int * size)
     char * copy = malloc((n+1)*sizeof(char));
     copy[n] = 0;
     memcpy(copy, &link[6], n);
-    char *  tag;
+
+    char * tag;
     char * url = strtok_r(copy, "#", &tag);
+
     if (!tag || !is_regular_file(url)){
         return NULL;
     }
+
     CsvParser *csvparser = CsvParser_new(url, ",", 1);
     CsvRow *header;
     CsvRow *row;
@@ -170,7 +195,7 @@ clist* parse_csv(char * link, unsigned int * size)
         char **rowFields = CsvParser_getFields(row);
         double *val = malloc(sizeof(double));
         *val = atof(rowFields[id]);
-        
+
         list = clist_append(list, val);
 
         *size = *size + 1;
@@ -194,7 +219,7 @@ void* parse_math(char* text)
     return expr;
 }
 
-char* 
+char*
 get_rest(char* text, unsigned int m)
 {
     unsigned int n = strlen(text) - m;
@@ -209,7 +234,7 @@ get_rest(char* text, unsigned int m)
 }
 
 void* parse_data(char* line, unsigned int *l, dtype  * type)
-{   
+{
 
     *l = 0;
     unsigned int n = strlen(line);
@@ -219,17 +244,18 @@ void* parse_data(char* line, unsigned int *l, dtype  * type)
     char * local = malloc((1+n)*sizeof(char));
     local[n] = 0;
     memcpy(local, line, n);
+    strip_starts(local, ' ');
 
     char * tok = local;
     char * point;
     *type = ND;
     clist * list = NULL;
     if (startsWith("csv://", local))
-    {   
-            *type = CSV;
-            list = parse_csv(local, l);
+    {
+        *type = CSV;
+        list = parse_csv(local, l);
     } else if (startsWith("math:", local))
-    {   
+    {
         *type = MATH;
         char * expr = parse_math(local);
         free(local);
@@ -242,7 +268,7 @@ void* parse_data(char* line, unsigned int *l, dtype  * type)
         unsigned int num = 10;
         char * rest = get_rest(local, 6);
         double * data = NULL;
-        
+
         if (parse_range(rest, &min, &max, &num)  && max != min && num > 0)
         {
             *l = num;
@@ -264,8 +290,8 @@ void* parse_data(char* line, unsigned int *l, dtype  * type)
         double max = 0;
         unsigned int num = 10;
         char * rest = get_rest(local, 9);
-        double * data = NULL; 
-        
+        double * data = NULL;
+
         if (parse_range(rest, &min, &max, &num)  && max != min && num > 0)
         {
             *l = num;
@@ -283,14 +309,14 @@ void* parse_data(char* line, unsigned int *l, dtype  * type)
     } else
     {
         *type = DATA;
-    
+
         /* count values */
         while((tok = strtok_r(tok, "\t ,\n", &point)) != NULL)
         {
             double * val =malloc(sizeof(double));
             *val = atof(tok);
             list = clist_append(list, val);
-            
+
             *l = (unsigned int)(*l + 1);
             tok = NULL;
         }
@@ -302,7 +328,7 @@ void* parse_data(char* line, unsigned int *l, dtype  * type)
         return NULL;
     }
 
-    double * data = malloc(*l*sizeof(double)); 
+    double * data = malloc(*l*sizeof(double));
     int i;
     clist *head = clist_get_first(list);
     for (i = *l-1 ; i >= 0 ; i--)
@@ -315,7 +341,7 @@ void* parse_data(char* line, unsigned int *l, dtype  * type)
     return data;
 }
 
-void  
+void
 parse_x_data(chart *chart, char* line)
 {
     plot * p = clist_get_last(chart->plots)->data;
@@ -333,7 +359,7 @@ parse_x_data(chart *chart, char* line)
     }
 }
 
-void  
+void
 parse_y_data(chart *chart, char* line)
 {
     plot * p = clist_get_last(chart->plots)->data;
@@ -342,11 +368,11 @@ parse_y_data(chart *chart, char* line)
         unsigned int l = 0;
         dtype t;
         void * data = parse_data(line, &l, &t);
-        p->y_type = t; 
+        p->y_type = t;
         if (t == ND)
             return;
         if (t != MATH)
-        {        
+        {
             p->n = l;
         }
         p->y_data = data;
@@ -386,7 +412,7 @@ plot * init_scatter()
     p->marker_style = 'o';
     p->line_width = 0;
     p->extra_data = NULL;
-    return p;   
+    return p;
 }
 
 plot * init_bar()
@@ -407,9 +433,9 @@ plot * init_bar()
     memcpy(color, "#000000", 7);
 
     pref->bar_width = 35;
-    pref->line_color = color; 
+    pref->line_color = color;
     p->extra_data = pref;
-    return p; 
+    return p;
 }
 
 plot * init_plot()
@@ -428,13 +454,13 @@ plot * init_plot()
     return p;
 }
 
-lineStyle 
+lineStyle
 parse_line_style(char * c)
 {
     strip(c, ' ');
     if (c == NULL || strlen(c) == 0)
         return NORMAL;
-    
+
     if (strcmp(c, "-") == 0 || strcmp(c, "normal") ==0)
     {
         return NORMAL;
@@ -454,7 +480,7 @@ parse_line_style(char * c)
     return NORMAL;
 }
 
-_pstate 
+_pstate
 parse_line(char* line, chart * chart, _pstate prev)
 {
     unsigned int n = strlen(line);
@@ -475,7 +501,7 @@ parse_line(char* line, chart * chart, _pstate prev)
         {
             char * label = parse_text(rest);
             if (prev == AXIS_X)
-            {   
+            {
                 chart->x_axis.label = label;
             }
             else if (prev == AXIS_Y)
@@ -522,23 +548,23 @@ parse_line(char* line, chart * chart, _pstate prev)
         {
             prev = PLOT;
             chart_add_plot(chart, init_bar());
-        } else if (strcmp(tok, TOK_TABLE) == 0) 
+        } else if (strcmp(tok, TOK_TABLE) == 0)
         {
             char * id = parse_text(rest);
             if (id != NULL)
             {
                 prev = TABLE;
-                
+
             }
             break;
         } else if (strcmp(tok, TOK_MODE) == 0)
         {
-            if (prev == AXIS_X) 
+            if (prev == AXIS_X)
             {
                 chart->x_axis.mode = parse_mode(rest);
             } else if (prev == AXIS_Y)
             {
-                chart->y_axis.mode = parse_mode(rest); 
+                chart->y_axis.mode = parse_mode(rest);
             }
             break;
         } else if (strcmp(tok, TOK_X_DATA) == 0 && prev == PLOT)
@@ -586,8 +612,8 @@ parse_line(char* line, chart * chart, _pstate prev)
             }
             free(ms);
             break;
-        }else if (((strcmp(tok, TOK_LIN_WIDTH) == 0) || 
-                  (strcmp(tok, TOK_ALT_LIN_WIDTH) == 0)) && 
+        }else if (((strcmp(tok, TOK_LIN_WIDTH) == 0) ||
+                  (strcmp(tok, TOK_ALT_LIN_WIDTH) == 0)) &&
                   prev == PLOT)
         {
             strip(rest, ' ');
@@ -598,15 +624,15 @@ parse_line(char* line, chart * chart, _pstate prev)
                 p->line_width = v;
             }
             break;
-        } else if (((strcmp(tok, TOK_LIN_STYLE) == 0) || 
-                   (strcmp(tok, TOK_ALT_LIN_STYLE) == 0)) && 
+        } else if (((strcmp(tok, TOK_LIN_STYLE) == 0) ||
+                   (strcmp(tok, TOK_ALT_LIN_STYLE) == 0)) &&
                    prev == PLOT)
         {
             plot * p = clist_get_last(chart->plots)->data;
             p->line_style = parse_line_style(rest);
             break;
-        }  else if (((strcmp(tok, TOK_BAR_WIDTH) == 0) || 
-                   (strcmp(tok, TOK_ALT_BAR_WIDTH) == 0)) && 
+        }  else if (((strcmp(tok, TOK_BAR_WIDTH) == 0) ||
+                   (strcmp(tok, TOK_ALT_BAR_WIDTH) == 0)) &&
                    prev == PLOT)
         {
             strip(rest, ' ');
@@ -618,7 +644,7 @@ parse_line(char* line, chart * chart, _pstate prev)
                 {
                     barPref* pref = p->extra_data;
                     pref->bar_width = v;
-                }    
+                }
             }
             break;
         } else if ((strcmp(tok, TOK_LIN_COLOR) == 0) && prev == PLOT)
@@ -639,17 +665,17 @@ parse_line(char* line, chart * chart, _pstate prev)
     return prev;
 }
 
-chart * 
+chart *
 parse_chart(char *text)
 {
     chart* nchart = initialize_empty_chart();
-    
+
     char * copy = text;
     char* tok_pointer;
     char* line = strtok_r(copy, "\n", &tok_pointer);
     _pstate state = NONE;
     while (line != NULL)
-    {   
+    {
         if (strlen(line) > 0)
             state = parse_line(line, nchart, state);
         line = strtok_r(NULL, "\n", &tok_pointer);
