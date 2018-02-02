@@ -2,6 +2,7 @@
 <gresources>
   <gresource prefix="/com/github/fabiocolacio/marker">
     <file>ui/marker-prefs-window.ui</file>
+    <file>ui/marker-wysiwyg-toolbar.ui</file>
     <file>ui/marker-shortcuts-window.ui</file>
     <file>ui/marker-gear-popover.ui</file>
     <file>ui/marker-headerbar.ui</file>
