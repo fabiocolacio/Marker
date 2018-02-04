@@ -152,9 +152,18 @@ struct hoedown_document {
  static int
  is_regular_file(const char *path)
  {
-     struct stat path_stat;
-     stat(path, &path_stat);
-     return S_ISREG(path_stat.st_mode);
+ 	if (path[0] != '/'){
+ 		char cwd[1024];
+ 		getcwd(cwd, sizeof(cwd));
+ 		strcat(cwd, "/");
+ 		strcat(cwd, path);
+	    struct stat path_stat;
+	    stat(cwd, &path_stat);
+	    return S_ISREG(path_stat.st_mode);
+ 	}
+    struct stat path_stat;
+    stat(path, &path_stat);
+    return S_ISREG(path_stat.st_mode);
  }
 
 static hoedown_buffer *
@@ -796,7 +805,16 @@ parse_math(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offs
 static char*
 load_file(const char* path, long * size)
 {
-	FILE *f = fopen(path, "rb");
+	FILE *f;
+	if (path[0] != '/'){
+		char cwd[1024];
+		getcwd(cwd, sizeof(cwd));
+		strcat(cwd, "/");
+		strcat(cwd, path);
+		f =fopen(cwd, "rb");
+	}
+	else
+		f = fopen(path, "rb");
 	fseek(f, 0, SEEK_END);
 	*size = ftell(f);
 	fseek(f, 0, SEEK_SET);  //same as rewind(f);
@@ -3053,12 +3071,7 @@ sub_render(hoedown_document *doc, hoedown_buffer *ob, const uint8_t *data, size_
 		parse_block(ob, doc, text->data, text->size);
 	}
 
-	/* footnotes */
-	if (footnotes_enabled)
-		parse_footnote_list(ob, doc, &doc->footnotes_used);
 
-	if (doc->md.doc_footer)
-		doc->md.doc_footer(ob, 0, &doc->data);
 	hoedown_buffer_free(text);
 }
 
@@ -3081,7 +3094,12 @@ hoedown_document_render(hoedown_document *doc, hoedown_buffer *ob, const uint8_t
 	}
 
 	sub_render(doc, ob, data, size);
+	/* footnotes */
+	if (footnotes_enabled)
+		parse_footnote_list(ob, doc, &doc->footnotes_used);
 
+	if (doc->md.doc_footer)
+		doc->md.doc_footer(ob, 0, &doc->data);
 	/* clean-up */
 
 	free_link_refs(doc->refs);
