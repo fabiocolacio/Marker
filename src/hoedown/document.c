@@ -84,6 +84,8 @@ static size_t char_image(hoedown_buffer *ob, hoedown_document *doc, uint8_t *dat
 static size_t char_superscript(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offset, size_t size);
 static size_t char_math(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offset, size_t size);
 
+void sub_render(hoedown_document *doc, hoedown_buffer *ob, const uint8_t *data, size_t size);
+
 enum markdown_char_t {
 	MD_CHAR_NONE = 0,
 	MD_CHAR_EMPHASIS,
@@ -267,7 +269,6 @@ static struct footnote_ref *
 create_footnote_ref(struct footnote_list *list, const uint8_t *name, size_t name_size)
 {
 	struct footnote_ref *ref = hoedown_calloc(1, sizeof(struct footnote_ref));
-
 	ref->id = hash_link_ref(name, name_size);
 
 	return ref;
@@ -830,7 +831,7 @@ parse_include(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t o
 			long neu_size = 0;
 			char * buffer = load_file(path, &neu_size);
 
-			hoedown_document_render(doc, ob, (uint8_t*)buffer, neu_size);
+			sub_render(doc, ob, (uint8_t*)buffer, neu_size);
 
 		}
 		free(path);
@@ -2599,11 +2600,45 @@ parse_block(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t siz
 /*********************
  * REFERENCE PARSING *
  *********************/
+void load_notes(const uint8_t * text, size_t size,  struct footnote_list *list);
 
 /* is_footnote • returns whether a line is a footnote definition or not */
 static int
 is_footnote(const uint8_t *data, size_t beg, size_t end, size_t *last, struct footnote_list *list)
 {
+	if (startsWith("@bib(", (char*)data+beg))
+		{
+
+			size_t n = 0;
+			size_t i = 5+beg;
+			while(data[i] != '\n' && i != end)
+			{
+				if (data[i]==')')
+					break;
+				n++;
+				i++;
+			}
+
+			if (n){
+				char * path = malloc((n+1)*sizeof(char));
+				path[n] = 0;
+				strncpy(path, (char*)data+beg+5, n);
+				if (is_regular_file(path)){
+					long size = 0;
+					char * bib = load_file(path, &size);
+					load_notes((uint8_t*)bib, size, list);
+					free(bib);
+				}
+				free(path);
+			}
+
+	        i = beg;
+	        while(data[i]!='\n')
+		      	i ++;
+	        *last = i;
+
+			return 1;
+		}
 	size_t i = 0;
 	hoedown_buffer *contents = 0;
 	size_t ind = 0;
@@ -2710,6 +2745,7 @@ static int
 is_ref(const uint8_t *data, size_t beg, size_t end, size_t *last, struct link_ref **refs)
 {
 /*	int n; */
+
 	size_t i = 0;
 	size_t id_offset, id_end;
 	size_t link_offset, link_end;
@@ -2819,6 +2855,34 @@ is_ref(const uint8_t *data, size_t beg, size_t end, size_t *last, struct link_re
 	return 1;
 }
 
+
+void
+load_notes(const uint8_t * data, size_t size,  struct footnote_list *list)
+{
+	static const uint8_t UTF8_BOM[] = {0xEF, 0xBB, 0xBF};
+	size_t beg, end;
+	beg = 0;
+	/* Skip a possible UTF-8 BOM, even though the Unicode standard
+	 * discourages having these in UTF-8 documents */
+	if (size >= 3 && memcmp(data, UTF8_BOM, 3) == 0)
+		beg += 3;
+
+	while (beg < size) /* iterating over lines */
+	{
+		if (is_footnote(data, beg, size, &end, list))
+			beg = end;
+		else { /* skipping to the next line */
+			end = beg;
+			while (end < size && data[end] != '\n' && data[end] != '\r')
+				end++;
+			while (end < size && (data[end] == '\n' || data[end] == '\r')) {
+
+				end++;
+			}
+			beg = end;
+		}
+	}
+}
 static void expand_tabs(hoedown_buffer *ob, const uint8_t *line, size_t size)
 {
 	/* This code makes two assumptions:
@@ -2928,34 +2992,22 @@ hoedown_document_new(
 	return doc;
 }
 
+
 void
-hoedown_document_render(hoedown_document *doc, hoedown_buffer *ob, const uint8_t *data, size_t size)
+sub_render(hoedown_document *doc, hoedown_buffer *ob, const uint8_t *data, size_t size)
 {
 	static const uint8_t UTF8_BOM[] = {0xEF, 0xBB, 0xBF};
 
 	hoedown_buffer *text;
 	size_t beg, end;
-
-	int footnotes_enabled;
-
 	text = hoedown_buffer_new(64);
 
 	/* Preallocate enough space for our buffer to avoid expanding while copying */
 	hoedown_buffer_grow(text, size);
-
-	/* reset the references table */
-	memset(&doc->refs, 0x0, REF_TABLE_SIZE * sizeof(void *));
-
-	footnotes_enabled = doc->ext_flags & HOEDOWN_EXT_FOOTNOTES;
-
-	/* reset the footnotes lists */
-	if (footnotes_enabled) {
-		memset(&doc->footnotes_found, 0x0, sizeof(doc->footnotes_found));
-		memset(&doc->footnotes_used, 0x0, sizeof(doc->footnotes_used));
-	}
-
 	/* first pass: looking for references, copying everything else */
 	beg = 0;
+
+	int footnotes_enabled = doc->ext_flags & HOEDOWN_EXT_FOOTNOTES;
 
 	/* Skip a possible UTF-8 BOM, even though the Unicode standard
 	 * discourages having these in UTF-8 documents */
@@ -3007,18 +3059,38 @@ hoedown_document_render(hoedown_document *doc, hoedown_buffer *ob, const uint8_t
 
 	if (doc->md.doc_footer)
 		doc->md.doc_footer(ob, 0, &doc->data);
+	hoedown_buffer_free(text);
+}
+
+
+void
+hoedown_document_render(hoedown_document *doc, hoedown_buffer *ob, const uint8_t *data, size_t size)
+{
+
+	int footnotes_enabled;
+
+	/* reset the references table */
+	memset(&doc->refs, 0x0, REF_TABLE_SIZE * sizeof(void *));
+
+	footnotes_enabled = doc->ext_flags & HOEDOWN_EXT_FOOTNOTES;
+
+	/* reset the footnotes lists */
+	if (footnotes_enabled) {
+		memset(&doc->footnotes_found, 0x0, sizeof(doc->footnotes_found));
+		memset(&doc->footnotes_used, 0x0, sizeof(doc->footnotes_used));
+	}
+
+	sub_render(doc, ob, data, size);
 
 	/* clean-up */
-	hoedown_buffer_free(text);
+
 	free_link_refs(doc->refs);
 	if (footnotes_enabled) {
 		free_footnote_list(&doc->footnotes_found, 1);
 		free_footnote_list(&doc->footnotes_used, 0);
 	}
-	/*
 	assert(doc->work_bufs[BUFFER_SPAN].size == 0);
 	assert(doc->work_bufs[BUFFER_BLOCK].size == 0);
-	*/
 }
 
 void
@@ -3063,10 +3135,8 @@ hoedown_document_render_inline(hoedown_document *doc, hoedown_buffer *ob, const 
 
 	/* clean-up */
 	hoedown_buffer_free(text);
-	/*
 	assert(doc->work_bufs[BUFFER_SPAN].size == 0);
 	assert(doc->work_bufs[BUFFER_BLOCK].size == 0);
-	*/
 }
 
 void
