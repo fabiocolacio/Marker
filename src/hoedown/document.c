@@ -4,6 +4,9 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdio.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 #include "stack.h"
 
@@ -96,7 +99,7 @@ enum markdown_char_t {
 	MD_CHAR_AUTOLINK_WWW,
 	MD_CHAR_SUPERSCRIPT,
 	MD_CHAR_QUOTE,
-	MD_CHAR_MATH
+	MD_CHAR_MATH,
 };
 
 static char_trigger markdown_char_ptrs[] = {
@@ -134,6 +137,23 @@ struct hoedown_document {
 /***************************
  * HELPER FUNCTIONS *
  ***************************/
+
+ static int
+ startsWith(const char *pre, const char *str)
+ {
+     size_t lenpre = strlen(pre),
+            lenstr = strlen(str);
+     return lenstr < lenpre ? 0 : strncmp(pre, str, lenpre) == 0;
+ }
+
+
+ static int
+ is_regular_file(const char *path)
+ {
+     struct stat path_stat;
+     stat(path, &path_stat);
+     return S_ISREG(path_stat.st_mode);
+ }
 
 static hoedown_buffer *
 newbuf(hoedown_document *doc, int type)
@@ -499,7 +519,6 @@ parse_inline(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t si
 
 		if (end >= size) break;
 		i = end;
-
 		end = markdown_char_ptrs[ (int)active_char[data[end]] ](ob, doc, data + i, i - consumed, size - i);
 		if (!end) /* no action from the callback */
 			end = i + 1;
@@ -772,6 +791,53 @@ parse_math(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offs
 
 	return 0;
 }
+
+static char*
+load_file(const char* path, long * size)
+{
+	FILE *f = fopen(path, "rb");
+	fseek(f, 0, SEEK_END);
+	*size = ftell(f);
+	fseek(f, 0, SEEK_SET);  //same as rewind(f);
+
+	char *string = malloc(*size + 1);
+	fread(string, *size, 1, f);
+	fclose(f);
+
+	string[*size] = 0;
+	return string;
+}
+
+static size_t
+parse_include(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offset, size_t size)
+{
+	/* @include(path) */
+	size_t i = 9;
+	size_t n = 0;
+	for (;i < size; i++)
+	{
+		if (data[i] == ')')
+		{
+			break;
+		}
+		n++;
+	}
+	if (n){
+		char * path = malloc((n+1)*sizeof(uint8_t));
+		path[n] = 0;
+		memcpy(path, data+9, n);
+		if (is_regular_file(path)){
+			long neu_size = 0;
+			char * buffer = load_file(path, &neu_size);
+
+			hoedown_document_render(doc, ob, (uint8_t*)buffer, neu_size);
+
+		}
+		free(path);
+	}
+	return i+1;
+}
+
 
 /* char_emphasis • single and double emphasis parsing */
 static size_t
@@ -1050,9 +1116,15 @@ char_autolink_www(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size
 	return link_len;
 }
 
+
+
 static size_t
 char_autolink_email(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offset, size_t size)
 {
+	if (startsWith("@include(", (char*)data))
+    {
+    	return parse_include(ob, doc, data, offset, size);
+    }
 	hoedown_buffer *link;
 	size_t link_len, rewind;
 
@@ -2943,9 +3015,10 @@ hoedown_document_render(hoedown_document *doc, hoedown_buffer *ob, const uint8_t
 		free_footnote_list(&doc->footnotes_found, 1);
 		free_footnote_list(&doc->footnotes_used, 0);
 	}
-
+	/*
 	assert(doc->work_bufs[BUFFER_SPAN].size == 0);
 	assert(doc->work_bufs[BUFFER_BLOCK].size == 0);
+	*/
 }
 
 void
@@ -2990,9 +3063,10 @@ hoedown_document_render_inline(hoedown_document *doc, hoedown_buffer *ob, const 
 
 	/* clean-up */
 	hoedown_buffer_free(text);
-
+	/*
 	assert(doc->work_bufs[BUFFER_SPAN].size == 0);
 	assert(doc->work_bufs[BUFFER_BLOCK].size == 0);
+	*/
 }
 
 void

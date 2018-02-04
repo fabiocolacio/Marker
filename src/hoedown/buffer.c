@@ -116,6 +116,18 @@ hoedown_buffer_grow(hoedown_buffer *buf, size_t neosz)
 	buf->asize = neoasz;
 }
 
+
+void
+hoedown_buffer_insert(hoedown_buffer *buf, const char* buffer, size_t offset, size_t size, size_t buffer_size)
+{
+	hoedown_buffer_grow(buf, size + buffer_size);
+	char * tmp = malloc(offset);
+	strncpy(tmp, (char*)buf->data, offset);
+	strcat(tmp, buffer);
+	strcat(tmp, (char*)buf->data + offset);
+	buf->data = (uint8_t*)tmp;
+}
+
 void
 hoedown_buffer_put(hoedown_buffer *buf, const uint8_t *data, size_t size)
 {
