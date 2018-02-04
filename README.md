@@ -13,6 +13,7 @@ unfinished features.
 * Support for [mermaid](https://mermaidjs.github.io/) diagrams
 * Support for [charter](https://github.com/Mandarancio/charter/) for plot 
 * Include external markdown or text file using syntax ```@include(path)```
+* Include external references using syntax ```@bib(path)```
 * Syntax highlighting for code blocks with [highlight.js](https://highlightjs.org/)
 * Integrated sketch editor 
 * Flexible export options with [pandoc](https://pandoc.org/)
