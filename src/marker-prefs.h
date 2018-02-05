@@ -86,5 +86,6 @@ void                 marker_prefs_load                           (void);
 void                 marker_prefs_show_window                    (void);
 GList               *marker_prefs_get_available_stylesheets      (void);
 GList               *marker_prefs_get_available_syntax_themes    (void);
+GList               *marker_prefs_get_available_backends         (void);
 
 #endif
