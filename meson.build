@@ -4,10 +4,12 @@ project('Marker', 'c',
 )
 
 PREFIX = get_option('prefix')
+HEADER_DIR = join_paths(join_paths(PREFIX, 'include'), 'marker')
 DATA_DIR = join_paths(PREFIX, 'share')
 APP_DIR = join_paths(DATA_DIR, 'com.github.fabiocolacio.marker')
 STYLES_DIR = join_paths(APP_DIR, 'styles')
 SCRIPTS_DIR = join_paths(APP_DIR, 'scripts')
+BACKEND_DIR = join_paths(APP_DIR, 'backends')
 HIGHLIGHT_STYLES_DIR = join_paths(join_paths(SCRIPTS_DIR, 'highlight'),'styles')
 WEB_EXTENSIONS_DIRECTORY = join_paths(APP_DIR, 'extensions')
 APPDATA_DIR = join_paths(DATA_DIR, 'appdata')
@@ -80,6 +82,7 @@ ext_deps =[
 add_global_arguments(
   '-DSTYLES_DIR="@0@/"'.format(STYLES_DIR),
   '-DSCRIPTS_DIR="@0@/"'.format(SCRIPTS_DIR),
+  '-DBACKEND_DIR="@0@/"'.format(BACKEND_DIR),
   '-DHIGHLIGHT_STYLES_DIR="@0@/"'.format(HIGHLIGHT_STYLES_DIR),
   '-DMARKER_VERSION="@0@"'.format(meson.project_version()),
   '-DWEB_EXTENSIONS_DIRECTORY="@0@"'.format(WEB_EXTENSIONS_DIRECTORY),
@@ -126,6 +129,11 @@ install_data(
 install_data(
   'data/com.github.fabiocolacio.marker.appdata.xml',
   install_dir : APPDATA_DIR
+)
+
+install_data(
+    'src/marker-backend.h',
+    install_dir : HEADER_DIR
 )
 
 install_subdir(
