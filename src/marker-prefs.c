@@ -776,6 +776,12 @@ marker_prefs_show_window()
   GtkToggleButton* check_button;
   GtkSpinButton* spin_button;
 
+  combo_box = GTK_COMBO_BOX (gtk_builder_get_object(builder, "backend_chooser"));
+  list = marker_prefs_get_available_backends ();
+  marker_widget_populate_combo_box_with_strings (combo_box, list);
+  g_list_free_full (list, free);
+  list = NULL;
+
   combo_box = GTK_COMBO_BOX(gtk_builder_get_object(builder, "syntax_chooser"));
   list = marker_prefs_get_available_syntax_themes();
   marker_widget_populate_combo_box_with_strings(combo_box, list);
