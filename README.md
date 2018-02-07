@@ -49,8 +49,8 @@ unfinished features.
 * gtk3-devel >= 3.20
 * gtksourceview3-devel
 * webkitgtk4-devel
+* gtkspell3-devel
 * pandoc
-* gtkspell
 
 ### Build Instructions
 
