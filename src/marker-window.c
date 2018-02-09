@@ -94,6 +94,7 @@ show_unsaved_documents_warning (MarkerWindow *window)
   MarkerEditor *editor = marker_window_get_active_editor (window);
   GFile *file = marker_editor_get_file (editor);
 
+
   GtkWidget *dialog;
   if (G_IS_FILE (file))
   {
@@ -596,7 +597,11 @@ button_pressed_cb (GtkWidget *view,
 static void
 marker_window_init (MarkerWindow *window)
 {
+  /** Add marker icon theme to the default icon theme **/
+  gtk_icon_theme_append_search_path (gtk_icon_theme_get_default(), ICONS_DIR);
+
   window->is_fullscreen = FALSE;
+
   window->editors_counter = 0;
   window->last_click_ = 0;
 
@@ -607,6 +612,7 @@ marker_window_init (MarkerWindow *window)
   window->vbox = vbox;
   gtk_container_add (GTK_CONTAINER (window), GTK_WIDGET (vbox));
   gtk_widget_show (GTK_WIDGET (vbox));
+
 
   gtk_builder_add_from_resource (builder, "/com/github/fabiocolacio/marker/ui/marker-window-main-view.ui", NULL);
 
@@ -832,6 +838,7 @@ void
 marker_window_open_file (MarkerWindow *window)
 {
   g_assert (MARKER_IS_WINDOW (window));
+
   g_autoptr (GtkFileChooserNative) dialog = gtk_file_chooser_native_new ("Open",
                                                               GTK_WINDOW (window),
                                                               GTK_FILE_CHOOSER_ACTION_OPEN,
@@ -874,6 +881,7 @@ marker_window_save_active_file_as (MarkerWindow *window)
                                                                          "_Save", "_Cancel");
 
   gtk_file_chooser_set_do_overwrite_confirmation(GTK_FILE_CHOOSER(dialog), TRUE);
+
 
   gint response = gtk_native_dialog_run (GTK_NATIVE_DIALOG (dialog));
 
