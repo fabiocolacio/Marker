@@ -25,9 +25,9 @@
 #include <glib.h>
 #include <glib/gprintf.h>
 
-#include "hoedown/html.h"
-#include "hoedown/document.h"
-#include "hoedown/buffer.h"
+#include "scidown/src/html.h"
+#include "scidown/src/document.h"
+#include "scidown/src/buffer.h"
 
 #include "marker-markdown.h"
 #include "marker-prefs.h"
@@ -94,12 +94,7 @@ char* html_header(MarkerKaTeXMode     katex_mode,
       break;
   }
 
-  char * buffer = g_strdup_printf("<!doctype html>"
-                                  "<html>\n"
-                                  "<head>\n"
-                                  "%s\n%s\n%s\n%s\n%s\n%s\n"
-                                  "<meta charset=\"utf-8\">\n",
-                                  katex_css, highlight_css, katex_script, katex_auto, highlight_script, mermaid_script);
+  char * buffer = g_strdup_printf("%s\n%s\n%s\n%s\n%s\n%s\n",katex_css, highlight_css, katex_script, katex_auto, highlight_script, mermaid_script);
 
   g_free(katex_script);
   g_free(katex_auto);
@@ -153,10 +148,7 @@ html_footer(MarkerKaTeXMode     katex_mode,
       break;
   }
 
-  char* buffer = g_strdup_printf("%s\n%s\n%s\n"
-                                 "</body>\n"
-                                 "</html>",
-                                 katex_render, highlight_render, mermaid_render);
+  char* buffer = g_strdup_printf("%s\n%s\n%s\n", katex_render, highlight_render, mermaid_render);
   g_free(highlight_render);
   g_free(katex_render);
   g_free(mermaid_render);
@@ -171,21 +163,6 @@ get_html_mode(MarkerMermaidMode mermaid_mode)
   if (mermaid_mode != MERMAID_OFF)
   {
     mode |= HOEDOWN_HTML_MERMAID;
-  }
-
-  if (marker_prefs_get_use_figure_caption())
-  {
-    mode |= HOEDOWN_HTML_FIGCAPTION;
-  }
-
-  if (marker_prefs_get_use_figure_numbering())
-  {
-    mode |= HOEDOWN_HTML_FIGCOUNTER;
-  }
-
-  if (marker_prefs_get_use_katex() && marker_prefs_get_use_equation_numbering())
-  {
-    mode |= HOEDOWN_HTML_EQCOUNTER;
   }
 
   if (marker_prefs_get_use_charter())
@@ -222,45 +199,38 @@ marker_markdown_to_html(const char*         markdown,
 
   renderer = hoedown_html_renderer_new(html_mode, 0, get_local());
 
-  document = hoedown_document_new(renderer,
-                                  HOEDOWN_EXT_BLOCK         |
-                                  HOEDOWN_EXT_SPAN          |
-                                  HOEDOWN_EXT_MATH          |
-                                  HOEDOWN_EXT_MATH_EXPLICIT |
-                                  HOEDOWN_EXT_FLAGS,
-                                  16);
 
-  buffer = hoedown_buffer_new(500);
+
+
 
   char * header = html_header(katex_mode, highlight_mode, mermaid_mode);
 
-
-  hoedown_buffer_printf(buffer,
-                        "%s",
-                        header);
-  g_free(header);
-
   if (stylesheet_location)
   {
-    hoedown_buffer_printf(buffer, "<link rel=\"stylesheet\" type=\"text/css\" href=\"%s\">\n", stylesheet_location);
+    header = g_strdup_printf("%s<link rel=\"stylesheet\" type=\"text/css\" href=\"%s\">\n", header, stylesheet_location);
   }
 
-  hoedown_buffer_puts(buffer,
-                      "</head>\n"
-                      "<body>\n");
+  char * footer = html_footer(katex_mode, highlight_mode, mermaid_mode);
 
+  ext_definition def = {header, footer};
+
+
+  document = hoedown_document_new(renderer,
+                                  HOEDOWN_EXT_BLOCK         |
+                                  HOEDOWN_EXT_SPAN          |
+                                  HOEDOWN_EXT_FLAGS,
+                                  &def,
+                                  16);
+
+  buffer = hoedown_buffer_new(500);
   hoedown_document_render(document, buffer, (uint8_t*) markdown, size);
 
-  char * footer = html_footer(katex_mode, highlight_mode, mermaid_mode);
-  hoedown_buffer_printf(buffer,
-  					          "%s\n",
-                      footer);
+  g_free(header);
   g_free(footer);
 
   const char* buf_cstr = hoedown_buffer_cstr(buffer);
 
   html = strdup(buf_cstr);
-
   hoedown_html_renderer_free(renderer);
   hoedown_document_free(document);
   hoedown_buffer_free(buffer);
@@ -303,44 +273,29 @@ marker_markdown_to_html_with_css_inline(const char*         markdown,
 
   renderer = hoedown_html_renderer_new(html_mode, 0, get_local());
 
-  document = hoedown_document_new(renderer,
-                                  HOEDOWN_EXT_BLOCK         |
-                                  HOEDOWN_EXT_SPAN          |
-                                  HOEDOWN_EXT_MATH          |
-                                  HOEDOWN_EXT_MATH_EXPLICIT |
-                                  HOEDOWN_EXT_FLAGS,
-                                  16);
-
-  buffer = hoedown_buffer_new(500);
-
   char * header = html_header(katex_mode, highlight_mode, mermaid_mode);
-
-  hoedown_buffer_printf(buffer,
-                        "%s\n",
-                        header);
-
-  g_free(header);
 
   if(inline_css)
   {
-    hoedown_buffer_printf(buffer,
-                         "<style>\n%s\n</style>\n",
-                         inline_css);
+    header = g_strdup_printf("%s<style>\n%s\n</style>\n", header, inline_css);
     free(inline_css);
     inline_css = NULL;
   }
+  char * footer = html_footer(katex_mode, highlight_mode, mermaid_mode);
 
-  hoedown_buffer_puts(buffer,
-                      "</head>\n"
-                      "<body>\n");
+  ext_definition def = {header, footer};
+  document = hoedown_document_new(renderer,
+                                  HOEDOWN_EXT_BLOCK         |
+                                  HOEDOWN_EXT_SPAN          |
+                                  HOEDOWN_EXT_FLAGS,
+                                  &def,
+                                  16);
 
+  buffer = hoedown_buffer_new(500);
   hoedown_document_render(document, buffer, (uint8_t*) markdown, size);
 
-  char * footer = html_footer(katex_mode, highlight_mode, mermaid_mode);
-  hoedown_buffer_printf(buffer,
-  					          "%s\n",
-                      footer);
   g_free(footer);
+  g_free(header);
 
   const char* buf_cstr = hoedown_buffer_cstr(buffer);
   html = strdup(buf_cstr);
@@ -393,10 +348,8 @@ marker_markdown_to_html_file_with_css_inline(const char*         markdown,
                                                        mermaid_mode,
                                                        stylesheet_location);
   FILE* fp = fopen(filepath, "w");
-  printf("fp: %p\nfilepath: %s\n", fp, filepath);
   if (fp && html)
   {
-    puts("two");
     fputs(html, fp);
     fclose(fp);
   }

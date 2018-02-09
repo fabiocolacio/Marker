@@ -1,0 +1,3 @@
+[submodule "src/scidown"]
+	path = src/scidown
+	url = https://github.com/Mandarancio/scidown.git
