@@ -112,17 +112,17 @@ key_press_event_cb (GtkWidget *widget,
       case GDK_KEY_plus:
         marker_preview_zoom_in (preview);
         break;
-      
+
       case GDK_KEY_minus:
         marker_preview_zoom_out (preview);
         break;
-      
+
       case GDK_KEY_0:
         marker_preview_zoom_original (preview);
         break;
     }
   }
-  
+
   return FALSE;
 }
 
@@ -133,14 +133,14 @@ scroll_event_cb (GtkWidget *widget,
 {
   g_return_val_if_fail (MARKER_IS_PREVIEW (widget), FALSE);
   MarkerPreview *preview = MARKER_PREVIEW (widget);
-  
+
   GdkEventScroll *scroll_event = (GdkEventScroll *) event;
-  
+
   guint state = scroll_event->state;
   if ((state & GDK_CONTROL_MASK) != 0)
   {
     gdouble delta_y = scroll_event->delta_y;
-    
+
     if (delta_y > 0)
     {
       marker_preview_zoom_out (preview);
@@ -150,7 +150,7 @@ scroll_event_cb (GtkWidget *widget,
       marker_preview_zoom_in (preview);
     }
   }
-  
+
   return FALSE;
 }
 
@@ -162,13 +162,13 @@ load_changed_cb (WebKitWebView   *preview,
   {
     case WEBKIT_LOAD_STARTED:
       break;
-      
+
     case WEBKIT_LOAD_REDIRECTED:
       break;
-      
+
     case WEBKIT_LOAD_COMMITTED:
       break;
-      
+
     case WEBKIT_LOAD_FINISHED:
       break;
   }
@@ -211,7 +211,7 @@ marker_preview_class_init (MarkerPreviewClass *class)
                  G_SIGNAL_RUN_LAST | G_SIGNAL_NO_RECURSE,
                  NULL, NULL, NULL, NULL,
                  G_TYPE_NONE, 0, NULL);
-                 
+
 
   WEBKIT_WEB_VIEW_CLASS(class)->load_changed = load_changed_cb;
 }
@@ -219,10 +219,15 @@ marker_preview_class_init (MarkerPreviewClass *class)
 MarkerPreview*
 marker_preview_new(void)
 {
-  MarkerPreview * obj =  g_object_new(MARKER_TYPE_PREVIEW, NULL); 
-  
+  MarkerPreview * obj =  g_object_new(MARKER_TYPE_PREVIEW, NULL);
   webkit_web_view_set_zoom_level (WEBKIT_WEB_VIEW (obj), makrer_prefs_get_zoom_level ());
-  
+
+  /*** FOR DEBUG PURPOSE ONLY
+  WebKitSettings * settings = webkit_web_view_get_settings(WEBKIT_WEB_VIEW(obj));
+  webkit_settings_set_enable_write_console_messages_to_stdout(settings, TRUE);
+  webkit_web_view_set_settings(WEBKIT_WEB_VIEW(obj), settings);
+  ***/
+
   return obj;
 }
 
@@ -231,13 +236,13 @@ marker_preview_zoom_out (MarkerPreview *preview)
 {
   g_return_if_fail (WEBKIT_IS_WEB_VIEW (preview));
   WebKitWebView *view = WEBKIT_WEB_VIEW (preview);
-  
+
   gdouble val = webkit_web_view_get_zoom_level (view) - 0.1;
   val = max (val, MIN_ZOOM);
-  
+
   marker_prefs_set_zoom_level(val);
   webkit_web_view_set_zoom_level(view, val);
-  
+
   g_signal_emit_by_name (preview, "zoom-changed");
 }
 
@@ -246,12 +251,12 @@ marker_preview_zoom_original (MarkerPreview *preview)
 {
   g_return_if_fail (WEBKIT_IS_WEB_VIEW (preview));
   WebKitWebView *view = WEBKIT_WEB_VIEW (preview);
-  
+
   gdouble zoom = 1.0;
-  
+
   marker_prefs_set_zoom_level (zoom);
   webkit_web_view_set_zoom_level (view, zoom);
-  
+
   g_signal_emit_by_name (preview, "zoom-changed");
 }
 
@@ -260,13 +265,13 @@ marker_preview_zoom_in (MarkerPreview *preview)
 {
   g_return_if_fail (WEBKIT_IS_WEB_VIEW (preview));
   WebKitWebView *view = WEBKIT_WEB_VIEW (preview);
-  
+
   gdouble val = webkit_web_view_get_zoom_level (view) + 0.1;
   val = min (val, MAX_ZOOM);
-  
+
   marker_prefs_set_zoom_level(val);
   webkit_web_view_set_zoom_level(view, val);
-  
+
   g_signal_emit_by_name (preview, "zoom-changed");
 }
 
@@ -291,14 +296,13 @@ marker_preview_render_markdown(MarkerPreview* preview,
   }
 
 
-  char* html = marker_markdown_to_html(markdown, 
-                                       strlen(markdown), 
-                                       katex_mode, 
+  char* html = marker_markdown_to_html(markdown,
+                                       strlen(markdown),
+                                       katex_mode,
                                        highlight_mode,
                                        mermaid_mode,
                                        css_theme);
-                                       
-  const char* uri = (base_uri) ? base_uri : "file://unnamed.md";
+
   WebKitWebView* web_view = WEBKIT_WEB_VIEW(preview);
 
   g_signal_connect(web_view,
@@ -309,7 +313,14 @@ marker_preview_render_markdown(MarkerPreview* preview,
                    "context-menu",
                    G_CALLBACK(context_menu_cb),
                    NULL);
-  webkit_web_view_load_html(web_view, html, uri);
+
+  gchar * uri = g_strdup_printf("file://%s", (base_uri) ? g_locale_from_utf8(base_uri, strlen(base_uri), NULL, NULL, NULL) : "internal.md");
+
+  GBytes *bhtml = g_string_free_to_bytes(g_string_new(html));
+  webkit_web_view_load_bytes(web_view, bhtml, "text/html", "UTF-8",
+                             uri);
+
+  g_free(uri);
   free(html);
 }
 
@@ -319,9 +330,9 @@ marker_preview_run_print_dialog(MarkerPreview* preview,
 {
   WebKitPrintOperation* print_op =
     webkit_print_operation_new(WEBKIT_WEB_VIEW(preview));
-  
+
   g_signal_connect(print_op, "failed", G_CALLBACK(pdf_print_failed_cb), NULL);
-  
+
   return webkit_print_operation_run_dialog(print_op, parent);
 }
 
@@ -333,16 +344,16 @@ marker_preview_print_pdf(MarkerPreview* preview,
     WebKitPrintOperation* print_op = NULL;
     GtkPrintSettings* print_s = NULL;
     char* uri = g_strdup_printf("file://%s", outfile);
-    
+
     print_op = webkit_print_operation_new(WEBKIT_WEB_VIEW(preview));
     g_signal_connect(print_op, "failed", G_CALLBACK(pdf_print_failed_cb), NULL);
-    
+
     print_s = gtk_print_settings_new();
     gtk_print_settings_set(print_s, GTK_PRINT_SETTINGS_OUTPUT_FILE_FORMAT, "pdf");
     gtk_print_settings_set(print_s, GTK_PRINT_SETTINGS_OUTPUT_URI, uri);
     gtk_print_settings_set(print_s, GTK_PRINT_SETTINGS_PRINTER, "Print to File");
     webkit_print_operation_set_print_settings(print_op, print_s);
-    
+
     webkit_print_operation_print(print_op);
 
     g_free(uri);

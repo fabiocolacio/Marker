@@ -97,7 +97,7 @@ marker_open(GtkApplication* app,
   {
     GFile* file = files[i];
     g_object_ref(file);
-    marker_create_new_window_from_file(file);
+    marker_open_file(file);
   }
 }
 
@@ -214,6 +214,25 @@ marker_create_new_window_from_file (GFile *file)
     MarkerEditor *editor = marker_window_get_active_editor (window);
     marker_editor_set_view_mode (editor, PREVIEW_ONLY_MODE);
   }
+}
+
+
+void
+marker_open_file (GFile *file)
+{
+  GList *windows = gtk_application_get_windows(app);
+  if (g_list_last(windows))
+  {
+    if (MARKER_IS_WINDOW(windows->data))
+    {
+      MarkerWindow *window = MARKER_WINDOW(windows->data);
+      marker_window_new_editor_from_file(window, file);
+      return;
+    }
+  }
+
+  marker_create_new_window_from_file(file);
+
 }
 
 void

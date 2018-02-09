@@ -20,12 +20,19 @@
  */
 
 #include <string.h>
+#include <math.h>
 
 #include "scroll-extension.h"
 
 /**TODO: Clear user_data when closing window.
  * I did not found any signal to connect to a cleaning function!
 **/
+
+struct {
+  glong horizontal;
+  glong vertical;
+  gboolean vertical_lock;
+}typedef Scroll;
 
 enum
 {
@@ -39,18 +46,24 @@ document_loaded_cb (WebKitWebPage *web_page,
 {
     WebKitDOMDocument *document = webkit_web_page_get_dom_document (web_page);
     WebKitDOMElement *body = WEBKIT_DOM_ELEMENT (webkit_dom_document_get_body (document));
-    
-    const glong *pos = user_data;
-    
+
+    const Scroll *pos = user_data;
+
     if (body){
-      webkit_dom_element_set_scroll_top (body, pos[0]);
-      webkit_dom_element_set_scroll_left (body, pos[1]);     
+      if (pos->vertical_lock)
+      {
+          webkit_dom_element_set_scroll_top (body, webkit_dom_element_get_scroll_height(body));
+      }else
+      {
+        webkit_dom_element_set_scroll_top (body, pos->vertical);
+      }
+      webkit_dom_element_set_scroll_left (body, pos->horizontal);
     } else {
       g_error ("Error restoring scroll position!\n");
     }
 }
 
-static gboolean 
+static gboolean
 send_request_cb (WebKitWebPage     *web_page,
                  WebKitURIRequest  *request,
                  WebKitURIResponse *redirected_response,
@@ -60,20 +73,26 @@ send_request_cb (WebKitWebPage     *web_page,
     if (strstr (uri, ".md") != NULL)
     {
       WebKitDOMDocument *document = webkit_web_page_get_dom_document (web_page);
+      WebKitDOMDOMWindow * view = webkit_dom_document_get_default_view(document);
+
       WebKitDOMElement *body = WEBKIT_DOM_ELEMENT (webkit_dom_document_get_body (document));
-      glong * pos = user_data;
-      
+      Scroll * pos = user_data;
+
       if (body)
       {
-        pos[VERTICAL_SCROLL] = webkit_dom_element_get_scroll_top (body);
-        pos[HORIZONTAL_SCROLL] = webkit_dom_element_get_scroll_left (body);       
+        pos->vertical = webkit_dom_element_get_scroll_top (body);
+        pos->horizontal = webkit_dom_element_get_scroll_left (body);
+
+        glong height = webkit_dom_element_get_scroll_height(body);
+        glong offset = webkit_dom_dom_window_get_inner_height(view) + pos->vertical;
+        pos->vertical_lock = offset >= height;
       }
       else
       {
         g_error ("Error restoring scroll position!\n");
       }
-    }    
-    
+    }
+
     return FALSE;
 }
 
@@ -83,12 +102,13 @@ page_created_cb (WebKitWebExtension *extension,
                  gpointer            user_data)
 {
     /** create a new position index for each thread.**/
-    glong *pos = g_malloc (2 * sizeof (glong));
-    pos[VERTICAL_SCROLL] = 0;
-    pos[HORIZONTAL_SCROLL] = 0;
+    Scroll *pos = g_malloc (sizeof(Scroll));
+    pos->horizontal = 0;
+    pos->vertical = 0;
+    pos->vertical_lock = FALSE;
 
     g_signal_connect (web_page, "document-loaded",
-                      G_CALLBACK (document_loaded_cb), 
+                      G_CALLBACK (document_loaded_cb),
                       pos);
     g_signal_connect (web_page, "send-request",
                       G_CALLBACK (send_request_cb),

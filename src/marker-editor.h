@@ -53,9 +53,12 @@ void                 marker_editor_open_file                     (MarkerEditor  
 void                 marker_editor_save_file                     (MarkerEditor       *editor);
 void                 marker_editor_save_file_as                  (MarkerEditor       *editor,
                                                                   GFile              *file);
+gboolean             marker_editor_rename_file                   (MarkerEditor       *editor,
+                                                                  gchar*              name);
 GFile               *marker_editor_get_file                      (MarkerEditor       *editor);
 gboolean             marker_editor_has_unsaved_changes           (MarkerEditor       *editor);
 gchar               *marker_editor_get_title                     (MarkerEditor       *editor);
+gchar               *marker_editor_get_raw_title                 (MarkerEditor       *editor);
 gchar               *marker_editor_get_subtitle                  (MarkerEditor       *editor);
 MarkerPreview       *marker_editor_get_preview                   (MarkerEditor       *editor);
 MarkerSourceView    *marker_editor_get_source_view               (MarkerEditor       *editor);

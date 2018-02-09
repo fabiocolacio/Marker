@@ -4,6 +4,9 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdio.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 #include "stack.h"
 
@@ -81,6 +84,8 @@ static size_t char_image(hoedown_buffer *ob, hoedown_document *doc, uint8_t *dat
 static size_t char_superscript(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offset, size_t size);
 static size_t char_math(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offset, size_t size);
 
+void sub_render(hoedown_document *doc, hoedown_buffer *ob, const uint8_t *data, size_t size);
+
 enum markdown_char_t {
 	MD_CHAR_NONE = 0,
 	MD_CHAR_EMPHASIS,
@@ -96,7 +101,7 @@ enum markdown_char_t {
 	MD_CHAR_AUTOLINK_WWW,
 	MD_CHAR_SUPERSCRIPT,
 	MD_CHAR_QUOTE,
-	MD_CHAR_MATH
+	MD_CHAR_MATH,
 };
 
 static char_trigger markdown_char_ptrs[] = {
@@ -134,6 +139,32 @@ struct hoedown_document {
 /***************************
  * HELPER FUNCTIONS *
  ***************************/
+
+ static int
+ startsWith(const char *pre, const char *str)
+ {
+     size_t lenpre = strlen(pre),
+            lenstr = strlen(str);
+     return lenstr < lenpre ? 0 : strncmp(pre, str, lenpre) == 0;
+ }
+
+
+ static int
+ is_regular_file(const char *path)
+ {
+ 	if (path[0] != '/'){
+ 		char cwd[1024];
+ 		getcwd(cwd, sizeof(cwd));
+ 		strcat(cwd, "/");
+ 		strcat(cwd, path);
+	    struct stat path_stat;
+	    stat(cwd, &path_stat);
+	    return S_ISREG(path_stat.st_mode);
+ 	}
+    struct stat path_stat;
+    stat(path, &path_stat);
+    return S_ISREG(path_stat.st_mode);
+ }
 
 static hoedown_buffer *
 newbuf(hoedown_document *doc, int type)
@@ -247,7 +278,6 @@ static struct footnote_ref *
 create_footnote_ref(struct footnote_list *list, const uint8_t *name, size_t name_size)
 {
 	struct footnote_ref *ref = hoedown_calloc(1, sizeof(struct footnote_ref));
-
 	ref->id = hash_link_ref(name, name_size);
 
 	return ref;
@@ -499,7 +529,6 @@ parse_inline(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t si
 
 		if (end >= size) break;
 		i = end;
-
 		end = markdown_char_ptrs[ (int)active_char[data[end]] ](ob, doc, data + i, i - consumed, size - i);
 		if (!end) /* no action from the callback */
 			end = i + 1;
@@ -772,6 +801,62 @@ parse_math(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offs
 
 	return 0;
 }
+
+static char*
+load_file(const char* path, long * size)
+{
+	FILE *f;
+	if (path[0] != '/'){
+		char cwd[1024];
+		getcwd(cwd, sizeof(cwd));
+		strcat(cwd, "/");
+		strcat(cwd, path);
+		f =fopen(cwd, "rb");
+	}
+	else
+		f = fopen(path, "rb");
+	fseek(f, 0, SEEK_END);
+	*size = ftell(f);
+	fseek(f, 0, SEEK_SET);  //same as rewind(f);
+
+	char *string = malloc(*size + 1);
+	fread(string, *size, 1, f);
+	fclose(f);
+
+	string[*size] = 0;
+	return string;
+}
+
+static size_t
+parse_include(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offset, size_t size)
+{
+	/* @include(path) */
+	size_t i = 9;
+	size_t n = 0;
+	for (;i < size; i++)
+	{
+		if (data[i] == ')')
+		{
+			break;
+		}
+		n++;
+	}
+	if (n){
+		char * path = malloc((n+1)*sizeof(uint8_t));
+		path[n] = 0;
+		memcpy(path, data+9, n);
+		if (is_regular_file(path)){
+			long neu_size = 0;
+			char * buffer = load_file(path, &neu_size);
+
+			sub_render(doc, ob, (uint8_t*)buffer, neu_size);
+
+		}
+		free(path);
+	}
+	return i+1;
+}
+
 
 /* char_emphasis • single and double emphasis parsing */
 static size_t
@@ -1050,9 +1135,15 @@ char_autolink_www(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size
 	return link_len;
 }
 
+
+
 static size_t
 char_autolink_email(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offset, size_t size)
 {
+	if (startsWith("@include(", (char*)data))
+    {
+    	return parse_include(ob, doc, data, offset, size);
+    }
 	hoedown_buffer *link;
 	size_t link_len, rewind;
 
@@ -2527,11 +2618,45 @@ parse_block(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t siz
 /*********************
  * REFERENCE PARSING *
  *********************/
+void load_notes(const uint8_t * text, size_t size,  struct footnote_list *list);
 
 /* is_footnote • returns whether a line is a footnote definition or not */
 static int
 is_footnote(const uint8_t *data, size_t beg, size_t end, size_t *last, struct footnote_list *list)
 {
+	if (startsWith("@bib(", (char*)data+beg))
+		{
+
+			size_t n = 0;
+			size_t i = 5+beg;
+			while(data[i] != '\n' && i != end)
+			{
+				if (data[i]==')')
+					break;
+				n++;
+				i++;
+			}
+
+			if (n){
+				char * path = malloc((n+1)*sizeof(char));
+				path[n] = 0;
+				strncpy(path, (char*)data+beg+5, n);
+				if (is_regular_file(path)){
+					long size = 0;
+					char * bib = load_file(path, &size);
+					load_notes((uint8_t*)bib, size, list);
+					free(bib);
+				}
+				free(path);
+			}
+
+	        i = beg;
+	        while(data[i]!='\n')
+		      	i ++;
+	        *last = i;
+
+			return 1;
+		}
 	size_t i = 0;
 	hoedown_buffer *contents = 0;
 	size_t ind = 0;
@@ -2638,6 +2763,7 @@ static int
 is_ref(const uint8_t *data, size_t beg, size_t end, size_t *last, struct link_ref **refs)
 {
 /*	int n; */
+
 	size_t i = 0;
 	size_t id_offset, id_end;
 	size_t link_offset, link_end;
@@ -2747,6 +2873,34 @@ is_ref(const uint8_t *data, size_t beg, size_t end, size_t *last, struct link_re
 	return 1;
 }
 
+
+void
+load_notes(const uint8_t * data, size_t size,  struct footnote_list *list)
+{
+	static const uint8_t UTF8_BOM[] = {0xEF, 0xBB, 0xBF};
+	size_t beg, end;
+	beg = 0;
+	/* Skip a possible UTF-8 BOM, even though the Unicode standard
+	 * discourages having these in UTF-8 documents */
+	if (size >= 3 && memcmp(data, UTF8_BOM, 3) == 0)
+		beg += 3;
+
+	while (beg < size) /* iterating over lines */
+	{
+		if (is_footnote(data, beg, size, &end, list))
+			beg = end;
+		else { /* skipping to the next line */
+			end = beg;
+			while (end < size && data[end] != '\n' && data[end] != '\r')
+				end++;
+			while (end < size && (data[end] == '\n' || data[end] == '\r')) {
+
+				end++;
+			}
+			beg = end;
+		}
+	}
+}
 static void expand_tabs(hoedown_buffer *ob, const uint8_t *line, size_t size)
 {
 	/* This code makes two assumptions:
@@ -2856,34 +3010,22 @@ hoedown_document_new(
 	return doc;
 }
 
+
 void
-hoedown_document_render(hoedown_document *doc, hoedown_buffer *ob, const uint8_t *data, size_t size)
+sub_render(hoedown_document *doc, hoedown_buffer *ob, const uint8_t *data, size_t size)
 {
 	static const uint8_t UTF8_BOM[] = {0xEF, 0xBB, 0xBF};
 
 	hoedown_buffer *text;
 	size_t beg, end;
-
-	int footnotes_enabled;
-
 	text = hoedown_buffer_new(64);
 
 	/* Preallocate enough space for our buffer to avoid expanding while copying */
 	hoedown_buffer_grow(text, size);
-
-	/* reset the references table */
-	memset(&doc->refs, 0x0, REF_TABLE_SIZE * sizeof(void *));
-
-	footnotes_enabled = doc->ext_flags & HOEDOWN_EXT_FOOTNOTES;
-
-	/* reset the footnotes lists */
-	if (footnotes_enabled) {
-		memset(&doc->footnotes_found, 0x0, sizeof(doc->footnotes_found));
-		memset(&doc->footnotes_used, 0x0, sizeof(doc->footnotes_used));
-	}
-
 	/* first pass: looking for references, copying everything else */
 	beg = 0;
+
+	int footnotes_enabled = doc->ext_flags & HOEDOWN_EXT_FOOTNOTES;
 
 	/* Skip a possible UTF-8 BOM, even though the Unicode standard
 	 * discourages having these in UTF-8 documents */
@@ -2929,21 +3071,42 @@ hoedown_document_render(hoedown_document *doc, hoedown_buffer *ob, const uint8_t
 		parse_block(ob, doc, text->data, text->size);
 	}
 
+
+	hoedown_buffer_free(text);
+}
+
+
+void
+hoedown_document_render(hoedown_document *doc, hoedown_buffer *ob, const uint8_t *data, size_t size)
+{
+
+	int footnotes_enabled;
+
+	/* reset the references table */
+	memset(&doc->refs, 0x0, REF_TABLE_SIZE * sizeof(void *));
+
+	footnotes_enabled = doc->ext_flags & HOEDOWN_EXT_FOOTNOTES;
+
+	/* reset the footnotes lists */
+	if (footnotes_enabled) {
+		memset(&doc->footnotes_found, 0x0, sizeof(doc->footnotes_found));
+		memset(&doc->footnotes_used, 0x0, sizeof(doc->footnotes_used));
+	}
+
+	sub_render(doc, ob, data, size);
 	/* footnotes */
 	if (footnotes_enabled)
 		parse_footnote_list(ob, doc, &doc->footnotes_used);
 
 	if (doc->md.doc_footer)
 		doc->md.doc_footer(ob, 0, &doc->data);
-
 	/* clean-up */
-	hoedown_buffer_free(text);
+
 	free_link_refs(doc->refs);
 	if (footnotes_enabled) {
 		free_footnote_list(&doc->footnotes_found, 1);
 		free_footnote_list(&doc->footnotes_used, 0);
 	}
-
 	assert(doc->work_bufs[BUFFER_SPAN].size == 0);
 	assert(doc->work_bufs[BUFFER_BLOCK].size == 0);
 }
@@ -2990,7 +3153,6 @@ hoedown_document_render_inline(hoedown_document *doc, hoedown_buffer *ob, const 
 
 	/* clean-up */
 	hoedown_buffer_free(text);
-
 	assert(doc->work_bufs[BUFFER_SPAN].size == 0);
 	assert(doc->work_bufs[BUFFER_BLOCK].size == 0);
 }

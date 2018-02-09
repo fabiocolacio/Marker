@@ -110,6 +110,9 @@ void hoedown_buffer_printf(hoedown_buffer *buf, const char *fmt, ...) __attribut
 /* hoedown_buffer_put_utf8: put a Unicode character encoded as UTF-8 */
 void hoedown_buffer_put_utf8(hoedown_buffer *buf, unsigned int codepoint);
 
+/* hoedown_buffer_insert: insert string at offset */
+void hoedown_buffer_insert(hoedown_buffer *buf, const char* buffer, size_t offset, size_t size, size_t buffer_size);
+
 /* hoedown_buffer_free: free the buffer */
 void hoedown_buffer_free(hoedown_buffer *buf);
 

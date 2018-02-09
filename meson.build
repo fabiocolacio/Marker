@@ -13,7 +13,7 @@ HIGHLIGHT_STYLES_DIR = join_paths(join_paths(SCRIPTS_DIR, 'highlight'),'styles')
 WEB_EXTENSIONS_DIRECTORY = join_paths(APP_DIR, 'extensions')
 APPDATA_DIR = join_paths(DATA_DIR, 'appdata')
 
-EXECUTABLE_NAME = 'com.github.fabiocolacio.marker'
+EXECUTABLE_NAME = 'marker'
 
 gnome = import('gnome')
 
@@ -93,16 +93,9 @@ shared_library(
   sources : [scroll_extension],
   dependencies : ext_deps,
   install : true,
+  link_args: '-lm',
   install_dir: WEB_EXTENSIONS_DIRECTORY
 )
-
-# shared_library(
-#   'click-extension',
-#   sources : [click_extension],
-#   dependencies : ext_deps,
-#   install : true,
-#   install_dir: WEB_EXTENSIONS_DIRECTORY
-# )
 
 executable(
   EXECUTABLE_NAME,
