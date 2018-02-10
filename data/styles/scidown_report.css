@@ -183,3 +183,24 @@ td.eq_code {
   text-align: center;
 }
 
+.toc_container{
+  background: #f5f5ff;
+  border: solid 1px #eef;
+  padding: 0mm 5mm 0mm 5mm;
+}
+
+.toc_header
+{
+  font-size: 14pt;
+  margin-bottom:0;
+}
+.toc_list{
+  padding-left: 0mm;
+}
+.toc_list ul{
+padding-left: 5mm;
+}
+
+.toc_list li{
+list-style-type: none;
+}
