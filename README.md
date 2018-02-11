@@ -8,12 +8,11 @@ unfinished features.
 ## Features
 
 * View and edit markdown documents
-* HTML conversion of markdown documents with [hoedown](https://github.com/hoedown/hoedown)
+* HTML conversion of markdown documents with [scidown](https://github.com/Mandarancio/scidown/)
+* Extra scientific syntax of SciDwon [wiki](https://github.com/Mandarancio/scidown/wiki/)
 * TeX math rendering with [KaTeX](https://khan.github.io/KaTeX/)
 * Support for [mermaid](https://mermaidjs.github.io/) diagrams
 * Support for [charter](https://github.com/Mandarancio/charter/) for plot 
-* Include external markdown or text file using syntax ```@include(path)```
-* Include external references using syntax ```@bib(path)```
 * Syntax highlighting for code blocks with [highlight.js](https://highlightjs.org/)
 * Integrated sketch editor 
 * Flexible export options with [pandoc](https://pandoc.org/)
