@@ -64,12 +64,12 @@ marker_exporter_str_to_fmt(const char* str)
 }
 
 void
-marker_exporter_export_pandoc(const char*        markdown,
+marker_exporter_export_pandoc(const char*        tex,
                               const char*        stylesheet_path,
                               const char*        outfile,
                               MarkerExportFormat format)
 {
-  const char* ftmp = ".marker_tmp_markdown.md";
+  const char* ftmp = ".marker_tmp_markdown.html";
   char* path = marker_string_filename_get_path(outfile);
   if (chdir(path) == 0)
   {
@@ -77,38 +77,37 @@ marker_exporter_export_pandoc(const char*        markdown,
     fp = fopen(ftmp, "w");
     if (fp)
     {
-      fputs(markdown, fp);
+      fputs(tex, fp);
       fclose(fp);
 
-      const char* format_s = "rtf";
-      switch (format)
-      {
-        case RTF:
-          format_s = "rtf";
-          break;
+      // const char* format_s = "rtf";
+      // switch (format)
+      // {
+      //   case RTF:
+      //     format_s = "rtf";
+      //     break;
 
-        case DOCX:
-          format_s = "docx";
-          break;
+      //   case DOCX:
+      //     format_s = "docx";
+      //     break;
 
-        case ODT:
-          format_s = "odt";
-          break;
+      //   case ODT:
+      //     format_s = "odt";
+      //     break;
 
-        case LATEX:
-          format_s = "latex";
-          break;
+      //   case PDF:
+      //     format_s = "pdf";
+      //     break;
 
-        default:
-          break;
-      }
+      //   default:
+      //     break;
+      // }
 
       char* command = NULL;
 
       asprintf(&command,
-               "pandoc -s -c %s -t %s -f markdown -o %s %s",
+               "pandoc -s -c %s -o %s %s",
                stylesheet_path,
-               format_s,
                outfile,
                ftmp);
 
@@ -190,8 +189,6 @@ marker_exporter_show_export_dialog(MarkerWindow* window)
     MarkerSourceView *source_view = marker_editor_get_source_view (editor);
     markdown = marker_source_view_get_text (source_view);
 
-    MarkerPreview *preview = marker_editor_get_preview (editor);
-
     switch (fmt)
     {
       case HTML:
@@ -210,9 +207,9 @@ marker_exporter_show_export_dialog(MarkerWindow* window)
                                                      filename);
         break;
 
-      case PDF:
-        marker_preview_print_pdf(preview, filename);
-        break;
+      // case PDF:
+      //   marker_preview_print_pdf(preview, filename);
+      //   break;
 
       case LATEX:
         marker_markdown_to_latex_file(markdown,
@@ -230,7 +227,21 @@ marker_exporter_show_export_dialog(MarkerWindow* window)
         break;
 
       default:
-        marker_exporter_export_pandoc(markdown, stylesheet_path, filename, fmt);
+        marker_exporter_export_pandoc(marker_markdown_to_html_with_css_inline(markdown,
+                                                                              strlen(markdown),
+                                                                              (marker_prefs_get_use_katex())
+                                                                                ? KATEX_NET
+                                                                                : KATEX_OFF,
+                                                                              (marker_prefs_get_use_highlight())
+                                                                                ? HIGHLIGHT_NET
+                                                                                : HIGHLIGHT_OFF,
+                                                                              (marker_prefs_get_use_mermaid()
+                                                                                ? MERMAID_NET
+                                                                                : MERMAID_OFF),
+                                                                              stylesheet_path),
+                                      stylesheet_path,
+                                      filename,
+                                      fmt);
         break;
     }
   }

@@ -157,7 +157,7 @@ html_footer(MarkerKaTeXMode     katex_mode,
 }
 
 scidown_render_flags
-get_html_mode(MarkerMermaidMode mermaid_mode)
+get_render_mode(MarkerMermaidMode mermaid_mode)
 {
   scidown_render_flags mode = 0;
 
@@ -196,13 +196,9 @@ marker_markdown_to_html(const char*         markdown,
   hoedown_renderer* renderer;
   hoedown_document* document;
   hoedown_buffer* buffer;
-  scidown_render_flags html_mode = get_html_mode(mermaid_mode);
+  scidown_render_flags html_mode = get_render_mode(mermaid_mode);
 
   renderer = hoedown_html_renderer_new(html_mode, 0, get_local());
-
-
-
-
 
   char * header = html_header(katex_mode, highlight_mode, mermaid_mode);
 
@@ -270,7 +266,7 @@ marker_markdown_to_html_with_css_inline(const char*         markdown,
   hoedown_renderer* renderer;
   hoedown_document* document;
   hoedown_buffer* buffer;
-  scidown_render_flags html_mode = get_html_mode(mermaid_mode);
+  scidown_render_flags html_mode = get_render_mode(mermaid_mode);
 
   renderer = hoedown_html_renderer_new(html_mode, 0, get_local());
 
@@ -308,6 +304,46 @@ marker_markdown_to_html_with_css_inline(const char*         markdown,
 
   return html;
 }
+
+char*
+marker_markdown_to_latex(const char*         markdown,
+                         size_t              size,
+                         MarkerKaTeXMode     katex_mode,
+                         MarkerHighlightMode highlight_mode,
+                         MarkerMermaidMode   mermaid_mode,
+                         const char*         stylesheet_location)
+{
+  char* latex = NULL;
+
+  hoedown_renderer* renderer;
+  hoedown_document* document;
+  hoedown_buffer* buffer;
+  scidown_render_flags mode = get_render_mode(mermaid_mode);
+
+  renderer = scidown_latex_renderer_new(mode, 0, get_local());
+
+  ext_definition def = {NULL, NULL};
+
+
+  document = hoedown_document_new(renderer,
+                                  HOEDOWN_EXT_BLOCK         |
+                                  HOEDOWN_EXT_SPAN          |
+                                  HOEDOWN_EXT_FLAGS,
+                                  &def,
+                                  16);
+
+  buffer = hoedown_buffer_new(500);
+  hoedown_document_render(document, buffer, (uint8_t*) markdown, size);
+
+  const char* buf_cstr = hoedown_buffer_cstr(buffer);
+  latex = strdup(buf_cstr);
+  hoedown_html_renderer_free(renderer);
+  hoedown_document_free(document);
+  hoedown_buffer_free(buffer);
+
+  return latex;
+}
+
 
 void
 marker_markdown_to_html_file(const char*         markdown,
@@ -365,42 +401,20 @@ marker_markdown_to_latex_file(const char*         markdown,
                                MarkerMermaidMode   mermaid_mode,
                                const char*         filepath)
 {
-  hoedown_renderer* renderer;
-  hoedown_document* document;
-  hoedown_buffer* buffer;
-  scidown_render_flags html_mode = get_html_mode(mermaid_mode);
-
-  renderer = scidown_latex_renderer_new(html_mode, 0, get_local());
 
 
-
-
-
-  ext_definition def = {NULL, NULL};
-
-
-  document = hoedown_document_new(renderer,
-                                  HOEDOWN_EXT_BLOCK         |
-                                  HOEDOWN_EXT_SPAN          |
-                                  HOEDOWN_EXT_FLAGS,
-                                  &def,
-                                  16);
-
-  buffer = hoedown_buffer_new(500);
-  hoedown_document_render(document, buffer, (uint8_t*) markdown, size);
-
-
-  const char* latex = hoedown_buffer_cstr(buffer);
-
-
-  hoedown_html_renderer_free(renderer);
-  hoedown_document_free(document);
-  hoedown_buffer_free(buffer);
-
+  char* latex = marker_markdown_to_latex(markdown,
+                                         size,
+                                         katex_mode,
+                                         highlight_mode,
+                                         mermaid_mode,
+                                         NULL);
   FILE* fp = fopen(filepath, "w");
   if (fp && latex)
   {
     fputs(latex, fp);
     fclose(fp);
   }
+
+  free(latex);
 }
