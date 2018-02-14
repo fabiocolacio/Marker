@@ -26,6 +26,7 @@
 #include <glib/gprintf.h>
 
 #include "scidown/src/html.h"
+#include "scidown/src/latex.h"
 #include "scidown/src/document.h"
 #include "scidown/src/buffer.h"
 
@@ -155,27 +156,27 @@ html_footer(MarkerKaTeXMode     katex_mode,
   return buffer;
 }
 
-hoedown_html_flags
+scidown_render_flags
 get_html_mode(MarkerMermaidMode mermaid_mode)
 {
-  hoedown_html_flags mode = 0;
+  scidown_render_flags mode = 0;
 
   if (mermaid_mode != MERMAID_OFF)
   {
-    mode |= HOEDOWN_HTML_MERMAID;
+    mode |= SCIDOWN_RENDER_MERMAID;
   }
 
   if (marker_prefs_get_use_charter())
   {
-    mode |= HOEDOWN_HTML_CHARTER;
+    mode |= SCIDOWN_RENDER_CHARTER;
   }
 
   return mode;
 }
 
-html_localization get_local()
+localization get_local()
 {
-  html_localization local;
+  localization local;
   local.figure = "Figure";
   local.listing = "Listing";
   local.table = "Table";
@@ -195,7 +196,7 @@ marker_markdown_to_html(const char*         markdown,
   hoedown_renderer* renderer;
   hoedown_document* document;
   hoedown_buffer* buffer;
-  hoedown_html_flags html_mode = get_html_mode(mermaid_mode);
+  scidown_render_flags html_mode = get_html_mode(mermaid_mode);
 
   renderer = hoedown_html_renderer_new(html_mode, 0, get_local());
 
@@ -269,7 +270,7 @@ marker_markdown_to_html_with_css_inline(const char*         markdown,
   hoedown_renderer* renderer;
   hoedown_document* document;
   hoedown_buffer* buffer;
-  hoedown_html_flags html_mode = get_html_mode(mermaid_mode);
+  scidown_render_flags html_mode = get_html_mode(mermaid_mode);
 
   renderer = hoedown_html_renderer_new(html_mode, 0, get_local());
 
@@ -354,4 +355,52 @@ marker_markdown_to_html_file_with_css_inline(const char*         markdown,
     fclose(fp);
   }
   free(html);
+}
+
+void
+marker_markdown_to_latex_file(const char*         markdown,
+                               size_t              size,
+                               MarkerKaTeXMode     katex_mode,
+                               MarkerHighlightMode highlight_mode,
+                               MarkerMermaidMode   mermaid_mode,
+                               const char*         filepath)
+{
+  hoedown_renderer* renderer;
+  hoedown_document* document;
+  hoedown_buffer* buffer;
+  scidown_render_flags html_mode = get_html_mode(mermaid_mode);
+
+  renderer = scidown_latex_renderer_new(html_mode, 0, get_local());
+
+
+
+
+
+  ext_definition def = {NULL, NULL};
+
+
+  document = hoedown_document_new(renderer,
+                                  HOEDOWN_EXT_BLOCK         |
+                                  HOEDOWN_EXT_SPAN          |
+                                  HOEDOWN_EXT_FLAGS,
+                                  &def,
+                                  16);
+
+  buffer = hoedown_buffer_new(500);
+  hoedown_document_render(document, buffer, (uint8_t*) markdown, size);
+
+
+  const char* latex = hoedown_buffer_cstr(buffer);
+
+
+  hoedown_html_renderer_free(renderer);
+  hoedown_document_free(document);
+  hoedown_buffer_free(buffer);
+
+  FILE* fp = fopen(filepath, "w");
+  if (fp && latex)
+  {
+    fputs(latex, fp);
+    fclose(fp);
+  }
 }

@@ -51,6 +51,7 @@ hoedown_sources = [
   'src/scidown/src/document.c',
   'src/scidown/src/escape.c',
   'src/scidown/src/html.c',
+  'src/scidown/src/latex.c',
   'src/scidown/src/html_blocks.c',
   'src/scidown/src/html_smartypants.c',
   'src/scidown/src/stack.c',
