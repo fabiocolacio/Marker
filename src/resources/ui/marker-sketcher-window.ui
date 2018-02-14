@@ -79,32 +79,32 @@
   <object class="GtkImage" id="eraser_img">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="icon_name">marker-eraser</property>
+    <property name="icon_name">marker-eraser-symbolic</property>
   </object>
   <object class="GtkImage" id="large_img">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="icon_name">marker-large</property>
+    <property name="icon_name">marker-large-symbolic</property>
   </object>
   <object class="GtkImage" id="medium_img">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="icon_name">marker-medium</property>
+    <property name="icon_name">marker-medium-symbolic</property>
   </object>
   <object class="GtkImage" id="pen_img">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="icon_name">marker-pen</property>
+    <property name="icon_name">marker-pen-symbolic</property>
   </object>
   <object class="GtkImage" id="small_img">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="icon_name">marker-small</property>
+    <property name="icon_name">marker-small-symbolic</property>
   </object>
   <object class="GtkImage" id="text_img">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="icon_name">marker-text</property>
+    <property name="icon_name">marker-text-symbolic</property>
   </object>
   <object class="GtkHeaderBar" id="header_bar">
     <property name="visible">True</property>
