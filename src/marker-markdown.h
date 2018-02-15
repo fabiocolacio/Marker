@@ -44,6 +44,7 @@ typedef enum{
 
 char                *marker_markdown_to_html                     (const char         *markdown,
                                                                   size_t              size,
+                                                                  char               *base_folder,
                                                                   MarkerKaTeXMode     katex_mode,
                                                                   MarkerHighlightMode highlight_mode,
                                                                   MarkerMermaidMode   mermaid_mode,
@@ -51,6 +52,7 @@ char                *marker_markdown_to_html                     (const char    
 
 char                *marker_markdown_to_html_with_css_inline     (const char         *markdown,
                                                                   size_t              size,
+                                                                  char               *base_folder,
                                                                   MarkerKaTeXMode     katex_mode,
                                                                   MarkerHighlightMode highlight_mode,
                                                                   MarkerMermaidMode   mermaid_mode,
@@ -58,6 +60,7 @@ char                *marker_markdown_to_html_with_css_inline     (const char    
 
 char                *marker_markdown_to_latex                    (const char         *markdown,
                                                                   size_t              size,
+                                                                  char               *base_folder,
                                                                   MarkerKaTeXMode     katex_mode,
                                                                   MarkerHighlightMode highlight_mode,
                                                                   MarkerMermaidMode   mermaid_mode,
@@ -65,6 +68,7 @@ char                *marker_markdown_to_latex                    (const char    
 
 void                 marker_markdown_to_html_file                (const char         *markdown,
                                                                   size_t              size,
+                                                                  char               *base_folder,
                                                                   MarkerKaTeXMode     katex_mode,
                                                                   MarkerHighlightMode highlight_mode,
                                                                   MarkerMermaidMode   mermaid_mode,
@@ -73,6 +77,7 @@ void                 marker_markdown_to_html_file                (const char    
 
 void                 marker_markdown_to_html_file_with_css_inline(const char         *markdown,
                                                                   size_t              size,
+                                                                  char               *base_folder,
                                                                   MarkerKaTeXMode     katex_mode,
                                                                   MarkerHighlightMode highlight_mode,
                                                                   MarkerMermaidMode   mermaid_mode,
@@ -81,6 +86,7 @@ void                 marker_markdown_to_html_file_with_css_inline(const char    
 
 void                 marker_markdown_to_latex_file               (const char         *markdown,
                                                                   size_t              size,
+                                                                  char               *base_folder,
                                                                   MarkerKaTeXMode     katex_mode,
                                                                   MarkerHighlightMode highlight_mode,
                                                                   MarkerMermaidMode   mermaid_mode,

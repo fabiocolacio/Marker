@@ -28,6 +28,8 @@
 #include "marker-markdown.h"
 #include "marker-prefs.h"
 
+#include "marker-string.h"
+
 #include "marker-preview.h"
 #include "marker.h"
 
@@ -311,9 +313,12 @@ marker_preview_render_markdown(MarkerPreview* preview,
     mermaid_mode = MERMAID_LOCAL;
   }
 
-
+  char * base_folder = NULL;
+  if (base_uri)
+    base_folder = marker_string_filename_get_path(base_uri);
   char* html = marker_markdown_to_html(markdown,
                                        strlen(markdown),
+                                       base_folder,
                                        katex_mode,
                                        highlight_mode,
                                        mermaid_mode,
@@ -335,7 +340,6 @@ marker_preview_render_markdown(MarkerPreview* preview,
   GBytes *bhtml = g_string_free_to_bytes(g_string_new(html));
   webkit_web_view_load_bytes(web_view, bhtml, "text/html", "UTF-8",
                              uri);
-
   g_free(uri);
   free(html);
 }

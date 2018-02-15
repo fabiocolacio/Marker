@@ -189,11 +189,18 @@ marker_exporter_show_export_dialog(MarkerWindow* window)
     MarkerSourceView *source_view = marker_editor_get_source_view (editor);
     markdown = marker_source_view_get_text (source_view);
 
+    GFile * source = marker_editor_get_file(editor);
+    char * base_folder = NULL;
+
+    if (source)
+      base_folder = g_file_get_path(g_file_get_parent(source));
+
     switch (fmt)
     {
       case HTML:
         marker_markdown_to_html_file_with_css_inline(markdown,
                                                      strlen(markdown),
+                                                     base_folder,
                                                      (marker_prefs_get_use_katex())
                                                        ? KATEX_NET
                                                        : KATEX_OFF,
@@ -214,6 +221,7 @@ marker_exporter_show_export_dialog(MarkerWindow* window)
       case LATEX:
         marker_markdown_to_latex_file(markdown,
                                       strlen(markdown),
+                                      base_folder,
                                       (marker_prefs_get_use_katex())
                                         ? KATEX_NET
                                         : KATEX_OFF,
@@ -229,6 +237,7 @@ marker_exporter_show_export_dialog(MarkerWindow* window)
       default:
         marker_exporter_export_pandoc(marker_markdown_to_html_with_css_inline(markdown,
                                                                               strlen(markdown),
+                                                                              base_folder,
                                                                               (marker_prefs_get_use_katex())
                                                                                 ? KATEX_NET
                                                                                 : KATEX_OFF,

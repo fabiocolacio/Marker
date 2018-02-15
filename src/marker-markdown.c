@@ -186,6 +186,7 @@ localization get_local()
 char*
 marker_markdown_to_html(const char*         markdown,
                         size_t              size,
+                        char *              base_folder,
                         MarkerKaTeXMode     katex_mode,
                         MarkerHighlightMode highlight_mode,
                         MarkerMermaidMode   mermaid_mode,
@@ -217,6 +218,7 @@ marker_markdown_to_html(const char*         markdown,
                                   HOEDOWN_EXT_SPAN          |
                                   HOEDOWN_EXT_FLAGS,
                                   &def,
+                                  base_folder,
                                   16);
 
   buffer = hoedown_buffer_new(500);
@@ -238,6 +240,7 @@ marker_markdown_to_html(const char*         markdown,
 char*
 marker_markdown_to_html_with_css_inline(const char*         markdown,
                                         size_t              size,
+                                        char *              base_folder,
                                         MarkerKaTeXMode     katex_mode,
                                         MarkerHighlightMode highlight_mode,
                                         MarkerMermaidMode   mermaid_mode,
@@ -286,6 +289,7 @@ marker_markdown_to_html_with_css_inline(const char*         markdown,
                                   HOEDOWN_EXT_SPAN          |
                                   HOEDOWN_EXT_FLAGS,
                                   &def,
+                                  base_folder,
                                   16);
 
   buffer = hoedown_buffer_new(500);
@@ -308,6 +312,7 @@ marker_markdown_to_html_with_css_inline(const char*         markdown,
 char*
 marker_markdown_to_latex(const char*         markdown,
                          size_t              size,
+                         char *              base_folder,
                          MarkerKaTeXMode     katex_mode,
                          MarkerHighlightMode highlight_mode,
                          MarkerMermaidMode   mermaid_mode,
@@ -330,6 +335,7 @@ marker_markdown_to_latex(const char*         markdown,
                                   HOEDOWN_EXT_SPAN          |
                                   HOEDOWN_EXT_FLAGS,
                                   &def,
+                                  base_folder,
                                   16);
 
   buffer = hoedown_buffer_new(500);
@@ -348,6 +354,7 @@ marker_markdown_to_latex(const char*         markdown,
 void
 marker_markdown_to_html_file(const char*         markdown,
                              size_t              size,
+                             char               *base_folder,
                              MarkerKaTeXMode     katex_mode,
                              MarkerHighlightMode highlight_mode,
                              MarkerMermaidMode   mermaid_mode,
@@ -356,6 +363,7 @@ marker_markdown_to_html_file(const char*         markdown,
 {
   char* html = marker_markdown_to_html(markdown,
                                        size,
+                                       base_folder,
                                        katex_mode,
                                        highlight_mode,
                                        mermaid_mode,
@@ -372,6 +380,7 @@ marker_markdown_to_html_file(const char*         markdown,
 void
 marker_markdown_to_html_file_with_css_inline(const char*         markdown,
                                              size_t              size,
+                                             char               *base_folder,
                                              MarkerKaTeXMode     katex_mode,
                                              MarkerHighlightMode highlight_mode,
                                              MarkerMermaidMode   mermaid_mode,
@@ -380,6 +389,7 @@ marker_markdown_to_html_file_with_css_inline(const char*         markdown,
 {
   char* html = marker_markdown_to_html_with_css_inline(markdown,
                                                        size,
+                                                       base_folder,
                                                        katex_mode,
                                                        highlight_mode,
                                                        mermaid_mode,
@@ -395,16 +405,18 @@ marker_markdown_to_html_file_with_css_inline(const char*         markdown,
 
 void
 marker_markdown_to_latex_file(const char*         markdown,
-                               size_t              size,
-                               MarkerKaTeXMode     katex_mode,
-                               MarkerHighlightMode highlight_mode,
-                               MarkerMermaidMode   mermaid_mode,
-                               const char*         filepath)
+                              size_t              size,
+                              char               *base_folder,
+                              MarkerKaTeXMode     katex_mode,
+                              MarkerHighlightMode highlight_mode,
+                              MarkerMermaidMode   mermaid_mode,
+                              const char*         filepath)
 {
 
 
   char* latex = marker_markdown_to_latex(markdown,
                                          size,
+                                         base_folder,
                                          katex_mode,
                                          highlight_mode,
                                          mermaid_mode,
