@@ -12,44 +12,44 @@
     <child name="preview" schema="com.github.fabiocolacio.marker.preferences.preview"/>
     <child name="window" schema="com.github.fabiocolacio.marker.preferences.window"/>
   </schema>
-  
+
   <schema path="/com/github/fabiocolacio/marker/preferences/editor/" id="com.github.fabiocolacio.marker.preferences.editor">
     <key name="syntax-theme" type="s">
       <default>'tango'</default>
       <summary>Syntax Theme</summary>
       <description>The syntax theme to use for the editor.</description>
     </key>
-    
+
     <key name="enable-syntax-theme" type="b">
       <default>false</default>
       <summary>Enable Syntax Theme</summary>
       <description>Whether to use a syntax theme in the editor.</description>
     </key>
-  
+
     <key name="show-line-numbers" type="b">
       <default>true</default>
       <summary>Show Line Numbers</summary>
       <description>Whether to show line numbers in the editor.</description>
     </key>
-    
+
     <key name="show-right-margin" type="b">
       <default>true</default>
       <summary>Show Right Margin</summary>
       <description>Whether to show a margin on the right side of the editor.</description>
     </key>
-    
+
     <key name="show-right-margin-position" type="u">
       <default>80</default>
       <summary>The column at which the right margin should be shown</summary>
       <description>Sets the column where the right margin will appear when 'show-right-margin' is enabled</description>
     </key>
-    
+
     <key name="wrap-text" type="b">
       <default>false</default>
       <summary>Wrap Text</summary>
       <description>Whether to wrap text in the editor.</description>
     </key>
-    
+
     <key name="highlight-current-line" type="b">
       <default>true</default>
       <summary>Highlight Current Line</summary>
@@ -86,32 +86,32 @@
       <description>Selected language for spell check.</description>
     </key>
   </schema>
-  
+
   <schema path="/com/github/fabiocolacio/marker/preferences/preview/" id="com.github.fabiocolacio.marker.preferences.preview">
     <key name="css-theme" type="s">
       <default>'/usr/share/com.github.fabiocolacio.marker/styles/swiss.css'</default>
       <summary>CSS Theme</summary>
       <description>The css theme to use for the preview.</description>
     </key>
-    
+
     <key name="css-toggle" type="b">
       <default>true</default>
       <summary>Enable CSS theme in Preview</summary>
       <summary>Use a CSS theme in the live preview</summary>
     </key>
-    
+
     <key name="katex-toggle" type="b">
       <default>true</default>
       <summary>Enable KaTeX in Preview</summary>
       <description>Use KaTeX in the live preview.</description>
     </key>
-    
+
     <key name="highlight-toggle" type="b">
       <default>true</default>
       <summary>Enable highlight.js in Preview</summary>
       <description>Use highlight.js in the live preview.</description>
     </key>
-    
+
     <key name="mermaid-toggle" type="b">
       <default>true</default>
       <summary>Enable mermaid.js in Preview</summary>
@@ -122,21 +122,6 @@
       <default>'default'</default>
       <summary>Highlight.js CSS theme.</summary>
       <description>The css theme to use for the synthax highlight.</description>
-    </key>
-    <key name="figure-caption-toggle" type="b">
-      <default>false</default>
-      <summary>Enable figure caption in Preview</summary>
-      <description>Display title or alt text as caption in the live preview.</description>
-    </key>
-    <key name="figure-numbering-toggle" type="b">
-      <default>false</default>
-      <summary>Enable figure numbering in Preview</summary>
-      <description>Enable and display figure numbering in the live preview (when figure-caption-toggle is enabled).</description>
-    </key>
-    <key name="equation-numbering-toggle" type="b">
-      <default>false</default>
-      <summary>Enable numbering of equation in Preview</summary>
-      <description>Enable automatic numbering of equations in the live preview.</description>
     </key>
     <key name="charter-toggle" type="b">
       <default>false</default>
@@ -149,20 +134,20 @@
       <description>Zoom level of the preview widget</description>
     </key>
   </schema>
-  
+
   <schema path="/com/github/fabiocolacio/marker/preferences/window/" id="com.github.fabiocolacio.marker.preferences.window">
     <key name="view-mode" enum="com.github.fabiocolacio.marker.ViewMode">
       <default>'dual-pane'</default>
       <summary>View Mode</summary>
       <description>Controls how to organize the editor and preview areas on the screen.</description>
     </key>
-    
+
     <key name="enable-dark-mode" type="b">
       <default>false</default>
       <summary>Enter dark-mode</summary>
       <description>When this is enabled, the dark variant of the current gtk theme will be used.</description>
     </key>
-    
+
     <key name="gnome-appmenu" type="b">
       <default>true</default>
       <summary>Use GNOME Appmenu</summary>
