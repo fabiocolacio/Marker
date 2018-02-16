@@ -57,13 +57,15 @@ hoedown_sources = [
   'src/scidown/src/html_smartypants.c',
   'src/scidown/src/stack.c',
   'src/scidown/src/version.c',
-  'src/scidown/src/charter/csv_parser/csvparser.c',
-  'src/scidown/src/charter/tinyexpr/tinyexpr.c',
-  'src/scidown/src/charter/clist.c',
-  'src/scidown/src/charter/parser.c',
-  'src/scidown/src/charter/charter.c',
-  'src/scidown/src/charter/renderer.c',
-  'src/scidown/src/charter/svg_utils.c'
+  'src/scidown/src/charter/src/charter_string.c',
+  'src/scidown/src/charter/src/csv_parser/csvparser.c',
+  'src/scidown/src/charter/src/tinyexpr/tinyexpr.c',
+  'src/scidown/src/charter/src/clist.c',
+  'src/scidown/src/charter/src/parser.c',
+  'src/scidown/src/charter/src/charter.c',
+  'src/scidown/src/charter/src/svg.c',
+  'src/scidown/src/charter/src/latex.c',
+  'src/scidown/src/charter/src/svg_utils.c'
 ]
 
 deps = [
