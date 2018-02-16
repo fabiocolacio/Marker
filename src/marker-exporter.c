@@ -185,6 +185,7 @@ marker_exporter_show_export_dialog(MarkerWindow* window)
 
 
     MarkerEditor *editor = marker_window_get_active_editor (window);
+    MarkerPreview *preview = marker_editor_get_preview(editor);
 
     MarkerSourceView *source_view = marker_editor_get_source_view (editor);
     markdown = marker_source_view_get_text (source_view);
@@ -214,9 +215,9 @@ marker_exporter_show_export_dialog(MarkerWindow* window)
                                                      filename);
         break;
 
-      // case PDF:
-      //   marker_preview_print_pdf(preview, filename);
-      //   break;
+      case PDF:
+        marker_preview_print_pdf(preview, filename);
+        break;
 
       case LATEX:
         marker_markdown_to_latex_file(markdown,
