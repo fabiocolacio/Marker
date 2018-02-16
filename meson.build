@@ -57,6 +57,7 @@ hoedown_sources = [
   'src/scidown/src/html_smartypants.c',
   'src/scidown/src/stack.c',
   'src/scidown/src/version.c',
+  'src/scidown/src/constants.c',
   'src/scidown/src/charter/src/charter_string.c',
   'src/scidown/src/charter/src/csv_parser/csvparser.c',
   'src/scidown/src/charter/src/tinyexpr/tinyexpr.c',
