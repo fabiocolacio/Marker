@@ -7,6 +7,7 @@ PREFIX = get_option('prefix')
 DATA_DIR = join_paths(PREFIX, 'share')
 APP_DIR = join_paths(DATA_DIR, 'com.github.fabiocolacio.marker')
 STYLES_DIR = join_paths(APP_DIR, 'styles')
+COMMON_DIR = join_paths(APP_DIR, 'common')
 SCRIPTS_DIR = join_paths(APP_DIR, 'scripts')
 HIGHLIGHT_STYLES_DIR = join_paths(join_paths(SCRIPTS_DIR, 'highlight'),'styles')
 WEB_EXTENSIONS_DIRECTORY = join_paths(APP_DIR, 'extensions')
@@ -87,6 +88,7 @@ add_global_arguments(
   '-DSCRIPTS_DIR="@0@/"'.format(SCRIPTS_DIR),
   '-DHIGHLIGHT_STYLES_DIR="@0@/"'.format(HIGHLIGHT_STYLES_DIR),
   '-DMARKER_VERSION="@0@"'.format(meson.project_version()),
+  '-DCOMMON_DIR="@0@/"'.format(COMMON_DIR),
   '-DWEB_EXTENSIONS_DIRECTORY="@0@"'.format(WEB_EXTENSIONS_DIRECTORY),
   language : 'c'
 )
@@ -137,6 +139,12 @@ install_subdir(
   'data/styles',
   install_dir : APP_DIR
 )
+
+install_subdir(
+  'data/common',
+  install_dir : APP_DIR
+)
+
 
 install_subdir(
     'data/scripts',
