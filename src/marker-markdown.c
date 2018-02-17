@@ -97,6 +97,7 @@ char* html_header(MarkerKaTeXMode     katex_mode,
 
   char * buffer = g_strdup_printf("%s\n%s\n%s\n%s\n%s\n%s\n",katex_css, highlight_css, katex_script, katex_auto, highlight_script, mermaid_script);
 
+
   g_free(katex_script);
   g_free(katex_auto);
   g_free(katex_css);
@@ -203,10 +204,18 @@ marker_markdown_to_html(const char*         markdown,
 
   char * header = html_header(katex_mode, highlight_mode, mermaid_mode);
 
+  char * ref;
   if (stylesheet_location)
   {
+    ref = header;
     header = g_strdup_printf("%s<link rel=\"stylesheet\" type=\"text/css\" href=\"%s\">\n", header, stylesheet_location);
+    free(ref);
   }
+
+  /*COMMON CSS STYLING*/
+  ref = header;
+  header = g_strdup_printf("%s<link rel=\"stylesheet\" type=\"text/css\" href=\"%s/%s\">\n", header, COMMON_DIR, "scidown.css");
+  free(ref);
 
   char * footer = html_footer(katex_mode, highlight_mode, mermaid_mode);
 
@@ -275,12 +284,51 @@ marker_markdown_to_html_with_css_inline(const char*         markdown,
 
   char * header = html_header(katex_mode, highlight_mode, mermaid_mode);
 
-  if(inline_css)
+  /*To be fixed.*/
+  char * common_path;
+  common_path = g_strdup_printf("%s/%s", COMMON_DIR, "scidown.css");
+
+  fp = fopen(common_path, "r");
+  char* common_css = NULL;
+  if (fp)
   {
-    header = g_strdup_printf("%s<style>\n%s\n</style>\n", header, inline_css);
+    fseek(fp , 0 , SEEK_END);
+    long size = ftell(fp);
+    rewind(fp);
+
+    common_css = (char*) malloc(sizeof(char) * size);
+    fread(common_css, 1, size, fp);
+
+    fclose(fp);
+  }
+  free(common_path);
+
+
+  if(inline_css && common_css) {
+    char * old = header;
+    header = g_strdup_printf("%s<style>\n%s\n%s\n</style>\n", header, inline_css, common_css);
+    free(old);
+    free(common_css);
     free(inline_css);
     inline_css = NULL;
+    common_css = NULL;
+  } else if (inline_css) {
+    char * old = header;
+    header = g_strdup_printf("%s<style>\n%s\n</style>\n", header, inline_css);
+    free(old);
+    free(inline_css);
+    inline_css = NULL;
+    common_css = NULL;
+  } else if (common_css) {
+    char * old = header;
+    header = g_strdup_printf("%s<style>\n%s\n</style>\n", header, common_css);
+    free(old);
+    free(common_css);
+    inline_css = NULL;
+    common_css = NULL;
   }
+
+
   char * footer = html_footer(katex_mode, highlight_mode, mermaid_mode);
 
   ext_definition def = {header, footer};
