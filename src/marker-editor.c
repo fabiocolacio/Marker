@@ -46,6 +46,8 @@ struct _MarkerEditor
   gboolean              search_active;
   gboolean              needs_refresh;
   guint                 timer_id;
+
+  GtkTextIter          *text_iter;
 };
 
 G_DEFINE_TYPE (MarkerEditor, marker_editor, GTK_TYPE_BOX);
@@ -81,6 +83,9 @@ buffer_changed_cb (GtkTextBuffer *buffer,
   MarkerEditor *editor = user_data;
   editor->unsaved_changes = TRUE;
   editor->needs_refresh = TRUE;
+  if (editor->text_iter) {
+    editor->text_iter = NULL;
+  }
   emit_signal_title_changed (editor);
 }
 
@@ -106,12 +111,62 @@ search_text_changed (GtkEntry         *entry,
 }
 
 static void
+search_activate (GtkEntry         *entry,
+                 MarkerEditor     *editor)
+{
+  GtkSourceSearchContext* context = marker_source_get_search_context(editor->source_view);
+  GtkTextBuffer * buffer = GTK_TEXT_BUFFER(gtk_source_search_context_get_buffer(context));
+
+  GtkTextIter *iter;
+  GtkTextIter close;
+
+  gtk_text_buffer_get_end_iter(buffer, &close);
+
+  if (editor->text_iter)
+  {
+    iter = editor->text_iter;
+    if (gtk_text_iter_compare(iter, &close) == 0)
+    {
+      gtk_text_buffer_get_start_iter(buffer, iter);
+    }
+  } else {
+    GtkTextIter tmp;
+    iter = &tmp;
+    gtk_text_buffer_get_start_iter(buffer,iter);
+
+  }
+
+  if (gtk_text_iter_compare(iter, &close) == 0)
+  {
+    /* Empty document! */
+    return;
+  }
+
+  /** TODO use async forward instead **/
+  GtkTextIter start;
+  GtkTextIter end;
+  gtk_text_buffer_get_start_iter(buffer, &start);
+  gtk_text_buffer_get_start_iter(buffer, &end);
+
+  gtk_source_search_context_forward2(context, iter, &start, &end, NULL);
+
+  if (gtk_text_iter_compare(&start, &end) != 0){
+    gtk_text_buffer_select_range(buffer, &start, &end);
+    editor->text_iter = gtk_text_iter_copy(&end);
+  } else {
+    gtk_text_buffer_get_start_iter(buffer, &start);
+    editor->text_iter = gtk_text_iter_copy(&start);
+  }
+}
+
+static void
 marker_editor_init (MarkerEditor *editor)
 {
   editor->file = NULL;
   editor->title = g_strdup("Untitled.md");
   editor->unsaved_changes = FALSE;
   editor->search_active = FALSE;
+  editor->text_iter = NULL;
 
   editor->paned = GTK_PANED (gtk_paned_new (GTK_ORIENTATION_HORIZONTAL));
   editor->vbox = GTK_BOX(gtk_box_new(GTK_ORIENTATION_VERTICAL, 0));
@@ -134,6 +189,11 @@ marker_editor_init (MarkerEditor *editor)
   g_signal_connect(editor->search_entry,
                    "search-changed",
                    G_CALLBACK(search_text_changed),
+                   editor);
+
+  g_signal_connect(editor->search_entry,
+                   "activate",
+                   G_CALLBACK(search_activate),
                    editor);
 
   /** DONE **/
@@ -528,6 +588,11 @@ marker_editor_toggle_search_bar (MarkerEditor       *editor)
     editor->search_active = TRUE;
   } else {
     gtk_entry_set_text(GTK_ENTRY(editor->search_entry), "");
+    if (editor->text_iter)
+    {
+      g_free(editor->text_iter);
+      editor->text_iter = NULL;
+    }
   }
 
   gtk_search_bar_set_search_mode (editor->search_bar, editor->search_active);
