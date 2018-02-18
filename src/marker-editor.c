@@ -111,7 +111,7 @@ search_text_changed (GtkEntry         *entry,
 }
 
 static void
-search_activate (GtkEntry         *entry,
+search_next     (GtkEntry         *entry,
                  MarkerEditor     *editor)
 {
   GtkSourceSearchContext* context = marker_source_get_search_context(editor->source_view);
@@ -132,15 +132,9 @@ search_activate (GtkEntry         *entry,
   } else {
     GtkTextIter tmp;
     iter = &tmp;
-    gtk_text_buffer_get_start_iter(buffer,iter);
-
+    gtk_text_buffer_get_start_iter(buffer, iter);
   }
 
-  if (gtk_text_iter_compare(iter, &close) == 0)
-  {
-    /* Empty document! */
-    return;
-  }
 
   /** TODO use async forward instead **/
   GtkTextIter start;
@@ -155,6 +149,50 @@ search_activate (GtkEntry         *entry,
     editor->text_iter = gtk_text_iter_copy(&end);
   } else {
     gtk_text_buffer_get_start_iter(buffer, &start);
+    editor->text_iter = gtk_text_iter_copy(&start);
+  }
+}
+
+
+static void
+search_previous     (GtkEntry         *entry,
+                     MarkerEditor     *editor)
+{
+
+  GtkSourceSearchContext* context = marker_source_get_search_context(editor->source_view);
+  GtkTextBuffer * buffer = GTK_TEXT_BUFFER(gtk_source_search_context_get_buffer(context));
+
+  GtkTextIter *iter;
+  GtkTextIter close;
+
+  gtk_text_buffer_get_start_iter(buffer, &close);
+
+  if (editor->text_iter)
+  {
+    iter = editor->text_iter;
+    if (gtk_text_iter_compare(iter, &close) == 0)
+    {
+      gtk_text_buffer_get_end_iter(buffer, iter);
+    }
+  } else {
+    GtkTextIter tmp;
+    iter = &tmp;
+    gtk_text_buffer_get_start_iter(buffer,iter);
+  }
+
+  /** TODO use async forward instead **/
+  GtkTextIter start;
+  GtkTextIter end;
+  gtk_text_buffer_get_start_iter(buffer, &start);
+  gtk_text_buffer_get_start_iter(buffer, &end);
+
+  gtk_source_search_context_backward2(context, iter, &start, &end, NULL);
+
+  if (gtk_text_iter_compare(&start, &end) != 0){
+    gtk_text_buffer_select_range(buffer, &start, &end);
+    editor->text_iter = gtk_text_iter_copy(&start);
+  } else {
+    gtk_text_buffer_get_end_iter(buffer, &start);
     editor->text_iter = gtk_text_iter_copy(&start);
   }
 }
@@ -193,9 +231,19 @@ marker_editor_init (MarkerEditor *editor)
 
   g_signal_connect(editor->search_entry,
                    "activate",
-                   G_CALLBACK(search_activate),
+                   G_CALLBACK(search_next),
                    editor);
 
+  g_signal_connect(editor->search_entry,
+                   "next-match",
+                   G_CALLBACK(search_next),
+                   editor);
+
+
+  g_signal_connect(editor->search_entry,
+                   "previous-match",
+                   G_CALLBACK(search_previous),
+                   editor);
   /** DONE **/
 
   gtk_paned_set_position (editor->paned, 450);
