@@ -29,7 +29,7 @@
 
 #include <glib/gprintf.h>
 
-
+#define MIN_DELTA_T 1
 
 
 enum {
@@ -62,6 +62,7 @@ struct _MarkerWindow
   guint                 untitled_files;
 
   guint32               last_click_;
+  guint32               last_key_pressed_;
 };
 
 G_DEFINE_TYPE (MarkerWindow, marker_window, GTK_TYPE_APPLICATION_WINDOW);
@@ -253,9 +254,21 @@ key_pressed_cb (GtkWidget   *widget,
                 GdkEventKey *event,
                 gpointer     user_data)
 {
+
   MarkerWindow *window = MARKER_WINDOW (widget);
   MarkerEditor *editor = marker_window_get_active_editor (window);
+
+  guint32 time = event->time;
+
+  if (time - window->last_key_pressed_ < MIN_DELTA_T)
+  {
+    window->last_key_pressed_ = time;
+    return FALSE;
+  }
+
+  window->last_key_pressed_ = time;
   MarkerSourceView *source_view = marker_editor_get_source_view (editor);
+
 
   gboolean ctrl_pressed = (event->state & GDK_CONTROL_MASK);
   if (ctrl_pressed)
@@ -302,41 +315,45 @@ key_pressed_cb (GtkWidget   *widget,
         marker_window_open_file (window);
         break;
 
+    case GDK_KEY_f:
+        marker_window_search(window);
+        break;
+
     case GDK_KEY_O:
         marker_window_open_file_in_new_window(window);
         break;
 
-      case GDK_KEY_k:
-        marker_window_open_sketcher (window);
-        break;
+    case GDK_KEY_k:
+      marker_window_open_sketcher (window);
+      break;
 
-      case GDK_KEY_S:
-        marker_window_save_active_file_as (window);
-        break;
+    case GDK_KEY_S:
+      marker_window_save_active_file_as (window);
+      break;
 
-      case GDK_KEY_s:
-        marker_window_save_active_file (window);
-        break;
+    case GDK_KEY_s:
+      marker_window_save_active_file (window);
+      break;
 
-      case GDK_KEY_p:
-        marker_preview_run_print_dialog (marker_editor_get_preview (editor), GTK_WINDOW (window));
-        break;
+    case GDK_KEY_p:
+      marker_preview_run_print_dialog (marker_editor_get_preview (editor), GTK_WINDOW (window));
+      break;
 
-      case GDK_KEY_1:
-        marker_editor_set_view_mode (editor, EDITOR_ONLY_MODE);
-        break;
+    case GDK_KEY_1:
+      marker_editor_set_view_mode (editor, EDITOR_ONLY_MODE);
+      break;
 
-      case GDK_KEY_2:
-        marker_editor_set_view_mode (editor, PREVIEW_ONLY_MODE);
-        break;
+    case GDK_KEY_2:
+      marker_editor_set_view_mode (editor, PREVIEW_ONLY_MODE);
+      break;
 
-      case GDK_KEY_3:
-        marker_editor_set_view_mode (editor, DUAL_PANE_MODE);
-        break;
+    case GDK_KEY_3:
+      marker_editor_set_view_mode (editor, DUAL_PANE_MODE);
+      break;
 
-      case GDK_KEY_4:
-        marker_editor_set_view_mode (editor, DUAL_WINDOW_MODE);
-        break;
+    case GDK_KEY_4:
+      marker_editor_set_view_mode (editor, DUAL_WINDOW_MODE);
+      break;
     }
   }
   else
@@ -348,7 +365,6 @@ key_pressed_cb (GtkWidget   *widget,
         break;
     }
   }
-
   return FALSE;
 }
 
@@ -599,6 +615,7 @@ marker_window_init (MarkerWindow *window)
   window->is_fullscreen = FALSE;
   window->editors_counter = 0;
   window->last_click_ = 0;
+  window->last_key_pressed_ = 0;
 
   GtkBuilder *builder = gtk_builder_new ();
 
@@ -1028,5 +1045,14 @@ marker_window_close_current_document (MarkerWindow *window)
         marker_window_try_close (window);
       }
     }
+  }
+}
+
+void
+marker_window_search (MarkerWindow       *window)
+{
+  if (window->active_editor)
+  {
+    marker_editor_toggle_search_bar(window->active_editor);
   }
 }

@@ -30,26 +30,28 @@ G_BEGIN_DECLS
 
 G_DECLARE_FINAL_TYPE (MarkerSourceView, marker_source_view, MARKER, SOURCE_VIEW, GtkSourceView)
 
-MarkerSourceView    *marker_source_view_new                      (void);
-gboolean             marker_source_view_get_modified             (MarkerSourceView   *source_view);
-void                 marker_source_view_set_modified             (MarkerSourceView   *source_view,
-                                                                  gboolean            modified);
-gchar               *marker_source_view_get_text                 (MarkerSourceView   *source_view);
-void                 marker_source_view_set_text                 (MarkerSourceView   *source_view,
-                                                                  const char         *text,
-                                                                  size_t              size);
-void                 marker_source_view_set_language             (MarkerSourceView   *source_view,
-                                                                  const gchar        *language);
-void                 marker_source_view_set_syntax_theme         (MarkerSourceView   *source_view,
-                                                                  const char         *syntax_theme);
-void                 marker_source_view_surround_selection_with  (MarkerSourceView   *source_view,
-                                                                  const char         *insertion);
-void                 marker_source_view_insert_image             (MarkerSourceView   *source_view,
-                                                                  const char         *image_path);
-void                 marker_source_view_set_spell_check          (MarkerSourceView   *source_view,
-                                                                  gboolean            state);
-void                 marker_source_view_set_spell_check_lang     (MarkerSourceView   *source_view,
-                                                                  const gchar        *lang);
+MarkerSourceView        *marker_source_view_new                      (void);
+gboolean                 marker_source_view_get_modified             (MarkerSourceView   *source_view);
+void                     marker_source_view_set_modified             (MarkerSourceView   *source_view,
+                                                                      gboolean            modified);
+gchar                   *marker_source_view_get_text                 (MarkerSourceView   *source_view);
+void                     marker_source_view_set_text                 (MarkerSourceView   *source_view,
+                                                                      const char         *text,
+                                                                      size_t              size);
+void                     marker_source_view_set_language             (MarkerSourceView   *source_view,
+                                                                      const gchar        *language);
+void                     marker_source_view_set_syntax_theme         (MarkerSourceView   *source_view,
+                                                                      const char         *syntax_theme);
+void                     marker_source_view_surround_selection_with  (MarkerSourceView   *source_view,
+                                                                      const char         *insertion);
+void                     marker_source_view_insert_image             (MarkerSourceView   *source_view,
+                                                                      const char         *image_path);
+void                     marker_source_view_set_spell_check          (MarkerSourceView   *source_view,
+                                                                      gboolean            state);
+void                     marker_source_view_set_spell_check_lang     (MarkerSourceView   *source_view,
+                                                                      const gchar        *lang);
+
+GtkSourceSearchContext  *marker_source_get_search_context            (MarkerSourceView   *source_view);
 
 G_END_DECLS
 
