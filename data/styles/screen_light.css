@@ -55,8 +55,8 @@ sup { font-size: 80%; line-height: 1; vertical-align: super; }
 button::-moz-focus-inner { border: 0; padding: 1px; }
 span.amp { font-family: Baskerville, "Goudy Old Style", "Palatino", "Book Antiqua", serif; font-weight: normal; font-style: italic; font-size: 1.2em; line-height: 0.8; }
 
-h1,h2,h3,h4,h5,h6 { 
-    line-height: 1.1; 
+h1,h2,h3,h4,h5,h6 {
+    line-height: 1.1;
     font-family: Baskerville, "Goudy Old Style", "Palatino", "Book Antiqua", serif;
 }
 
@@ -70,7 +70,7 @@ h6 { font-size: 14pt; }
 ::-moz-selection { background: #6e8898; }
 
 h1 {
-	font-size: 420%;
+	font-size: 24pt;
 	margin: 0 0 0.1em;
 	font-family: Baskerville, "Goudy Old Style", "Palatino", "Book Antiqua", serif;
 }
@@ -96,11 +96,10 @@ pre code {
 	font-size: 10pt;
 }
 
-.thumb { 
+.thumb {
     float:left;
     margin: 10px;
 }
 
 
-  
-  
+

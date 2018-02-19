@@ -17,7 +17,7 @@ td.counter {
 	text-align: right;
 	border: 0;
 }
-  
+
 td.eq_code {
 	width: 100%;
 	border: 0;
@@ -32,4 +32,27 @@ figure {
 figure figcaption {
 	text-align: center;
 	font-size: 11pt;
+}
+
+.authors
+{
+	text-align: center;
+	font-size: 14pt;
+	font-weight: bold;
+}
+
+.affiliation
+{
+	text-align: center;
+}
+
+
+.title
+{
+	text-align: center;
+	margin-bottom: 5pt;
+}
+
+.header{
+  margin-bottom: 20pt;
 }
