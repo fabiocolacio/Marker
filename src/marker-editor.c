@@ -146,6 +146,7 @@ search_next     (GtkEntry         *entry,
 
   if (gtk_text_iter_compare(&start, &end) != 0){
     gtk_text_buffer_select_range(buffer, &start, &end);
+    gtk_text_view_scroll_to_iter(GTK_TEXT_VIEW(editor->source_view), &start, 0, TRUE, 0, 0);
     editor->text_iter = gtk_text_iter_copy(&end);
   } else {
     gtk_text_buffer_get_start_iter(buffer, &start);
@@ -190,6 +191,7 @@ search_previous     (GtkEntry         *entry,
 
   if (gtk_text_iter_compare(&start, &end) != 0){
     gtk_text_buffer_select_range(buffer, &start, &end);
+    gtk_text_view_scroll_to_iter(GTK_TEXT_VIEW(editor->source_view), &start, 0, TRUE, 0, 0);
     editor->text_iter = gtk_text_iter_copy(&start);
   } else {
     gtk_text_buffer_get_end_iter(buffer, &start);
