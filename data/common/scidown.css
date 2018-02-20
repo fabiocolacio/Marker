@@ -34,6 +34,14 @@ figure figcaption {
 	font-size: 11pt;
 }
 
+figure img {
+	max-width: 100%;
+}
+
+img {
+	max-width: 100%;
+}
+
 .authors
 {
 	text-align: center;
