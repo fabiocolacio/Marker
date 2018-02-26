@@ -6,6 +6,7 @@ project('Marker', 'c',
 PREFIX = get_option('prefix')
 DATA_DIR = join_paths(PREFIX, 'share')
 APP_DIR = join_paths(DATA_DIR, 'com.github.fabiocolacio.marker')
+ICONS_DIR = join_paths(APP_DIR, 'icons')
 STYLES_DIR = join_paths(APP_DIR, 'styles')
 COMMON_DIR = join_paths(APP_DIR, 'common')
 SCRIPTS_DIR = join_paths(APP_DIR, 'scripts')
@@ -86,6 +87,7 @@ ext_deps =[
 add_global_arguments(
   '-DSTYLES_DIR="@0@/"'.format(STYLES_DIR),
   '-DSCRIPTS_DIR="@0@/"'.format(SCRIPTS_DIR),
+  '-DICONS_DIR="@0@/"'.format(ICONS_DIR),
   '-DHIGHLIGHT_STYLES_DIR="@0@/"'.format(HIGHLIGHT_STYLES_DIR),
   '-DMARKER_VERSION="@0@"'.format(meson.project_version()),
   '-DCOMMON_DIR="@0@/"'.format(COMMON_DIR),
@@ -147,8 +149,14 @@ install_subdir(
 
 
 install_subdir(
-    'data/scripts',
-    install_dir : APP_DIR
+  'data/scripts',
+  install_dir : APP_DIR
+}
+
+install_subdir(
+  'data/icons',
+  install_dir : APP_DIR
 )
+
 
 meson.add_install_script('post-install.sh')
