@@ -8,6 +8,7 @@ DATA_DIR = join_paths(PREFIX, 'share')
 APP_DIR = join_paths(DATA_DIR, 'com.github.fabiocolacio.marker')
 ICONS_DIR = join_paths(APP_DIR, 'icons')
 STYLES_DIR = join_paths(APP_DIR, 'styles')
+COMMON_DIR = join_paths(APP_DIR, 'common')
 SCRIPTS_DIR = join_paths(APP_DIR, 'scripts')
 HIGHLIGHT_STYLES_DIR = join_paths(join_paths(SCRIPTS_DIR, 'highlight'),'styles')
 WEB_EXTENSIONS_DIRECTORY = join_paths(APP_DIR, 'extensions')
@@ -47,22 +48,27 @@ click_extension = [
 ]
 
 hoedown_sources = [
-  'src/hoedown/autolink.c',
-  'src/hoedown/buffer.c',
-  'src/hoedown/document.c',
-  'src/hoedown/escape.c',
-  'src/hoedown/html.c',
-  'src/hoedown/html_blocks.c',
-  'src/hoedown/html_smartypants.c',
-  'src/hoedown/stack.c',
-  'src/hoedown/version.c',
-  'src/hoedown/charter/csv_parser/csvparser.c',
-  'src/hoedown/charter/tinyexpr/tinyexpr.c',
-  'src/hoedown/charter/clist.c',
-  'src/hoedown/charter/parser.c',
-  'src/hoedown/charter/charter.c',
-  'src/hoedown/charter/renderer.c',
-  'src/hoedown/charter/svg_utils.c'
+  'src/scidown/src/autolink.c',
+  'src/scidown/src/buffer.c',
+  'src/scidown/src/document.c',
+  'src/scidown/src/escape.c',
+  'src/scidown/src/html.c',
+  'src/scidown/src/utils.c',
+  'src/scidown/src/latex.c',
+  'src/scidown/src/html_blocks.c',
+  'src/scidown/src/html_smartypants.c',
+  'src/scidown/src/stack.c',
+  'src/scidown/src/version.c',
+  'src/scidown/src/constants.c',
+  'src/scidown/src/charter/src/charter_string.c',
+  'src/scidown/src/charter/src/csv_parser/csvparser.c',
+  'src/scidown/src/charter/src/tinyexpr/tinyexpr.c',
+  'src/scidown/src/charter/src/clist.c',
+  'src/scidown/src/charter/src/parser.c',
+  'src/scidown/src/charter/src/charter.c',
+  'src/scidown/src/charter/src/svg.c',
+  'src/scidown/src/charter/src/latex.c',
+  'src/scidown/src/charter/src/svg_utils.c'
 ]
 
 deps = [
@@ -84,6 +90,7 @@ add_global_arguments(
   '-DICONS_DIR="@0@/"'.format(ICONS_DIR),
   '-DHIGHLIGHT_STYLES_DIR="@0@/"'.format(HIGHLIGHT_STYLES_DIR),
   '-DMARKER_VERSION="@0@"'.format(meson.project_version()),
+  '-DCOMMON_DIR="@0@/"'.format(COMMON_DIR),
   '-DWEB_EXTENSIONS_DIRECTORY="@0@"'.format(WEB_EXTENSIONS_DIRECTORY),
   language : 'c'
 )
@@ -136,13 +143,20 @@ install_subdir(
 )
 
 install_subdir(
-  'data/icons',
+  'data/common',
   install_dir : APP_DIR
 )
+
 
 install_subdir(
   'data/scripts',
   install_dir : APP_DIR
 )
+
+install_subdir(
+  'data/icons',
+  install_dir : APP_DIR
+)
+
 
 meson.add_install_script('post-install.sh')

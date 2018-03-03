@@ -70,7 +70,7 @@ send_request_cb (WebKitWebPage     *web_page,
                  gpointer           user_data)
 {
     const gchar *uri = webkit_uri_request_get_uri (request);
-    if (strstr (uri, ".md") != NULL)
+    if (strstr (uri, ".md") != NULL || strstr(uri, ".sd"))
     {
       WebKitDOMDocument *document = webkit_web_page_get_dom_document (web_page);
       WebKitDOMDOMWindow * view = webkit_dom_document_get_default_view(document);

@@ -62,7 +62,7 @@ table {
 
 table, th, td {
 	border: 1px solid #EAEAEA;
-	
+
 	border-radius: 3px;
 	padding: 5px;
 }
@@ -125,3 +125,39 @@ pre > code {
 .send { color:#77bb77; }
 .server { color:#7799bb; }
 .error { color:#AA0000; }
+
+
+table.eq_table {
+  border-collapse: collapse;
+  border: 0;
+  width: 100%;
+}
+table.eq_table td, table.eq_table th {
+  padding: 3px 2px;
+  font-size: 11pt;
+  border: 0;
+}
+table.eq_table tfoot td {
+  font-size: 11pt;
+  border: 0;
+}
+table.eq_table tfoot .links {
+  text-align: right;
+}
+table.eq_table tfoot .links a{
+  display: inline-block;
+  background: #1C6EA4;
+  color: #FFFFFF;
+  padding: 2px 8px;
+  border-radius: 5px;
+}
+
+td.counter {
+  text-align: right;
+
+}
+
+td.eq_code {
+  width: 100%;
+  text-align: center;
+}

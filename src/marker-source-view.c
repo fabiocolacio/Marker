@@ -29,9 +29,10 @@
 
 struct _MarkerSourceView
 {
-  GtkSourceView parent_instance;
-  GSettings* settings;
-  GtkSpellChecker* spell;
+  GtkSourceView           parent_instance;
+  GSettings              *settings;
+  GtkSpellChecker        *spell;
+  GtkSourceSearchContext *search_context;
 };
 
 G_DEFINE_TYPE(MarkerSourceView, marker_source_view, GTK_SOURCE_TYPE_VIEW)
@@ -65,7 +66,7 @@ marker_source_view_insert_image (MarkerSourceView   *source_view,
 {
   GtkTextBuffer* buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(source_view));
   GtkTextIter start ;
-  
+
   gtk_text_buffer_get_iter_at_mark(buffer, &start, gtk_text_buffer_get_insert(buffer));
 
 
@@ -73,9 +74,9 @@ marker_source_view_insert_image (MarkerSourceView   *source_view,
   char * insertion = malloc((n+7)*sizeof(char));
   memset(insertion, 0, (n+7));
   sprintf(insertion, "![](%s)", image_path);
-  
+
   size_t len = strlen(insertion);
-  
+
   gtk_text_buffer_insert(buffer, &start, insertion, len);
   free(insertion);
 }
@@ -191,6 +192,9 @@ default_font_changed(GSettings*   settings,
 static void
 marker_source_view_init (MarkerSourceView *source_view)
 {
+  GtkSourceSearchContext * search_context = gtk_source_search_context_new(GTK_SOURCE_BUFFER(gtk_text_view_get_buffer(GTK_TEXT_VIEW(source_view))),
+                                                                          NULL);
+  source_view->search_context = search_context;
   marker_source_view_set_language (source_view, "markdown");
   source_view->settings = g_settings_new ("org.gnome.desktop.interface");
   g_signal_connect (source_view->settings, "changed::monospace-font-name", G_CALLBACK (default_font_changed), source_view);
@@ -222,4 +226,10 @@ MarkerSourceView*
 marker_source_view_new(void)
 {
   return g_object_new(MARKER_TYPE_SOURCE_VIEW, NULL);
+}
+
+GtkSourceSearchContext*
+marker_source_get_search_context (MarkerSourceView   *source_view)
+{
+  return source_view->search_context;
 }

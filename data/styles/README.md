@@ -22,6 +22,9 @@ swiss.css ->
 screen.css ->
 [jasonm23/markdown-css-themes](https://github.com/markdown-css-themes)
 
+screen_light.css ->
+Martino Ferrari (based on screen.css)
+
 Clearness.css ->
 [MacDownApp/macdown](https://github.com/MacDownApp/macdown)
 
@@ -39,3 +42,15 @@ Solarized (Dark).css ->
 
 Solarized (Light).css ->
 [MacDownApp/macdown](https://github.com/MacDownApp/macdown)
+
+scidwon_article.css ->
+Martino Ferrari
+
+scidown_report.css ->
+Martino Ferrari
+
+pubcss-acm-sigchi.css ->
+[thomaspark/pubcss](https://github.com/thomaspark/pubcss)
+
+pubcss-acm-sigchi-ea.css ->
+[thomaspark/pubcss](https://github.com/thomaspark/pubcss)
