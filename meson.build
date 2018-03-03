@@ -151,7 +151,7 @@ install_subdir(
 install_subdir(
   'data/scripts',
   install_dir : APP_DIR
-}
+)
 
 install_subdir(
   'data/icons',
