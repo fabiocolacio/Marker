@@ -256,8 +256,6 @@ main(int    argc,
 {
   app = gtk_application_new("com.github.fabiocolacio.marker",
                             G_APPLICATION_HANDLES_OPEN);
-
-
   g_signal_connect(app, "activate", G_CALLBACK(activate), NULL);
   g_signal_connect(app, "open", G_CALLBACK(marker_open), NULL);
 

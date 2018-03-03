@@ -95,6 +95,7 @@ show_unsaved_documents_warning (MarkerWindow *window)
   MarkerEditor *editor = marker_window_get_active_editor (window);
   GFile *file = marker_editor_get_file (editor);
 
+
   GtkWidget *dialog;
   if (G_IS_FILE (file))
   {
@@ -612,7 +613,11 @@ button_pressed_cb (GtkWidget *view,
 static void
 marker_window_init (MarkerWindow *window)
 {
+  /** Add marker icon theme to the default icon theme **/
+  gtk_icon_theme_append_search_path (gtk_icon_theme_get_default(), ICONS_DIR);
+
   window->is_fullscreen = FALSE;
+
   window->editors_counter = 0;
   window->last_click_ = 0;
   window->last_key_pressed_ = 0;
@@ -624,6 +629,7 @@ marker_window_init (MarkerWindow *window)
   window->vbox = vbox;
   gtk_container_add (GTK_CONTAINER (window), GTK_WIDGET (vbox));
   gtk_widget_show (GTK_WIDGET (vbox));
+
 
   gtk_builder_add_from_resource (builder, "/com/github/fabiocolacio/marker/ui/marker-window-main-view.ui", NULL);
 
@@ -824,8 +830,55 @@ void
 marker_window_new_editor_from_file (MarkerWindow *window,
                                     GFile        *file)
 {
-  MarkerEditor * editor = marker_editor_new_from_file(file);
-  marker_window_add_editor(window, editor);
+  GList *children = gtk_container_get_children (GTK_CONTAINER (window->editors_stack));
+  bool duplicate = false;
+
+  for (GList *current = children; current != NULL; current = current->next) {
+    GFile *editor_file = marker_editor_get_file (MARKER_EDITOR (current->data));
+    char *uri1, *uri2;
+
+    uri1 = g_file_get_uri (editor_file);
+    uri2 = g_file_get_uri (file);
+    if (g_strcmp0 (uri1, uri2) == 0) {
+      GtkTreeModel *model = GTK_TREE_MODEL (window->documents_tree_store);
+      GtkTreeIter iter;
+
+      duplicate = true;
+
+      g_free (uri1);
+      g_free (uri2);
+
+      /**
+       * Now that we've found a duplicate, show the relevant editor.
+       */
+      if (gtk_tree_model_get_iter_first (model, &iter)) {
+        do {
+          MarkerEditor *editor;
+
+          gtk_tree_model_get (model, &iter, EDITOR_COLUMN, &editor, -1);
+
+          if (editor == MARKER_EDITOR (current->data)) {
+            GtkTreeSelection *selection;
+
+            selection = gtk_tree_view_get_selection (window->documents_tree_view);
+            gtk_tree_selection_select_iter (selection, &iter);
+            break;
+          }
+        } while (gtk_tree_model_iter_next (model, &iter));
+      }
+      break;
+    }
+
+    g_free (uri1);
+    g_free (uri2);
+  }
+
+  g_list_free (children);
+
+  if (!duplicate) {
+    MarkerEditor * editor = marker_editor_new_from_file(file);
+    marker_window_add_editor(window, editor);
+  }
 }
 
 MarkerWindow *
@@ -849,6 +902,7 @@ void
 marker_window_open_file (MarkerWindow *window)
 {
   g_assert (MARKER_IS_WINDOW (window));
+
   g_autoptr (GtkFileChooserNative) dialog = gtk_file_chooser_native_new ("Open",
                                                               GTK_WINDOW (window),
                                                               GTK_FILE_CHOOSER_ACTION_OPEN,
@@ -891,6 +945,7 @@ marker_window_save_active_file_as (MarkerWindow *window)
                                                                          "_Save", "_Cancel");
 
   gtk_file_chooser_set_do_overwrite_confirmation(GTK_FILE_CHOOSER(dialog), TRUE);
+
 
   gint response = gtk_native_dialog_run (GTK_NATIVE_DIALOG (dialog));
 
