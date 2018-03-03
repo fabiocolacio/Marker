@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <menu id="menubar">
+    <submenu id="file">
+      <attribute name="label" translatable="yes">_File</attribute>
+      <section>
+        <item>
+          <attribute name="label" translatable="yes">_New</attribute>
+          <attribute name="action">app.new</attribute>
+          <attribute name="icon">document-new-symbolic</attribute>
+        </item>
+        <item>
+          <attribute name="label" translatable="yes">_Open...</attribute>
+          <attribute name="action">app.open</attribute>
+          <attribute name="icon">document-open-symbolic</attribute>
+        </item>
+      </section>
+      <section>
+        <item>
+          <attribute name="label" translatable="yes">_Save</attribute>
+          <attribute name="action">app.save</attribute>
+          <attribute name="icon">document-save-symbolic</attribute>
+        </item>
+        <item>
+          <attribute name="label" translatable="yes">_Save As...</attribute>
+          <attribute name="action">app.saveas</attribute>
+          <attribute name="icon">document-save-as-symbolic</attribute>
+        </item>
+      </section>
+      <section>
+        <item>
+          <attribute name="label" translatable="yes">_Print...</attribute>
+          <attribute name="action">app.print</attribute>
+          <attribute name="icon">document-print-symbolic</attribute>
+        </item>
+      </section>
+      <section>
+        <item>
+          <attribute name="label" translatable="yes">_Close</attribute>
+          <attribute name="action">app.close</attribute>
+          <attribute name="icon">window-close-symbolic</attribute>
+        </item>
+        <item>
+          <attribute name="label" translatable="yes">_Quit</attribute>
+          <attribute name="action">app.quit</attribute>
+          <attribute name="icon">application-exit-symbolic</attribute>
+        </item>
+      </section>
+    </submenu>
+  </menu>
+</interface>

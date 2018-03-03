@@ -59,11 +59,10 @@ marker_init(GtkApplication* app)
   marker_prefs_load();
   if (marker_prefs_get_gnome_appmenu())
   {
-    GtkBuilder* builder =
-      gtk_builder_new_from_resource("/com/github/fabiocolacio/marker/ui/marker-appmenu.ui");
+    GtkBuilder* builder = gtk_builder_new ();
+    gtk_builder_add_from_resource (builder, "/com/github/fabiocolacio/marker/ui/marker-appmenu.ui", NULL);
 
-    GMenuModel* app_menu =
-      G_MENU_MODEL(gtk_builder_get_object(builder, "app_menu"));
+    GMenuModel* app_menu = G_MENU_MODEL(gtk_builder_get_object(builder, "app_menu"));
     gtk_application_set_app_menu(app, app_menu);
     g_action_map_add_action_entries(G_ACTION_MAP(app),
                                     APP_MENU_ACTION_ENTRIES,
@@ -84,6 +83,14 @@ activate(GtkApplication* app)
 {
   marker_init(app);
   marker_create_new_window();
+}
+
+static void
+startup (GtkApplication *app)
+{
+  g_autoptr (GtkBuilder) builder = gtk_builder_new_from_resource ("/com/github/fabiocolacio/marker/ui/marker-menubar.ui");
+  GMenuModel *menubar = G_MENU_MODEL (gtk_builder_get_object (builder, "menubar"));
+  gtk_application_set_menubar (GTK_APPLICATION (app), menubar);
 }
 
 static void
@@ -257,6 +264,7 @@ main(int    argc,
   app = gtk_application_new("com.github.fabiocolacio.marker",
                             G_APPLICATION_HANDLES_OPEN);
   g_signal_connect(app, "activate", G_CALLBACK(activate), NULL);
+  g_signal_connect(app, "startup", G_CALLBACK(startup), NULL);
   g_signal_connect(app, "open", G_CALLBACK(marker_open), NULL);
 
   g_application_add_main_option_entries (G_APPLICATION(app), CLI_OPTIONS);
