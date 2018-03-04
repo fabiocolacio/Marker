@@ -9,6 +9,12 @@ unfinished features.
 
 * View and edit markdown documents
 * HTML conversion of markdown documents with [scidown](https://github.com/Mandarancio/scidown/)
+  * Support for YAML headers
+  * Abstract sections
+  * Table of Conents
+  * External document inclusion
+  * Equations, figures, table and listings with reference id and caption
+  * Internal references
 * Extra scientific syntax of SciDwon [wiki](https://github.com/Mandarancio/scidown/wiki/)
 * TeX math rendering with [KaTeX](https://khan.github.io/KaTeX/)
 * Support for [mermaid](https://mermaidjs.github.io/) diagrams
