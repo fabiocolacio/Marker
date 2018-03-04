@@ -8,7 +8,7 @@ unfinished features.
 ## Features
 
 * View and edit markdown documents
-* HTML conversion of markdown documents with [scidown](https://github.com/Mandarancio/scidown/)
+* HTML and LaTeX conversion of markdown documents with [scidown](https://github.com/Mandarancio/scidown/)
   * Support for YAML headers
   * Abstract sections
   * Table of Conents
@@ -26,7 +26,6 @@ unfinished features.
   * RTF
   * ODT
   * DOCX
-  * LaTeX
 * Custom CSS themes
 * Custom syntax themes
 * Native Gtk+3 application
