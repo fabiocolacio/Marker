@@ -10,6 +10,8 @@ unfinished features.
 * View and edit markdown documents
 * HTML and LaTeX conversion of markdown documents with [scidown](https://github.com/Mandarancio/scidown/)
   * Support for YAML headers
+  * Document classes
+  * Beamer/presentation mode (`class: beamer`)
   * Abstract sections
   * Table of Conents
   * External document inclusion
@@ -18,9 +20,9 @@ unfinished features.
 * Extra scientific syntax of SciDwon [wiki](https://github.com/Mandarancio/scidown/wiki/)
 * TeX math rendering with [KaTeX](https://khan.github.io/KaTeX/)
 * Support for [mermaid](https://mermaidjs.github.io/) diagrams
-* Support for [charter](https://github.com/Mandarancio/charter/) for plot 
+* Support for [charter](https://github.com/Mandarancio/charter/) for plot
 * Syntax highlighting for code blocks with [highlight.js](https://highlightjs.org/)
-* Integrated sketch editor 
+* Integrated sketch editor
 * Flexible export options with [pandoc](https://pandoc.org/)
   * PDF
   * RTF
