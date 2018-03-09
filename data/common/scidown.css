@@ -103,7 +103,6 @@ img {
 }
 
 
-
 @media print {
 	.slide {
 	  page-break-after: always;
@@ -112,5 +111,6 @@ img {
 	  width: 8.3in;
 	  height: 6.25in;
 	  box-shadow: 0 0;
+	  overflow: hidden;
 	}
 }
