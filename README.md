@@ -42,6 +42,8 @@ unfinished features.
 
 ![sketcher.png](sketcher.png)
 
+![slides.png](slides.png)
+
 ## Packages
 
 * [Flathub (thanks to @jsparber and @bertob)](https://beta.flathub.org/apps/details/com.github.fabiocolacio.marker)
