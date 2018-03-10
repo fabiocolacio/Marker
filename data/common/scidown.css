@@ -11,6 +11,7 @@ table.eq_table tfoot td {
 }
 table.eq_table tfoot .links {
  	text-align: right;
+ 	border: 0;
 }
 
 td.counter {
@@ -22,6 +23,10 @@ td.eq_code {
 	width: 100%;
 	border: 0;
 	text-align: center;
+}
+
+.eq_table > tr, td, th, {
+	border: 0;
 }
 
 figure {
@@ -85,17 +90,35 @@ img {
 }
 
 .slide {
-   display: block;
+   display: flex;
+   align-items: center;
    margin-left: auto;
    margin-right: auto;
-   margin-top: 5px;
-   margin-bottom: 15px;
-   padding: 15px;
-   width: 8.3in;
-   height: 6.25in;
+   margin-top: 10pt;
+   margin-bottom: 10pt;
+   padding: 0;
+   width: 800px;
+   height: 600px;
    overflow:hide;
    border: solid 1px #aaa;
    float: center;
+}
+
+.slide_body {
+	margin: auto;
+	width: 90%;
+	height: 95%;
+	font-size: 150%;
+	overflow: hidden;
+}
+
+.header > .slide_body{
+	height: auto;
+	max-height: 95%;
+}
+
+.slide_body:empty {
+	display: none;
 }
 
 .slide:empty{
@@ -108,8 +131,6 @@ img {
 	  page-break-after: always;
 	  margin: 0;
 	  border: none;
-	  width: 8.3in;
-	  height: 6.25in;
 	  box-shadow: 0 0;
 	  overflow: hidden;
 	}

@@ -19,13 +19,20 @@
     padding:0;
     margin: 0;
   }
+
+  table, pre {
+  	page-break-inside: avoid;
+  }
+  pre {
+  	word-wrap: break-word;
+  }
 }
 
 
 body {
   font-family: Helvetica, arial, sans-serif;
   font-size: 20px;
-  background-color: #333;
+  background-color: #202020;
 }
 
 body > *:first-child {
@@ -84,6 +91,7 @@ h1 {
 h2 {
   font-size: 32px;
   border-bottom: 1px solid #cccccc;
+  margin-bottom: 25px;
   color: black; }
 
 h3 {
@@ -323,21 +331,13 @@ kbd {
         margin:0 auto;
     }
 }
-@media print {
-	table, pre {
-		page-break-inside: avoid;
-	}
-	pre {
-		word-wrap: break-word;
-	}
-}
 
 figure figcaption {
   text-align: center;
   font-size: 12px;
 }
 .inner {
-  background: #333;
+  background: #202020;
 }
 
 .slide {
@@ -364,4 +364,8 @@ figure figcaption {
 .title
 {
   vertical-align: middle;
+}
+
+.slide_body {
+  line-height: 1.5;
 }
