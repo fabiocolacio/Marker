@@ -812,6 +812,9 @@ marker_window_add_editor(MarkerWindow *window,
   preview_zoom_changed_cb(marker_editor_get_preview(editor),
                           window);
   window->editors_counter ++;
+
+  GtkWidget *source_view = GTK_WIDGET (marker_editor_get_source_view (editor));
+  gtk_widget_grab_focus (source_view);
 }
 
 void
