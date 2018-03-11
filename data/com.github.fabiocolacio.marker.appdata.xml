@@ -63,6 +63,11 @@
         <p>Initial Flathub release</p>
       </description>
     </release>
+    <release version="2018.03.09" date="2018-03-09">
+      <description>
+        Release notes: <a>https://github.com/fabiocolacio/Marker/releases/tag/2018.03.09</a>
+      </description>
+    </release>
   </releases>
 
  <content_rating type="oars-1.1">
