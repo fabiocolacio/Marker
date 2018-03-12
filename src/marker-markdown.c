@@ -60,9 +60,9 @@ char* html_header(MarkerKaTeXMode     katex_mode,
       katex_auto = g_strdup("<script src=\"https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.9.0-alpha2/contrib/auto-render.min.js\" crossorigin=\"anonymous\"></script>");
       break;
     case KATEX_LOCAL:
-   	  katex_css = g_strdup_printf("<link rel=\"stylesheet\" href=\"%skatex/katex.min.css\">", SCRIPTS_DIR);
-      katex_script = g_strdup_printf("<script src=\"%skatex/katex.min.js\"></script>", SCRIPTS_DIR);
-      katex_auto = g_strdup_printf("<script src=\"%skatex/contrib/auto-render.min.js\"></script>", SCRIPTS_DIR);
+   	  katex_css = g_strdup_printf("<link rel=\"stylesheet\" href=\"file://%skatex/katex.min.css\">", SCRIPTS_DIR);
+      katex_script = g_strdup_printf("<script src=\"file://%skatex/katex.min.js\"></script>", SCRIPTS_DIR);
+      katex_auto = g_strdup_printf("<script src=\"file://%skatex/contrib/auto-render.min.js\"></script>", SCRIPTS_DIR);
       break;
   }
 
@@ -77,8 +77,8 @@ char* html_header(MarkerKaTeXMode     katex_mode,
       highlight_script = g_strdup("<script src=\"https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js\"></script>");
       break;
     case HIGHLIGHT_LOCAL:
-      highlight_css = g_strdup_printf("<link rel=\"stylesheet\" href=\"%shighlight/styles/%s.css\">", SCRIPTS_DIR, local_highlight_css);
-      highlight_script = g_strdup_printf("<script src=\"%shighlight/highlight.pack.js\"></script>", SCRIPTS_DIR);
+      highlight_css = g_strdup_printf("<link rel=\"stylesheet\" href=\"file://%shighlight/styles/%s.css\">", SCRIPTS_DIR, local_highlight_css);
+      highlight_script = g_strdup_printf("<script src=\"file://%shighlight/highlight.pack.js\"></script>", SCRIPTS_DIR);
       break;
   }
 
@@ -91,7 +91,7 @@ char* html_header(MarkerKaTeXMode     katex_mode,
       mermaid_script = g_strdup("<script src=\"https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js\"></script>");
       break;
     case MERMAID_LOCAL:
-      mermaid_script = g_strdup_printf("<script src=\"%smermaid/mermaid.min.js\"></script>", SCRIPTS_DIR);
+      mermaid_script = g_strdup_printf("<script src=\"file://%smermaid/mermaid.min.js\"></script>", SCRIPTS_DIR);
       break;
   }
 
@@ -208,13 +208,13 @@ marker_markdown_to_html(const char*         markdown,
   if (stylesheet_location)
   {
     ref = header;
-    header = g_strdup_printf("%s<link rel=\"stylesheet\" type=\"text/css\" href=\"%s\">\n", header, stylesheet_location);
+    header = g_strdup_printf("%s<link rel=\"stylesheet\" type=\"text/css\" href=\"file://%s\">\n", header, stylesheet_location);
     free(ref);
   }
 
   /*COMMON CSS STYLING*/
   ref = header;
-  header = g_strdup_printf("%s<link rel=\"stylesheet\" type=\"text/css\" href=\"%s/%s\">\n", header, COMMON_DIR, "scidown.css");
+  header = g_strdup_printf("%s<link rel=\"stylesheet\" type=\"text/css\" href=\"file://%s/%s\">\n", header, COMMON_DIR, "scidown.css");
   free(ref);
 
   char * footer = html_footer(katex_mode, highlight_mode, mermaid_mode);
