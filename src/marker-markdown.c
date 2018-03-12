@@ -478,3 +478,10 @@ marker_markdown_to_latex_file(const char*         markdown,
 
   free(latex);
 }
+
+metadata*
+marker_markdown_metadata                     (const char         *markdown,
+                                              size_t              size)
+{
+  return document_metadata((uint8_t*)markdown, size);
+}

@@ -23,6 +23,7 @@
 #define __MARKER_MARKDOWN_H__
 
 #include <stddef.h>
+#include "scidown/src/document.h"
 
 typedef enum {
   KATEX_OFF,
@@ -91,5 +92,8 @@ void                 marker_markdown_to_latex_file               (const char    
                                                                   MarkerHighlightMode highlight_mode,
                                                                   MarkerMermaidMode   mermaid_mode,
                                                                   const char         *filepath);
+
+metadata           *marker_markdown_metadata                     (const char         *markdown,
+                                                                  size_t              size);
 
 #endif
