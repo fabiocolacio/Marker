@@ -43,9 +43,10 @@ void                 marker_preview_render_markdown              (MarkerPreview 
 WebKitPrintOperationResponse
                      marker_preview_run_print_dialog             (MarkerPreview      *preview,
                                                                   GtkWindow          *parent);
-void                 marker_preview_print_pdf                    (MarkerPreview      *preview,
-                                                                  const char         *outfile);
-
+void                 marker_preview_print_pdf                    (MarkerPreview*     preview,
+                                                                  const char*        outfile,
+                                                                  const char*        paper_size,
+                                                                  GtkPageOrientation orientation);
 G_END_DECLS
 
 #endif

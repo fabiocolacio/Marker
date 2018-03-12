@@ -362,8 +362,10 @@ marker_preview_run_print_dialog(MarkerPreview* preview,
 }
 
 void
-marker_preview_print_pdf(MarkerPreview* preview,
-                         const char*    outfile)
+marker_preview_print_pdf(MarkerPreview*     preview,
+                         const char*        outfile,
+                         const char*        paper_size,
+                         GtkPageOrientation orientation)
 
 {
     WebKitPrintOperation* print_op = NULL;
@@ -374,13 +376,31 @@ marker_preview_print_pdf(MarkerPreview* preview,
     g_signal_connect(print_op, "failed", G_CALLBACK(pdf_print_failed_cb), NULL);
 
     print_s = gtk_print_settings_new();
-    GtkPaperSize * paper_size = gtk_paper_size_new(gtk_paper_size_get_default());
+    GtkPaperSize * gtk_paper_size = gtk_paper_size_new(paper_size);
+    GtkPageSetup * gtk_page_setup = gtk_page_setup_new();
+    gtk_page_setup_set_paper_size(gtk_page_setup, gtk_paper_size);
+    gtk_page_setup_set_orientation(gtk_page_setup, orientation);
+    gtk_page_setup_set_left_margin(gtk_page_setup, 0, GTK_UNIT_POINTS);
+    gtk_page_setup_set_right_margin(gtk_page_setup, 0, GTK_UNIT_POINTS);
+    gtk_page_setup_set_top_margin(gtk_page_setup, 0, GTK_UNIT_POINTS);
+    gtk_page_setup_set_bottom_margin(gtk_page_setup, 0, GTK_UNIT_POINTS);
 
     gtk_print_settings_set(print_s, GTK_PRINT_SETTINGS_OUTPUT_FILE_FORMAT, "pdf");
     gtk_print_settings_set(print_s, GTK_PRINT_SETTINGS_OUTPUT_URI, uri);
-    gtk_print_settings_set_paper_size(print_s, paper_size);
     gtk_print_settings_set(print_s, GTK_PRINT_SETTINGS_PRINTER, "Print to File");
+
+    gtk_print_settings_set_paper_width(print_s, gtk_paper_size_get_width(gtk_paper_size, GTK_UNIT_MM), GTK_UNIT_MM);
+    gtk_print_settings_set_paper_height(print_s, gtk_paper_size_get_height(gtk_paper_size, GTK_UNIT_MM), GTK_UNIT_MM);
+    gtk_print_settings_set_orientation(print_s, orientation);
+
+    /*
+    g_print("export: %s %d (%f x %f mm)\n", paper_size, orientation, gtk_paper_size_get_width(gtk_paper_size, GTK_UNIT_MM), gtk_paper_size_get_height(gtk_paper_size, GTK_UNIT_MM));
+    g_print("export: %s %d (%f x %f mm)\n", paper_size, orientation, gtk_print_settings_get_paper_width(print_s, GTK_UNIT_MM), gtk_print_settings_get_paper_height(print_s, GTK_UNIT_MM));
+    */
+
     webkit_print_operation_set_print_settings(print_op, print_s);
+    webkit_print_operation_set_page_setup(print_op, gtk_page_setup);
+
 
     webkit_print_operation_print(print_op);
 
