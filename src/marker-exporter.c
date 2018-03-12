@@ -195,12 +195,18 @@ marker_exporter_show_export_dialog(MarkerWindow* window)
 
     if (source)
       base_folder = g_file_get_path(g_file_get_parent(source));
-
+    size_t len = strlen(markdown);
+    metadata * meta = marker_markdown_metadata(markdown, len);
+    if (!meta) {
+      fprintf(stderr, "marker-exporter.c#show_export_dialog: Document Metadata NULL!\n");
+      return;
+    }
+    GtkPageOrientation orientation = meta->doc_class == CLASS_BEAMER ? GTK_PAGE_ORIENTATION_LANDSCAPE : GTK_PAGE_ORIENTATION_PORTRAIT;
     switch (fmt)
     {
       case HTML:
         marker_markdown_to_html_file_with_css_inline(markdown,
-                                                     strlen(markdown),
+                                                     len,
                                                      base_folder,
                                                      (marker_prefs_get_use_katex())
                                                        ? KATEX_NET
@@ -216,12 +222,12 @@ marker_exporter_show_export_dialog(MarkerWindow* window)
         break;
 
       case PDF:
-        marker_preview_print_pdf(preview, filename);
+        marker_preview_print_pdf(preview, filename, paper_to_gtkstr(meta->paper_size), orientation );
         break;
 
       case LATEX:
         marker_markdown_to_latex_file(markdown,
-                                      strlen(markdown),
+                                      len,
                                       base_folder,
                                       (marker_prefs_get_use_katex())
                                         ? KATEX_NET
@@ -237,7 +243,7 @@ marker_exporter_show_export_dialog(MarkerWindow* window)
 
       default:
         marker_exporter_export_pandoc(marker_markdown_to_html_with_css_inline(markdown,
-                                                                              strlen(markdown),
+                                                                              len,
                                                                               base_folder,
                                                                               (marker_prefs_get_use_katex())
                                                                                 ? KATEX_NET
