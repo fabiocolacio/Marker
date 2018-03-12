@@ -345,7 +345,6 @@ marker_preview_render_markdown(MarkerPreview* preview,
   GBytes *bhtml = g_string_free_to_bytes(g_string_new(html));
   webkit_web_view_load_bytes(web_view, bhtml, "text/html", "UTF-8",
                              uri);
-  g_print("== %s \n", uri);
   g_free(uri);
   free(html);
 }
