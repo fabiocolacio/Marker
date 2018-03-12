@@ -65,6 +65,9 @@ MarkerSourceView    *marker_editor_get_source_view               (MarkerEditor  
 void                 marker_editor_apply_prefs                   (MarkerEditor       *editor);
 void                 marker_editor_closing                       (MarkerEditor       *editor);
 
+void                 marker_editor_toggle_search_bar             (MarkerEditor       *editor);
+GtkSearchBar        *marker_editor_get_search_bar                (MarkerEditor       *editor);
+
 G_END_DECLS
 
 #endif

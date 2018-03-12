@@ -28,6 +28,8 @@
 #include "marker-markdown.h"
 #include "marker-prefs.h"
 
+#include "marker-string.h"
+
 #include "marker-preview.h"
 #include "marker.h"
 
@@ -44,13 +46,29 @@ struct _MarkerPreview
 
 G_DEFINE_TYPE(MarkerPreview, marker_preview, WEBKIT_TYPE_WEB_VIEW)
 
-static void
-open_uri (WebKitResponsePolicyDecision *decision) {
-  const gchar * uri = webkit_uri_request_get_uri(webkit_response_policy_decision_get_request(decision));
+static gboolean
+open_uri (WebKitPolicyDecision *decision) {
+  WebKitResponsePolicyDecision* policy_decision = WEBKIT_RESPONSE_POLICY_DECISION(decision);
+  const gchar * uri = webkit_uri_request_get_uri(webkit_response_policy_decision_get_request(policy_decision));
   GtkApplication * app = marker_get_app();
   GList* windows = gtk_application_get_windows(app);
   time_t now = time(0);
   gtk_show_uri_on_window (windows->data, uri, now, NULL);
+  webkit_policy_decision_ignore(decision);
+  return TRUE;
+}
+
+static gboolean
+navigate(WebKitPolicyDecision *decision)
+{
+  /** TODO FIX internal navigation
+  WebKitNavigationPolicyDecision * nav_dec = WEBKIT_NAVIGATION_POLICY_DECISION(decision);
+
+  const gchar * uri =webkit_uri_request_get_uri(webkit_navigation_action_get_request (webkit_navigation_policy_decision_get_navigation_action (nav_dec)));
+  g_print(">> %s\n", uri);
+  **/
+
+  return FALSE;
 }
 
 static gboolean
@@ -61,14 +79,14 @@ decide_policy_cb (WebKitWebView *web_view,
     switch (type) {
     case WEBKIT_POLICY_DECISION_TYPE_RESPONSE:
         /* ignore default policy and open uri in default browser*/
-        open_uri((WebKitResponsePolicyDecision*)decision);
-        webkit_policy_decision_ignore(decision);
-        break;
+        return open_uri(decision);
+    case WEBKIT_POLICY_DECISION_TYPE_NAVIGATION_ACTION:
+        return navigate(decision);
     default:
         /* Making no decision results in webkit_policy_decision_use(). */
         return FALSE;
     }
-    return TRUE;
+    return FALSE;
 }
 
 
@@ -295,9 +313,12 @@ marker_preview_render_markdown(MarkerPreview* preview,
     mermaid_mode = MERMAID_LOCAL;
   }
 
-
+  char * base_folder = NULL;
+  if (base_uri)
+    base_folder = marker_string_filename_get_path(base_uri);
   char* html = marker_markdown_to_html(markdown,
                                        strlen(markdown),
+                                       base_folder,
                                        katex_mode,
                                        highlight_mode,
                                        mermaid_mode,
@@ -319,7 +340,6 @@ marker_preview_render_markdown(MarkerPreview* preview,
   GBytes *bhtml = g_string_free_to_bytes(g_string_new(html));
   webkit_web_view_load_bytes(web_view, bhtml, "text/html", "UTF-8",
                              uri);
-
   g_free(uri);
   free(html);
 }
@@ -349,8 +369,11 @@ marker_preview_print_pdf(MarkerPreview* preview,
     g_signal_connect(print_op, "failed", G_CALLBACK(pdf_print_failed_cb), NULL);
 
     print_s = gtk_print_settings_new();
+    GtkPaperSize * paper_size = gtk_paper_size_new(gtk_paper_size_get_default());
+
     gtk_print_settings_set(print_s, GTK_PRINT_SETTINGS_OUTPUT_FILE_FORMAT, "pdf");
     gtk_print_settings_set(print_s, GTK_PRINT_SETTINGS_OUTPUT_URI, uri);
+    gtk_print_settings_set_paper_size(print_s, paper_size);
     gtk_print_settings_set(print_s, GTK_PRINT_SETTINGS_PRINTER, "Print to File");
     webkit_print_operation_set_print_settings(print_op, print_s);
 
