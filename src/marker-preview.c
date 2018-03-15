@@ -335,7 +335,12 @@ marker_preview_render_markdown(MarkerPreview* preview,
                    G_CALLBACK(context_menu_cb),
                    NULL);
 
-  gchar * uri = g_strdup_printf("file://%s", (base_uri) ? g_locale_from_utf8(base_uri, strlen(base_uri), NULL, NULL, NULL) : "internal.md");
+  gchar * uri;
+  if (base_uri) {
+    uri = g_filename_to_uri  (g_locale_from_utf8(base_uri, strlen(base_uri), NULL, NULL, NULL), NULL, NULL);
+  }else {
+    uri = g_strdup("file://internal.md");
+  }
 
   GBytes *bhtml = g_string_free_to_bytes(g_string_new(html));
   webkit_web_view_load_bytes(web_view, bhtml, "text/html", "UTF-8",
@@ -357,8 +362,10 @@ marker_preview_run_print_dialog(MarkerPreview* preview,
 }
 
 void
-marker_preview_print_pdf(MarkerPreview* preview,
-                         const char*    outfile)
+marker_preview_print_pdf(MarkerPreview*     preview,
+                         const char*        outfile,
+                         const char*        paper_size,
+                         GtkPageOrientation orientation)
 
 {
     WebKitPrintOperation* print_op = NULL;
@@ -369,13 +376,36 @@ marker_preview_print_pdf(MarkerPreview* preview,
     g_signal_connect(print_op, "failed", G_CALLBACK(pdf_print_failed_cb), NULL);
 
     print_s = gtk_print_settings_new();
-    GtkPaperSize * paper_size = gtk_paper_size_new(gtk_paper_size_get_default());
+    GtkPaperSize * gtk_paper_size = gtk_paper_size_new(paper_size);
+    GtkPageSetup * gtk_page_setup = gtk_page_setup_new();
 
     gtk_print_settings_set(print_s, GTK_PRINT_SETTINGS_OUTPUT_FILE_FORMAT, "pdf");
     gtk_print_settings_set(print_s, GTK_PRINT_SETTINGS_OUTPUT_URI, uri);
-    gtk_print_settings_set_paper_size(print_s, paper_size);
     gtk_print_settings_set(print_s, GTK_PRINT_SETTINGS_PRINTER, "Print to File");
+
+    if (orientation == GTK_PAGE_ORIENTATION_PORTRAIT) {
+      gtk_page_setup_set_paper_size(gtk_page_setup, gtk_paper_size);
+      gtk_print_settings_set_paper_width(print_s, gtk_paper_size_get_width(gtk_paper_size, GTK_UNIT_MM), GTK_UNIT_MM);
+      gtk_print_settings_set_paper_height(print_s, gtk_paper_size_get_height(gtk_paper_size, GTK_UNIT_MM), GTK_UNIT_MM);
+
+    } else {
+      gdouble width = gtk_paper_size_get_width(gtk_paper_size, GTK_UNIT_MM);
+      gdouble height = gtk_paper_size_get_height(gtk_paper_size, GTK_UNIT_MM);
+      GtkPaperSize * custom_size = gtk_paper_size_new_custom(g_strdup_printf("%s_landscape", paper_size), "pdf", height, width, GTK_UNIT_MM);
+      gtk_page_setup_set_paper_size(gtk_page_setup, custom_size);
+
+      gtk_print_settings_set_paper_width(print_s, height, GTK_UNIT_MM);
+      gtk_print_settings_set_paper_height(print_s, width, GTK_UNIT_MM);
+    }
+
+    gtk_page_setup_set_left_margin(gtk_page_setup, 0, GTK_UNIT_POINTS);
+    gtk_page_setup_set_right_margin(gtk_page_setup, 0, GTK_UNIT_POINTS);
+    gtk_page_setup_set_top_margin(gtk_page_setup, 0, GTK_UNIT_POINTS);
+    gtk_page_setup_set_bottom_margin(gtk_page_setup, 0, GTK_UNIT_POINTS);
+    gtk_print_settings_set_orientation(print_s, orientation);
+
     webkit_print_operation_set_print_settings(print_op, print_s);
+    webkit_print_operation_set_page_setup(print_op, gtk_page_setup);
 
     webkit_print_operation_print(print_op);
 
