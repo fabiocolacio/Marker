@@ -38,25 +38,29 @@ struct _MarkerSourceView
 G_DEFINE_TYPE(MarkerSourceView, marker_source_view, GTK_SOURCE_TYPE_VIEW)
 
 void
-marker_source_view_surround_selection_with(MarkerSourceView* source_view,
-                                           const char*       insertion)
+marker_source_view_surround_selection_with (MarkerSourceView *source_view,
+                                            const char       *insertion)
 {
-  GtkTextBuffer* buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(source_view));
+  GtkTextBuffer* buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (source_view));
   GtkTextIter start, end;
   gint start_index, end_index, selection_len;
   gboolean selected;
-  size_t len = strlen(insertion);
+  size_t len = strlen (insertion);
 
-  selected = gtk_text_buffer_get_selection_bounds(buffer, &start, &end);
-  if (selected)
+  selected = gtk_text_buffer_get_selection_bounds (buffer, &start, &end);
+
+  start_index = gtk_text_iter_get_line_offset (&start);
+  end_index = gtk_text_iter_get_line_offset (&end);
+  selection_len = end_index - start_index;
+
+  gtk_text_buffer_insert (buffer, &start, insertion, len);
+  gtk_text_iter_forward_chars (&start, selection_len);
+  gtk_text_buffer_insert (buffer, &start, insertion, len);
+
+  if (!selected)
   {
-    start_index = gtk_text_iter_get_line_offset(&start);
-    end_index = gtk_text_iter_get_line_offset(&end);
-    selection_len = end_index - start_index;
-
-    gtk_text_buffer_insert(buffer, &start, insertion, len);
-    gtk_text_iter_forward_chars(&start, selection_len);
-    gtk_text_buffer_insert(buffer, &start, insertion, len);
+    gtk_text_iter_backward_chars (&start, len);
+    gtk_text_buffer_place_cursor (buffer, &start);
   }
 }
 
