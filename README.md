@@ -68,8 +68,8 @@ than cloning from master.
 
 ```
 $ git clone https://github.com/fabiocolacio/Marker.git
-$ git submodule update --init --recursive
 $ cd Marker
+$ git submodule update --init --recursive
 $ mkdir build && cd build
 $ meson ..
 $ ninja
