@@ -288,6 +288,10 @@ key_pressed_cb (GtkWidget   *widget,
         marker_source_view_surround_selection_with (source_view, "**");
         break;
 
+      case GDK_KEY_k:
+        marker_source_view_insert_link (source_view);
+        break;
+
       case GDK_KEY_q:
         marker_quit ();
         break;
@@ -316,45 +320,45 @@ key_pressed_cb (GtkWidget   *widget,
         marker_window_open_file (window);
         break;
 
-    case GDK_KEY_f:
+      case GDK_KEY_f:
         marker_window_search(window);
         break;
 
-    case GDK_KEY_O:
+      case GDK_KEY_O:
         marker_window_open_file_in_new_window(window);
         break;
 
-    case GDK_KEY_k:
-      marker_window_open_sketcher (window);
-      break;
+      case GDK_KEY_d:
+        marker_window_open_sketcher (window);
+        break;
 
-    case GDK_KEY_S:
-      marker_window_save_active_file_as (window);
-      break;
+      case GDK_KEY_S:
+        marker_window_save_active_file_as (window);
+        break;
 
-    case GDK_KEY_s:
-      marker_window_save_active_file (window);
-      break;
+      case GDK_KEY_s:
+        marker_window_save_active_file (window);
+        break;
 
-    case GDK_KEY_p:
-      marker_preview_run_print_dialog (marker_editor_get_preview (editor), GTK_WINDOW (window));
-      break;
+      case GDK_KEY_p:
+        marker_preview_run_print_dialog (marker_editor_get_preview (editor), GTK_WINDOW (window));
+        break;
 
-    case GDK_KEY_1:
-      marker_editor_set_view_mode (editor, EDITOR_ONLY_MODE);
-      break;
+      case GDK_KEY_1:
+        marker_editor_set_view_mode (editor, EDITOR_ONLY_MODE);
+        break;
 
-    case GDK_KEY_2:
-      marker_editor_set_view_mode (editor, PREVIEW_ONLY_MODE);
-      break;
+      case GDK_KEY_2:
+        marker_editor_set_view_mode (editor, PREVIEW_ONLY_MODE);
+        break;
 
-    case GDK_KEY_3:
-      marker_editor_set_view_mode (editor, DUAL_PANE_MODE);
-      break;
+      case GDK_KEY_3:
+        marker_editor_set_view_mode (editor, DUAL_PANE_MODE);
+        break;
 
-    case GDK_KEY_4:
-      marker_editor_set_view_mode (editor, DUAL_WINDOW_MODE);
-      break;
+      case GDK_KEY_4:
+        marker_editor_set_view_mode (editor, DUAL_WINDOW_MODE);
+        break;
     }
   }
   else
