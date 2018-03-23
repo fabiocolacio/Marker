@@ -24,6 +24,7 @@
 
 #include "marker-source-view.h"
 #include "marker-prefs.h"
+#include "marker-utils.h"
 
 #include <gtkspell/gtkspell.h>
 
@@ -65,6 +66,48 @@ marker_source_view_surround_selection_with (MarkerSourceView *source_view,
 }
 
 void
+marker_source_view_insert_link (MarkerSourceView   *source_view)
+{
+  GtkTextBuffer* buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (source_view));
+  GtkTextIter start, end;
+  gint start_index, end_index, selection_len;
+  gboolean selected;
+
+  selected = gtk_text_buffer_get_selection_bounds (buffer, &start, &end);
+  if (selected) {
+    start_index = gtk_text_iter_get_line_offset (&start);
+    end_index = gtk_text_iter_get_line_offset (&end);
+    selection_len = end_index - start_index;
+
+    gchar * selected = gtk_text_buffer_get_text(buffer, &start, &end, TRUE);
+    if (!marker_utils_is_url(selected)) {
+      gtk_text_buffer_insert (buffer, &start, "[", 1);
+      gtk_text_iter_forward_chars (&start, selection_len);
+      gtk_text_buffer_insert (buffer, &start, "]()", 3);
+      gtk_text_iter_backward_chars(&start, 1);
+      gtk_text_buffer_place_cursor(buffer, &start);
+
+    } else {
+      gtk_text_buffer_insert (buffer, &start, "[](", 3);
+      gtk_text_iter_forward_chars (&start, selection_len);
+      gtk_text_buffer_insert (buffer, &start, ")", 1);
+      gtk_text_iter_backward_chars(&start, selection_len + 3);
+      gtk_text_buffer_place_cursor(buffer, &start);
+    }
+  } else {
+    gchar * link = g_strdup("[]()");
+    GtkTextMark * mark = gtk_text_buffer_get_insert(buffer);
+    gtk_text_buffer_get_iter_at_mark(buffer, &start, mark);
+    size_t len = strlen(link);
+
+    gtk_text_buffer_insert(buffer, &start, link, len);
+    gtk_text_iter_backward_chars(&start, 3);
+    gtk_text_buffer_place_cursor(buffer, &start);
+    g_free(link);
+  }
+}
+
+void
 marker_source_view_insert_image (MarkerSourceView   *source_view,
                                  const char         *image_path)
 {
@@ -73,16 +116,12 @@ marker_source_view_insert_image (MarkerSourceView   *source_view,
 
   gtk_text_buffer_get_iter_at_mark(buffer, &start, gtk_text_buffer_get_insert(buffer));
 
+  gchar * img = g_strdup_printf("![](%s)", image_path);
 
-  int n = strlen(image_path);
-  char * insertion = malloc((n+7)*sizeof(char));
-  memset(insertion, 0, (n+7));
-  sprintf(insertion, "![](%s)", image_path);
+  size_t len = strlen(img);
 
-  size_t len = strlen(insertion);
-
-  gtk_text_buffer_insert(buffer, &start, insertion, len);
-  free(insertion);
+  gtk_text_buffer_insert(buffer, &start, img, len);
+  g_free(img);
 }
 
 void
