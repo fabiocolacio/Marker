@@ -26,6 +26,8 @@
 
 #include "marker-utils.h"
 
+#include "scidown/src/autolink.h"
+
 void
 marker_utils_surround_selection_with(GtkTextBuffer* buffer,
                                      char*          insertion)
@@ -34,14 +36,14 @@ marker_utils_surround_selection_with(GtkTextBuffer* buffer,
   gint start_index, end_index, selection_len;
   gboolean selected;
   size_t len = strlen(insertion);
-  
-  selected = gtk_text_buffer_get_selection_bounds(buffer, &start, &end);  
+
+  selected = gtk_text_buffer_get_selection_bounds(buffer, &start, &end);
   if (selected)
   {
     start_index = gtk_text_iter_get_line_offset(&start);
     end_index = gtk_text_iter_get_line_offset(&end);
     selection_len = end_index - start_index;
-    
+
     gtk_text_buffer_insert(buffer, &start, insertion, len);
     gtk_text_iter_forward_chars(&start, selection_len);
     gtk_text_buffer_insert(buffer, &start, insertion, len);
@@ -135,7 +137,7 @@ marker_utils_get_current_time_seconds()
   time(&timer);
 
   seconds = difftime(timer,mktime(&y2k));
-    
+
   return seconds;
 }
 
@@ -174,3 +176,27 @@ marker_utils_str_ends_with(char* str,
   return 0;
 }
 
+
+gboolean
+marker_utils_is_url (gchar *str)
+{
+  size_t len = strlen(str);
+  if (len <= 0)
+    return FALSE;
+  size_t rewind = 0;
+  size_t res = hoedown_autolink__www(&rewind, NULL, (uint8_t*)str, 0, len, 0);
+
+  if (res)
+    return res;
+
+  rewind = 0;
+  res = hoedown_autolink__url(&rewind, NULL, (uint8_t*)str, 0, len, 0);
+
+  if (res)
+    return res;
+
+  rewind = 0;
+  res = hoedown_autolink__email(&rewind, NULL, (uint8_t*)str, 0, len, 0);
+
+  return res;
+}

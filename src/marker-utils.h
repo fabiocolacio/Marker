@@ -38,5 +38,6 @@ void                 marker_utils_combo_box_set_model            (GtkComboBox   
                                                                   GtkTreeModel       *model);
 char                *marker_utils_allocate_string                (char               *str);
 char                *marker_utils_escape_file_path               (char               *filename);
+gboolean             marker_utils_is_url                         (gchar              *str);
 
 #endif
