@@ -33,7 +33,7 @@ char                *marker_string_prepend                       (const char    
                                                                   const char         *addition,
                                                                   char               *buffer,
                                                                   size_t              buffer_size);
-char                *marker_string_append                        (const char         *str, 
+char                *marker_string_append                        (const char         *str,
                                                                   const char         *addition,
                                                                   char               *buffer,
                                                                   size_t              buffer_size);
