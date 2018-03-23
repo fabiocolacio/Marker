@@ -85,7 +85,14 @@
               <object class="GtkShortcutsShortcut">
                 <property name="visible">1</property>
                 <property name="accelerator">&lt;ctrl&gt;k</property>
-                <property name="title" context="shortcut window">Insert sketch</property>
+                <property name="title" context="shortcut window">Insert link</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="visible">1</property>
+                <property name="accelerator">&lt;ctrl&gt;d</property>
+                <property name="title" context="shortcut window">Draw a sketch</property>
               </object>
             </child>
             <child>
