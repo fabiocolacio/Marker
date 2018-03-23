@@ -1,4 +1,19 @@
-# Markdown ref test
+---
+numbering: true
+title: Marker Reference Tests
+keywords: Markdown, Scidown, LaTeX, HTML
+paper: A3
+class: report
+---
+
+@abstract
+In this example we will shows most of the basic syntax and test its functionality. 
+
+@/
+
+@toc
+
+# MARKER Test
 
 ## Maths
 
@@ -6,11 +21,15 @@ This is a block equation:
 $$
 \begin{cases}
 x = 42\\
-y = \log_{10}x
+y = \log_{10}(x)
 \end{cases}
 $$
 
 An this is an inline equation: $x\in A$.
+
+@equation
+(x+1)^2=-y
+@/
 
 ## Listings
 
@@ -25,6 +44,7 @@ main(int argc,
   return 0;
 }
 ```
+
 The following code block instead can be visualized as _Mermaid_ chart if the extension is enabled in the preferences.
 
 ```mermaid
@@ -35,6 +55,7 @@ B -.->C
 
 The last code block instead is a _Charter_ plot and the results is plotted as SVG if the extension is enabled:
 
+@figure
 ```charter
 title: a simple plot
 x-axis:
@@ -46,7 +67,8 @@ plot:
   y math: exp(-(x^2))
   label: gausian
 ```
-
+@caption(A simple plot)
+@/
 
 ## Results
 
@@ -65,7 +87,8 @@ For the **Preview**:
 | Figure caption     | Ok     |
 | Numbering          | Ok     |
 | Charter            | Ok     |
-| Charter preferences| __Missing__| 
+| Charter preferences| OK     | 
+
 
 For the **Editor**:
 
