@@ -222,7 +222,7 @@ marker_exporter_show_export_dialog(MarkerWindow* window)
         break;
 
       case PDF:
-        marker_preview_print_pdf(preview, filename, paper_to_gtkstr(meta->paper_size), orientation );
+        marker_preview_print_pdf(preview, filename, meta->paper_size, orientation);
         break;
 
       case LATEX:
