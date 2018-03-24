@@ -189,14 +189,17 @@ marker_utils_is_url (gchar *str)
   if (res)
     return res;
 
-  rewind = 0;
-  res = hoedown_autolink__url(&rewind, NULL, (uint8_t*)str, 0, len, 0);
+  int safe = hoedown_autolink_is_safe((uint8_t*) str, len);
+  if (safe) {
+    rewind = 0;
+    return hoedown_autolink__url(&rewind, NULL, (uint8_t*)str+safe, safe, len, 0);
+  }
 
-  if (res)
-    return res;
-
-  rewind = 0;
-  res = hoedown_autolink__email(&rewind, NULL, (uint8_t*)str, 0, len, 0);
-
-  return res;
+  gchar * e = strchr(str, '@');
+  if (e) {
+    size_t indx = (size_t)(e - str);
+    rewind = 0;
+    return hoedown_autolink__email(&rewind, NULL, (uint8_t*)str, indx, len, 0);
+  }
+  return 0;
 }
