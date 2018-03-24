@@ -2,7 +2,7 @@
 class:beamer
 title: A Simple Presentation
 author: Martino Ferrari
-paper: A4
+paper: 4:3
 ---
 
 # Introduction
@@ -25,15 +25,21 @@ where $x\in\mathbb{R}$ is the independent variable and $n\in\mathbb{N}$ is a con
 
 # Result
 
+@figure(fig:1)
 ```charter
+title: f(x)
+height: 300
 plot:
   x: range: 1 10 100
-  y: math: x^-3/2
+  y: math: 2*x^-1+1
+  ls: --
 ```
+@caption(approximation of equation 1 with $n=3$)
+@/
 
 
 ---
 
 # Conclusion
 
-As shown in previous slides....
+As shown in figure (#fig:1) the output is cool
