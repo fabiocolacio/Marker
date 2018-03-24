@@ -364,7 +364,7 @@ marker_preview_run_print_dialog(MarkerPreview* preview,
 void
 marker_preview_print_pdf(MarkerPreview*     preview,
                          const char*        outfile,
-                         const char*        paper_size,
+                         enum scidown_paper_size paper_size,
                          GtkPageOrientation orientation)
 
 {
@@ -376,7 +376,14 @@ marker_preview_print_pdf(MarkerPreview*     preview,
     g_signal_connect(print_op, "failed", G_CALLBACK(pdf_print_failed_cb), NULL);
 
     print_s = gtk_print_settings_new();
-    GtkPaperSize * gtk_paper_size = gtk_paper_size_new(paper_size);
+    GtkPaperSize * gtk_paper_size = NULL;
+    if (paper_size != B43 && paper_size != B169)
+      gtk_paper_size = gtk_paper_size_new(paper_to_gtkstr(paper_size));
+    else if (paper_size == B43)
+      gtk_paper_size = gtk_paper_size_new_custom("B43", "B43", 166, 210, GTK_UNIT_MM);
+    else
+      gtk_paper_size = gtk_paper_size_new_custom("B43", "B43", 166, 294, GTK_UNIT_MM);
+
     GtkPageSetup * gtk_page_setup = gtk_page_setup_new();
 
     gtk_print_settings_set(print_s, GTK_PRINT_SETTINGS_OUTPUT_FILE_FORMAT, "pdf");
@@ -391,7 +398,8 @@ marker_preview_print_pdf(MarkerPreview*     preview,
     } else {
       gdouble width = gtk_paper_size_get_width(gtk_paper_size, GTK_UNIT_MM);
       gdouble height = gtk_paper_size_get_height(gtk_paper_size, GTK_UNIT_MM);
-      GtkPaperSize * custom_size = gtk_paper_size_new_custom(g_strdup_printf("%s_landscape", paper_size), "pdf", height, width, GTK_UNIT_MM);
+      GtkPaperSize * custom_size = gtk_paper_size_new_custom(g_strdup_printf("%s_landscape", paper_to_string(paper_size)),
+                                                             "pdf", height, width, GTK_UNIT_MM);
       gtk_page_setup_set_paper_size(gtk_page_setup, custom_size);
 
       gtk_print_settings_set_paper_width(print_s, height, GTK_UNIT_MM);

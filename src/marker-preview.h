@@ -23,6 +23,8 @@
 #define __MARKER_PREVIEW_H__
 
 #include <webkit2/webkit2.h>
+#include "scidown/src/constants.h"
+
 
 G_BEGIN_DECLS
 
@@ -45,7 +47,7 @@ WebKitPrintOperationResponse
                                                                   GtkWindow          *parent);
 void                 marker_preview_print_pdf                    (MarkerPreview*     preview,
                                                                   const char*        outfile,
-                                                                  const char*        paper_size,
+                                                                  enum scidown_paper_size paper_size,
                                                                   GtkPageOrientation orientation);
 G_END_DECLS
 
