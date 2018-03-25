@@ -15,7 +15,10 @@
    version="1.1"
    id="svg8"
    inkscape:version="0.92.2 2405546, 2018-03-11"
-   sodipodi:docname="structure.svg">
+   sodipodi:docname="structure.svg"
+   inkscape:export-filename="/home/martino/git/Marker/docs/img/structure.png"
+   inkscape:export-xdpi="90.019447"
+   inkscape:export-ydpi="90.019447">
   <defs
      id="defs2">
     <marker
@@ -639,8 +642,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.49497475"
-     inkscape:cx="474.58141"
-     inkscape:cy="598.7463"
+     inkscape:cx="472.64367"
+     inkscape:cy="436.34227"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="false"
