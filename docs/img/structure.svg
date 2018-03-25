@@ -17,8 +17,8 @@
    inkscape:version="0.92.2 2405546, 2018-03-11"
    sodipodi:docname="structure.svg"
    inkscape:export-filename="/home/martino/git/Marker/docs/img/structure.png"
-   inkscape:export-xdpi="90.019447"
-   inkscape:export-ydpi="90.019447">
+   inkscape:export-xdpi="90.019997"
+   inkscape:export-ydpi="90.019997">
   <defs
      id="defs2">
     <marker
@@ -641,15 +641,15 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.49497475"
-     inkscape:cx="472.64367"
-     inkscape:cy="436.34227"
+     inkscape:zoom="0.9899495"
+     inkscape:cx="523.46207"
+     inkscape:cy="1066.4876"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="false"
      inkscape:window-width="1920"
      inkscape:window-height="1018"
-     inkscape:window-x="0"
+     inkscape:window-x="1920"
      inkscape:window-y="28"
      inkscape:window-maximized="1"
      showguides="true"
@@ -693,7 +693,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -772,7 +772,7 @@
        y="203.64137" />
     <path
        style="fill:none;stroke:#000000;stroke-width:0.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-start:url(#marker1202);marker-end:url(#StopL)"
-       d="m 116.52951,13.427031 c 0,-10.3221748 6.07003,-23.076235 24.69077,-23.076235"
+       d="m 116.52951,23.7169 c 0,-20.5275316 6.07003,-33.366104 24.69077,-33.366104"
        id="path916"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="cc" />
@@ -797,7 +797,7 @@
          id="tspan2063"
          x="141.86389"
          y="-7.1577568"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10.58333302px;font-family:'Latin Modern Mono';-inkscape-font-specification:'Latin Modern Mono';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;stroke-width:0.26458332">.header</tspan></text>
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10.58333302px;font-family:'Latin Modern Mono';-inkscape-font-specification:'Latin Modern Mono';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;stroke-width:0.26458332">.title</tspan></text>
     <path
        sodipodi:nodetypes="cc"
        inkscape:connector-curvature="0"
@@ -817,26 +817,26 @@
          sodipodi:role="line">.document</tspan></text>
     <path
        style="fill:none;stroke:#000000;stroke-width:0.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-start:url(#marker4357);marker-end:url(#marker4424)"
-       d="m 167.08482,23.716901 c 23.11881,0 9.88384,-44.32416 28.50458,-44.32416"
+       d="m 184.44868,18.65683 c 8.15172,0 14.10182,-39.15683 32.72256,-39.15683"
        id="path4349"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="cc" />
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
-       x="196.36665"
+       x="216.69936"
        y="-18.115807"
        id="text4353"><tspan
          sodipodi:role="line"
          id="tspan4351"
-         x="196.36665"
+         x="216.69936"
          y="-18.115807"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'Latin Modern Mono';-inkscape-font-specification:'Latin Modern Mono';stroke-width:0.26458332">.title</tspan></text>
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'Latin Modern Mono';-inkscape-font-specification:'Latin Modern Mono';stroke-width:0.26458332">.header</tspan></text>
     <path
        sodipodi:nodetypes="cc"
        inkscape:connector-curvature="0"
        id="path7283"
-       d="m 188.66666,60.147384 c 23.11881,0 9.88385,-47.317176 28.50458,-47.317176"
+       d="m 188.66666,60.147384 c 14.28362,0 9.88385,-47.317176 28.50458,-47.317176"
        style="fill:none;stroke:#000000;stroke-width:0.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-start:url(#marker7287);marker-end:url(#marker7378)" />
     <text
        id="text8351"
