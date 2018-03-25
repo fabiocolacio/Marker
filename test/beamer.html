@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html><head>
+<meta charset="UTF-8">
+<title>A Simple Presentation</title>
+<meta name="author" content="Martino Ferrari">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.9.0-alpha2/katex.min.css" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/zenburn.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.9.0-alpha2/katex.min.js" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.9.0-alpha2/contrib/auto-render.min.js" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script src="https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js"></script>
+<style>
+*{margin:0;padding:0;}
+body {
+	font:13.34px helvetica,arial,freesans,clean,sans-serif;
+	color:black;
+	line-height:1.4em;
+	background-color: #F8F8F8;
+	padding: 0.7em;
+}
+p {
+	margin:1em 0;
+	line-height:1.5em;
+}
+table {
+	font-size:inherit;
+	font:100%;
+	margin:1em;
+}
+table th{border-bottom:1px solid #bbb;padding:.2em 1em;}
+table td{border-bottom:1px solid #ddd;padding:.2em 1em;}
+input[type=text],input[type=password],input[type=image],textarea{font:99% helvetica,arial,freesans,sans-serif;}
+select,option{padding:0 .25em;}
+optgroup{margin-top:.5em;}
+pre,code{font:12px Monaco,"Courier New","DejaVu Sans Mono","Bitstream Vera Sans Mono",monospace;}
+pre {
+	margin:1em 0;
+	font-size:12px;
+	background-color:#eee;
+	border:1px solid #ddd;
+	padding:5px;
+	line-height:1.5em;
+	color:#444;
+	overflow:auto;
+	-webkit-box-shadow:rgba(0,0,0,0.07) 0 1px 2px inset;
+	-webkit-border-radius:3px;
+	-moz-border-radius:3px;border-radius:3px;
+}
+pre code {
+	padding:0;
+	font-size:12px;
+	background-color:#eee;
+	border:none;
+}
+code {
+	font-size:12px;
+	background-color:#f8f8ff;
+	color:#444;
+	padding:0 .2em;
+	border:1px solid #dedede;
+}
+img{border:0;max-width:100%;}
+abbr{border-bottom:none;}
+a{color:#4183c4;text-decoration:none;}
+a:hover{text-decoration:underline;}
+a code,a:link code,a:visited code{color:#4183c4;}
+h2,h3{margin:1em 0;}
+h1,h2,h3,h4,h5,h6{border:0;}
+h1{font-size:170%;border-top:4px solid #aaa;padding-top:.5em;margin-top:1.5em;}
+h1:first-child{margin-top:0;padding-top:.25em;border-top:none;}
+h2{font-size:150%;margin-top:1.5em;border-top:4px solid #e0e0e0;padding-top:.5em;}
+h3{margin-top:1em;}
+hr{border:1px solid #ddd;}
+ul{margin:1em 0 1em 2em;}
+ol{margin:1em 0 1em 2em;}
+ul li,ol li{margin-top:.5em;margin-bottom:.5em;}
+ul ul,ul ol,ol ol,ol ul{margin-top:0;margin-bottom:0;}
+blockquote{margin:1em 0;border-left:5px solid #ddd;padding-left:.6em;color:#555;}
+dt{font-weight:bold;margin-left:1em;}
+dd{margin-left:2em;margin-bottom:1em;}
+sup {
+    font-size: 0.83em;
+    vertical-align: super;
+    line-height: 0;
+}
+kbd {
+  display: inline-block;padding: 3px 5px;font-size: 11px;line-height: 10px;color: #555;vertical-align: middle;background-color: #fcfcfc;border: solid 1px #ccc;border-bottom-color: #bbb;border-radius: 3px;box-shadow: inset 0 -1px 0 #bbb;
+}
+* {
+	-webkit-print-color-adjust: exact;
+}
+@media screen and (min-width: 914px) {
+    body {
+        width: 854px;
+        margin:0 auto;
+    }
+}
+@media print {
+	table, pre {
+		page-break-inside: avoid;
+	}
+	pre {
+		word-wrap: break-word;
+	}
+}
+
+figure figcaption {
+	text-align: center;
+	font-size: 10px;
+  }
+
+table.eq_table {
+	border-collapse: collapse;
+ 	border: 0;
+	width: 100%;
+}
+table.eq_table td, table.eq_table th {
+	border: 0;
+}
+table.eq_table tfoot td {
+ 	border: 0;
+}
+table.eq_table tfoot .links {
+ 	text-align: right;
+ 	border: 0;
+}
+
+td.counter {
+	text-align: right;
+	border: 0;
+}
+
+td.eq_code {
+	width: 100%;
+	border: 0;
+	text-align: center;
+}
+
+.eq_table > tr, td, th, {
+	border: 0;
+}
+
+figure {
+	width: 100%;
+	text-align: center;
+}
+
+figure figcaption {
+	text-align: center;
+	font-size: 11pt;
+}
+
+figure img {
+	max-width: 100%;
+}
+
+img {
+	max-width: 100%;
+}
+
+.authors
+{
+	text-align: center;
+	font-size: 14pt;
+	font-weight: bold;
+}
+
+.authors:empty
+{
+	display: none;
+}
+
+
+.affiliation
+{
+	text-align: center;
+}
+
+.affiliation:empty
+{
+	display: none;
+}
+
+.title
+{
+	text-align: center;
+	margin-bottom: 5pt;
+}
+
+.title:empty
+{
+	display: none;
+}
+
+.header{
+  margin-bottom: 20pt;
+}
+
+.header:empty {
+   display: none;
+}
+
+.slide {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 10pt;
+  margin-bottom: 10pt;
+  padding: 0;
+  width: 221mm;
+  height: 166mm;
+  overflow:hide;
+  border: solid 1px #aaa;
+  float: center;
+}
+
+.slide_169 {
+  width: 294mm;
+  height: 166mm;
+}
+.slide .charter {
+  width: 170mm;
+}
+
+.slide_body {
+  margin: auto;
+  width: 90%;
+  height: 95%;
+  font-size: 130%;
+  overflow: hidden;
+}
+
+
+.slide .slide_body > .charter {
+  margin-right: 14.45mm;
+  margin-left: 14.45mm;
+}
+
+.slide_169 .slide_body > .charter{
+  margin-right: 47.3;
+  margin-left: 47.3;
+}
+
+.slide_body .charter {
+ font-size: 14pt;
+}
+
+.header > .slide_body{
+  height: auto;
+  max-height: 95%;
+}
+
+.figure > .charter {
+  margin: auto;
+}
+
+.slide_body:empty {
+  display: none;
+}
+
+.slide:empty{
+  display: none;
+}
+
+
+@media print {
+  body  {
+    margin: 0;
+    padding: 0;
+  }
+
+  .slide {
+    page-break-after: always;
+    margin: 0;
+    padding: 0;
+    width: 221mm;
+    height: 166mm;
+    border: none;
+    box-shadow: 0 0;
+    overflow: hidden;
+  }
+
+  .slide_169 {
+    width: 294mm;
+    height: 166mm;
+  }
+  /**
+  .slide_body {
+    margin: 0;
+    width: 221mm;
+    height: 166mm;
+    font-size: 130%;
+    overflow: hidden;
+  }
+
+  .slide_169 > .slide_body {
+    width: 294mm;
+  }
+  **/
+}
+
+</style>
+</head>
+<body>
+<div class="document">
+<div class="header slide"><div class="slide_body"><h1 class="title">A Simple Presentation</h1>
+<div class="authors"><span class="author">Martino Ferrari</span><span class="and"> </span></div>
+</div></div><div class="inner">
+<div class="slide"><div class="slide_body">
+<h2 id="toc_1">Introduction</h2>
+
+<p>The results will be presented in equation (<a href="#eq1">1</a>)</p>
+
+</div></div>
+<div class="slide"><div class="slide_body">
+<h2 id="toc_2">Formula</h2>
+
+<p>Some equation:</p>
+<div id="eq1" class="equation">
+<table class="eq_table"><tr><td class="eq_code">\[
+f(x)=\sum_{i=0}^nx^{-i}\]</td><td class="counter">\[(1)\]</td></tr></table></div>
+
+<p>where \(x\in\mathbb{R}\) is the independent variable and \(n\in\mathbb{N}\) is a constant.</p>
+
+</div></div>
+<div class="slide"><div class="slide_body">
+<h2 id="toc_3">Result</h2>
+<figure id="fig:1">
+
+<svg class="charter" xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" viewbox="0 0 600 300">
+<defs><clipPath id="plot-area"><rect x="52.50" y="25.00" width="512.00" height="250.00"/>
+</clipPath></defs><text  x="308.50" y="15.00" text-anchor="middle"  font-weight="bold">f(x)</text>
+<line clip-path="url(#plot-area)"  x1="127.49" y1="25.00" x2="127.49" y2="275.00"  style="stroke: #ccc;stroke-width:0.50"/>
+<line clip-path="url(#plot-area)"  x1="230.92" y1="25.00" x2="230.92" y2="275.00"  style="stroke: #ccc;stroke-width:0.50"/>
+<line clip-path="url(#plot-area)"  x1="334.36" y1="25.00" x2="334.36" y2="275.00"  style="stroke: #ccc;stroke-width:0.50"/>
+<line clip-path="url(#plot-area)"  x1="437.79" y1="25.00" x2="437.79" y2="275.00"  style="stroke: #ccc;stroke-width:0.50"/>
+<line clip-path="url(#plot-area)"  x1="541.23" y1="25.00" x2="541.23" y2="275.00"  style="stroke: #ccc;stroke-width:0.50"/>
+<line clip-path="url(#plot-area)"  x1="52.50" y1="225.76" x2="564.50" y2="225.76"  style="stroke: #ccc;stroke-width:0.50"/>
+<line clip-path="url(#plot-area)"  x1="52.50" y1="162.63" x2="564.50" y2="162.63"  style="stroke: #ccc;stroke-width:0.50"/>
+<line clip-path="url(#plot-area)"  x1="52.50" y1="99.49" x2="564.50" y2="99.49"  style="stroke: #ccc;stroke-width:0.50"/>
+<line clip-path="url(#plot-area)"  x1="52.50" y1="36.36" x2="564.50" y2="36.36"  style="stroke: #ccc;stroke-width:0.50"/>
+<polyline clip-path="url(#plot-area)" style="fill:none; stroke:#db5f57; stroke-width:2.00;" stroke-dasharray="5, 5" points="75.77,36.36 80.47,57.41 85.18,75.21 89.88,90.48 94.58,103.70 99.28,115.28 103.98,125.49 108.68,134.57 113.39,142.69 118.09,150.00 122.79,156.61 127.49,162.63 132.19,168.12 136.89,173.15 141.59,177.78 146.30,182.05 151.00,186.01 155.70,189.68 160.40,193.10 165.10,196.30 169.80,199.28 174.51,202.08 179.21,204.71 183.91,207.19 188.61,209.52 193.31,211.73 198.01,213.81 202.71,215.79 207.42,217.66 212.12,219.44 216.82,221.14 221.52,222.75 226.22,224.29 230.92,225.76 235.63,227.16 240.33,228.50 245.03,229.79 249.73,231.02 254.43,232.20 259.13,233.33 263.84,234.42 268.54,235.47 273.24,236.48 277.94,237.45 282.64,238.38 287.34,239.29 292.04,240.16 296.75,241.00 301.45,241.81 306.15,242.59 310.85,243.35 315.55,244.09 320.25,244.80 324.96,245.49 329.66,246.15 334.36,246.80 339.06,247.43 343.76,248.04 348.46,248.63 353.16,249.21 357.87,249.77 362.57,250.31 367.27,250.84 371.97,251.35 376.67,251.85 381.37,252.34 386.08,252.81 390.78,253.28 395.48,253.73 400.18,254.17 404.88,254.60 409.58,255.01 414.29,255.42 418.99,255.82 423.69,256.21 428.39,256.59 433.09,256.96 437.79,257.32 442.49,257.68 447.20,258.02 451.90,258.36 456.60,258.70 461.30,259.02 466.00,259.34 470.70,259.65 475.41,259.95 480.11,260.25 484.81,260.54 489.51,260.83 494.21,261.11 498.91,261.39 503.61,261.66 508.32,261.92 513.02,262.18 517.72,262.43 522.42,262.68 527.12,262.93 531.82,263.17 536.53,263.40 541.23,263.64 " /><rect  x="52.00" y="25.00" width="512.00" height="250.00" style="fill:none; fill-opacity:1.00; stroke:black; stroke-width:0.50;" />
+<line  x1="127.49" y1="276.00" x2="127.49" y2="281.00"  style="stroke: black;stroke-width:1.00"/>
+<text  x="127.49" y="295.00" text-anchor="middle"  font-weight="regular">2.0</text>
+<line  x1="230.92" y1="276.00" x2="230.92" y2="281.00"  style="stroke: black;stroke-width:1.00"/>
+<text  x="230.92" y="295.00" text-anchor="middle"  font-weight="regular">4.0</text>
+<line  x1="334.36" y1="276.00" x2="334.36" y2="281.00"  style="stroke: black;stroke-width:1.00"/>
+<text  x="334.36" y="295.00" text-anchor="middle"  font-weight="regular">6.0</text>
+<line  x1="437.79" y1="276.00" x2="437.79" y2="281.00"  style="stroke: black;stroke-width:1.00"/>
+<text  x="437.79" y="295.00" text-anchor="middle"  font-weight="regular">8.0</text>
+<line  x1="541.23" y1="276.00" x2="541.23" y2="281.00"  style="stroke: black;stroke-width:1.00"/>
+<text  x="541.23" y="295.00" text-anchor="middle"  font-weight="regular">10.0</text>
+<line  x1="46.50" y1="225.76" x2="51.50" y2="225.76"  style="stroke: black;stroke-width:1.00"/>
+<text  x="42.50" y="229.76" text-anchor="end"  font-weight="regular">1.5</text>
+<line  x1="46.50" y1="162.63" x2="51.50" y2="162.63"  style="stroke: black;stroke-width:1.00"/>
+<text  x="42.50" y="166.63" text-anchor="end"  font-weight="regular">2.0</text>
+<line  x1="46.50" y1="99.49" x2="51.50" y2="99.49"  style="stroke: black;stroke-width:1.00"/>
+<text  x="42.50" y="103.49" text-anchor="end"  font-weight="regular">2.5</text>
+<line  x1="46.50" y1="36.36" x2="51.50" y2="36.36"  style="stroke: black;stroke-width:1.00"/>
+<text  x="42.50" y="40.36" text-anchor="end"  font-weight="regular">3.0</text>
+</svg>
+
+<figcaption><b>Figure 1.</b> approximation of equation 1 with \(n=3\)</figcaption>
+</figure>
+
+</div></div>
+<div class="slide"><div class="slide_body">
+<h2 id="toc_4">Conclusion</h2>
+
+<p>As shown in figure <a href="#fig:1">1</a> the output is cool</p>
+</div></div>
+</div>
+</div>
+<script>renderMathInElement(document.body);</script>
+<script>hljs.initHighlightingOnLoad();</script>
+<script>mermaid.initialize({startOnLoad:true});</script>
+</body>
+</html>
