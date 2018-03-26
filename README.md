@@ -71,7 +71,7 @@ $ git clone https://github.com/fabiocolacio/Marker.git
 $ cd Marker
 $ git submodule update --init --recursive
 $ mkdir build && cd build
-$ meson ..
+$ meson .. --prefix /usr
 $ ninja
 $ sudo ninja install
 ```
