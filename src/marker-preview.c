@@ -343,9 +343,9 @@ marker_preview_render_markdown(MarkerPreview* preview,
   }
 
   GBytes *bhtml = g_string_free_to_bytes(g_string_new(html));
-  webkit_web_view_load_bytes(web_view, bhtml, "text/html", "UTF-8",
-                             uri);
+  webkit_web_view_load_bytes(web_view, bhtml, "text/html", "UTF-8", uri);
   g_free(uri);
+  // g_free(shtml);
   free(html);
 }
 
@@ -405,11 +405,12 @@ marker_preview_print_pdf(MarkerPreview*     preview,
       gtk_print_settings_set_paper_width(print_s, height, GTK_UNIT_MM);
       gtk_print_settings_set_paper_height(print_s, width, GTK_UNIT_MM);
     }
-
-    gtk_page_setup_set_left_margin(gtk_page_setup, 0, GTK_UNIT_POINTS);
-    gtk_page_setup_set_right_margin(gtk_page_setup, 0, GTK_UNIT_POINTS);
-    gtk_page_setup_set_top_margin(gtk_page_setup, 0, GTK_UNIT_POINTS);
-    gtk_page_setup_set_bottom_margin(gtk_page_setup, 0, GTK_UNIT_POINTS);
+    if (paper_size == B43 || paper_size == B169) {
+      gtk_page_setup_set_left_margin(gtk_page_setup, 0, GTK_UNIT_POINTS);
+      gtk_page_setup_set_right_margin(gtk_page_setup, 0, GTK_UNIT_POINTS);
+      gtk_page_setup_set_top_margin(gtk_page_setup, 0, GTK_UNIT_POINTS);
+      gtk_page_setup_set_bottom_margin(gtk_page_setup, 0, GTK_UNIT_POINTS);
+    }
     gtk_print_settings_set_orientation(print_s, orientation);
 
     webkit_print_operation_set_print_settings(print_op, print_s);
