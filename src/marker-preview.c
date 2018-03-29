@@ -380,7 +380,7 @@ marker_preview_print_pdf(MarkerPreview*     preview,
     if (paper_size != B43 && paper_size != B169)
       gtk_paper_size = gtk_paper_size_new(paper_to_gtkstr(paper_size));
     else if (paper_size == B43)
-      gtk_paper_size = gtk_paper_size_new_custom("B43", "B43", 166, 210, GTK_UNIT_MM);
+      gtk_paper_size = gtk_paper_size_new_custom("B43", "B43", 166, 221, GTK_UNIT_MM);
     else
       gtk_paper_size = gtk_paper_size_new_custom("B43", "B43", 166, 294, GTK_UNIT_MM);
 
