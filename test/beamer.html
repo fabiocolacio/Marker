@@ -10,104 +10,90 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
 <script src="https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js"></script>
 <style>
-*{margin:0;padding:0;}
+@import url(https://fonts.googleapis.com/css?family=IBM+Plex+Sans+Condensed);
+@import url(https://fonts.googleapis.com/css?family=IBM+Plex+Serif);
+
 body {
-	font:13.34px helvetica,arial,freesans,clean,sans-serif;
-	color:black;
-	line-height:1.4em;
-	background-color: #F8F8F8;
-	padding: 0.7em;
-}
-p {
-	margin:1em 0;
-	line-height:1.5em;
-}
-table {
-	font-size:inherit;
-	font:100%;
-	margin:1em;
-}
-table th{border-bottom:1px solid #bbb;padding:.2em 1em;}
-table td{border-bottom:1px solid #ddd;padding:.2em 1em;}
-input[type=text],input[type=password],input[type=image],textarea{font:99% helvetica,arial,freesans,sans-serif;}
-select,option{padding:0 .25em;}
-optgroup{margin-top:.5em;}
-pre,code{font:12px Monaco,"Courier New","DejaVu Sans Mono","Bitstream Vera Sans Mono",monospace;}
-pre {
-	margin:1em 0;
-	font-size:12px;
-	background-color:#eee;
-	border:1px solid #ddd;
-	padding:5px;
-	line-height:1.5em;
-	color:#444;
-	overflow:auto;
-	-webkit-box-shadow:rgba(0,0,0,0.07) 0 1px 2px inset;
-	-webkit-border-radius:3px;
-	-moz-border-radius:3px;border-radius:3px;
-}
-pre code {
-	padding:0;
-	font-size:12px;
-	background-color:#eee;
-	border:none;
-}
-code {
-	font-size:12px;
-	background-color:#f8f8ff;
-	color:#444;
-	padding:0 .2em;
-	border:1px solid #dedede;
-}
-img{border:0;max-width:100%;}
-abbr{border-bottom:none;}
-a{color:#4183c4;text-decoration:none;}
-a:hover{text-decoration:underline;}
-a code,a:link code,a:visited code{color:#4183c4;}
-h2,h3{margin:1em 0;}
-h1,h2,h3,h4,h5,h6{border:0;}
-h1{font-size:170%;border-top:4px solid #aaa;padding-top:.5em;margin-top:1.5em;}
-h1:first-child{margin-top:0;padding-top:.25em;border-top:none;}
-h2{font-size:150%;margin-top:1.5em;border-top:4px solid #e0e0e0;padding-top:.5em;}
-h3{margin-top:1em;}
-hr{border:1px solid #ddd;}
-ul{margin:1em 0 1em 2em;}
-ol{margin:1em 0 1em 2em;}
-ul li,ol li{margin-top:.5em;margin-bottom:.5em;}
-ul ul,ul ol,ol ol,ol ul{margin-top:0;margin-bottom:0;}
-blockquote{margin:1em 0;border-left:5px solid #ddd;padding-left:.6em;color:#555;}
-dt{font-weight:bold;margin-left:1em;}
-dd{margin-left:2em;margin-bottom:1em;}
-sup {
-    font-size: 0.83em;
-    vertical-align: super;
-    line-height: 0;
-}
-kbd {
-  display: inline-block;padding: 3px 5px;font-size: 11px;line-height: 10px;color: #555;vertical-align: middle;background-color: #fcfcfc;border: solid 1px #ccc;border-bottom-color: #bbb;border-radius: 3px;box-shadow: inset 0 -1px 0 #bbb;
-}
-* {
-	-webkit-print-color-adjust: exact;
-}
-@media screen and (min-width: 914px) {
-    body {
-        width: 854px;
-        margin:0 auto;
-    }
-}
-@media print {
-	table, pre {
-		page-break-inside: avoid;
-	}
-	pre {
-		word-wrap: break-word;
-	}
+    background: #223;
 }
 
-figure figcaption {
-	text-align: center;
-	font-size: 10px;
-  }
+.document {
+	font-family: 'IBM Plex Sans Condensed', sans-serif;
+    font-size: 16pt;
+    margin: auto;
+}
+
+a {
+    color: #660;
+}
+
+h2, h3, h4, h5, h6 {
+    margin-top: 0;
+    margin-bottom: 30pt;
+}
+
+.slide {
+    background: #eee;
+    color: #111;
+}
+
+.slide_body{
+    text-align: left;
+    overflow: hidden;
+}
+
+table {
+  border: 0;
+  min-width: 80%;
+  border-collapse: collapse;
+  margin: auto;
+}
+table td, table th {
+  padding: 3px 2px;
+}
+
+table tr:nth-child(even) {
+  background: #ccc;
+}
+table thead {
+  background: #333;
+  border-bottom: 0;
+}
+table thead th {
+  font-size: 16pt;
+  font-weight: bold;
+  color: #FFFFFF;
+}
+
+.header {
+    background: #066dab; /* Old browsers */
+    color: #fff;
+}
+
+
+.title, .authors, .affiliation {
+    text-align: center;
+}
+
+.authors{
+    font-size: 20pt;
+}
+
+.affiliation {
+    font-size: 18pt;
+}
+
+table.eq_table {
+	font-size: 14pt;
+}
+
+.charter {
+    font-family: 'IBM Plex Serif', serif;
+}
+
+figcaption {
+    font-size: 14pt;
+}
 
 table.eq_table {
 	border-collapse: collapse;
@@ -202,53 +188,49 @@ img {
 
 .slide {
   display: flex;
-  align-items: center;
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: 10pt;
-  margin-bottom: 10pt;
-  padding: 0;
   width: 221mm;
   height: 166mm;
-  overflow:hide;
-  border: solid 1px #aaa;
-  float: center;
+  margin: 0 auto 20px auto;
+  padding: 0;
+  align-items: center;
+  border: 1px solid #000;
 }
 
 .slide_169 {
   width: 294mm;
   height: 166mm;
 }
-.slide .charter {
-  width: 170mm;
-}
+
 
 .slide_body {
+  display: block;
+  width: 191mm;
+  height: 136mm;
   margin: auto;
-  width: 90%;
-  height: 95%;
-  font-size: 130%;
   overflow: hidden;
 }
 
 
-.slide .slide_body > .charter {
-  margin-right: 14.45mm;
-  margin-left: 14.45mm;
+.slide_169 > .slide_body {
+  width: 264mm;
 }
 
-.slide_169 .slide_body > .charter{
-  margin-right: 47.3;
-  margin-left: 47.3;
+.slide figure {
+  width: auto;
 }
+
+.slide figcaption {
+  font-size: 14pt;
+}
+
 
 .slide_body .charter {
- font-size: 14pt;
+ font-size: 12pt;
+ max-width: 180mm;
 }
 
-.header > .slide_body{
-  height: auto;
-  max-height: 95%;
+.header > .slide_body {
+    height: auto;
 }
 
 .figure > .charter {
@@ -275,29 +257,17 @@ img {
     margin: 0;
     padding: 0;
     width: 221mm;
-    height: 166mm;
+    min-height: 165.5mm;
+    height: 165.5mm;
+    max-height: 165.5mm;
     border: none;
-    box-shadow: 0 0;
     overflow: hidden;
+    border: 0;
   }
 
   .slide_169 {
     width: 294mm;
-    height: 166mm;
   }
-  /**
-  .slide_body {
-    margin: 0;
-    width: 221mm;
-    height: 166mm;
-    font-size: 130%;
-    overflow: hidden;
-  }
-
-  .slide_169 > .slide_body {
-    width: 294mm;
-  }
-  **/
 }
 
 </style>
@@ -366,7 +336,39 @@ f(x)=\sum_{i=0}^nx^{-i}\]</td><td class="counter">\[(1)\]</td></tr></table></div
 
 </div></div>
 <div class="slide"><div class="slide_body">
-<h2 id="toc_4">Conclusion</h2>
+<h2 id="toc_4">Table</h2>
+
+<table>
+<thead>
+<tr>
+<th>Column A.</th>
+<th>Column B.</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>Element A.1</td>
+<td>Element B.1</td>
+</tr>
+<tr>
+<td>Element A.2</td>
+<td>Element B.2</td>
+</tr>
+<tr>
+<td>Element A.3</td>
+<td>Element B.3</td>
+</tr>
+<tr>
+<td>Element A.4</td>
+<td>Element B.4</td>
+</tr>
+</tbody>
+</table>
+
+</div></div>
+<div class="slide"><div class="slide_body">
+<h2 id="toc_5">Conclusion</h2>
 
 <p>As shown in figure <a href="#fig:1">1</a> the output is cool</p>
 </div></div>
