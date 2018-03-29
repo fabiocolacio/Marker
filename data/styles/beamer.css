@@ -1,0 +1,84 @@
+@import url(https://fonts.googleapis.com/css?family=IBM+Plex+Sans+Condensed);
+@import url(https://fonts.googleapis.com/css?family=IBM+Plex+Serif);
+
+body {
+    background: #223;
+}
+
+.document {
+	font-family: 'IBM Plex Sans Condensed', sans-serif;
+    font-size: 16pt;
+    margin: auto;
+}
+
+a {
+    color: #660;
+}
+
+h2, h3, h4, h5, h6 {
+    margin-top: 0;
+    margin-bottom: 30pt;
+}
+
+.slide {
+    background: #eee;
+    color: #111;
+}
+
+.slide_body{
+    text-align: left;
+    overflow: hidden;
+}
+
+table {
+  border: 0;
+  min-width: 80%;
+  border-collapse: collapse;
+  margin: auto;
+}
+table td, table th {
+  padding: 3px 2px;
+}
+
+table tr:nth-child(even) {
+  background: #ccc;
+}
+table thead {
+  background: #333;
+  border-bottom: 0;
+}
+table thead th {
+  font-size: 16pt;
+  font-weight: bold;
+  color: #FFFFFF;
+}
+
+.header {
+    background: #066dab; /* Old browsers */
+    color: #fff;
+}
+
+
+.title, .authors, .affiliation {
+    text-align: center;
+}
+
+.authors{
+    font-size: 20pt;
+}
+
+.affiliation {
+    font-size: 18pt;
+}
+
+table.eq_table {
+	font-size: 14pt;
+}
+
+.charter {
+    font-family: 'IBM Plex Serif', serif;
+}
+
+figcaption {
+    font-size: 14pt;
+}
