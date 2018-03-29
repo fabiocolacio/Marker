@@ -40,6 +40,17 @@ plot:
 
 ---
 
+# Table
+
+| Column A. | Column B.|
+| --------- | -------- |
+| Element A.1 | Element B.1 |
+| Element A.2 | Element B.2 |
+| Element A.3 | Element B.3 |
+| Element A.4 | Element B.4 |
+
+---
+
 # Conclusion
 
 As shown in figure (#fig:1) the output is cool
