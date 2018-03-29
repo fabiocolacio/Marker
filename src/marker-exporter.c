@@ -197,6 +197,10 @@ marker_exporter_show_export_dialog(MarkerWindow* window)
       base_folder = g_file_get_path(g_file_get_parent(source));
     size_t len = strlen(markdown);
     metadata * meta = marker_markdown_metadata(markdown, len);
+    scidow_paper_size paper_size = meta->paper_size;
+    if (meta->doc_class == CLASS_BEAMER && !(paper_size == B43 || paper_size == B169))
+      paper_size = B43;
+
     if (!meta) {
       fprintf(stderr, "marker-exporter.c#show_export_dialog: Document Metadata NULL!\n");
       return;
@@ -222,7 +226,7 @@ marker_exporter_show_export_dialog(MarkerWindow* window)
         break;
 
       case PDF:
-        marker_preview_print_pdf(preview, filename, meta->paper_size, orientation);
+        marker_preview_print_pdf(preview, filename, paper_size, orientation);
         break;
 
       case LATEX:
