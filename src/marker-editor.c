@@ -105,7 +105,6 @@ file_changed_cb (GFileMonitor      *monior,
       gtk_source_buffer_begin_not_undoable_action (buffer);
       marker_source_view_set_text (source_view, file_contents, file_size);
       gtk_source_buffer_end_not_undoable_action (buffer);
-      editor->needs_refresh = TRUE;
     }
 
     editor->unsaved_changes = FALSE;
@@ -119,7 +118,9 @@ buffer_changed_cb (GtkTextBuffer *buffer,
                    gpointer user_data)
 {
   MarkerEditor *editor = user_data;
-  editor->unsaved_changes = TRUE;
+  if (editor->view_mode != PREVIEW_ONLY_MODE) {
+    editor->unsaved_changes = TRUE;
+  }
   editor->needs_refresh = TRUE;
   if (editor->text_iter) {
     editor->text_iter = NULL;
