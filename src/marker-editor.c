@@ -31,6 +31,7 @@ struct _MarkerEditor
   GtkBox                parent_instance;
 
   GFile                *file;
+  GFileMonitor         *file_monitor;
   gchar*                title;
   gboolean              unsaved_changes;
 
@@ -73,6 +74,43 @@ refresh_timeout_cb (gpointer user_data)
   MarkerEditor *editor = user_data;
   if (editor->needs_refresh)
     marker_editor_refresh_preview (editor);
+  return G_SOURCE_CONTINUE;
+}
+
+static gboolean
+file_changed_cb (GFileMonitor      *monior,
+                 GFile             *file,
+                 GFile             *other_file,
+                 GFileMonitorEvent  event_type,
+                 gpointer           user_data)
+{
+  MarkerEditor * editor = MARKER_EDITOR(user_data);
+  g_assert (MARKER_IS_EDITOR (editor));
+  if (file) {
+    g_autofree gchar *file_contents = NULL;
+    gsize file_size = 0;
+    GError *err = NULL;
+
+    g_file_load_contents (file, NULL, &file_contents, &file_size, NULL, &err);
+
+    if (err)
+    {
+      g_error_free (err);
+    }
+    else
+    {
+      MarkerSourceView *source_view = editor->source_view;
+      GtkSourceBuffer *buffer =
+        GTK_SOURCE_BUFFER (gtk_text_view_get_buffer (GTK_TEXT_VIEW (source_view)));
+      gtk_source_buffer_begin_not_undoable_action (buffer);
+      marker_source_view_set_text (source_view, file_contents, file_size);
+      gtk_source_buffer_end_not_undoable_action (buffer);
+      editor->needs_refresh = TRUE;
+    }
+
+    editor->unsaved_changes = FALSE;
+
+  }
   return G_SOURCE_CONTINUE;
 }
 
@@ -341,6 +379,17 @@ marker_editor_set_view_mode (MarkerEditor   *editor,
 {
   g_assert (MARKER_IS_EDITOR (editor));
 
+  if (editor->view_mode  != view_mode){
+    if (view_mode == PREVIEW_ONLY_MODE && editor->file)
+    {
+      editor->file_monitor = g_file_monitor_file(editor->file, G_FILE_MONITOR_NONE, NULL, NULL);
+      g_signal_connect(editor->file_monitor, "changed", G_CALLBACK(file_changed_cb), editor);
+
+    } else if (editor->view_mode == PREVIEW_ONLY_MODE && editor->file)
+    {
+      g_file_monitor_cancel(editor->file_monitor);
+    }
+  }
   editor->view_mode = view_mode;
 
   GtkWidget * const paned = GTK_WIDGET (editor->paned);
@@ -393,6 +442,7 @@ marker_editor_set_view_mode (MarkerEditor   *editor,
       gtk_widget_show_all (GTK_WIDGET (preview_window));
       break;
   }
+
 }
 
 void
