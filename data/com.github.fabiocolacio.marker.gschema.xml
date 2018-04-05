@@ -7,6 +7,11 @@
     <value nick="dual-window" value="3"/>
   </enum>
 
+  <enum id="com.github.fabiocolacio.marker.MathJS">
+    <value nick="KaTeX" value="0"/>
+    <value nick="MathJax" value="1"/>
+  </enum>
+
   <schema path="/com/github/fabiocolacio/marker/preferences/" id="com.github.fabiocolacio.marker.preferences">
     <child name="editor" schema="com.github.fabiocolacio.marker.preferences.editor"/>
     <child name="preview" schema="com.github.fabiocolacio.marker.preferences.preview"/>
@@ -106,10 +111,16 @@
       <summary>Use a CSS theme in the live preview</summary>
     </key>
 
-    <key name="katex-toggle" type="b">
+    <key name="mathjs-toggle" type="b">
       <default>true</default>
-      <summary>Enable KaTeX in Preview</summary>
-      <description>Use KaTeX in the live preview.</description>
+      <summary>Enable math in Preview</summary>
+      <description>Use js back-end to render math in the live preview.</description>
+    </key>
+
+    <key name="math-backend" enum="com.github.fabiocolacio.marker.MathJS">
+      <default>'KaTeX'</default>
+      <summary>Math Back-end</summary>
+      <description>Select the js math rendering back-end.</description>
     </key>
 
     <key name="highlight-toggle" type="b">
