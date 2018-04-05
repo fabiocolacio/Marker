@@ -17,7 +17,6 @@ img {
   font-size: 100%;
   font: inherit;
   vertical-align: baseline;
-  unicode-bidi: plaintext;
 }
 html * {
   font-family: "ff-din-web-pro-1", "ff-din-web-pro-2", sans-serif;
