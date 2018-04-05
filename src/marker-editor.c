@@ -640,6 +640,16 @@ marker_editor_apply_prefs (MarkerEditor *editor)
   state = marker_prefs_get_replace_tabs ();
   gtk_source_view_set_insert_spaces_instead_of_tabs (source_view, state);
 
+  state = marker_prefs_get_show_spaces();
+  GtkSourceSpaceDrawer * space_drawer = gtk_source_view_get_space_drawer(source_view);
+  if (state) {
+    gtk_source_space_drawer_set_types_for_locations(space_drawer, GTK_SOURCE_SPACE_LOCATION_ALL,
+                                                    GTK_SOURCE_SPACE_TYPE_NBSP |
+                                                    GTK_SOURCE_SPACE_TYPE_SPACE |
+                                                    GTK_SOURCE_SPACE_TYPE_TAB);
+  }
+  gtk_source_space_drawer_set_enable_matrix(space_drawer, state);
+
   guint tab_width = marker_prefs_get_tab_width ();
   gtk_source_view_set_indent_width (source_view, tab_width);
 }
