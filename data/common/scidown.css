@@ -38,6 +38,9 @@ figure figcaption {
 	text-align: center;
 	font-size: 11pt;
 }
+*{
+  unicode-bidi: plaintext;
+}
 
 figure img {
 	max-width: 100%;
