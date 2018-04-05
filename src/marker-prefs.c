@@ -218,6 +218,18 @@ marker_prefs_set_auto_indent(gboolean state)
 }
 
 gboolean
+marker_prefs_get_show_spaces (void)
+{
+  return g_settings_get_boolean(prefs.editor_settings, "show-spaces");
+}
+
+void
+marker_prefs_set_show_spaces (gboolean state)
+{
+  g_settings_set_boolean(prefs.editor_settings, "show-spaces", state);
+}
+
+gboolean
 marker_prefs_get_spell_check()
 {
   return g_settings_get_boolean(prefs.editor_settings, "spell-check");
@@ -512,6 +524,15 @@ wrap_text_toggled(GtkToggleButton* button,
 }
 
 static void
+show_spaces_toggled(GtkToggleButton* button,
+                    gpointer         user_data)
+{
+  gboolean state = gtk_toggle_button_get_active(button);
+  marker_prefs_set_show_spaces(state);
+  update_editors ();
+}
+
+static void
 enable_dark_mode_toggled(GtkToggleButton* button,
                          gpointer         user_data)
 {
@@ -773,6 +794,10 @@ marker_prefs_show_window()
   gtk_toggle_button_set_active(check_button, marker_prefs_get_wrap_text());
 
   check_button =
+    GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "show_spaces_check_button"));
+  gtk_toggle_button_set_active(check_button, marker_prefs_get_show_spaces());
+
+  check_button =
     GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "highlight_current_line_check_button"));
   gtk_toggle_button_set_active(check_button, marker_prefs_get_highlight_current_line());
 
@@ -868,6 +893,9 @@ marker_prefs_show_window()
   gtk_builder_add_callback_symbol(builder,
                                   "wrap_text_toggled",
                                   G_CALLBACK(wrap_text_toggled));
+  gtk_builder_add_callback_symbol(builder,
+                                  "show_spaces_toggled",
+                                  G_CALLBACK(show_spaces_toggled));
   gtk_builder_add_callback_symbol(builder,
                                   "show_right_margin_toggled",
                                   G_CALLBACK(show_right_margin_toggled));

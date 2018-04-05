@@ -42,6 +42,8 @@ guint                marker_prefs_get_tab_width                  (void);
 void                 marker_prefs_set_tab_width                  (guint               width);
 gboolean             marker_prefs_get_auto_indent                (void);
 void                 marker_prefs_set_auto_indent                (gboolean            state);
+gboolean             marker_prefs_get_show_spaces                (void);
+void                 marker_prefs_set_show_spaces                (gboolean            state);
 gboolean             marker_prefs_get_spell_check                (void);
 void                 marker_prefs_set_spell_check                (gboolean            state);
 gchar               *marker_prefs_get_spell_check_language       (void);
