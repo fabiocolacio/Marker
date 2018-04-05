@@ -212,7 +212,7 @@ marker_exporter_show_export_dialog(MarkerWindow* window)
         marker_markdown_to_html_file_with_css_inline(markdown,
                                                      len,
                                                      base_folder,
-                                                     (marker_prefs_get_use_katex())
+                                                     (marker_prefs_get_use_mathjs())
                                                        ? KATEX_NET
                                                        : KATEX_OFF,
                                                      (marker_prefs_get_use_highlight())
@@ -233,7 +233,7 @@ marker_exporter_show_export_dialog(MarkerWindow* window)
         marker_markdown_to_latex_file(markdown,
                                       len,
                                       base_folder,
-                                      (marker_prefs_get_use_katex())
+                                      (marker_prefs_get_use_mathjs())
                                         ? KATEX_NET
                                         : KATEX_OFF,
                                       (marker_prefs_get_use_highlight())
@@ -249,7 +249,7 @@ marker_exporter_show_export_dialog(MarkerWindow* window)
         marker_exporter_export_pandoc(marker_markdown_to_html_with_css_inline(markdown,
                                                                               len,
                                                                               base_folder,
-                                                                              (marker_prefs_get_use_katex())
+                                                                              (marker_prefs_get_use_mathjs())
                                                                                 ? KATEX_NET
                                                                                 : KATEX_OFF,
                                                                               (marker_prefs_get_use_highlight())

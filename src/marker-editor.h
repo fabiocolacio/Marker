@@ -42,6 +42,11 @@ typedef enum
   DUAL_WINDOW_MODE
 } MarkerViewMode;
 
+typedef enum {
+  KATEX,
+  MATHJAX
+} MarkerMathBackEnd;
+
 MarkerEditor        *marker_editor_new                           (void);
 MarkerEditor        *marker_editor_new_from_file                 (GFile              *file);
 MarkerViewMode       marker_editor_get_view_mode                 (MarkerEditor       *editor);
