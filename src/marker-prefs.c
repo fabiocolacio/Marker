@@ -98,15 +98,15 @@ marker_prefs_set_highlight_theme(const char* theme)
 }
 
 gboolean
-marker_prefs_get_use_katex()
+marker_prefs_get_use_mathjs()
 {
-  return g_settings_get_boolean(prefs.preview_settings, "katex-toggle");
+  return g_settings_get_boolean(prefs.preview_settings, "mathjs-toggle");
 }
 
 void
-marker_prefs_set_use_katex(gboolean state)
+marker_prefs_set_use_mathjs(gboolean state)
 {
-  g_settings_set_boolean(prefs.preview_settings, "katex-toggle", state);
+  g_settings_set_boolean(prefs.preview_settings, "mathjs-toggle", state);
 }
 
 gdouble
@@ -325,6 +325,19 @@ marker_prefs_set_default_view_mode(MarkerViewMode view_mode)
   g_settings_set_enum(prefs.window_settings, "view-mode", view_mode);
 }
 
+
+MarkerMathBackEnd
+marker_prefs_get_math_backend (void)
+{
+  return g_settings_get_enum(prefs.preview_settings, "math-backend");
+}
+
+void
+marker_prefs_set_math_backend (MarkerMathBackEnd   backend)
+{
+  g_settings_set_enum(prefs.preview_settings, "math-backend", backend);
+}
+
 GList*
 marker_prefs_get_available_stylesheets()
 {
@@ -488,11 +501,13 @@ highlight_current_line_toggled(GtkToggleButton* button,
 }
 
 static void
-enable_katex_toggled(GtkToggleButton* button,
+enable_mathjs_toggled(GtkToggleButton* button,
                        gpointer         user_data)
 {
   gboolean state = gtk_toggle_button_get_active(button);
-  marker_prefs_set_use_katex(state);
+  marker_prefs_set_use_mathjs(state);
+  if (user_data)
+    gtk_widget_set_sensitive(GTK_WIDGET(user_data), state);
   refresh_preview();
 }
 
@@ -683,6 +698,16 @@ default_view_mode_chosen(GtkComboBox* combo_box,
 }
 
 static void
+math_backend_changed (GtkComboBox* combo_box,
+                         gpointer     user_data)
+{
+  MarkerMathBackEnd backend = gtk_combo_box_get_active(combo_box);
+  marker_prefs_set_math_backend(backend);
+  refresh_preview();
+}
+
+
+static void
 use_gnome_appmenu_toggled(GtkToggleButton* button,
                           gpointer         user_data)
 {
@@ -743,6 +768,16 @@ marker_prefs_show_window()
                                  NULL);
   gtk_combo_box_set_active(combo_box, marker_prefs_get_default_view_mode());
 
+  combo_box = GTK_COMBO_BOX(gtk_builder_get_object(builder, "math_backends_combo"));
+  cell_renderer = gtk_cell_renderer_text_new();
+  gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(combo_box), cell_renderer, TRUE);
+  gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(combo_box),
+                                 cell_renderer,
+                                 "text", 0,
+                                 NULL);
+  gtk_combo_box_set_active(combo_box, marker_prefs_get_math_backend());
+  gtk_widget_set_sensitive(GTK_WIDGET(combo_box), marker_prefs_get_use_mathjs());
+
   combo_box = GTK_COMBO_BOX(gtk_builder_get_object(builder, "spell_lang_chooser"));
   list = marker_prefs_get_available_languages();
   marker_widget_populate_combo_box_with_strings(combo_box, list);
@@ -766,8 +801,8 @@ marker_prefs_show_window()
   gtk_toggle_button_set_active(check_button, marker_prefs_get_use_syntax_theme());
 
   check_button =
-    GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "katex_check_button"));
-  gtk_toggle_button_set_active(check_button, marker_prefs_get_use_katex());
+    GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "mathjs_check_button"));
+  gtk_toggle_button_set_active(check_button, marker_prefs_get_use_mathjs());
 
   check_button =
     GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "mermaid_check_button"));
@@ -861,6 +896,9 @@ marker_prefs_show_window()
                                   "default_view_mode_chosen",
                                   G_CALLBACK(default_view_mode_chosen));
   gtk_builder_add_callback_symbol(builder,
+                                  "math_backends_combo_changed_cb",
+                                  G_CALLBACK(math_backend_changed));
+  gtk_builder_add_callback_symbol(builder,
                                   "show_line_numbers_toggled",
                                   G_CALLBACK(show_line_numbers_toggled));
   gtk_builder_add_callback_symbol(builder,
@@ -885,8 +923,8 @@ marker_prefs_show_window()
                                   "right_margin_position_value_changed",
                                   G_CALLBACK(right_margin_position_value_changed));
   gtk_builder_add_callback_symbol(builder,
-                                  "enable_katex_toggled",
-                                  G_CALLBACK(enable_katex_toggled));
+                                  "enable_mathjs_toggled",
+                                  G_CALLBACK(enable_mathjs_toggled));
   gtk_builder_add_callback_symbol(builder,
                                   "enable_mermaid_toggled",
                                   G_CALLBACK(enable_mermaid_toggled));
