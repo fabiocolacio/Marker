@@ -100,7 +100,7 @@
 
   <schema path="/com/github/fabiocolacio/marker/preferences/preview/" id="com.github.fabiocolacio.marker.preferences.preview">
     <key name="css-theme" type="s">
-      <default>'/usr/share/com.github.fabiocolacio.marker/styles/swiss.css'</default>
+      <default>'swiss.css'</default>
       <summary>CSS Theme</summary>
       <description>The css theme to use for the preview.</description>
     </key>

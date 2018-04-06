@@ -646,17 +646,8 @@ css_chosen(GtkComboBox* combo_box,
 {
   char* choice = marker_widget_combo_box_get_active_str(combo_box);
 
-  char* path;
-  if (strcmp(choice, "none") != 0)
-  {
-    path = marker_string_prepend(choice, STYLES_DIR, NULL, 0);
-    marker_prefs_set_css_theme(path);
-    free(path);
-  }
-  else
-  {
-    marker_prefs_set_css_theme(choice);
-  }
+  marker_prefs_set_css_theme(choice);
+
   free(choice);
 
   refresh_preview();

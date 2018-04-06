@@ -231,7 +231,8 @@ marker_markdown_to_html(const char*         markdown,
   if (stylesheet_location)
   {
     ref = header;
-    header = g_strdup_printf("%s<link rel=\"stylesheet\" type=\"text/css\" href=\"file://%s\">\n", header, stylesheet_location);
+    header = g_strdup_printf("%s<link rel=\"stylesheet\" type=\"text/css\" href=\"file://%s%s\">\n", header, STYLES_DIR, stylesheet_location);
+    g_print("%s\n",header);
     free(ref);
   }
 
@@ -282,7 +283,9 @@ marker_markdown_to_html_with_css_inline(const char*         markdown,
 
 
   FILE* fp = NULL;
-  fp = fopen(stylesheet_location, "r");
+  gchar * path = g_strdup_printf("%s%s", STYLES_DIR, stylesheet_location);
+  fp = fopen(path, "r");
+  g_free(path);
   char* inline_css = NULL;
   if (fp)
   {
