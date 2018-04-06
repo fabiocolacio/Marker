@@ -213,8 +213,8 @@ marker_exporter_show_export_dialog(MarkerWindow* window)
                                                      len,
                                                      base_folder,
                                                      (marker_prefs_get_use_mathjs())
-                                                       ? KATEX_NET
-                                                       : KATEX_OFF,
+                                                       ? MATHJS_NET
+                                                       : MATHJS_OFF,
                                                      (marker_prefs_get_use_highlight())
                                                        ? HIGHLIGHT_NET
                                                        : HIGHLIGHT_OFF,
@@ -234,8 +234,8 @@ marker_exporter_show_export_dialog(MarkerWindow* window)
                                       len,
                                       base_folder,
                                       (marker_prefs_get_use_mathjs())
-                                        ? KATEX_NET
-                                        : KATEX_OFF,
+                                        ? MATHJS_NET
+                                        : MATHJS_OFF,
                                       (marker_prefs_get_use_highlight())
                                         ? HIGHLIGHT_NET
                                         : HIGHLIGHT_OFF,
@@ -250,8 +250,8 @@ marker_exporter_show_export_dialog(MarkerWindow* window)
                                                                               len,
                                                                               base_folder,
                                                                               (marker_prefs_get_use_mathjs())
-                                                                                ? KATEX_NET
-                                                                                : KATEX_OFF,
+                                                                                ? MATHJS_NET
+                                                                                : MATHJS_OFF,
                                                                               (marker_prefs_get_use_highlight())
                                                                                 ? HIGHLIGHT_NET
                                                                                 : HIGHLIGHT_OFF,

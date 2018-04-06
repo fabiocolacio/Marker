@@ -299,9 +299,9 @@ marker_preview_render_markdown(MarkerPreview* preview,
                                const char*    css_theme,
                                const char*    base_uri)
 {
-  MarkerKaTeXMode katex_mode = KATEX_OFF;
+  MarkerMathJSMode katex_mode = MATHJS_OFF;
   if (marker_prefs_get_use_mathjs()) {
-    katex_mode = KATEX_LOCAL;
+    katex_mode = MATHJS_LOCAL;
   }
   MarkerHighlightMode highlight_mode = HIGHLIGHT_OFF;
   if (marker_prefs_get_use_highlight()){
