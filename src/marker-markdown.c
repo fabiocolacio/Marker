@@ -232,7 +232,6 @@ marker_markdown_to_html(const char*         markdown,
   {
     ref = header;
     header = g_strdup_printf("%s<link rel=\"stylesheet\" type=\"text/css\" href=\"file://%s%s\">\n", header, STYLES_DIR, stylesheet_location);
-    g_print("%s\n",header);
     free(ref);
   }
 
