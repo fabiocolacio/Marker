@@ -14,4 +14,7 @@ if [ -z $DESTDIR ]; then
 
     echo "Updating desktop database..."
     update-desktop-database -q $datadir"/applications"
+
+    chmod -R o=+rx $datadir"/com.github.fabiocolacio.marker/scripts"
+    chmod -R g=+rx $datadir"/com.github.fabiocolacio.marker/scripts"
 fi
