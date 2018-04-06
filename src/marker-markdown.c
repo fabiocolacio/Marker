@@ -33,13 +33,13 @@
 #include "marker-markdown.h"
 #include "marker-prefs.h"
 
-char* html_header(MarkerKaTeXMode     katex_mode,
+char* html_header(MarkerMathJSMode    mathjs_mode,
                   MarkerHighlightMode highlight_mode,
                   MarkerMermaidMode   mermaid_mode)
 {
-  char* katex_script;
-  char* katex_auto;
-  char* katex_css;
+  char* mathjs_script;
+  char* mathjs_auto;
+  char* mathjs_css;
 
   char* highlight_css;
   char* highlight_script;
@@ -47,22 +47,41 @@ char* html_header(MarkerKaTeXMode     katex_mode,
   char* mermaid_script;
 
   char * local_highlight_css = marker_prefs_get_highlight_theme();
+  MarkerMathBackEnd backend = marker_prefs_get_math_backend();
 
-  switch (katex_mode) {
-    case KATEX_OFF:
-      katex_script = g_strdup(" ");
-      katex_css = g_strdup(" ");
-      katex_auto = g_strdup(" ");
+
+  switch (mathjs_mode) {
+    case MATHJS_OFF:
+      mathjs_script = g_strdup(" ");
+      mathjs_css = g_strdup(" ");
+      mathjs_auto = g_strdup(" ");
       break;
-    case KATEX_NET:
-      katex_css = g_strdup("<link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.9.0-alpha2/katex.min.css\" crossorigin=\"anonymous\">");
-      katex_script = g_strdup("<script src=\"https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.9.0-alpha2/katex.min.js\" crossorigin=\"anonymous\"></script>");
-      katex_auto = g_strdup("<script src=\"https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.9.0-alpha2/contrib/auto-render.min.js\" crossorigin=\"anonymous\"></script>");
+  case MATHJS_NET:
+      if (backend == KATEX)
+      {
+        mathjs_css = g_strdup("<link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.9.0-alpha2/katex.min.css\" crossorigin=\"anonymous\">");
+        mathjs_script = g_strdup("<script src=\"https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.9.0-alpha2/katex.min.js\" crossorigin=\"anonymous\"></script>");
+        mathjs_auto = g_strdup("<script src=\"https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.9.0-alpha2/contrib/auto-render.min.js\" crossorigin=\"anonymous\"></script>");
+      } else
+      {
+        mathjs_css = g_strdup(" ");
+        mathjs_script = g_strdup("<script type=\"text/javascript\" src=\"https://cdn.jsdelivr.net/npm/mathjax@2.7.1/MathJax.js?config=TeX-AMS_HTML\"></script>");
+        mathjs_auto = g_strdup(" ");
+      }
       break;
-    case KATEX_LOCAL:
-   	  katex_css = g_strdup_printf("<link rel=\"stylesheet\" href=\"file://%skatex/katex.min.css\">", SCRIPTS_DIR);
-      katex_script = g_strdup_printf("<script src=\"file://%skatex/katex.min.js\"></script>", SCRIPTS_DIR);
-      katex_auto = g_strdup_printf("<script src=\"file://%skatex/contrib/auto-render.min.js\"></script>", SCRIPTS_DIR);
+  case MATHJS_LOCAL:
+      if (backend == KATEX)
+      {
+        mathjs_css = g_strdup_printf("<link rel=\"stylesheet\" href=\"file://%skatex/katex.min.css\">", SCRIPTS_DIR);
+        mathjs_script = g_strdup_printf("<script src=\"file://%skatex/katex.min.js\"></script>", SCRIPTS_DIR);
+        mathjs_auto = g_strdup_printf("<script src=\"file://%skatex/contrib/auto-render.min.js\"></script>", SCRIPTS_DIR);
+      } else
+      {
+        mathjs_css = g_strdup(" ");
+        mathjs_script = g_strdup_printf("<script src=\"file://%smathjax/MathJax.js?config=TeX-AMS_HTML\"></script>",
+                                        SCRIPTS_DIR);
+        mathjs_auto = g_strdup(" ");
+      }
       break;
   }
 
@@ -95,12 +114,12 @@ char* html_header(MarkerKaTeXMode     katex_mode,
       break;
   }
 
-  char * buffer = g_strdup_printf("%s\n%s\n%s\n%s\n%s\n%s\n",katex_css, highlight_css, katex_script, katex_auto, highlight_script, mermaid_script);
+  char * buffer = g_strdup_printf("%s\n%s\n%s\n%s\n%s\n%s\n",mathjs_css, highlight_css, mathjs_script, mathjs_auto, highlight_script, mermaid_script);
 
 
-  g_free(katex_script);
-  g_free(katex_auto);
-  g_free(katex_css);
+  g_free(mathjs_script);
+  g_free(mathjs_auto);
+  g_free(mathjs_css);
 
   g_free(highlight_css);
   g_free(highlight_script);
@@ -113,20 +132,24 @@ char* html_header(MarkerKaTeXMode     katex_mode,
 
 
 char*
-html_footer(MarkerKaTeXMode     katex_mode,
+html_footer(MarkerMathJSMode     mathjs_mode,
             MarkerHighlightMode highlight_mode,
             MarkerMermaidMode   mermaid_mode)
 {
-  char * katex_render;
+  char * mathjs_render;
   char * highlight_render;
   char * mermaid_render;
+  MarkerMathBackEnd backend = marker_prefs_get_math_backend();
 
-  switch(katex_mode){
-    case KATEX_OFF:
-      katex_render = g_strdup(" ");
+  switch(mathjs_mode){
+    case MATHJS_OFF:
+      mathjs_render = g_strdup(" ");
       break;
     default:
-      katex_render = g_strdup("<script>renderMathInElement(document.body);</script>");
+      if (backend == KATEX)
+        mathjs_render = g_strdup("<script>renderMathInElement(document.body);</script>");
+      else
+        mathjs_render = g_strdup(" ");
       break;
   }
 
@@ -150,9 +173,9 @@ html_footer(MarkerKaTeXMode     katex_mode,
       break;
   }
 
-  char* buffer = g_strdup_printf("%s\n%s\n%s\n", katex_render, highlight_render, mermaid_render);
+  char* buffer = g_strdup_printf("%s\n%s\n%s\n", mathjs_render, highlight_render, mermaid_render);
   g_free(highlight_render);
-  g_free(katex_render);
+  g_free(mathjs_render);
   g_free(mermaid_render);
   return buffer;
 }
@@ -188,7 +211,7 @@ char*
 marker_markdown_to_html(const char*         markdown,
                         size_t              size,
                         char *              base_folder,
-                        MarkerKaTeXMode     katex_mode,
+                        MarkerMathJSMode     katex_mode,
                         MarkerHighlightMode highlight_mode,
                         MarkerMermaidMode   mermaid_mode,
                         const char*         stylesheet_location)
@@ -250,7 +273,7 @@ char*
 marker_markdown_to_html_with_css_inline(const char*         markdown,
                                         size_t              size,
                                         char *              base_folder,
-                                        MarkerKaTeXMode     katex_mode,
+                                        MarkerMathJSMode     katex_mode,
                                         MarkerHighlightMode highlight_mode,
                                         MarkerMermaidMode   mermaid_mode,
                                         const char*         stylesheet_location)
@@ -361,7 +384,7 @@ char*
 marker_markdown_to_latex(const char*         markdown,
                          size_t              size,
                          char *              base_folder,
-                         MarkerKaTeXMode     katex_mode,
+                         MarkerMathJSMode     katex_mode,
                          MarkerHighlightMode highlight_mode,
                          MarkerMermaidMode   mermaid_mode,
                          const char*         stylesheet_location)
@@ -403,7 +426,7 @@ void
 marker_markdown_to_html_file(const char*         markdown,
                              size_t              size,
                              char               *base_folder,
-                             MarkerKaTeXMode     katex_mode,
+                             MarkerMathJSMode     katex_mode,
                              MarkerHighlightMode highlight_mode,
                              MarkerMermaidMode   mermaid_mode,
                              const char*         stylesheet_location,
@@ -429,7 +452,7 @@ void
 marker_markdown_to_html_file_with_css_inline(const char*         markdown,
                                              size_t              size,
                                              char               *base_folder,
-                                             MarkerKaTeXMode     katex_mode,
+                                             MarkerMathJSMode     katex_mode,
                                              MarkerHighlightMode highlight_mode,
                                              MarkerMermaidMode   mermaid_mode,
                                              const char*         stylesheet_location,
@@ -455,7 +478,7 @@ void
 marker_markdown_to_latex_file(const char*         markdown,
                               size_t              size,
                               char               *base_folder,
-                              MarkerKaTeXMode     katex_mode,
+                              MarkerMathJSMode     katex_mode,
                               MarkerHighlightMode highlight_mode,
                               MarkerMermaidMode   mermaid_mode,
                               const char*         filepath)
