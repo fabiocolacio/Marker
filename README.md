@@ -18,7 +18,7 @@ unfinished features.
   * Equations, figures, table and listings with reference id and caption
   * Internal references
 * Extra scientific syntax of SciDwon [wiki](https://github.com/Mandarancio/scidown/wiki/)
-* TeX math rendering with [KaTeX](https://khan.github.io/KaTeX/)
+* TeX math rendering with [KaTeX](https://khan.github.io/KaTeX/) and [MathJax](mathjax.org/)
 * Support for [mermaid](https://mermaidjs.github.io/) diagrams
 * Support for [charter](https://github.com/Mandarancio/charter/) for plot
 * Syntax highlighting for code blocks with [highlight.js](https://highlightjs.org/)
