@@ -172,3 +172,7 @@ img {
     width: 294mm;
   }
 }
+
+*:not(span){
+  unicode-bidi: plaintext;
+}
