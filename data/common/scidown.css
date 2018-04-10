@@ -38,9 +38,6 @@ figure figcaption {
 	text-align: center;
 	font-size: 11pt;
 }
-*{
-  unicode-bidi: plaintext;
-}
 
 figure img {
 	max-width: 100%;
@@ -174,4 +171,8 @@ img {
   .slide_169 {
     width: 294mm;
   }
+}
+
+*:not(span){
+  unicode-bidi: plaintext;
 }
