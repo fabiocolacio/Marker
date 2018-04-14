@@ -1,3 +1,6 @@
 [submodule "src/scidown"]
 	path = src/scidown
 	url = https://github.com/Mandarancio/scidown.git
+[submodule "data/scripts/mathjax"]
+	path = data/scripts/mathjax
+	url = https://github.com/mathjax/mathjax
