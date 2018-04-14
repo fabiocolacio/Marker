@@ -4,3 +4,6 @@
 [submodule "data/scripts/mathjax"]
 	path = data/scripts/mathjax
 	url = https://github.com/mathjax/mathjax
+[submodule "data/scripts/katex"]
+	path = data/scripts/katex
+	url = https://github.com/khan/katex
