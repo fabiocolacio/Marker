@@ -58,14 +58,11 @@
   </provides>
 
   <releases>
-    <release version="2018.01.23" date="2018-01-23">
+   <release version="2018.03.09" date="2018-03-09">
+   </release>
+   <release version="2018.01.23" date="2018-01-23">
       <description>
         <p>Initial Flathub release</p>
-      </description>
-    </release>
-    <release version="2018.03.09" date="2018-03-09">
-      <description>
-        Release notes: <a>https://github.com/fabiocolacio/Marker/releases/tag/2018.03.09</a>
       </description>
     </release>
   </releases>
