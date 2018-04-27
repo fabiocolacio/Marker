@@ -58,6 +58,15 @@
   </provides>
 
   <releases>
+   <release version="2018.04.27" date="2018-04-27">
+        <description>
+            <ul>
+                <li>Added right-to-left language support</li>
+                <li>Added support for beamer classes for making presentations</li>
+                <li>Users can choose between KaTeX math rendering (faster), or MathJax math rendering.</li>
+            </ul>
+        </description>
+   </release>
    <release version="2018.03.09" date="2018-03-09">
    </release>
    <release version="2018.01.23" date="2018-01-23">

@@ -110,8 +110,11 @@ size_allocated_cb (GtkWidget     *widget,
 When making a release, do all of the following:
 
 1. Update the version number in the ``meson.build``
-2. Create a release on GitHub (see guidelines for release notes below).
-3. Update the tag name in the flatpak manifest of the [flathub repo](https://github.com/flathub/com.github.fabiocolacio.marker)
+2. Add a release into ``data/com.github.fabiocolacio.marker.appdata.xml``.
+3. Validate the appdata file with the command ``appstream-util validate-relax data/com.github.fabiocolacio.marker.appdata.xml``.
+4. Create a release archive using the script ``archive.sh``
+5. Create a release on GitHub (see guidelines for release notes below).
+6. Update the tag name in the flatpak manifest of the [flathub repo](https://github.com/flathub/com.github.fabiocolacio.marker)
     * If you do not have push access, create a pull request.
       Someone who has push access will merge it for you.
 
@@ -119,7 +122,7 @@ When making a release, do all of the following:
 
 We use dates for version numbers in the format ``YYYY.MM.DD``
 
-e.g. ``2018.01.28``.
+e.g. ``2018.04.25``.
 
 ### Release Notes
 
