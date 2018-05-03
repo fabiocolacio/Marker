@@ -24,6 +24,8 @@
 
 #include <gtk/gtk.h>
 
+gchar               *marker_utils_read_file                      (const gchar        *infile,
+                                                                  long               *out_size);
 void                 marker_utils_surround_selection_with        (GtkTextBuffer      *buffer,
                                                                   char               *insertion);
 int                  marker_utils_rfind                          (char                query,

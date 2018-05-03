@@ -32,9 +32,6 @@ typedef enum
 } MarkerExportFormat;
 
 void                 marker_exporter_show_export_dialog          (MarkerWindow       *window);
-void                 marker_exporter_export                      (const char         *markdown,
-                                                                  const char         *stylesheet,
-                                                                  const char         *outfile,
-                                                                  MarkerExportFormat  format);
-
+void                 marker_exporter_export                      (const gchar        *infile,
+                                                                  const gchar        *outfile);
 #endif
