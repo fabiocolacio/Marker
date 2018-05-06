@@ -24,6 +24,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "marker.h"
 #include "marker-utils.h"
 #include "marker-string.h"
 #include "marker-markdown.h"
@@ -277,11 +278,11 @@ marker_exporter_export (const gchar *infile,
                                                  stylesheet, outfile);  
   }
   else if (marker_string_ends_with (outfile, ".pdf")) {
+    /*
     g_autoptr (MarkerPreview) preview = marker_preview_new ();
-    gtk_widget_show (GTK_WIDGET (preview));
     marker_preview_render_markdown (preview, markdown, stylesheet, base_folder);
     marker_preview_print_pdf (preview, outfile, paper_size, orientation);
-    gtk_widget_hide (GTK_WIDGET (preview));
+    */
   }
   else if (marker_string_ends_with (outfile, ".tex")) {
     marker_markdown_to_latex_file(markdown, len, base_folder,
