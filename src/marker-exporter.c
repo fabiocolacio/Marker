@@ -65,11 +65,11 @@ marker_exporter_str_to_fmt(const char* str)
 }
 
 void
-marker_exporter_export_pandoc(const char*        tex,
+marker_exporter_export_pandoc(const char*        markdown,
                               const char*        stylesheet_path,
                               const char*        outfile)
 {
-  const char* ftmp = ".marker_tmp_markdown.html";
+  const char* ftmp = ".marker_tmp_markdown.md";
   char* path = marker_string_filename_get_path(outfile);
   if (chdir(path) == 0)
   {
@@ -77,7 +77,7 @@ marker_exporter_export_pandoc(const char*        tex,
     fp = fopen(ftmp, "w");
     if (fp)
     {
-      fputs(tex, fp);
+      fputs(markdown, fp);
       fclose(fp);
       char* command = NULL;
 
@@ -278,8 +278,10 @@ marker_exporter_export (const gchar *infile,
   }
   else if (marker_string_ends_with (outfile, ".pdf")) {
     g_autoptr (MarkerPreview) preview = marker_preview_new ();
+    gtk_widget_show (GTK_WIDGET (preview));
     marker_preview_render_markdown (preview, markdown, stylesheet, base_folder);
     marker_preview_print_pdf (preview, outfile, paper_size, orientation);
+    gtk_widget_hide (GTK_WIDGET (preview));
   }
   else if (marker_string_ends_with (outfile, ".tex")) {
     marker_markdown_to_latex_file(markdown, len, base_folder,
@@ -295,18 +297,6 @@ marker_exporter_export (const gchar *infile,
                                   outfile);     
   }
   else {
-    marker_exporter_export_pandoc(marker_markdown_to_html_with_css_inline(markdown, len, base_folder,
-                                                                          (marker_prefs_get_use_mathjs())
-                                                                            ? MATHJS_NET
-                                                                            : MATHJS_OFF,
-                                                                          (marker_prefs_get_use_highlight())
-                                                                            ? HIGHLIGHT_NET
-                                                                            : HIGHLIGHT_OFF,
-                                                                          (marker_prefs_get_use_mermaid()
-                                                                            ? MERMAID_NET
-                                                                            : MERMAID_OFF),
-                                                                          stylesheet),
-                                                                          stylesheet,
-                                                                          outfile); 
+    marker_exporter_export_pandoc(markdown, stylesheet, outfile);
   }
 }
