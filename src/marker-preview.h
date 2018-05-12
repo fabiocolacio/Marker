@@ -53,6 +53,8 @@ void                 marker_preview_scroll_left                  (MarkerPreview 
 void                 marker_preview_scroll_right                 (MarkerPreview      *preview);
 void                 marker_preview_scroll_up                    (MarkerPreview      *preview);
 void                 marker_preview_scroll_down                  (MarkerPreview      *preview);
+void                 marker_preview_scroll_to_top                (MarkerPreview      *preview);
+void                 marker_preview_scroll_to_bottom             (MarkerPreview      *preview);
 
 G_END_DECLS
 
