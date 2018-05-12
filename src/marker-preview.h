@@ -49,6 +49,11 @@ void                 marker_preview_print_pdf                    (MarkerPreview*
                                                                   const char*        outfile,
                                                                   enum scidown_paper_size paper_size,
                                                                   GtkPageOrientation orientation);
+void                 marker_preview_scroll_left                  (MarkerPreview      *preview);
+void                 marker_preview_scroll_right                 (MarkerPreview      *preview);
+void                 marker_preview_scroll_up                    (MarkerPreview      *preview);
+void                 marker_preview_scroll_down                  (MarkerPreview      *preview);
+
 G_END_DECLS
 
 #endif

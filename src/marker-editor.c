@@ -421,15 +421,18 @@ marker_editor_set_view_mode (MarkerEditor   *editor,
   {
     case EDITOR_ONLY_MODE:
       gtk_paned_add1 (GTK_PANED (paned), source_scroll);
+      gtk_widget_grab_focus (GTK_WIDGET (editor->source_view));
       break;
 
     case PREVIEW_ONLY_MODE:
       gtk_paned_add2 (GTK_PANED (paned), preview);
+      gtk_widget_grab_focus (GTK_WIDGET (preview));
       break;
 
     case DUAL_PANE_MODE:
       gtk_paned_add1 (GTK_PANED (paned), source_scroll);
       gtk_paned_add2 (GTK_PANED (paned), preview);
+      gtk_widget_grab_focus (GTK_WIDGET (editor->source_view));
       break;
 
     case DUAL_WINDOW_MODE:
@@ -441,6 +444,7 @@ marker_editor_set_view_mode (MarkerEditor   *editor,
       gtk_window_set_title (preview_window, "Preview");
       gtk_window_set_default_size (preview_window, 500, 600);
       gtk_widget_show_all (GTK_WIDGET (preview_window));
+      gtk_widget_grab_focus (GTK_WIDGET (editor->source_view));
       break;
   }
 

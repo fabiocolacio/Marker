@@ -36,6 +36,9 @@
 #define MAX_ZOOM  4.0
 #define MIN_ZOOM  0.1
 
+#define SCROLL_STEP 25
+#define SCROLL_SCRIPT "window.scrollBy(%d,%d);"
+
 #define min(a, b) ((a < b) ? a : b)
 #define max(a, b) ((a < b) ? b : a)
 
@@ -140,6 +143,27 @@ key_press_event_cb (GtkWidget *widget,
         break;
     }
   }
+  else
+  {
+    switch (key_event->keyval)
+    {
+      case GDK_KEY_j:
+        marker_preview_scroll_down (preview);
+        break;
+
+      case GDK_KEY_k:
+        marker_preview_scroll_up (preview);
+        break;
+
+      case GDK_KEY_h:
+        marker_preview_scroll_left (preview);
+        break;
+
+      case GDK_KEY_l:
+        marker_preview_scroll_right (preview);
+        break;
+    }
+  }
 
   return FALSE;
 }
@@ -198,6 +222,24 @@ pdf_print_failed_cb (WebKitPrintOperation* print_op,
                      gpointer              user_data)
 {
   g_printerr("print failed with error: %s\n", err->message);
+}
+
+static void
+scroll_js_finished_cb (GObject      *object,
+                       GAsyncResult *result,
+                       gpointer      user_data)
+{
+  WebKitJavascriptResult *js_result;
+  GError *error = NULL;
+
+  js_result = webkit_web_view_run_javascript_finish (WEBKIT_WEB_VIEW (object), result, &error);
+  if (error != NULL) {
+    g_print ("Error running scroll script: %s", error->message);
+    g_error_free (error);
+    return;
+  }
+
+  webkit_javascript_result_unref (js_result);
 }
 
 void
@@ -419,4 +461,32 @@ marker_preview_print_pdf(MarkerPreview*     preview,
     webkit_print_operation_print(print_op);
 
     g_free(uri);
+}
+
+void
+marker_preview_scroll_left (MarkerPreview *preview)
+{
+  g_autofree gchar *script = g_strdup_printf (SCROLL_SCRIPT, -SCROLL_STEP, 0);
+  webkit_web_view_run_javascript (WEBKIT_WEB_VIEW (preview), script, NULL, scroll_js_finished_cb, NULL);
+}
+
+void
+marker_preview_scroll_right (MarkerPreview *preview)
+{
+  g_autofree gchar *script = g_strdup_printf (SCROLL_SCRIPT, SCROLL_STEP, 0);
+  webkit_web_view_run_javascript (WEBKIT_WEB_VIEW (preview), script, NULL, scroll_js_finished_cb, NULL);
+}
+
+void
+marker_preview_scroll_up (MarkerPreview *preview)
+{
+  g_autofree gchar *script = g_strdup_printf (SCROLL_SCRIPT, 0, -SCROLL_STEP);
+  webkit_web_view_run_javascript (WEBKIT_WEB_VIEW (preview), script, NULL, scroll_js_finished_cb, NULL);
+}
+
+void
+marker_preview_scroll_down (MarkerPreview *preview)
+{
+  g_autofree gchar *script = g_strdup_printf (SCROLL_SCRIPT, 0, SCROLL_STEP);
+  webkit_web_view_run_javascript (WEBKIT_WEB_VIEW (preview), script, NULL, scroll_js_finished_cb, NULL);
 }
