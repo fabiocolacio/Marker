@@ -32,6 +32,7 @@ struct {
   glong horizontal;
   glong vertical;
   gboolean vertical_lock;
+  gboolean valid;
 }typedef Scroll;
 
 enum
@@ -47,7 +48,8 @@ document_loaded_cb (WebKitWebPage *web_page,
     WebKitDOMDocument *document = webkit_web_page_get_dom_document (web_page);
     WebKitDOMElement *body = WEBKIT_DOM_ELEMENT (webkit_dom_document_get_body (document));
 
-    const Scroll *pos = user_data;
+    Scroll *pos = user_data;
+    pos->valid = TRUE;
 
     if (body){
       if (pos->vertical_lock)
@@ -69,31 +71,33 @@ send_request_cb (WebKitWebPage     *web_page,
                  WebKitURIResponse *redirected_response,
                  gpointer           user_data)
 {
-    const gchar *uri = webkit_uri_request_get_uri (request);
-    if (strstr (uri, ".md") != NULL || strstr(uri, ".sd"))
+  Scroll *pos = user_data;
+  if (!pos->valid) return FALSE;
+
+  const gchar *uri = webkit_uri_request_get_uri (request);
+  if (strstr (uri, ".md") != NULL || strstr(uri, ".sd"))
+  {
+    WebKitDOMDocument *document = webkit_web_page_get_dom_document (web_page);
+    WebKitDOMDOMWindow * view = webkit_dom_document_get_default_view(document);
+
+    WebKitDOMElement *body = WEBKIT_DOM_ELEMENT (webkit_dom_document_get_body (document));
+
+    if (body)
     {
-      WebKitDOMDocument *document = webkit_web_page_get_dom_document (web_page);
-      WebKitDOMDOMWindow * view = webkit_dom_document_get_default_view(document);
+      pos->vertical = webkit_dom_element_get_scroll_top (body);
+      pos->horizontal = webkit_dom_element_get_scroll_left (body);
 
-      WebKitDOMElement *body = WEBKIT_DOM_ELEMENT (webkit_dom_document_get_body (document));
-      Scroll * pos = user_data;
-
-      if (body)
-      {
-        pos->vertical = webkit_dom_element_get_scroll_top (body);
-        pos->horizontal = webkit_dom_element_get_scroll_left (body);
-
-        glong height = webkit_dom_element_get_scroll_height(body);
-        glong offset = webkit_dom_dom_window_get_inner_height(view) + pos->vertical;
-        pos->vertical_lock = offset >= height;
-      }
-      else
-      {
-        g_error ("Error restoring scroll position!\n");
-      }
+      glong height = webkit_dom_element_get_scroll_height(body);
+      glong offset = webkit_dom_dom_window_get_inner_height(view) + pos->vertical;
+      pos->vertical_lock = offset >= height;
     }
+    else
+    {
+      g_error ("Error restoring scroll position!\n");
+    }
+  }
 
-    return FALSE;
+  return FALSE;
 }
 
 static void
@@ -106,6 +110,7 @@ page_created_cb (WebKitWebExtension *extension,
     pos->horizontal = 0;
     pos->vertical = 0;
     pos->vertical_lock = FALSE;
+    pos->valid = FALSE;
 
     g_signal_connect (web_page, "document-loaded",
                       G_CALLBACK (document_loaded_cb),
