@@ -86,6 +86,7 @@ marker_init(GtkApplication* app)
 static void
 activate(GtkApplication* app)
 {
+  marker_init (app);
   marker_create_new_window();
 }
 
