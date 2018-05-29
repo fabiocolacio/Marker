@@ -754,9 +754,16 @@ marker_window_init (MarkerWindow *window)
 }
 
 static void
+marker_window_constructed (GObject *object)
+{
+  G_OBJECT_CLASS (marker_window_parent_class)->constructed (object);
+  gtk_application_window_set_show_menubar (GTK_APPLICATION_WINDOW (object), FALSE);
+}
+
+static void
 marker_window_class_init (MarkerWindowClass *class)
 {
-
+  G_OBJECT_CLASS (class)->constructed = marker_window_constructed;
 }
 
 
