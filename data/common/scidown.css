@@ -43,6 +43,10 @@ figure img {
 	max-width: 100%;
 }
 
+code {
+    font-family: monospace;
+}
+
 img {
 	max-width: 100%;
 }
