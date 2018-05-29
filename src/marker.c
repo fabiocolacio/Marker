@@ -36,12 +36,18 @@ marker_get_app()
   return app;
 }
 
+static gboolean editor_mode_arg = FALSE;
 static gboolean preview_mode_arg = FALSE;
+static gboolean dual_pane_mode_arg = FALSE;
+static gboolean dual_window_mode_arg = FALSE;
 static gchar *outfile_arg = NULL;
 
 static const GOptionEntry CLI_OPTIONS[] =
 {
-  { "preview", 'p', 0, G_OPTION_ARG_NONE, &preview_mode_arg, "Open in preview mode", NULL },
+  { "editor", 'e', 0, G_OPTION_ARG_NONE, &editor_mode_arg, "Open in editor-only mode", NULL },
+  { "preview", 'p', 0, G_OPTION_ARG_NONE, &preview_mode_arg, "Open in preview-only mode", NULL },
+  { "dual-pane", 'd', 0, G_OPTION_ARG_NONE, &dual_pane_mode_arg, "Open in dual-pane mode", NULL },
+  { "dual-window", 'w', 0, G_OPTION_ARG_NONE, &dual_window_mode_arg, "Open in dual-window mode", NULL },
   { "output", 'o', 0, G_OPTION_ARG_STRING, &outfile_arg, "Export the given markdown document as the given output file", NULL },
   { NULL }
 };
@@ -228,6 +234,21 @@ marker_create_new_window_from_file (GFile *file)
   {
     MarkerEditor *editor = marker_window_get_active_editor (window);
     marker_editor_set_view_mode (editor, PREVIEW_ONLY_MODE);
+  }
+  else if (editor_mode_arg)
+  {
+    MarkerEditor *editor = marker_window_get_active_editor (window);
+    marker_editor_set_view_mode (editor, EDITOR_ONLY_MODE);
+  }
+  else if (dual_pane_mode_arg)
+  {
+    MarkerEditor *editor = marker_window_get_active_editor (window);
+    marker_editor_set_view_mode (editor, DUAL_PANE_MODE);
+  }
+  else if (dual_window_mode_arg)
+  {
+    MarkerEditor *editor = marker_window_get_active_editor (window);
+    marker_editor_set_view_mode (editor, DUAL_WINDOW_MODE);
   }
 }
 
