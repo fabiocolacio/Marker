@@ -13,7 +13,7 @@ unfinished features.
   * Document classes
   * Beamer/presentation mode (`class: beamer`)
   * Abstract sections
-  * Table of Conents
+  * Table of Contents
   * External document inclusion
   * Equations, figures, table and listings with reference id and caption
   * Internal references
