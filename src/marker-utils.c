@@ -28,6 +28,21 @@
 
 #include "scidown/src/autolink.h"
 
+gchar *
+marker_utils_read_file (const char* infile, long *out_size)
+{
+  gchar *contents = NULL;
+  FILE *file = fopen (infile, "r");
+  fseek (file, 0, SEEK_END);
+  long size = ftell (file);
+  *out_size = size;
+  rewind (file);
+  contents = g_malloc (size);
+  fread (contents, size, 1, file);
+  fclose (file);
+  return contents;
+}
+
 void
 marker_utils_surround_selection_with(GtkTextBuffer* buffer,
                                      char*          insertion)

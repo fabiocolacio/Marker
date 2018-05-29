@@ -20,9 +20,11 @@
  */
 
 #include <gtk/gtk.h>
+#include <stdlib.h>
 
 #include "marker-prefs.h"
 #include "marker-window.h"
+#include "marker-exporter.h"
 
 #include "marker.h"
 
@@ -34,11 +36,13 @@ marker_get_app()
   return app;
 }
 
-static gboolean preview_mode = FALSE;
+static gboolean preview_mode_arg = FALSE;
+static gchar *outfile_arg = NULL;
 
 static const GOptionEntry CLI_OPTIONS[] =
 {
-  { "preview", 'p', 0, G_OPTION_ARG_NONE, &preview_mode, "Open in preview mode", NULL },
+  { "preview", 'p', 0, G_OPTION_ARG_NONE, &preview_mode_arg, "Open in preview mode", NULL },
+  { "output", 'o', 0, G_OPTION_ARG_STRING, &outfile_arg, "Export the given markdown document as the given output file", NULL },
   { NULL }
 };
 
@@ -82,7 +86,6 @@ marker_init(GtkApplication* app)
 static void
 activate(GtkApplication* app)
 {
-  marker_init(app);
   marker_create_new_window();
 }
 
@@ -92,13 +95,24 @@ marker_open(GtkApplication* app,
             gint            num_files,
             const gchar*    hint)
 {
+  g_application_hold (G_APPLICATION (app));
   marker_init(app);
+
+  if (outfile_arg != NULL) {
+    g_autoptr (GFile) outfile = g_file_new_for_commandline_arg (outfile_arg);
+    g_autofree gchar *outfile_path = g_file_get_path (outfile);
+    g_autofree gchar *infile_path = g_file_get_path (files[0]);
+    marker_exporter_export (infile_path, outfile_path);
+    exit (0);
+  }
+ 
   for (int i = 0; i < num_files; ++i)
   {
     GFile* file = files[i];
     g_object_ref(file);
     marker_open_file(file);
   }
+  g_application_release (G_APPLICATION (app));
 }
 
 void
@@ -209,7 +223,7 @@ marker_create_new_window_from_file (GFile *file)
   MarkerWindow *window = marker_window_new_from_file (app, file);
   gtk_widget_show (GTK_WIDGET (window));
 
-  if (preview_mode)
+  if (preview_mode_arg)
   {
     MarkerEditor *editor = marker_window_get_active_editor (window);
     marker_editor_set_view_mode (editor, PREVIEW_ONLY_MODE);

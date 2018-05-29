@@ -24,6 +24,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "marker.h"
+#include "marker-utils.h"
 #include "marker-string.h"
 #include "marker-markdown.h"
 #include "marker-prefs.h"
@@ -64,12 +66,11 @@ marker_exporter_str_to_fmt(const char* str)
 }
 
 void
-marker_exporter_export_pandoc(const char*        tex,
+marker_exporter_export_pandoc(const char*        markdown,
                               const char*        stylesheet_path,
-                              const char*        outfile,
-                              MarkerExportFormat format)
+                              const char*        outfile)
 {
-  const char* ftmp = ".marker_tmp_markdown.html";
+  const char* ftmp = ".marker_tmp_markdown.md";
   char* path = marker_string_filename_get_path(outfile);
   if (chdir(path) == 0)
   {
@@ -77,32 +78,8 @@ marker_exporter_export_pandoc(const char*        tex,
     fp = fopen(ftmp, "w");
     if (fp)
     {
-      fputs(tex, fp);
+      fputs(markdown, fp);
       fclose(fp);
-
-      // const char* format_s = "rtf";
-      // switch (format)
-      // {
-      //   case RTF:
-      //     format_s = "rtf";
-      //     break;
-
-      //   case DOCX:
-      //     format_s = "docx";
-      //     break;
-
-      //   case ODT:
-      //     format_s = "odt";
-      //     break;
-
-      //   case PDF:
-      //     format_s = "pdf";
-      //     break;
-
-      //   default:
-      //     break;
-      // }
-
       char* command = NULL;
 
       asprintf(&command,
@@ -197,7 +174,7 @@ marker_exporter_show_export_dialog(MarkerWindow* window)
       base_folder = g_file_get_path(g_file_get_parent(source));
     size_t len = strlen(markdown);
     metadata * meta = marker_markdown_metadata(markdown, len);
-    scidow_paper_size paper_size = meta->paper_size;
+    enum scidown_paper_size paper_size = meta->paper_size;
     if (meta->doc_class == CLASS_BEAMER && !(paper_size == B43 || paper_size == B169))
       paper_size = B43;
 
@@ -260,8 +237,7 @@ marker_exporter_show_export_dialog(MarkerWindow* window)
                                                                                 : MERMAID_OFF),
                                                                               stylesheet_path),
                                       stylesheet_path,
-                                      filename,
-                                      fmt);
+                                      filename);
         break;
     }
   }
@@ -269,3 +245,59 @@ marker_exporter_show_export_dialog(MarkerWindow* window)
   gtk_widget_destroy(GTK_WIDGET(dialog));
 }
 
+void
+marker_exporter_export (const gchar *infile,
+                        const gchar *outfile)
+{
+  g_return_if_fail (infile != NULL && outfile != NULL);
+
+  long len = 0;
+  g_autofree gchar *markdown = marker_utils_read_file (infile, &len);
+  g_autofree gchar *stylesheet = marker_prefs_get_css_theme ();
+  g_autofree gchar *base_folder = marker_string_filename_get_path (infile);
+
+  metadata *meta = marker_markdown_metadata(markdown, len);
+  enum scidown_paper_size paper_size = meta->paper_size; 
+  if (meta->doc_class == CLASS_BEAMER && !(paper_size == B43 || paper_size == B169))
+    paper_size = B43;
+  GtkPageOrientation orientation = meta->doc_class == CLASS_BEAMER ?
+    GTK_PAGE_ORIENTATION_LANDSCAPE :
+    GTK_PAGE_ORIENTATION_PORTRAIT;
+
+  if (marker_string_ends_with (outfile, ".html")) {
+    marker_markdown_to_html_file_with_css_inline(markdown, len, base_folder,
+                                                 (marker_prefs_get_use_mathjs())
+                                                   ? MATHJS_NET
+                                                   : MATHJS_OFF,
+                                                 (marker_prefs_get_use_highlight())
+                                                   ? HIGHLIGHT_NET
+                                                   : HIGHLIGHT_OFF,
+                                                 (marker_prefs_get_use_mermaid()
+                                                   ? MERMAID_NET
+                                                   : MERMAID_OFF),
+                                                 stylesheet, outfile);  
+  }
+  else if (marker_string_ends_with (outfile, ".pdf")) {
+    /*
+    g_autoptr (MarkerPreview) preview = marker_preview_new ();
+    marker_preview_render_markdown (preview, markdown, stylesheet, base_folder);
+    marker_preview_print_pdf (preview, outfile, paper_size, orientation);
+    */
+  }
+  else if (marker_string_ends_with (outfile, ".tex")) {
+    marker_markdown_to_latex_file(markdown, len, base_folder,
+                                  (marker_prefs_get_use_mathjs())
+                                    ? MATHJS_NET
+                                    : MATHJS_OFF,
+                                  (marker_prefs_get_use_highlight())
+                                    ? HIGHLIGHT_NET
+                                    : HIGHLIGHT_OFF,
+                                  (marker_prefs_get_use_mermaid()
+                                    ? MERMAID_NET
+                                    : MERMAID_OFF),
+                                  outfile);     
+  }
+  else {
+    marker_exporter_export_pandoc(markdown, stylesheet, outfile);
+  }
+}
