@@ -58,6 +58,18 @@
   </provides>
 
   <releases>
+   <release version="2018.07.03" date="2018-07-03">
+        <description>
+            <ul>
+                <li>Added ability to export documents from the cli.</li>
+                <li>Added vim-like shortcuts (h,j,k,l,g,G) to the previewer.</li>
+                <li>Added the ability to choose any view mode when launching from cli.</li>
+                <li>Fixed a glitch where documents opened in preview mode were scrolled to the bottom.</li>
+                <li>Fixed a glitch causing two appmenus to appear in non-gnome environments.</li>
+                <li>Fixed a glitch where code blocks didn't have monospaced font in the preview with some themes.</li>
+            </ul>
+        </description>
+   </release>
    <release version="2018.04.27" date="2018-04-27">
         <description>
             <ul>
