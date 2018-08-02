@@ -1,11 +1,14 @@
-project('Marker', 'c',
+project('Marker', 'c', 'cpp',
+  default_options: [ 'cpp_std=c++11' ],
   version : '2018.07.03',
   license : 'GPL3'
 )
 
+ID = 'com.github.fabiocolacio.Marker'
+
 PREFIX = get_option('prefix')
 DATA_DIR = join_paths(PREFIX, 'share')
-APP_DIR = join_paths(DATA_DIR, 'com.github.fabiocolacio.marker')
+APP_DIR = join_paths(DATA_DIR, ID)
 ICONS_DIR = join_paths(APP_DIR, 'icons')
 STYLES_DIR = join_paths(APP_DIR, 'styles')
 COMMON_DIR = join_paths(APP_DIR, 'common')
@@ -25,18 +28,7 @@ res = gnome.compile_resources(
 )
 
 marker_sources = [
-  'src/marker.c',
-  'src/marker-editor.c',
-  'src/marker-window.c',
-  'src/marker-exporter.c',
-  'src/marker-markdown.c',
-  'src/marker-prefs.c',
-  'src/marker-source-view.c',
-  'src/marker-preview.c',
-  'src/marker-string.c',
-  'src/marker-widget.c',
-  'src/marker-sketcher-window.c',
-  'src/marker-utils.c',
+  'src/marker.cpp',
   res
 ]
 
@@ -73,6 +65,7 @@ hoedown_sources = [
 ]
 
 deps = [
+  dependency('gtkmm-3.0'),
   dependency('gtk+-3.0', version : '>=3.20'),
   dependency('glib-2.0'),
   dependency('gtksourceview-3.0'),
@@ -86,6 +79,7 @@ ext_deps =[
 
 
 add_global_arguments(
+  '-DMARKER_ID="@0@"'.format(ID),
   '-DSTYLES_DIR="@0@/"'.format(STYLES_DIR),
   '-DSCRIPTS_DIR="@0@/"'.format(SCRIPTS_DIR),
   '-DICONS_DIR="@0@/"'.format(ICONS_DIR),
@@ -93,7 +87,7 @@ add_global_arguments(
   '-DMARKER_VERSION="@0@"'.format(meson.project_version()),
   '-DCOMMON_DIR="@0@/"'.format(COMMON_DIR),
   '-DWEB_EXTENSIONS_DIRECTORY="@0@"'.format(WEB_EXTENSIONS_DIRECTORY),
-  language : 'c'
+  language : 'cpp'
 )
 
 shared_library(
