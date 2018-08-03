@@ -1,6 +1,10 @@
 #include <gtkmm/application.h>
 #include <iostream>
 
+#include "marker-window.hpp"
+
+namespace Marker {
+
 auto app = Gtk::Application::create(
     MARKER_ID,
     Gio::APPLICATION_HANDLES_OPEN);
@@ -8,6 +12,9 @@ auto app = Gtk::Application::create(
 void activate()
 {
     std::cout << "Activated!" << std::endl;
+    auto win = new Window;
+    win->set_default_size(500, 500);
+    win->show_all();
 }
 
 void open(const Gio::Application::type_vec_files &files, const Glib::ustring &hint)
@@ -18,9 +25,12 @@ void open(const Gio::Application::type_vec_files &files, const Glib::ustring &hi
     }
 }
 
+}
+
 int main(int argc, char *argv[])
 {
-    app->signal_open().connect(sigc::ptr_fun(&open));
-    app->signal_activate().connect(sigc::ptr_fun(&activate));
-    return app->run(argc, argv);
+    Marker::app->signal_open().connect(sigc::ptr_fun(&Marker::open));
+    Marker::app->signal_activate().connect(sigc::ptr_fun(&Marker::activate));
+    return Marker::app->run(argc, argv);
 }
+

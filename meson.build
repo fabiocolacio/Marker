@@ -29,6 +29,8 @@ res = gnome.compile_resources(
 
 marker_sources = [
   'src/marker.cpp',
+  'src/marker-editor.cpp',
+  'src/marker-window.cpp',
   res
 ]
 
@@ -66,11 +68,13 @@ hoedown_sources = [
 
 deps = [
   dependency('gtkmm-3.0'),
+  dependency('gtksourceviewmm-3.0'),
+  dependency('webkit2gtk-4.0'),
+  dependency('gtkspell3-3.0'),
+
   dependency('gtk+-3.0', version : '>=3.20'),
   dependency('glib-2.0'),
   dependency('gtksourceview-3.0'),
-  dependency('webkit2gtk-4.0'),
-  dependency('gtkspell3-3.0')
 ]
 
 ext_deps =[
@@ -155,3 +159,4 @@ install_subdir(
 
 
 meson.add_install_script('post-install.sh')
+
