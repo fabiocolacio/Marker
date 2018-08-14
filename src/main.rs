@@ -1,5 +1,7 @@
 extern crate gtk;
 extern crate gio;
+extern crate webkit2gtk;
+extern crate sourceview;
 
 mod session;
 mod window;
@@ -40,9 +42,15 @@ fn activate(app: &gtk::Application) {
 
 fn open(app: &gtk::Application, files: &[gio::File], hint: &str) {
     for file in files {
-        let basename = file.get_basename().unwrap();
-        let basename = basename.to_string_lossy();
-        println!("Opening file '{}'", basename);
+        let path = file.get_path().unwrap();
+        let path = path.to_string_lossy().into_owned();
+        println!("Opening file '{}'", &path);
+
+        let window = Window::new_from_file(app, &path).unwrap();
+        let app_window = window.as_application_window();
+        app_window.set_title(&path);
+        app_window.set_default_size(600, 600);
+        app_window.show_all();
     }
 }
 
