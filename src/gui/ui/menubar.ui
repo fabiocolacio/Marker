@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <menu id="menubar">
+    <section>
+
+      <!-- File Menu -->
+      <submenu>
+        <attribute name="label">File</attribute>
+        <section>
+          <item>
+            <attribute name="label">New...</attribute>
+            <attribute name="action">win.new</attribute>
+          </item>
+          <item>
+            <attribute name="label">Open...</attribute>
+            <attribute name="action">win.open</attribute>
+          </item>
+          <submenu>
+            <attribute name="label">Open Recent</attribute>
+          </submenu>
+        </section>
+        <section>
+          <item>
+            <attribute name="label">Save</attribute>
+            <attribute name="action">win.save</attribute>
+          </item>
+          <item>
+            <attribute name="label">Save As...</attribute>
+            <attribute name="action">win.saveas</attribute>
+          </item>
+        </section>
+        <section>
+          <item>
+            <attribute name="label">Export...</attribute>
+            <attribute name="action">win.export</attribute>
+          </item>
+          <item>
+            <attribute name="label">Print...</attribute>
+            <attribute name="action">win.print</attribute>
+          </item>
+        </section>
+        <section>
+          <item>
+            <attribute name="label">Close</attribute>
+            <attribute name="action">win.close</attribute>
+          </item>
+          <item>
+            <attribute name="label">Quit</attribute>
+            <attribute name="action">app.quit</attribute>
+          </item>
+        </section>
+      </submenu>
+
+      <!-- Edit Menu -->
+      <submenu>
+        <attribute name="label">Edit</attribute>
+        <section>
+          <item>
+            <attribute name="label">Undo</attribute>
+            <attribute name="action">win.undo</attribute>
+          </item>
+          <item>
+            <attribute name="label">Redo</attribute>
+            <attribute name="action">win.redo</attribute>
+          </item>
+        </section>
+        <section>
+          <item>
+            <attribute name="label">Cut</attribute>
+            <attribute name="action">win.cut</attribute>
+          </item>
+          <item>
+            <attribute name="label">Copy</attribute>
+            <attribute name="action">win.copy</attribute>
+          </item>
+          <item>
+            <attribute name="label">Paste</attribute>
+            <attribute name="action">win.paste</attribute>
+          </item>
+        </section>
+        <section>
+          <item>
+            <attribute name="label">Preferences...</attribute>
+            <attribute name="action">win.preferences</attribute>
+          </item>
+        </section>
+      </submenu>
+
+      <!-- View Menu -->
+      <submenu>
+        <attribute name="label">View</attribute>
+        <section>
+          <submenu>
+            <attribute name="label">Layout</attribute>
+          </submenu>
+        </section>
+        <section>
+          <item>
+            <attribute name="label">Dark Theme</attribute>
+            <attribute name="action">win.darktheme</attribute>
+          </item>
+        </section>
+        <section>
+          <item>
+            <attribute name="label">Fullscreen</attribute>
+            <attribute name="action">win.fullscreen</attribute>
+          </item>
+        </section>
+      </submenu>
+
+      <!-- Editor Menu -->
+      <submenu>
+        <attribute name="label">Editor</attribute>
+        <section>
+          <submenu>
+            <attribute name="label">Theme</attribute>
+          </submenu>
+        </section>
+      </submenu>
+
+      <!-- Preview Menu -->
+      <submenu>
+        <attribute name="label">Preview</attribute>
+        <section>
+          <item>
+            <attribute name="label">Zoom In</attribute>
+            <attribute name="action">win.zoomin</attribute>
+          </item>
+          <item>
+            <attribute name="label">Zoom Out</attribute>
+            <attribute name="action">win.zoomout</attribute>
+          </item>
+          <item>
+            <attribute name="label">Zoom Reset</attribute>
+            <attribute name="action">win.zoomreset</attribute>
+          </item>
+        </section>
+        <section>
+          <submenu>
+            <attribute name="label">Theme</attribute>
+          </submenu>
+        </section>
+      </submenu>
+
+      <!-- Help Menu -->
+      <submenu>
+        <attribute name="label">Help</attribute>
+        <section>
+          <item>
+            <attribute name="label">Keyboard Shortcuts</attribute>
+            <attribute name="action">win.keyboardshortcuts</attribute>
+          </item>
+          <item>
+            <attribute name="label">About</attribute>
+            <attribute name="action">win.about</attribute>
+          </item>
+        </section>
+      </submenu>
+
+    </section>
+  </menu>
+</interface>
+
