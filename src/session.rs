@@ -1,15 +1,14 @@
 extern crate gtk;
+extern crate sourceview;
+extern crate webkit2gtk;
+
 use self::gtk::prelude::*;
 use self::gtk::Widget;
 use self::gtk::Paned;
 use self::gtk::Orientation;
 use self::gtk::TextViewExt;
 use self::gtk::TextBufferExt;
-
-extern crate sourceview;
 use self::sourceview::View;
-
-extern crate webkit2gtk;
 use self::webkit2gtk::WebView;
 
 pub struct Session {

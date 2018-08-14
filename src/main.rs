@@ -1,18 +1,17 @@
 extern crate gtk;
-use gtk::prelude::*;
-use gtk::Application;
-use gtk::Builder;
-
 extern crate gio;
+
+mod session;
+mod window;
+
+use gtk::prelude::*;
 use gio::prelude::*;
-use  gio::MenuModel;
+use window::*;
 
-mod gui;
-
-const menubar_ui: &str = include_str!("gui/ui/menubar.ui");
+const MENUBAR_UI: &str = include_str!("ui/menubar.ui");
 
 fn main() {
-    let app = Application::new(
+    let app = gtk::Application::new(
         "com.github.fabiocolacio.Marker",
         gio::ApplicationFlags::HANDLES_OPEN)
         .expect("Failed to initialize application");
@@ -24,23 +23,22 @@ fn main() {
     app.run(&std::env::args().collect::<Vec<String>>().as_slice());
 }
 
-fn startup(app: &Application) {
-    println!("startup!");
-    let builder = Builder::new();
-    builder.add_from_string(menubar_ui);
-    let menumodel: MenuModel = builder.get_object("menubar").unwrap();
+fn startup(app: &gtk::Application) {
+    let builder = gtk::Builder::new();
+    builder.add_from_string(MENUBAR_UI).unwrap();
+    let menumodel: gio::MenuModel = builder.get_object("menubar").unwrap();
     app.set_menubar(&menumodel);
 }
 
-fn activate(app: &Application) {
-    let window = gui::Window::new(app);
+fn activate(app: &gtk::Application) {
+    let window = Window::new(app);
     let app_window = window.as_application_window();
     app_window.set_title("First Rust GTK+ Program");
     app_window.set_default_size(350, 70);
     app_window.show_all();
 }
 
-fn open(app: &Application, files: &[gio::File], hint: &str) {
+fn open(app: &gtk::Application, files: &[gio::File], hint: &str) {
     for file in files {
         let basename = file.get_basename().unwrap();
         let basename = basename.to_string_lossy();
