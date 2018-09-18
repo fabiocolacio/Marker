@@ -6,3 +6,4 @@ src/resources/ui/marker-gear-popover.ui
 src/resources/ui/marker-window-main-view.ui
 src/resources/ui/marker-headerbar.ui
 src/marker.c
+src/marker-editor.c

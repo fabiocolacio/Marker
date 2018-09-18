@@ -21,6 +21,9 @@
 
 #include <string.h>
 
+#include <locale.h>
+#include <glib/gi18n.h>
+
 #include "marker-prefs.h"
 #include "marker-string.h"
 
@@ -242,7 +245,7 @@ static void
 marker_editor_init (MarkerEditor *editor)
 {
   editor->file = NULL;
-  editor->title = g_strdup("Untitled.md");
+  editor->title = g_strdup(_("Untitled.md"));
   editor->unsaved_changes = FALSE;
   editor->search_active = FALSE;
   editor->text_iter = NULL;

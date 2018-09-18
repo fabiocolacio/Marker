@@ -1,7 +1,10 @@
 #!/bin/bash
 
 echo "Generating .pot file..."
-xgettext --from-code=UTF-8 --files-from=po/POTFILES --output=po/marker.pot
+# xgettext --from-code=UTF-8 --files-from=po/POTFILES --output=po/marker.pot
+cd build
+ninja marker-pot
+cd ..
 
 if [ $# = 0 ]; then
 	echo "No parameter, exiting now."

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: marker 1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-09-18 20:58+0200\n"
+"POT-Creation-Date: 2018-09-18 21:58+0200\n"
 "PO-Revision-Date: 2018-06-16 20:01+0200\n"
 "Last-Translator: Romain F. T.>\n"
 "Language-Team: français\n"
@@ -77,82 +77,86 @@ msgid "Wrap text"
 msgstr "Retour à la ligne"
 
 #: src/resources/ui/marker-prefs-window.ui:104
-msgid "Show right margin at column: "
+msgid "Show right margin at column:"
 msgstr "Montrer une marge dextre à la colonne :"
 
-#: src/resources/ui/marker-prefs-window.ui:143
-msgid "Check spelling for language: "
+#: src/resources/ui/marker-prefs-window.ui:144
+msgid "Check spelling for language:"
 msgstr "Vérification orthographique pour la langue :"
 
-#: src/resources/ui/marker-prefs-window.ui:177
+#: src/resources/ui/marker-prefs-window.ui:179
 msgid "Show spaces"
 msgstr "Afficher les espaces"
 
-#: src/resources/ui/marker-prefs-window.ui:194
+#: src/resources/ui/marker-prefs-window.ui:196
 msgid "<b>Highlighting</b>"
-msgstr "Surlignage"
+msgstr "<b>Coloration</b>"
 
-#: src/resources/ui/marker-prefs-window.ui:206
+#: src/resources/ui/marker-prefs-window.ui:208
 msgid "Highlight current line"
 msgstr "Surligner la ligne actuelle"
 
-#: src/resources/ui/marker-prefs-window.ui:226
+#: src/resources/ui/marker-prefs-window.ui:228
 msgid "Highlight syntax with theme:"
-msgstr ""
+msgstr "Mettre en valeur la syntaxe avec le thème :"
 
-#: src/resources/ui/marker-prefs-window.ui:262
+#: src/resources/ui/marker-prefs-window.ui:265
 msgid "<b>Tab Stops</b>"
 msgstr "<b>Tabulations</b>"
 
-#: src/resources/ui/marker-prefs-window.ui:274
+#: src/resources/ui/marker-prefs-window.ui:277
 msgid "Enable automatic indentation"
 msgstr "Activer l'indentation automatique"
 
-#: src/resources/ui/marker-prefs-window.ui:289
+#: src/resources/ui/marker-prefs-window.ui:292
 msgid "Insert spaces instead of tabs"
 msgstr "Insérer des espaces au lieu des tabulations"
 
-#: src/resources/ui/marker-prefs-window.ui:350
+#: src/resources/ui/marker-prefs-window.ui:314
+msgid "Tabulation width:"
+msgstr "Largeur des tabulations :"
+
+#: src/resources/ui/marker-prefs-window.ui:354
 msgid "Editor"
 msgstr "Éditeur"
 
-#: src/resources/ui/marker-prefs-window.ui:372
-msgid "Use css theme: "
+#: src/resources/ui/marker-prefs-window.ui:376
+msgid "Use css theme:"
 msgstr "Utiliser un thème CSS :"
 
-#: src/resources/ui/marker-prefs-window.ui:411
+#: src/resources/ui/marker-prefs-window.ui:416
 msgid "Highlight code blocks with theme:"
-msgstr ""
+msgstr "Coloration des blocs de code :"
 
-#: src/resources/ui/marker-prefs-window.ui:445
+#: src/resources/ui/marker-prefs-window.ui:451
 msgid "Enable Mermaid"
 msgstr "Activer Mermaid"
 
-#: src/resources/ui/marker-prefs-window.ui:460
+#: src/resources/ui/marker-prefs-window.ui:466
 msgid "Enable Charter"
 msgstr "Activer Charter"
 
-#: src/resources/ui/marker-prefs-window.ui:477
+#: src/resources/ui/marker-prefs-window.ui:483
 msgid "<b>Math</b>"
 msgstr "<b>Formules mathématiques</b>"
 
-#: src/resources/ui/marker-prefs-window.ui:493
+#: src/resources/ui/marker-prefs-window.ui:499
 msgid "Render Math"
 msgstr "Rendu des formules"
 
-#: src/resources/ui/marker-prefs-window.ui:537
+#: src/resources/ui/marker-prefs-window.ui:544
 msgid "Preview"
 msgstr "Aperçu"
 
-#: src/resources/ui/marker-prefs-window.ui:562
-msgid "Default view mode: "
-msgstr "Mode de vue par défaut"
+#: src/resources/ui/marker-prefs-window.ui:569
+msgid "Default view mode:"
+msgstr "Mode d'affichage par défaut"
 
-#: src/resources/ui/marker-prefs-window.ui:594
+#: src/resources/ui/marker-prefs-window.ui:602
 msgid "Enable dark mode"
 msgstr "Activer le mode sombre"
 
-#: src/resources/ui/marker-prefs-window.ui:616
+#: src/resources/ui/marker-prefs-window.ui:624
 msgid "Window"
 msgstr "Fenêtre"
 
@@ -164,7 +168,7 @@ msgstr "Documents"
 #: src/resources/ui/marker-shortcuts-window.ui:19
 msgctxt "shortcut window"
 msgid "Create a new document"
-msgstr ""
+msgstr "Créer un nouveau document"
 
 #: src/resources/ui/marker-shortcuts-window.ui:26
 msgctxt "shortcut window"
@@ -174,7 +178,7 @@ msgstr "Ouvrir un document"
 #: src/resources/ui/marker-shortcuts-window.ui:33
 msgctxt "shortcut window"
 msgid "Open a document in a new window"
-msgstr ""
+msgstr "Ouvrir un document dans une nouvelle fenêtre"
 
 #: src/resources/ui/marker-shortcuts-window.ui:40
 msgctxt "shortcut window"
@@ -184,7 +188,7 @@ msgstr "Enregistrer le document"
 #: src/resources/ui/marker-shortcuts-window.ui:47
 msgctxt "shortcut window"
 msgid "Save the document with a new filename"
-msgstr ""
+msgstr "Enregistrer le document sous un nouveau nom"
 
 #: src/resources/ui/marker-shortcuts-window.ui:54
 msgctxt "shortcut window"
@@ -199,27 +203,27 @@ msgstr "Éditeur"
 #: src/resources/ui/marker-shortcuts-window.ui:67
 msgctxt "shortcut window"
 msgid "Make selection bold"
-msgstr ""
+msgstr "Appliquer du gras à la sélection"
 
 #: src/resources/ui/marker-shortcuts-window.ui:74
 msgctxt "shortcut window"
 msgid "Make selection italic"
-msgstr ""
+msgstr "Appliquer de l'italique à la sélection"
 
 #: src/resources/ui/marker-shortcuts-window.ui:81
 msgctxt "shortcut window"
 msgid "Make selection monospace"
-msgstr ""
+msgstr "Appliquer une chasse fixe à la sélection"
 
 #: src/resources/ui/marker-shortcuts-window.ui:88
 msgctxt "shortcut window"
 msgid "Insert link"
-msgstr ""
+msgstr "Insérer un lien"
 
 #: src/resources/ui/marker-shortcuts-window.ui:95
 msgctxt "shortcut window"
 msgid "Draw a sketch"
-msgstr ""
+msgstr "Dessiner une esquisse"
 
 #: src/resources/ui/marker-shortcuts-window.ui:102
 msgctxt "shortcut window"
@@ -259,31 +263,31 @@ msgstr "(Dés)activer le mode plein écran"
 #: src/resources/ui/marker-shortcuts-window.ui:149
 msgctxt "shortcut window"
 msgid "Switch to editor-only mode"
-msgstr ""
+msgstr "Passer au mode \"éditeur seulement\""
 
 #: src/resources/ui/marker-shortcuts-window.ui:156
 msgctxt "shortcut window"
 msgid "Switch to preview-only mode"
-msgstr ""
+msgstr "Passer au mode \"aperçu seulement\""
 
 #: src/resources/ui/marker-shortcuts-window.ui:163
 msgctxt "shortcut window"
 msgid "Switch to dual-pane mode"
-msgstr ""
+msgstr "Passer au mode \"deux panneaux\""
 
 #: src/resources/ui/marker-shortcuts-window.ui:170
 msgctxt "shortcut window"
 msgid "Switch to dual-window mode"
-msgstr ""
+msgstr "Passer au mode \"deux fenêtres\""
 
 #: src/resources/ui/marker-shortcuts-window.ui:177
 msgctxt "shortcut window"
 msgid "Quit the application"
-msgstr ""
+msgstr "Quitter l'application"
 
 #: src/resources/ui/marker-sketcher-window.ui:112
 msgid "Sketcher"
-msgstr ""
+msgstr "Esquisse"
 
 #: src/resources/ui/marker-sketcher-window.ui:123
 msgid "Pen Tool"
@@ -303,11 +307,11 @@ msgstr "Choisir une couleur"
 
 #: src/resources/ui/marker-sketcher-window.ui:271
 msgid "Insert the sketch"
-msgstr ""
+msgstr "Insérer l'esquisse"
 
 #: src/resources/ui/marker-sketcher-window.ui:286
 msgid "Cancel the sketch"
-msgstr ""
+msgstr "Annuler l'esquisse"
 
 #: src/resources/ui/marker-gear-popover.ui:40
 msgid "Zoom Out"
@@ -323,15 +327,15 @@ msgstr "Zoomer"
 
 #: src/resources/ui/marker-gear-popover.ui:99
 msgid "Save As..."
-msgstr "Enregistrer sous..."
+msgstr "Enregistrer sous…"
 
 #: src/resources/ui/marker-gear-popover.ui:107
 msgid "Export..."
-msgstr "Exporter..."
+msgstr "Exporter…"
 
 #: src/resources/ui/marker-gear-popover.ui:115
 msgid "Print..."
-msgstr "Imprimer..."
+msgstr "Imprimer…"
 
 #: src/resources/ui/marker-gear-popover.ui:131
 #: src/resources/ui/marker-gear-popover.ui:198
@@ -340,14 +344,24 @@ msgstr "Affichage"
 
 #: src/resources/ui/marker-headerbar.ui:20
 msgid "Open..."
-msgstr "Ouvrir..."
+msgstr "Ouvrir…"
 
 #: src/resources/ui/marker-headerbar.ui:30
 msgid "Save"
 msgstr "Enregistrer"
 
-#~ msgid "translator-credits"
-#~ msgstr "Romain F. T."
+#: src/marker.c:181
+msgid "A markdown editor for GNOME"
+msgstr "Un éditeur de markdown pour GNOME."
 
-#~ msgid "A markdown editor for GNOME"
-#~ msgstr "Un éditeur de markdown pour GNOME."
+#: src/marker.c:183
+msgid "Report bugs and ideas on github"
+msgstr ""
+
+#: src/marker.c:188
+msgid "translator-credits"
+msgstr "Romain F. T."
+
+#: src/marker-editor.c:248
+msgid "Untitled.md"
+msgstr "Sans titre.md"

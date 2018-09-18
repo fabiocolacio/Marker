@@ -1,14 +1,14 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
+# This file is distributed under the same license as the marker package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: marker\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-09-18 20:58+0200\n"
+"POT-Creation-Date: 2018-09-18 21:58+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -76,82 +76,86 @@ msgid "Wrap text"
 msgstr ""
 
 #: src/resources/ui/marker-prefs-window.ui:104
-msgid "Show right margin at column: "
+msgid "Show right margin at column:"
 msgstr ""
 
-#: src/resources/ui/marker-prefs-window.ui:143
-msgid "Check spelling for language: "
+#: src/resources/ui/marker-prefs-window.ui:144
+msgid "Check spelling for language:"
 msgstr ""
 
-#: src/resources/ui/marker-prefs-window.ui:177
+#: src/resources/ui/marker-prefs-window.ui:179
 msgid "Show spaces"
 msgstr ""
 
-#: src/resources/ui/marker-prefs-window.ui:194
+#: src/resources/ui/marker-prefs-window.ui:196
 msgid "<b>Highlighting</b>"
 msgstr ""
 
-#: src/resources/ui/marker-prefs-window.ui:206
+#: src/resources/ui/marker-prefs-window.ui:208
 msgid "Highlight current line"
 msgstr ""
 
-#: src/resources/ui/marker-prefs-window.ui:226
+#: src/resources/ui/marker-prefs-window.ui:228
 msgid "Highlight syntax with theme:"
 msgstr ""
 
-#: src/resources/ui/marker-prefs-window.ui:262
+#: src/resources/ui/marker-prefs-window.ui:265
 msgid "<b>Tab Stops</b>"
 msgstr ""
 
-#: src/resources/ui/marker-prefs-window.ui:274
+#: src/resources/ui/marker-prefs-window.ui:277
 msgid "Enable automatic indentation"
 msgstr ""
 
-#: src/resources/ui/marker-prefs-window.ui:289
+#: src/resources/ui/marker-prefs-window.ui:292
 msgid "Insert spaces instead of tabs"
 msgstr ""
 
-#: src/resources/ui/marker-prefs-window.ui:350
+#: src/resources/ui/marker-prefs-window.ui:314
+msgid "Tabulation width:"
+msgstr ""
+
+#: src/resources/ui/marker-prefs-window.ui:354
 msgid "Editor"
 msgstr ""
 
-#: src/resources/ui/marker-prefs-window.ui:372
-msgid "Use css theme: "
+#: src/resources/ui/marker-prefs-window.ui:376
+msgid "Use css theme:"
 msgstr ""
 
-#: src/resources/ui/marker-prefs-window.ui:411
+#: src/resources/ui/marker-prefs-window.ui:416
 msgid "Highlight code blocks with theme:"
 msgstr ""
 
-#: src/resources/ui/marker-prefs-window.ui:445
+#: src/resources/ui/marker-prefs-window.ui:451
 msgid "Enable Mermaid"
 msgstr ""
 
-#: src/resources/ui/marker-prefs-window.ui:460
+#: src/resources/ui/marker-prefs-window.ui:466
 msgid "Enable Charter"
 msgstr ""
 
-#: src/resources/ui/marker-prefs-window.ui:477
+#: src/resources/ui/marker-prefs-window.ui:483
 msgid "<b>Math</b>"
 msgstr ""
 
-#: src/resources/ui/marker-prefs-window.ui:493
+#: src/resources/ui/marker-prefs-window.ui:499
 msgid "Render Math"
 msgstr ""
 
-#: src/resources/ui/marker-prefs-window.ui:537
+#: src/resources/ui/marker-prefs-window.ui:544
 msgid "Preview"
 msgstr ""
 
-#: src/resources/ui/marker-prefs-window.ui:562
-msgid "Default view mode: "
+#: src/resources/ui/marker-prefs-window.ui:569
+msgid "Default view mode:"
 msgstr ""
 
-#: src/resources/ui/marker-prefs-window.ui:594
+#: src/resources/ui/marker-prefs-window.ui:602
 msgid "Enable dark mode"
 msgstr ""
 
-#: src/resources/ui/marker-prefs-window.ui:616
+#: src/resources/ui/marker-prefs-window.ui:624
 msgid "Window"
 msgstr ""
 
@@ -343,4 +347,20 @@ msgstr ""
 
 #: src/resources/ui/marker-headerbar.ui:30
 msgid "Save"
+msgstr ""
+
+#: src/marker.c:181
+msgid "A markdown editor for GNOME"
+msgstr ""
+
+#: src/marker.c:183
+msgid "Report bugs and ideas on github"
+msgstr ""
+
+#: src/marker.c:188
+msgid "translator-credits"
+msgstr ""
+
+#: src/marker-editor.c:248
+msgid "Untitled.md"
 msgstr ""

@@ -64,7 +64,7 @@
             <property name="margin_top">18</property>
             <property name="margin_bottom">18</property>
             <property name="orientation">vertical</property>
-            <property name="spacing">6</property>
+            <property name="spacing">12</property>
             <child>
               <object class="GtkCheckButton" id="show_line_numbers_check_button">
                 <property name="label" translatable="yes">Show line numbers</property>
@@ -101,7 +101,7 @@
                 <property name="can_focus">False</property>
                 <child>
                   <object class="GtkCheckButton" id="show_right_margin_check_button">
-                    <property name="label" translatable="yes">Show right margin at column: </property>
+                    <property name="label" translatable="yes">Show right margin at column:</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">False</property>
@@ -124,6 +124,7 @@
                     <property name="expand">False</property>
                     <property name="fill">True</property>
                     <property name="position">1</property>
+                    <property name="pack-type">end</property>
                   </packing>
                 </child>
               </object>
@@ -140,7 +141,7 @@
                 <property name="spacing">10</property>
                 <child>
                   <object class="GtkCheckButton" id="spell_check_check_button">
-                    <property name="label" translatable="yes">Check spelling for language: </property>
+                    <property name="label" translatable="yes">Check spelling for language:</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">False</property>
@@ -163,6 +164,7 @@
                     <property name="expand">False</property>
                     <property name="fill">True</property>
                     <property name="position">1</property>
+                    <property name="pack-type">end</property>
                   </packing>
                 </child>
               </object>
@@ -246,6 +248,7 @@
                     <property name="expand">False</property>
                     <property name="fill">True</property>
                     <property name="position">1</property>
+                    <property name="pack-type">end</property>
                   </packing>
                 </child>
               </object>
@@ -308,7 +311,7 @@
                   <object class="GtkLabel">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="label">Tabulation width:</property>
+                    <property name="label" translatable="yes">Tabulation width:</property>
                     <property name="xalign">1</property>
                   </object>
                   <packing>
@@ -332,6 +335,7 @@
                     <property name="expand">False</property>
                     <property name="fill">True</property>
                     <property name="position">1</property>
+                    <property name="pack-type">end</property>
                   </packing>
                 </child>
               </object>
@@ -362,14 +366,14 @@
             <property name="margin_top">18</property>
             <property name="margin_bottom">18</property>
             <property name="orientation">vertical</property>
-            <property name="spacing">6</property>
+            <property name="spacing">12</property>
             <child>
               <object class="GtkBox">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <child>
                   <object class="GtkCheckButton" id="css_check_button">
-                    <property name="label" translatable="yes">Use css theme: </property>
+                    <property name="label" translatable="yes">Use css theme:</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">False</property>
@@ -392,6 +396,7 @@
                     <property name="expand">False</property>
                     <property name="fill">True</property>
                     <property name="position">1</property>
+                    <property name="pack-type">end</property>
                   </packing>
                 </child>
               </object>
@@ -431,6 +436,7 @@
                     <property name="expand">False</property>
                     <property name="fill">True</property>
                     <property name="position">1</property>
+                    <property name="pack-type">end</property>
                   </packing>
                 </child>
               </object>
@@ -516,6 +522,7 @@
                     <property name="expand">False</property>
                     <property name="fill">True</property>
                     <property name="position">1</property>
+                    <property name="pack-type">end</property>
                   </packing>
                 </child>
               </object>
@@ -550,7 +557,7 @@
             <property name="margin_top">18</property>
             <property name="margin_bottom">18</property>
             <property name="orientation">vertical</property>
-            <property name="spacing">6</property>
+            <property name="spacing">12</property>
             <child>
               <object class="GtkBox">
                 <property name="visible">True</property>
@@ -559,7 +566,7 @@
                   <object class="GtkLabel">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="label" translatable="yes">Default view mode: </property>
+                    <property name="label" translatable="yes">Default view mode:</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -580,6 +587,7 @@
                     <property name="expand">False</property>
                     <property name="fill">True</property>
                     <property name="position">1</property>
+                    <property name="pack-type">end</property>
                   </packing>
                 </child>
               </object>
