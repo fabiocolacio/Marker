@@ -32,6 +32,9 @@ void                 marker_quit                                 (void);
 void                 marker_prefs_cb                             (GSimpleAction      *action,
                                                                   GVariant           *parameter,
                                                                   gpointer            user_data);
+void                 marker_help_cb                             (GSimpleAction      *action,
+                                                                  GVariant           *parameter,
+                                                                  gpointer            user_data);
 void                 marker_about_cb                             (GSimpleAction      *action,
                                                                   GVariant           *parameter,
                                                                   gpointer            user_data);

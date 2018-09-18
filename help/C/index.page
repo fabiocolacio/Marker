@@ -1,0 +1,25 @@
+<page xmlns="http://projectmallard.org/1.0/"
+      xmlns:its="http://www.w3.org/2005/11/its"
+      type="guide" id="index">
+
+  <info>
+    <title type="link">Marker</title>
+    <title type="text">Marker</title>
+    <revision pkgversion="3.12" date="2018-02-24" status="review"/>
+
+    <credit type="author">
+      <name>Romain F. T.</name>
+      <years>2018</years>
+    </credit>
+    <include href="legal.xml" xmlns="http://www.w3.org/2001/XInclude"/>
+  </info>
+
+  <title>
+  <media type="image" mime="image/png" src="figures/icon.png"
+  its:translate="no"/>
+  Marker
+  </title>
+
+  <p>TODO</p>
+
+</page>
