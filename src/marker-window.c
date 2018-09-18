@@ -732,9 +732,6 @@ marker_window_init (MarkerWindow *window)
   {
     GtkWidget *extra_items_start = GTK_WIDGET (gtk_builder_get_object (builder, "appmenu_popover_items_start"));
     GtkWidget *extra_items_end = GTK_WIDGET (gtk_builder_get_object (builder, "appmenu_popover_items_end"));
-    /* GtkBox *popover_vbox = GTK_BOX (gtk_builder_get_object (builder, "gear_menu_popover_vbox")); */
-    /* gtk_box_pack_start (popover_vbox, extra_items_start, FALSE, FALSE, 0); */
-    /* gtk_box_pack_end (popover_vbox, extra_items_end, FALSE, FALSE, 0); */
     gtk_widget_set_visible(extra_items_start, TRUE);
     gtk_widget_set_visible(extra_items_end, TRUE);
     GtkApplication* app = marker_get_app ();
