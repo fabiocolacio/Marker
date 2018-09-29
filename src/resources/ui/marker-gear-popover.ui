@@ -128,7 +128,7 @@
               <object class="GtkModelButton">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
-                <property name="text" translatable="yes">View</property>
+                <property name="text" translatable="yes">View Mode</property>
                 <property name="menu-name">view</property>
               </object>
             </child>

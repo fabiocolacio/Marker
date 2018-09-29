@@ -1,0 +1,25 @@
+<page xmlns="http://projectmallard.org/1.0/"
+      xmlns:its="http://www.w3.org/2005/11/its"
+      type="topic" style="task"
+      id="sketcher">
+
+  <info>
+    <link type="guide" xref="index#start"/>
+    <include href="legal.xml" xmlns="http://www.w3.org/2001/XInclude"/>
+
+    <desc>Add quick drawings to your document using the integrated <app>Sketcher</app> tool.</desc>
+  </info>
+
+  <title>Sketcher, an integrated drawing tool</title>
+
+  <p><app>Marker</app> provides <app>Sketcher</app> a dialog allowing the insertion of basic drawing into your document.</p>
+  <p>You can launch the <app>Sketcher</app> dialog with <key>Ctrl</key>+<key>D</key>.</p>
+  <media type="image" mime="image/png" height="400" src="figures/sketcher.png">
+    <!-- This is the alt text, as read out by screen readers and if the image is
+         missing. It also describes how to re-create the image. -->
+    <p>Using Sketcher for math formulas might not be the best idea.</p>
+  </media>
+  <p>A pencil, an eraser and a text insertion tool are available. You can change the color or the size of them.</p>
+  <p>Undo and redo operations can be used from the keyboard.</p>
+
+</page>

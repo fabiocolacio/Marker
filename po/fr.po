@@ -78,7 +78,7 @@ msgstr "Retour à la ligne"
 
 #: src/resources/ui/marker-prefs-window.ui:104
 msgid "Show right margin at column:"
-msgstr "Montrer une marge dextre à la colonne :"
+msgstr "Montrer une marge dextre à la colonne n°"
 
 #: src/resources/ui/marker-prefs-window.ui:144
 msgid "Check spelling for language:"
@@ -339,8 +339,8 @@ msgstr "Imprimer…"
 
 #: src/resources/ui/marker-gear-popover.ui:131
 #: src/resources/ui/marker-gear-popover.ui:198
-msgid "View"
-msgstr "Affichage"
+msgid "View Mode"
+msgstr "Mode d'affichage"
 
 #: src/resources/ui/marker-headerbar.ui:20
 msgid "Open..."

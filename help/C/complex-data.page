@@ -1,0 +1,32 @@
+<page xmlns="http://projectmallard.org/1.0/"
+      xmlns:its="http://www.w3.org/2005/11/its"
+      type="topic" style="task"
+      id="complex-data">
+
+  <info>
+    <link type="guide" xref="index#advanced"/>
+    <include href="legal.xml" xmlns="http://www.w3.org/2001/XInclude"/>
+
+    <desc>Add graphs, math formulas or diagrams to your documents.</desc>
+  </info>
+
+  <title>Insertion of complex data</title>
+
+  <p>.......</p>
+
+  <section id="katex">
+    <title>KaTeX</title>
+    <p>Add beautiful math formulas to your markdown documents using KaTeX.</p>
+  </section>
+
+  <section id="charter">
+    <title>Charter</title>
+    <p>Create line graphs, bar graphs, or scatter plots in your documents using Charter.</p>
+  </section>
+
+  <section id="mermaid">
+    <title>Mermaid</title>
+    <p>Create flowcharts or diagrams in your markdown documents using Mermaid</p>
+  </section>
+
+</page>

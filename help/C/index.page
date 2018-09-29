@@ -1,17 +1,15 @@
 <page xmlns="http://projectmallard.org/1.0/"
       xmlns:its="http://www.w3.org/2005/11/its"
-      type="guide" id="index">
+      type="guide" id="index" style="2column">
 
   <info>
-    <title type="link">Marker</title>
     <title type="text">Marker</title>
-    <revision pkgversion="3.12" date="2018-02-24" status="review"/>
-
-    <credit type="author">
-      <name>Romain F. T.</name>
-      <years>2018</years>
-    </credit>
     <include href="legal.xml" xmlns="http://www.w3.org/2001/XInclude"/>
+    <credit type="author">
+      <name>Fabio Colacio</name>
+      <years>2017-2018</years>
+    </credit>
+    <desc><app>Marker</app> is a simple yet robust markdown editor for the GNOME desktop.</desc>
   </info>
 
   <title>
@@ -20,6 +18,12 @@
   Marker
   </title>
 
-  <p>TODO</p>
+  <section id="start" style="2column">
+    <title>Getting started</title>
+  </section>
+
+  <section id="advanced" style="2column">
+    <title>Advanced uses</title>
+  </section>
 
 </page>

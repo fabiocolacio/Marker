@@ -1,0 +1,84 @@
+<page xmlns="http://projectmallard.org/1.0/"
+      xmlns:its="http://www.w3.org/2005/11/its"
+      type="topic" style="task"
+      id="introduction">
+
+  <info>
+    <link type="guide" xref="index#start"/>
+    <include href="legal.xml" xmlns="http://www.w3.org/2001/XInclude"/>
+
+    <desc>An introduction to <app>Marker</app>, a markdown editor for GNOME.</desc>
+  </info>
+
+  <title>Introduction</title>
+
+  <p><app>Marker</app> offers a simple yet robust way to edit and view markdown files.
+  It shows dynamically a preview of your work, and supports advanced features.</p>
+  
+  <p>Files are easy to open, edit, preview and save. At the right of the
+  header bar, a menu contains various other features, such as printing, setting
+  the zoom or change preferences.</p>
+  
+  <media type="image" mime="image/png" height="400" src="figures/scrot.png">
+    <!--This is the alt text, as read out by screen readers and if the image is
+    missing. It also describes how to re-create the image.-->
+    <p>Taking notes in the dual-pane mode.</p>
+  </media>
+  
+
+  <section id="mardown">
+    <title>The Markdown format</title>
+		<p>Markdown is a lightweight markup language with plain text formatting
+		syntax. The text stays human-readable while it's easy to convert to HTML
+		or other file formats.</p>
+    <p>Here are a few examples of syntaxes:</p>
+  
+	  <table rules="rows" frame="top bottom">
+		<thead>
+		  <tr>
+		    <td>
+		      <p>Formatting</p>
+		    </td>
+		    <td>
+		      <p>Syntax</p>
+		    </td>
+		  </tr>
+		</thead>
+		<tbody>
+		  <tr>
+		    <td>
+		      <p>*italic* or _italic_</p>
+		    </td>
+		    <td>
+		      <p>Italic</p>
+		    </td>
+		  </tr>
+		  <tr>
+		    <td>
+		      <p>**bold**</p>
+		    </td>
+		    <td>
+		      <p>Bold</p>
+		    </td>
+		  </tr>
+		  <tr>
+		    <td>
+		      <p>__underlined__</p>
+		    </td>
+		    <td>
+		      <p>Underlined</p>
+		    </td>
+		  </tr>
+		  <tr>
+		    <td>
+		      <p>`monospace`</p>
+		    </td>
+		    <td>
+		      <p>Monospace text</p>
+		    </td>
+		  </tr>
+		</tbody>
+	  </table>
+  </section>
+
+</page>

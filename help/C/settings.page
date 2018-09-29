@@ -1,0 +1,39 @@
+<page xmlns="http://projectmallard.org/1.0/"
+      xmlns:its="http://www.w3.org/2005/11/its"
+      type="topic" style="task"
+      id="settings">
+
+  <info>
+    <link type="guide" xref="index#advanced"/>
+    <include href="legal.xml" xmlns="http://www.w3.org/2001/XInclude"/>
+
+    <desc>Customize your new favorite mardown editor.</desc>
+  </info>
+
+  <title>Settings</title>
+
+  <p>.......</p>
+
+  <section id="editor">
+    <title>Editor</title>
+    <p>............</p>
+  </section>
+
+  <section id="preview">
+    <title>Preview</title>
+    <p>..........</p>
+  </section>
+
+  <section id="window">
+    <title>Window</title>
+    <p>The global layout of the app can be set from the <gui>Preferences</gui> dialog or from the primary window menu:</p>
+	  <list>
+		<p>The global layout of the app can be set from the <gui>Preferences</gui> dialog or from the primary window menu:</p>
+		<item><p>Editor only mode</p></item>
+		<item><p>Preview only mode</p></item>
+		<item><p>Dual window mode</p></item>
+		<item><p>Dual pane mode</p></item>
+	  </list>
+  </section>
+
+</page>
