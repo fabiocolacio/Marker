@@ -1112,6 +1112,14 @@ marker_window_close_current_document (MarkerWindow *window)
       marker_editor_closing (editor);
       gtk_tree_store_remove (window->documents_tree_store, &iter);
       gtk_widget_destroy (GTK_WIDGET (editor));
+      window->editors_counter--;
+
+      if (window->editors_counter < 1 &&
+          gtk_paned_get_position(window->main_paned) > 0)
+      {
+        gtk_paned_set_position(window->main_paned, 0);
+      }
+
       /** Select the last available row if no new is automatically selected **/
       if (!gtk_tree_selection_get_selected (selection, &model, &iter)){
         gint rows = gtk_tree_model_iter_n_children (GTK_TREE_MODEL(window->documents_tree_store), NULL);
