@@ -58,6 +58,8 @@ struct _MarkerWindow
   GtkTreeView          *documents_tree_view;
   GtkTreeStore         *documents_tree_store;
   GtkPaned             *main_paned;
+  GtkWidget            *paned1;
+  GtkWidget            *paned2;
   guint                 editors_counter;
   guint                 untitled_files;
   gboolean              sidebar_visible;
@@ -623,7 +625,7 @@ marker_window_init (MarkerWindow *window)
 
   window->is_fullscreen = FALSE;
 
-  window->sidebar_visible = FALSE;
+  window->sidebar_visible = TRUE;
   window->editors_counter = 0;
   window->last_click_ = 0;
   window->last_key_pressed_ = 0;
@@ -700,6 +702,8 @@ marker_window_init (MarkerWindow *window)
   GtkWidget * main_paned = GTK_WIDGET(gtk_builder_get_object(builder, "main_paned"));
   gtk_box_pack_start (vbox, main_paned, TRUE, TRUE, 0);
   gtk_paned_set_position(GTK_PANED(main_paned), 0);
+  window->paned1 = gtk_paned_get_child1 (GTK_PANED (main_paned));
+  window->paned2 = gtk_paned_get_child2 (GTK_PANED (main_paned));
   gtk_widget_show(main_paned);
 
   window->main_paned = GTK_PANED(main_paned);
@@ -743,6 +747,7 @@ marker_window_init (MarkerWindow *window)
   }
 
   /** Window **/
+  marker_window_hide_sidebar (window);
   gtk_window_set_default_size(GTK_WINDOW(window), 900, 600);
   gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
   g_signal_connect (window, "key-press-event", G_CALLBACK (key_pressed_cb), window);
@@ -1144,8 +1149,8 @@ marker_window_hide_sidebar (MarkerWindow *window)
 {
   if (window->sidebar_visible) {
     window->sidebar_visible = false;
-    g_object_ref (window->documents_tree_view);
-    gtk_container_remove (GTK_CONTAINER (window->main_paned), GTK_WIDGET (window->documents_tree_view));
+    g_object_ref (window->paned1);
+    gtk_container_remove (GTK_CONTAINER (window->main_paned), GTK_WIDGET (window->paned1));
     gtk_paned_set_position (window->main_paned, 0);
   }
 }
@@ -1155,12 +1160,10 @@ marker_window_show_sidebar (MarkerWindow *window)
 {
   if (!window->sidebar_visible) {
     window->sidebar_visible = true;
-    gtk_paned_add1 (window->main_paned, GTK_WIDGET (window->documents_tree_view));
-    g_object_unref (window->documents_tree_view);
+    gtk_paned_add1 (window->main_paned, GTK_WIDGET (window->paned1));
+    g_object_unref (window->paned1);
     gtk_paned_set_position (window->main_paned, 200);
   }
-
-  g_print ("b");
 }
 
 void
@@ -1170,5 +1173,4 @@ marker_window_search (MarkerWindow       *window)
   {
     marker_editor_toggle_search_bar(window->active_editor);
   }
-  g_print ("a");
 }
