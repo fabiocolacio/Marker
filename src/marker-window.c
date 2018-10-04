@@ -807,7 +807,7 @@ marker_window_add_editor(MarkerWindow *window,
   gtk_tree_selection_select_iter(gtk_tree_view_get_selection(window->documents_tree_view),
                                  &iter);
 
-  if (window->editors_counter == 1 && !window->sidebar_visible)
+  if (window->editors_counter >= 1)
   {
     marker_window_show_sidebar (window);
   }
@@ -1115,7 +1115,7 @@ marker_window_close_current_document (MarkerWindow *window)
       gtk_widget_destroy (GTK_WIDGET (editor));
       window->editors_counter--;
 
-      if (window->editors_counter < 1 && window->sidebar_visible)
+      if (window->editors_counter < 1)
       {
         marker_window_hide_sidebar (window);
       }
@@ -1142,13 +1142,25 @@ marker_window_close_current_document (MarkerWindow *window)
 void
 marker_window_hide_sidebar (MarkerWindow *window)
 {
-  gtk_paned_set_position (window->main_paned, 0);
+  if (window->sidebar_visible) {
+    window->sidebar_visible = false;
+    g_object_ref (window->documents_tree_view);
+    gtk_container_remove (GTK_CONTAINER (window->main_paned), GTK_WIDGET (window->documents_tree_view));
+    gtk_paned_set_position (window->main_paned, 0);
+  }
 }
 
 void
 marker_window_show_sidebar (MarkerWindow *window)
 {
-  gtk_paned_set_position (window->main_paned, 200);
+  if (!window->sidebar_visible) {
+    window->sidebar_visible = true;
+    gtk_paned_add1 (window->main_paned, GTK_WIDGET (window->documents_tree_view));
+    g_object_unref (window->documents_tree_view);
+    gtk_paned_set_position (window->main_paned, 200);
+  }
+
+  g_print ("b");
 }
 
 void
@@ -1158,4 +1170,5 @@ marker_window_search (MarkerWindow       *window)
   {
     marker_editor_toggle_search_bar(window->active_editor);
   }
+  g_print ("a");
 }
