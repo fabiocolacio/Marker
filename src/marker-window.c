@@ -60,6 +60,7 @@ struct _MarkerWindow
   GtkPaned             *main_paned;
   guint                 editors_counter;
   guint                 untitled_files;
+  gboolean              sidebar_visible;
 
   guint32               last_click_;
   guint32               last_key_pressed_;
@@ -622,6 +623,7 @@ marker_window_init (MarkerWindow *window)
 
   window->is_fullscreen = FALSE;
 
+  window->sidebar_visible = FALSE;
   window->editors_counter = 0;
   window->last_click_ = 0;
   window->last_key_pressed_ = 0;
@@ -805,10 +807,9 @@ marker_window_add_editor(MarkerWindow *window,
   gtk_tree_selection_select_iter(gtk_tree_view_get_selection(window->documents_tree_view),
                                  &iter);
 
-  if (window->editors_counter == 1 &&
-      gtk_paned_get_position(window->main_paned) == 0)
+  if (window->editors_counter == 1 && !window->sidebar_visible)
   {
-    gtk_paned_set_position(window->main_paned, 200);
+    marker_window_show_sidebar (window);
   }
 
   g_signal_connect(editor, "title-changed",
@@ -1114,10 +1115,9 @@ marker_window_close_current_document (MarkerWindow *window)
       gtk_widget_destroy (GTK_WIDGET (editor));
       window->editors_counter--;
 
-      if (window->editors_counter < 1 &&
-          gtk_paned_get_position(window->main_paned) > 0)
+      if (window->editors_counter < 1 && window->sidebar_visible)
       {
-        gtk_paned_set_position(window->main_paned, 0);
+        marker_window_hide_sidebar (window);
       }
 
       /** Select the last available row if no new is automatically selected **/
@@ -1137,6 +1137,18 @@ marker_window_close_current_document (MarkerWindow *window)
       }
     }
   }
+}
+
+void
+marker_window_hide_sidebar (MarkerWindow *window)
+{
+  gtk_paned_set_position (window->main_paned, 0);
+}
+
+void
+marker_window_show_sidebar (MarkerWindow *window)
+{
+  gtk_paned_set_position (window->main_paned, 200);
 }
 
 void
