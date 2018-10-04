@@ -890,7 +890,21 @@ marker_window_new_editor_from_file (MarkerWindow *window,
   g_list_free (children);
 
   if (!duplicate) {
-    MarkerEditor * editor = marker_editor_new_from_file(file);
+    MarkerEditor *editor = NULL;
+    MarkerSourceView *source_view = NULL;
+    g_autofree gchar *md = NULL;
+    GFile *active_file = NULL;
+   
+    editor = marker_window_get_active_editor (window);
+    active_file = marker_editor_get_file (editor);
+    source_view = marker_editor_get_source_view (editor);
+    md = marker_source_view_get_text (source_view);
+
+    if (strcmp (md, "") == 0 && active_file == NULL) {
+      marker_window_close_current_document (window);
+    }
+
+    editor = marker_editor_new_from_file(file);
     marker_window_add_editor(window, editor);
   }
 }
@@ -1098,6 +1112,14 @@ marker_window_close_current_document (MarkerWindow *window)
       marker_editor_closing (editor);
       gtk_tree_store_remove (window->documents_tree_store, &iter);
       gtk_widget_destroy (GTK_WIDGET (editor));
+      window->editors_counter--;
+
+      if (window->editors_counter < 1 &&
+          gtk_paned_get_position(window->main_paned) > 0)
+      {
+        gtk_paned_set_position(window->main_paned, 0);
+      }
+
       /** Select the last available row if no new is automatically selected **/
       if (!gtk_tree_selection_get_selected (selection, &model, &iter)){
         gint rows = gtk_tree_model_iter_n_children (GTK_TREE_MODEL(window->documents_tree_store), NULL);
