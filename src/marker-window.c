@@ -890,7 +890,21 @@ marker_window_new_editor_from_file (MarkerWindow *window,
   g_list_free (children);
 
   if (!duplicate) {
-    MarkerEditor * editor = marker_editor_new_from_file(file);
+    MarkerEditor *editor = NULL;
+    MarkerSourceView *source_view = NULL;
+    g_autofree gchar *md = NULL;
+    GFile *active_file = NULL;
+   
+    editor = marker_window_get_active_editor (window);
+    active_file = marker_editor_get_file (editor);
+    source_view = marker_editor_get_source_view (editor);
+    md = marker_source_view_get_text (source_view);
+
+    if (strcmp (md, "") == 0 && active_file == NULL) {
+      marker_window_close_current_document (window);
+    }
+
+    editor = marker_editor_new_from_file(file);
     marker_window_add_editor(window, editor);
   }
 }
