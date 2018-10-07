@@ -620,6 +620,46 @@ button_pressed_cb (GtkWidget *view,
 static void
 marker_window_init (MarkerWindow *window)
 {
+  { // SETUP ACTIONS //
+    GAction *action = NULL;
+    GtkApplication *app = marker_get_app ();
+
+    action = G_ACTION (g_simple_action_new ("open", NULL));
+    const gchar *open_accels[] = { "<Ctrl>o", NULL }; 
+    gtk_application_set_accels_for_action (app, "win.open", open_accels);
+    g_action_map_add_action (G_ACTION_MAP (window), action);
+
+    action = G_ACTION (g_simple_action_new ("save", NULL));
+    const gchar *save_accels[] = { "<Ctrl>s", NULL };
+    gtk_application_set_accels_for_action (app, "win.save", save_accels);
+    g_action_map_add_action (G_ACTION_MAP (window), action);
+
+    action = G_ACTION (g_simple_action_new ("saveas", NULL));
+    const gchar *saveas_accels[] = { "<Ctrl><Shift>s", NULL };
+    gtk_application_set_accels_for_action (app, "win.saveas", saveas_accels);
+    g_action_map_add_action (G_ACTION_MAP (window), action);
+
+    action = G_ACTION (g_simple_action_new ("export", NULL));
+    const gchar *export_accels[] = { "<Ctrl>e", NULL };
+    gtk_application_set_accels_for_action (app, "win.export", export_accels);
+    g_action_map_add_action (G_ACTION_MAP (window), action);
+
+    action = G_ACTION (g_simple_action_new ("print", NULL));
+    const gchar *print_accels[] = { "<Ctrl>p", NULL };
+    gtk_application_set_accels_for_action (app, "win.print", print_accels);
+    g_action_map_add_action (G_ACTION_MAP (window), action);
+
+    action = G_ACTION (g_simple_action_new_stateful ("fullscreen", NULL, g_variant_new_boolean (FALSE)));
+    const gchar *fullscreen_accels[] = { "<Ctrl>f", "F11", NULL };
+    gtk_application_set_accels_for_action (app, "win.fullscreen", fullscreen_accels);
+    g_action_map_add_action (G_ACTION_MAP (window), action);
+
+    action = G_ACTION (g_simple_action_new_stateful ("sidebar", NULL, g_variant_new_boolean (FALSE)));
+    const gchar *sidebar_accels[] =  { "F12", NULL };
+    gtk_application_set_accels_for_action (app, "win.sidebar", sidebar_accels);
+    g_action_map_add_action (G_ACTION_MAP (window), action);
+  }
+
   /** Add marker icon theme to the default icon theme **/
   gtk_icon_theme_append_search_path (gtk_icon_theme_get_default(), ICONS_DIR);
 
