@@ -625,26 +625,31 @@ marker_window_init (MarkerWindow *window)
     GtkApplication *app = marker_get_app ();
 
     action = G_ACTION (g_simple_action_new ("open", NULL));
+    g_signal_connect_swapped (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (marker_window_open_file), window);
     const gchar *open_accels[] = { "<Ctrl>o", NULL }; 
     gtk_application_set_accels_for_action (app, "win.open", open_accels);
     g_action_map_add_action (G_ACTION_MAP (window), action);
 
     action = G_ACTION (g_simple_action_new ("save", NULL));
+    g_signal_connect_swapped (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (marker_window_save_active_file), window);
     const gchar *save_accels[] = { "<Ctrl>s", NULL };
     gtk_application_set_accels_for_action (app, "win.save", save_accels);
     g_action_map_add_action (G_ACTION_MAP (window), action);
 
     action = G_ACTION (g_simple_action_new ("saveas", NULL));
+    g_signal_connect_swapped (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (marker_window_save_active_file_as), window);
     const gchar *saveas_accels[] = { "<Ctrl><Shift>s", NULL };
     gtk_application_set_accels_for_action (app, "win.saveas", saveas_accels);
     g_action_map_add_action (G_ACTION_MAP (window), action);
 
     action = G_ACTION (g_simple_action_new ("export", NULL));
+    g_signal_connect_swapped (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (marker_exporter_show_export_dialog), window);
     const gchar *export_accels[] = { "<Ctrl>e", NULL };
     gtk_application_set_accels_for_action (app, "win.export", export_accels);
     g_action_map_add_action (G_ACTION_MAP (window), action);
 
     action = G_ACTION (g_simple_action_new ("print", NULL));
+    g_signal_connect (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (action_print), window);
     const gchar *print_accels[] = { "<Ctrl>p", NULL };
     gtk_application_set_accels_for_action (app, "win.print", print_accels);
     g_action_map_add_action (G_ACTION_MAP (window), action);
