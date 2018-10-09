@@ -172,6 +172,36 @@ action_sidebar (GSimpleAction *action,
 }
 
 static void
+action_monospace (GSimpleAction *action,
+                  GVariant      *parameter,
+                  gpointer       window)
+{
+    MarkerEditor *editor = marker_window_get_active_editor (MARKER_WINDOW (window));
+    MarkerSourceView *source_view = marker_editor_get_source_view (editor);
+    marker_source_view_surround_selection_with (source_view, "``");
+}
+
+static void
+action_italic (GSimpleAction *action,
+               GVariant      *parameter,
+               gpointer       window)
+{
+    MarkerEditor *editor = marker_window_get_active_editor (MARKER_WINDOW (window));
+    MarkerSourceView *source_view = marker_editor_get_source_view (editor);
+    marker_source_view_surround_selection_with (source_view, "*");
+}
+
+static void
+action_bold (GSimpleAction *action,
+             GVariant      *parameter,
+             gpointer       window)
+{
+    MarkerEditor *editor = marker_window_get_active_editor (MARKER_WINDOW (window));
+    MarkerSourceView *source_view = marker_editor_get_source_view (editor);
+    marker_source_view_surround_selection_with (source_view, "**");
+}
+
+static void
 action_zoom_out (GSimpleAction *action,
                  GVariant      *parameter,
                  gpointer       user_data)
@@ -281,18 +311,6 @@ key_pressed_cb (GtkWidget   *widget,
   {
     switch (event->keyval)
     {
-      case GDK_KEY_i:
-        marker_source_view_surround_selection_with (source_view, "*");
-        break;
-
-      case GDK_KEY_m:
-        marker_source_view_surround_selection_with (source_view, "``");
-        break;
-
-      case GDK_KEY_b:
-        marker_source_view_surround_selection_with (source_view, "**");
-        break;
-
       case GDK_KEY_k:
         marker_source_view_insert_link (source_view);
         break;
@@ -573,6 +591,24 @@ marker_window_init (MarkerWindow *window)
   { // SETUP ACTIONS //
     GAction *action = NULL;
     GtkApplication *app = marker_get_app ();
+
+    action = G_ACTION (g_simple_action_new ("italic", NULL));
+    g_signal_connect (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (action_italic), window);
+    const gchar *italic_accels[] = { "<Ctrl>i", NULL };
+    gtk_application_set_accels_for_action (app, "win.italic", italic_accels);
+    g_action_map_add_action (G_ACTION_MAP (window), action);
+
+    action = G_ACTION (g_simple_action_new ("bold", NULL));
+    g_signal_connect (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (action_bold), window);
+    const gchar *bold_accels[] = { "<Ctrl>b", NULL };
+    gtk_application_set_accels_for_action (app, "win.bold", bold_accels);
+    g_action_map_add_action (G_ACTION_MAP (window), action);
+
+    action = G_ACTION (g_simple_action_new ("monospace", NULL));
+    g_signal_connect (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (action_monospace), window);
+    const gchar *monospace_accels[] = { "<Ctrl>m", NULL };
+    gtk_application_set_accels_for_action (app, "win.monospace", monospace_accels);
+    g_action_map_add_action (G_ACTION_MAP (window), action);
 
     action = G_ACTION (g_simple_action_new ("new", NULL));
     g_signal_connect (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (marker_create_new_window), NULL);
