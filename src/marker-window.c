@@ -65,7 +65,6 @@ struct _MarkerWindow
   gboolean              sidebar_visible;
 
   guint32               last_click_;
-  guint32               last_key_pressed_;
 };
 
 G_DEFINE_TYPE (MarkerWindow, marker_window, GTK_TYPE_APPLICATION_WINDOW);
@@ -172,6 +171,16 @@ action_sidebar (GSimpleAction *action,
 }
 
 static void
+action_link (GSimpleAction *action,
+             GVariant      *parameter,
+             gpointer       window)
+{
+    MarkerEditor *editor = marker_window_get_active_editor (MARKER_WINDOW (window));
+    MarkerSourceView *source_view = marker_editor_get_source_view (editor);
+    marker_source_view_insert_link (source_view);
+}
+
+static void
 action_monospace (GSimpleAction *action,
                   GVariant      *parameter,
                   gpointer       window)
@@ -199,6 +208,15 @@ action_bold (GSimpleAction *action,
     MarkerEditor *editor = marker_window_get_active_editor (MARKER_WINDOW (window));
     MarkerSourceView *source_view = marker_editor_get_source_view (editor);
     marker_source_view_surround_selection_with (source_view, "**");
+}
+
+static void
+action_refresh (GSimpleAction *action,
+                GVariant      *parameter,
+                gpointer       window)
+{
+    MarkerEditor *editor = marker_window_get_active_editor (MARKER_WINDOW (window));
+    marker_editor_refresh_preview (editor);
 }
 
 static void
@@ -283,65 +301,6 @@ action_dual_window_mode (GSimpleAction *action,
   MarkerWindow *window = user_data;
   MarkerEditor *editor = marker_window_get_active_editor (window);
   marker_editor_set_view_mode (editor, DUAL_WINDOW_MODE);
-}
-
-static gboolean
-key_pressed_cb (GtkWidget   *widget,
-                GdkEventKey *event,
-                gpointer     user_data)
-{
-
-  MarkerWindow *window = MARKER_WINDOW (widget);
-  MarkerEditor *editor = marker_window_get_active_editor (window);
-
-  guint32 time = event->time;
-
-  if (time - window->last_key_pressed_ < MIN_DELTA_T)
-  {
-    window->last_key_pressed_ = time;
-    return FALSE;
-  }
-
-  window->last_key_pressed_ = time;
-  MarkerSourceView *source_view = marker_editor_get_source_view (editor);
-
-
-  gboolean ctrl_pressed = (event->state & GDK_CONTROL_MASK);
-  if (ctrl_pressed)
-  {
-    switch (event->keyval)
-    {
-      case GDK_KEY_k:
-        marker_source_view_insert_link (source_view);
-        break;
-
-      case GDK_KEY_q:
-        marker_quit ();
-        break;
-
-      case GDK_KEY_r:
-        marker_editor_refresh_preview (editor);
-        break;
-
-      case GDK_KEY_f:
-        marker_window_search(window);
-        break;
-
-      case GDK_KEY_d:
-        marker_window_open_sketcher (window);
-        break;
-    }
-  }
-  else
-  {
-    switch (event->keyval)
-    {
-      case GDK_KEY_F11:
-        marker_window_toggle_fullscreen (window);
-        break;
-    }
-  }
-  return FALSE;
 }
 
 gchar *
@@ -592,6 +551,30 @@ marker_window_init (MarkerWindow *window)
     GAction *action = NULL;
     GtkApplication *app = marker_get_app ();
 
+    action = G_ACTION (g_simple_action_new ("refresh", NULL));
+    g_signal_connect (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (action_refresh), window);
+    const gchar *refresh_accels[] = { "<Ctrl>r", NULL };
+    gtk_application_set_accels_for_action (app, "win.refresh", refresh_accels);
+    g_action_map_add_action (G_ACTION_MAP (window), action);
+
+    action = G_ACTION (g_simple_action_new ("sketcher", NULL));
+    g_signal_connect_swapped (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (marker_window_open_sketcher), window);
+    const gchar *sketcher_accels[] = { "<Ctrl>d", NULL };
+    gtk_application_set_accels_for_action (app, "win.sketcher", sketcher_accels);
+    g_action_map_add_action (G_ACTION_MAP (window), action);
+
+    action = G_ACTION (g_simple_action_new ("find", NULL));
+    g_signal_connect_swapped (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (marker_window_search), window);
+    const gchar *find_accels[] = { "<Ctrl>f", NULL };
+    gtk_application_set_accels_for_action (app, "win.find", find_accels);
+    g_action_map_add_action (G_ACTION_MAP (window), action);
+
+    action = G_ACTION (g_simple_action_new ("link", NULL));
+    g_signal_connect (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (action_link), window);
+    const gchar *link_accels[] = { "<Ctrl>k", NULL };
+    gtk_application_set_accels_for_action (app, "win.link", link_accels);
+    g_action_map_add_action (G_ACTION_MAP (window), action);
+
     action = G_ACTION (g_simple_action_new ("italic", NULL));
     g_signal_connect (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (action_italic), window);
     const gchar *italic_accels[] = { "<Ctrl>i", NULL };
@@ -708,7 +691,7 @@ marker_window_init (MarkerWindow *window)
 
     action = G_ACTION (g_simple_action_new_stateful ("fullscreen", NULL, g_variant_new_boolean (FALSE)));
     g_signal_connect (G_SIMPLE_ACTION (action), "change-state", G_CALLBACK (action_fullscreen), window);
-    const gchar *fullscreen_accels[] = { "<Ctrl>f", "F11", NULL };
+    const gchar *fullscreen_accels[] = { "F11", NULL };
     gtk_application_set_accels_for_action (app, "win.fullscreen", fullscreen_accels);
     g_action_map_add_action (G_ACTION_MAP (window), action);
 
@@ -727,7 +710,6 @@ marker_window_init (MarkerWindow *window)
   window->sidebar_visible = TRUE;
   window->editors_counter = 0;
   window->last_click_ = 0;
-  window->last_key_pressed_ = 0;
 
   GtkBuilder *builder = gtk_builder_new ();
 
@@ -847,7 +829,6 @@ marker_window_init (MarkerWindow *window)
   marker_window_hide_sidebar (window);
   gtk_window_set_default_size(GTK_WINDOW(window), 900, 600);
   gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
-  g_signal_connect (window, "key-press-event", G_CALLBACK (key_pressed_cb), window);
   g_signal_connect(window, "delete-event", G_CALLBACK(window_deleted_event_cb), window);
 
   gtk_builder_add_callback_symbol (builder, "save_button_clicked_cb", G_CALLBACK (marker_window_save_active_file));
