@@ -65,7 +65,6 @@ struct _MarkerWindow
   gboolean              sidebar_visible;
 
   guint32               last_click_;
-  guint32               last_key_pressed_;
 };
 
 G_DEFINE_TYPE (MarkerWindow, marker_window, GTK_TYPE_APPLICATION_WINDOW);
@@ -138,6 +137,89 @@ show_unsaved_documents_warning (MarkerWindow *window)
 }
 
 static void
+action_fullscreen (GSimpleAction *action,
+                   GVariant      *value,
+                   gpointer       window)
+{
+    gboolean state = g_variant_get_boolean (value);
+
+    g_simple_action_set_state (action, value);
+
+    if (state) {
+        marker_window_fullscreen (MARKER_WINDOW (window));
+    }
+    else {
+        marker_window_unfullscreen (MARKER_WINDOW (window));
+    }
+}
+
+static void
+action_sidebar (GSimpleAction *action,
+                GVariant      *value,
+                gpointer       window)
+{
+    gboolean state = g_variant_get_boolean (value);
+
+    g_simple_action_set_state (action, value);
+
+    if (state) {
+        marker_window_show_sidebar (MARKER_WINDOW (window));
+    }
+    else {
+        marker_window_hide_sidebar (MARKER_WINDOW (window));
+    }
+}
+
+static void
+action_link (GSimpleAction *action,
+             GVariant      *parameter,
+             gpointer       window)
+{
+    MarkerEditor *editor = marker_window_get_active_editor (MARKER_WINDOW (window));
+    MarkerSourceView *source_view = marker_editor_get_source_view (editor);
+    marker_source_view_insert_link (source_view);
+}
+
+static void
+action_monospace (GSimpleAction *action,
+                  GVariant      *parameter,
+                  gpointer       window)
+{
+    MarkerEditor *editor = marker_window_get_active_editor (MARKER_WINDOW (window));
+    MarkerSourceView *source_view = marker_editor_get_source_view (editor);
+    marker_source_view_surround_selection_with (source_view, "``");
+}
+
+static void
+action_italic (GSimpleAction *action,
+               GVariant      *parameter,
+               gpointer       window)
+{
+    MarkerEditor *editor = marker_window_get_active_editor (MARKER_WINDOW (window));
+    MarkerSourceView *source_view = marker_editor_get_source_view (editor);
+    marker_source_view_surround_selection_with (source_view, "*");
+}
+
+static void
+action_bold (GSimpleAction *action,
+             GVariant      *parameter,
+             gpointer       window)
+{
+    MarkerEditor *editor = marker_window_get_active_editor (MARKER_WINDOW (window));
+    MarkerSourceView *source_view = marker_editor_get_source_view (editor);
+    marker_source_view_surround_selection_with (source_view, "**");
+}
+
+static void
+action_refresh (GSimpleAction *action,
+                GVariant      *parameter,
+                gpointer       window)
+{
+    MarkerEditor *editor = marker_window_get_active_editor (MARKER_WINDOW (window));
+    marker_editor_refresh_preview (editor);
+}
+
+static void
 action_zoom_out (GSimpleAction *action,
                  GVariant      *parameter,
                  gpointer       user_data)
@@ -168,24 +250,6 @@ action_zoom_in (GSimpleAction *action,
   MarkerEditor *editor = marker_window_get_active_editor (window);
   MarkerPreview *preview = marker_editor_get_preview (editor);
   marker_preview_zoom_in (preview);
-}
-
-static void
-action_save_as (GSimpleAction *action,
-                GVariant      *parameter,
-                gpointer       user_data)
-{
-  MarkerWindow *window = user_data;
-  marker_window_save_active_file_as (window);
-}
-
-static void
-action_export (GSimpleAction *action,
-               GVariant      *parameter,
-               gpointer       user_data)
-{
-  MarkerWindow *window = user_data;
-  marker_exporter_show_export_dialog (window);
 }
 
 static void
@@ -237,143 +301,6 @@ action_dual_window_mode (GSimpleAction *action,
   MarkerWindow *window = user_data;
   MarkerEditor *editor = marker_window_get_active_editor (window);
   marker_editor_set_view_mode (editor, DUAL_WINDOW_MODE);
-}
-
-static const GActionEntry WINDOW_ACTIONS[] =
-{
-  { "zoomout", action_zoom_out, NULL, NULL, NULL },
-  { "zoomoriginal", action_zoom_original, NULL, NULL, NULL },
-  { "zoomin", action_zoom_in, NULL, NULL, NULL },
-  { "saveas", action_save_as, NULL, NULL, NULL },
-  { "export", action_export, NULL, NULL, NULL },
-  { "print", action_print, NULL, NULL, NULL },
-  { "editoronlymode", action_editor_only_mode, NULL, NULL, NULL },
-  { "previewonlymode", action_preview_only_mode, NULL, NULL, NULL },
-  { "dualpanemode", action_dual_pane_mode, NULL, NULL, NULL },
-  { "dualwindowmode", action_dual_window_mode, NULL, NULL, NULL }
-};
-
-static gboolean
-key_pressed_cb (GtkWidget   *widget,
-                GdkEventKey *event,
-                gpointer     user_data)
-{
-
-  MarkerWindow *window = MARKER_WINDOW (widget);
-  MarkerEditor *editor = marker_window_get_active_editor (window);
-
-  guint32 time = event->time;
-
-  if (time - window->last_key_pressed_ < MIN_DELTA_T)
-  {
-    window->last_key_pressed_ = time;
-    return FALSE;
-  }
-
-  window->last_key_pressed_ = time;
-  MarkerSourceView *source_view = marker_editor_get_source_view (editor);
-
-
-  gboolean ctrl_pressed = (event->state & GDK_CONTROL_MASK);
-  if (ctrl_pressed)
-  {
-    switch (event->keyval)
-    {
-      case GDK_KEY_i:
-        marker_source_view_surround_selection_with (source_view, "*");
-        break;
-
-      case GDK_KEY_m:
-        marker_source_view_surround_selection_with (source_view, "``");
-        break;
-
-      case GDK_KEY_b:
-        marker_source_view_surround_selection_with (source_view, "**");
-        break;
-
-      case GDK_KEY_k:
-        marker_source_view_insert_link (source_view);
-        break;
-
-      case GDK_KEY_q:
-        marker_quit ();
-        break;
-
-      case GDK_KEY_n:
-        marker_window_new_editor(window);
-        break;
-
-      case GDK_KEY_N:
-        marker_create_new_window ();
-        break;
-
-      case GDK_KEY_w:
-        marker_window_close_current_document (window);
-        break;
-
-      case GDK_KEY_W:
-        marker_window_try_close (window);
-        break;
-
-      case GDK_KEY_r:
-        marker_editor_refresh_preview (editor);
-        break;
-
-      case GDK_KEY_o:
-        marker_window_open_file (window);
-        break;
-
-      case GDK_KEY_f:
-        marker_window_search(window);
-        break;
-
-      case GDK_KEY_O:
-        marker_window_open_file_in_new_window(window);
-        break;
-
-      case GDK_KEY_d:
-        marker_window_open_sketcher (window);
-        break;
-
-      case GDK_KEY_S:
-        marker_window_save_active_file_as (window);
-        break;
-
-      case GDK_KEY_s:
-        marker_window_save_active_file (window);
-        break;
-
-      case GDK_KEY_p:
-        marker_preview_run_print_dialog (marker_editor_get_preview (editor), GTK_WINDOW (window));
-        break;
-
-      case GDK_KEY_1:
-        marker_editor_set_view_mode (editor, EDITOR_ONLY_MODE);
-        break;
-
-      case GDK_KEY_2:
-        marker_editor_set_view_mode (editor, PREVIEW_ONLY_MODE);
-        break;
-
-      case GDK_KEY_3:
-        marker_editor_set_view_mode (editor, DUAL_PANE_MODE);
-        break;
-
-      case GDK_KEY_4:
-        marker_editor_set_view_mode (editor, DUAL_WINDOW_MODE);
-        break;
-    }
-  }
-  else
-  {
-    switch (event->keyval)
-    {
-      case GDK_KEY_F11:
-        marker_window_toggle_fullscreen (window);
-        break;
-    }
-  }
-  return FALSE;
 }
 
 gchar *
@@ -620,6 +547,161 @@ button_pressed_cb (GtkWidget *view,
 static void
 marker_window_init (MarkerWindow *window)
 {
+  { // SETUP ACTIONS //
+    GAction *action = NULL;
+    GtkApplication *app = marker_get_app ();
+
+    action = G_ACTION (g_simple_action_new ("refresh", NULL));
+    g_signal_connect (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (action_refresh), window);
+    const gchar *refresh_accels[] = { "<Ctrl>r", NULL };
+    gtk_application_set_accels_for_action (app, "win.refresh", refresh_accels);
+    g_action_map_add_action (G_ACTION_MAP (window), action);
+
+    action = G_ACTION (g_simple_action_new ("sketcher", NULL));
+    g_signal_connect_swapped (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (marker_window_open_sketcher), window);
+    const gchar *sketcher_accels[] = { "<Ctrl>d", NULL };
+    gtk_application_set_accels_for_action (app, "win.sketcher", sketcher_accels);
+    g_action_map_add_action (G_ACTION_MAP (window), action);
+
+    action = G_ACTION (g_simple_action_new ("find", NULL));
+    g_signal_connect_swapped (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (marker_window_search), window);
+    const gchar *find_accels[] = { "<Ctrl>f", NULL };
+    gtk_application_set_accels_for_action (app, "win.find", find_accels);
+    g_action_map_add_action (G_ACTION_MAP (window), action);
+
+    action = G_ACTION (g_simple_action_new ("link", NULL));
+    g_signal_connect (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (action_link), window);
+    const gchar *link_accels[] = { "<Ctrl>k", NULL };
+    gtk_application_set_accels_for_action (app, "win.link", link_accels);
+    g_action_map_add_action (G_ACTION_MAP (window), action);
+
+    action = G_ACTION (g_simple_action_new ("italic", NULL));
+    g_signal_connect (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (action_italic), window);
+    const gchar *italic_accels[] = { "<Ctrl>i", NULL };
+    gtk_application_set_accels_for_action (app, "win.italic", italic_accels);
+    g_action_map_add_action (G_ACTION_MAP (window), action);
+
+    action = G_ACTION (g_simple_action_new ("bold", NULL));
+    g_signal_connect (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (action_bold), window);
+    const gchar *bold_accels[] = { "<Ctrl>b", NULL };
+    gtk_application_set_accels_for_action (app, "win.bold", bold_accels);
+    g_action_map_add_action (G_ACTION_MAP (window), action);
+
+    action = G_ACTION (g_simple_action_new ("monospace", NULL));
+    g_signal_connect (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (action_monospace), window);
+    const gchar *monospace_accels[] = { "<Ctrl>m", NULL };
+    gtk_application_set_accels_for_action (app, "win.monospace", monospace_accels);
+    g_action_map_add_action (G_ACTION_MAP (window), action);
+
+    action = G_ACTION (g_simple_action_new ("new", NULL));
+    g_signal_connect (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (marker_create_new_window), NULL);
+    const gchar *new_accels[] = { "<Shift><Ctrl>n", NULL };
+    gtk_application_set_accels_for_action (app, "win.new", new_accels);
+    g_action_map_add_action (G_ACTION_MAP (window), action);
+
+    action = G_ACTION (g_simple_action_new ("neweditor", NULL));
+    g_signal_connect_swapped (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (marker_window_new_editor), window);
+    const gchar *neweditor_accels[] = { "<Ctrl>n", NULL };
+    gtk_application_set_accels_for_action (app, "win.neweditor", neweditor_accels);
+    g_action_map_add_action (G_ACTION_MAP (window), action);
+    
+    action = G_ACTION (g_simple_action_new ("closedocument", NULL));
+    g_signal_connect_swapped (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (marker_window_close_current_document), window);
+    const gchar *closedocument_accels[] = { "<Ctrl>w", NULL };
+    gtk_application_set_accels_for_action (app, "win.closedocument", closedocument_accels);
+    g_action_map_add_action (G_ACTION_MAP (window), action);
+
+    action = G_ACTION (g_simple_action_new ("close", NULL));
+    g_signal_connect_swapped (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (marker_window_try_close), window);
+    const gchar *close_accels[] = { "<Shift><Ctrl>w", NULL };
+    gtk_application_set_accels_for_action (app, "win.close", close_accels);
+    g_action_map_add_action (G_ACTION_MAP (window), action);
+
+    action = G_ACTION (g_simple_action_new ("zoomoriginal", NULL));
+    g_signal_connect (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (action_zoom_original), window);
+    const gchar *zoomoriginal_accels[] = { "<Ctrl>equal", NULL };
+    gtk_application_set_accels_for_action (app, "win.zoomoriginal", zoomoriginal_accels);
+    g_action_map_add_action (G_ACTION_MAP (window), action);
+
+    action = G_ACTION (g_simple_action_new ("zoomin", NULL));
+    g_signal_connect (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (action_zoom_in), window);
+    const gchar *zoomin_accels[] = { "<Ctrl>plus", NULL };
+    gtk_application_set_accels_for_action (app, "win.zoomin", zoomin_accels);
+    g_action_map_add_action (G_ACTION_MAP (window), action);
+
+    action = G_ACTION (g_simple_action_new ("zoomout", NULL));
+    g_signal_connect (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (action_zoom_out), window);
+    const gchar *zoomout_accels[] = { "<Ctrl>minus", NULL };
+    gtk_application_set_accels_for_action (app, "win.zoomout", zoomout_accels);
+    g_action_map_add_action (G_ACTION_MAP (window), action);
+
+    action = G_ACTION (g_simple_action_new ("editoronlymode", NULL));
+    g_signal_connect (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (action_editor_only_mode), window);
+    const gchar *editoronlymode_accels[] = { "<Ctrl>1", NULL };
+    gtk_application_set_accels_for_action (app, "win.editoronlymode", editoronlymode_accels);
+    g_action_map_add_action (G_ACTION_MAP (window), action);
+
+    action = G_ACTION (g_simple_action_new ("previewonlymode", NULL));
+    g_signal_connect (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (action_preview_only_mode), window);
+    const gchar *previewonlymode_accels[] = { "<Ctrl>2", NULL };
+    gtk_application_set_accels_for_action (app, "win.previewonlymode", previewonlymode_accels);
+    g_action_map_add_action (G_ACTION_MAP (window), action);
+
+    action = G_ACTION (g_simple_action_new ("dualpanemode", NULL));
+    g_signal_connect (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (action_dual_pane_mode), window);
+    const gchar *dualpanemode_accels[] = { "<Ctrl>3", NULL };
+    gtk_application_set_accels_for_action (app, "win.dualpanemode", dualpanemode_accels);
+    g_action_map_add_action (G_ACTION_MAP (window), action);
+
+    action = G_ACTION (g_simple_action_new ("dualwindowmode", NULL));
+    g_signal_connect (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (action_dual_window_mode), window);
+    const gchar *dualwindowmode_accels[] = { "<Ctrl>4", NULL };
+    gtk_application_set_accels_for_action (app, "win.dualwindowmode", dualwindowmode_accels);
+    g_action_map_add_action (G_ACTION_MAP (window), action);
+
+    action = G_ACTION (g_simple_action_new ("open", NULL));
+    g_signal_connect_swapped (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (marker_window_open_file), window);
+    const gchar *open_accels[] = { "<Ctrl>o", NULL }; 
+    gtk_application_set_accels_for_action (app, "win.open", open_accels);
+    g_action_map_add_action (G_ACTION_MAP (window), action);
+
+    action = G_ACTION (g_simple_action_new ("save", NULL));
+    g_signal_connect_swapped (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (marker_window_save_active_file), window);
+    const gchar *save_accels[] = { "<Ctrl>s", NULL };
+    gtk_application_set_accels_for_action (app, "win.save", save_accels);
+    g_action_map_add_action (G_ACTION_MAP (window), action);
+
+    action = G_ACTION (g_simple_action_new ("saveas", NULL));
+    g_signal_connect_swapped (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (marker_window_save_active_file_as), window);
+    const gchar *saveas_accels[] = { "<Ctrl><Shift>s", NULL };
+    gtk_application_set_accels_for_action (app, "win.saveas", saveas_accels);
+    g_action_map_add_action (G_ACTION_MAP (window), action);
+
+    action = G_ACTION (g_simple_action_new ("export", NULL));
+    g_signal_connect_swapped (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (marker_exporter_show_export_dialog), window);
+    const gchar *export_accels[] = { "<Ctrl>e", NULL };
+    gtk_application_set_accels_for_action (app, "win.export", export_accels);
+    g_action_map_add_action (G_ACTION_MAP (window), action);
+
+    action = G_ACTION (g_simple_action_new ("print", NULL));
+    g_signal_connect (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (action_print), window);
+    const gchar *print_accels[] = { "<Ctrl>p", NULL };
+    gtk_application_set_accels_for_action (app, "win.print", print_accels);
+    g_action_map_add_action (G_ACTION_MAP (window), action);
+
+    action = G_ACTION (g_simple_action_new_stateful ("fullscreen", NULL, g_variant_new_boolean (FALSE)));
+    g_signal_connect (G_SIMPLE_ACTION (action), "change-state", G_CALLBACK (action_fullscreen), window);
+    const gchar *fullscreen_accels[] = { "F11", NULL };
+    gtk_application_set_accels_for_action (app, "win.fullscreen", fullscreen_accels);
+    g_action_map_add_action (G_ACTION_MAP (window), action);
+
+    action = G_ACTION (g_simple_action_new_stateful ("sidebar", NULL, g_variant_new_boolean (FALSE)));
+    g_signal_connect (G_SIMPLE_ACTION (action), "change-state", G_CALLBACK (action_sidebar), window);
+    const gchar *sidebar_accels[] =  { "F12", NULL };
+    gtk_application_set_accels_for_action (app, "win.sidebar", sidebar_accels);
+    g_action_map_add_action (G_ACTION_MAP (window), action);
+  }
+
   /** Add marker icon theme to the default icon theme **/
   gtk_icon_theme_append_search_path (gtk_icon_theme_get_default(), ICONS_DIR);
 
@@ -628,7 +710,6 @@ marker_window_init (MarkerWindow *window)
   window->sidebar_visible = TRUE;
   window->editors_counter = 0;
   window->last_click_ = 0;
-  window->last_key_pressed_ = 0;
 
   GtkBuilder *builder = gtk_builder_new ();
 
@@ -732,8 +813,6 @@ marker_window_init (MarkerWindow *window)
   gtk_menu_button_set_popover (menu_btn, popover);
   gtk_menu_button_set_direction (menu_btn, GTK_ARROW_DOWN);
 
-  g_action_map_add_action_entries(G_ACTION_MAP(window), WINDOW_ACTIONS, G_N_ELEMENTS(WINDOW_ACTIONS), window);
-
   if (!marker_has_app_menu ())
   {
     GtkWidget *extra_items = GTK_WIDGET (gtk_builder_get_object (builder, "appmenu_popover_items"));
@@ -750,12 +829,7 @@ marker_window_init (MarkerWindow *window)
   marker_window_hide_sidebar (window);
   gtk_window_set_default_size(GTK_WINDOW(window), 900, 600);
   gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
-  g_signal_connect (window, "key-press-event", G_CALLBACK (key_pressed_cb), window);
   g_signal_connect(window, "delete-event", G_CALLBACK(window_deleted_event_cb), window);
-
-  gtk_builder_add_callback_symbol (builder, "save_button_clicked_cb", G_CALLBACK (marker_window_save_active_file));
-  gtk_builder_add_callback_symbol (builder, "open_button_clicked_cb", G_CALLBACK (marker_window_open_file));
-  gtk_builder_connect_signals (builder, window);
 
   g_object_unref (builder);
 }
@@ -1120,9 +1194,13 @@ marker_window_close_current_document (MarkerWindow *window)
       gtk_widget_destroy (GTK_WIDGET (editor));
       window->editors_counter--;
 
-      if (window->editors_counter < 1)
+      if (window->editors_counter == 1)
       {
         marker_window_hide_sidebar (window);
+      }
+      else if (window->editors_counter < 1)
+      {
+        marker_window_try_close (window);
       }
 
       /** Select the last available row if no new is automatically selected **/
@@ -1142,6 +1220,17 @@ marker_window_close_current_document (MarkerWindow *window)
       }
     }
   }
+}
+
+void
+marker_window_toggle_sidebar (MarkerWindow *window)
+{
+    if (window->sidebar_visible) {
+        marker_window_hide_sidebar (window);
+    }
+    else {
+        marker_window_show_sidebar (window);
+    }
 }
 
 void

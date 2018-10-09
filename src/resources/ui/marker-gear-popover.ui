@@ -153,6 +153,30 @@
               </object>
             </child>
             <child>
+              <object class="GtkModelButton" id="fullscreen_btn">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="text" translatable="yes">Fullscreen</property>
+                <property name="action-name">win.fullscreen</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkModelButton" id="sidebar_btn">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="text" translatable="yes">Sidebar</property>
+                <property name="action-name">win.sidebar</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkSeparator">
+                <property name="visible">True</property>
+                <property name="orientation">horizontal</property>
+                <property name="margin-top">6</property>
+                <property name="margin-bottom">6</property>
+              </object>
+            </child>
+            <child>
               <object class="GtkModelButton" id="save_as_btn">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>

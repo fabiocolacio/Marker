@@ -67,6 +67,10 @@ static void
 marker_init(GtkApplication* app)
 {
   marker_prefs_load();
+
+  const gchar *quit_accels[] = { "<Ctrl>q", NULL };
+  gtk_application_set_accels_for_action (app, "app.quit", quit_accels);
+
   if (marker_prefs_get_gnome_appmenu())
   {
     GtkBuilder* builder =
