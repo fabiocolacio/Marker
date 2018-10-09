@@ -273,20 +273,6 @@ action_dual_window_mode (GSimpleAction *action,
   marker_editor_set_view_mode (editor, DUAL_WINDOW_MODE);
 }
 
-static const GActionEntry WINDOW_ACTIONS[] =
-{
-  { "zoomout", action_zoom_out, NULL, NULL, NULL },
-  { "zoomoriginal", action_zoom_original, NULL, NULL, NULL },
-  { "zoomin", action_zoom_in, NULL, NULL, NULL },
-  { "saveas", action_save_as, NULL, NULL, NULL },
-  { "export", action_export, NULL, NULL, NULL },
-  { "print", action_print, NULL, NULL, NULL },
-  { "editoronlymode", action_editor_only_mode, NULL, NULL, NULL },
-  { "previewonlymode", action_preview_only_mode, NULL, NULL, NULL },
-  { "dualpanemode", action_dual_pane_mode, NULL, NULL, NULL },
-  { "dualwindowmode", action_dual_window_mode, NULL, NULL, NULL }
-};
-
 static gboolean
 key_pressed_cb (GtkWidget   *widget,
                 GdkEventKey *event,
@@ -658,6 +644,48 @@ marker_window_init (MarkerWindow *window)
     GAction *action = NULL;
     GtkApplication *app = marker_get_app ();
 
+    action = G_ACTION (g_simple_action_new ("zoomoriginal", NULL));
+    g_signal_connect (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (action_zoom_original), window);
+    const gchar *zoomoriginal_accels[] = { "<Ctrl>=", NULL };
+    gtk_application_set_accels_for_action (app, "win.zoomoriginal", zoomoriginal_accels);
+    g_action_map_add_action (G_ACTION_MAP (window), action);
+
+    action = G_ACTION (g_simple_action_new ("zoomin", NULL));
+    g_signal_connect (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (action_zoom_in), window);
+    const gchar *zoomin_accels[] = { "<Ctrl>+", NULL };
+    gtk_application_set_accels_for_action (app, "win.zoomin", zoomin_accels);
+    g_action_map_add_action (G_ACTION_MAP (window), action);
+
+    action = G_ACTION (g_simple_action_new ("zoomout", NULL));
+    g_signal_connect (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (action_zoom_out), window);
+    const gchar *zoomout_accels[] = { "<Ctrl>-", NULL };
+    gtk_application_set_accels_for_action (app, "win.zoomout", zoomout_accels);
+    g_action_map_add_action (G_ACTION_MAP (window), action);
+
+    action = G_ACTION (g_simple_action_new ("editoronlymode", NULL));
+    g_signal_connect (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (action_editor_only_mode), window);
+    const gchar *editoronlymode_accels[] = { "<Ctrl>1", NULL };
+    gtk_application_set_accels_for_action (app, "win.editoronlymode", editoronlymode_accels);
+    g_action_map_add_action (G_ACTION_MAP (window), action);
+
+    action = G_ACTION (g_simple_action_new ("previewonlymode", NULL));
+    g_signal_connect (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (action_preview_only_mode), window);
+    const gchar *previewonlymode_accels[] = { "<Ctrl>2", NULL };
+    gtk_application_set_accels_for_action (app, "win.previewonlymode", previewonlymode_accels);
+    g_action_map_add_action (G_ACTION_MAP (window), action);
+
+    action = G_ACTION (g_simple_action_new ("dualpanemode", NULL));
+    g_signal_connect (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (action_dual_pane_mode), window);
+    const gchar *dualpanemode_accels[] = { "<Ctrl>3", NULL };
+    gtk_application_set_accels_for_action (app, "win.dualpanemode", dualpanemode_accels);
+    g_action_map_add_action (G_ACTION_MAP (window), action);
+
+    action = G_ACTION (g_simple_action_new ("dualwindowmode", NULL));
+    g_signal_connect (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (action_dual_window_mode), window);
+    const gchar *dualwindowmode_accels[] = { "<Ctrl>4", NULL };
+    gtk_application_set_accels_for_action (app, "win.dualwindowmode", dualwindowmode_accels);
+    g_action_map_add_action (G_ACTION_MAP (window), action);
+
     action = G_ACTION (g_simple_action_new ("open", NULL));
     g_signal_connect_swapped (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (marker_window_open_file), window);
     const gchar *open_accels[] = { "<Ctrl>o", NULL }; 
@@ -812,8 +840,6 @@ marker_window_init (MarkerWindow *window)
   gtk_menu_button_set_use_popover (menu_btn, TRUE);
   gtk_menu_button_set_popover (menu_btn, popover);
   gtk_menu_button_set_direction (menu_btn, GTK_ARROW_DOWN);
-
-  g_action_map_add_action_entries(G_ACTION_MAP(window), WINDOW_ACTIONS, G_N_ELEMENTS(WINDOW_ACTIONS), window);
 
   if (!marker_has_app_menu ())
   {
