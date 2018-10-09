@@ -54,6 +54,7 @@
       <object class="GtkNotebook">
         <property name="visible">True</property>
         <property name="can_focus">True</property>
+        <property name="show_border">False</property>
         <child>
           <object class="GtkBox">
             <property name="name">8</property>
