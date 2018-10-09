@@ -180,7 +180,7 @@
               <object class="GtkModelButton" id="save_as_btn">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
-                <property name="text" translatable="yes">Save As...</property>
+                <property name="text" translatable="yes">Save As…</property>
                 <property name="action-name">win.saveas</property>
               </object>
             </child>
@@ -188,7 +188,7 @@
               <object class="GtkModelButton" id="export_btn">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
-                <property name="text" translatable="yes">Export...</property>
+                <property name="text" translatable="yes">Export…</property>
                 <property name="action-name">win.export</property>
               </object>
             </child>
@@ -196,7 +196,7 @@
               <object class="GtkModelButton" id="print_btn">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
-                <property name="text" translatable="yes">Print...</property>
+                <property name="text" translatable="yes">Print…</property>
                 <property name="action-name">win.print</property>
               </object>
             </child>
