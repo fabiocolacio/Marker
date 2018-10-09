@@ -289,7 +289,7 @@ marker_editor_init (MarkerEditor *editor)
 
   gtk_paned_set_position (editor->paned, 450);
   gtk_widget_show (GTK_WIDGET (editor->paned));
-  gtk_box_pack_start (GTK_BOX (editor), GTK_WIDGET (editor->paned), TRUE, TRUE, 1);
+  gtk_box_pack_start (GTK_BOX (editor), GTK_WIDGET (editor->paned), TRUE, TRUE, 0);
 
   editor->preview = marker_preview_new ();
   gtk_widget_show (GTK_WIDGET (editor->preview));
@@ -302,7 +302,7 @@ marker_editor_init (MarkerEditor *editor)
   GtkTextBuffer *buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (editor->source_view));
   g_signal_connect (buffer, "changed", G_CALLBACK (buffer_changed_cb), editor);
 
-  gtk_box_pack_end(editor->vbox, GTK_WIDGET(editor->source_scroll), TRUE, TRUE, 1);
+  gtk_box_pack_end(editor->vbox, GTK_WIDGET(editor->source_scroll), TRUE, TRUE, 0);
   gtk_widget_show(GTK_WIDGET (editor->vbox));
   gtk_widget_show(GTK_WIDGET (editor->search_entry));
 
