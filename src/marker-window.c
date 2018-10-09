@@ -138,6 +138,40 @@ show_unsaved_documents_warning (MarkerWindow *window)
 }
 
 static void
+action_fullscreen (GSimpleAction *action,
+                   GVariant      *value,
+                   gpointer       window)
+{
+    gboolean state = g_variant_get_boolean (value);
+
+    g_simple_action_set_state (action, value);
+
+    if (state) {
+        marker_window_fullscreen (MARKER_WINDOW (window));
+    }
+    else {
+        marker_window_unfullscreen (MARKER_WINDOW (window));
+    }
+}
+
+static void
+action_sidebar (GSimpleAction *action,
+                GVariant      *value,
+                gpointer       window)
+{
+    gboolean state = g_variant_get_boolean (value);
+
+    g_simple_action_set_state (action, value);
+
+    if (state) {
+        marker_window_show_sidebar (MARKER_WINDOW (window));
+    }
+    else {
+        marker_window_hide_sidebar (MARKER_WINDOW (window));
+    }
+}
+
+static void
 action_zoom_out (GSimpleAction *action,
                  GVariant      *parameter,
                  gpointer       user_data)
@@ -655,13 +689,13 @@ marker_window_init (MarkerWindow *window)
     g_action_map_add_action (G_ACTION_MAP (window), action);
 
     action = G_ACTION (g_simple_action_new_stateful ("fullscreen", NULL, g_variant_new_boolean (FALSE)));
-    g_signal_connect_swapped (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (marker_window_toggle_fullscreen), window);
+    g_signal_connect (G_SIMPLE_ACTION (action), "change-state", G_CALLBACK (action_fullscreen), window);
     const gchar *fullscreen_accels[] = { "<Ctrl>f", "F11", NULL };
     gtk_application_set_accels_for_action (app, "win.fullscreen", fullscreen_accels);
     g_action_map_add_action (G_ACTION_MAP (window), action);
 
     action = G_ACTION (g_simple_action_new_stateful ("sidebar", NULL, g_variant_new_boolean (FALSE)));
-    g_signal_connect_swapped (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (marker_window_toggle_sidebar), window);
+    g_signal_connect (G_SIMPLE_ACTION (action), "change-state", G_CALLBACK (action_sidebar), window);
     const gchar *sidebar_accels[] =  { "F12", NULL };
     gtk_application_set_accels_for_action (app, "win.sidebar", sidebar_accels);
     g_action_map_add_action (G_ACTION_MAP (window), action);
