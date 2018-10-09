@@ -831,10 +831,6 @@ marker_window_init (MarkerWindow *window)
   gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
   g_signal_connect(window, "delete-event", G_CALLBACK(window_deleted_event_cb), window);
 
-  gtk_builder_add_callback_symbol (builder, "save_button_clicked_cb", G_CALLBACK (marker_window_save_active_file));
-  gtk_builder_add_callback_symbol (builder, "open_button_clicked_cb", G_CALLBACK (marker_window_open_file));
-  gtk_builder_connect_signals (builder, window);
-
   g_object_unref (builder);
 }
 
