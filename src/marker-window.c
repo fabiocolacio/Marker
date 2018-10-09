@@ -205,24 +205,6 @@ action_zoom_in (GSimpleAction *action,
 }
 
 static void
-action_save_as (GSimpleAction *action,
-                GVariant      *parameter,
-                gpointer       user_data)
-{
-  MarkerWindow *window = user_data;
-  marker_window_save_active_file_as (window);
-}
-
-static void
-action_export (GSimpleAction *action,
-               GVariant      *parameter,
-               gpointer       user_data)
-{
-  MarkerWindow *window = user_data;
-  marker_exporter_show_export_dialog (window);
-}
-
-static void
 action_print (GSimpleAction *action,
               GVariant      *parameter,
               gpointer       user_data)
@@ -614,19 +596,19 @@ marker_window_init (MarkerWindow *window)
 
     action = G_ACTION (g_simple_action_new ("zoomoriginal", NULL));
     g_signal_connect (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (action_zoom_original), window);
-    const gchar *zoomoriginal_accels[] = { "<Ctrl>=", NULL };
+    const gchar *zoomoriginal_accels[] = { "<Ctrl>equal", NULL };
     gtk_application_set_accels_for_action (app, "win.zoomoriginal", zoomoriginal_accels);
     g_action_map_add_action (G_ACTION_MAP (window), action);
 
     action = G_ACTION (g_simple_action_new ("zoomin", NULL));
     g_signal_connect (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (action_zoom_in), window);
-    const gchar *zoomin_accels[] = { "<Ctrl>+", NULL };
+    const gchar *zoomin_accels[] = { "<Ctrl>plus", NULL };
     gtk_application_set_accels_for_action (app, "win.zoomin", zoomin_accels);
     g_action_map_add_action (G_ACTION_MAP (window), action);
 
     action = G_ACTION (g_simple_action_new ("zoomout", NULL));
     g_signal_connect (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (action_zoom_out), window);
-    const gchar *zoomout_accels[] = { "<Ctrl>-", NULL };
+    const gchar *zoomout_accels[] = { "<Ctrl>minus", NULL };
     gtk_application_set_accels_for_action (app, "win.zoomout", zoomout_accels);
     g_action_map_add_action (G_ACTION_MAP (window), action);
 
