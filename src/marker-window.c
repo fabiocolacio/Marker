@@ -309,14 +309,6 @@ key_pressed_cb (GtkWidget   *widget,
         marker_create_new_window ();
         break;
 
-      case GDK_KEY_w:
-        marker_window_close_current_document (window);
-        break;
-
-      case GDK_KEY_W:
-        marker_window_try_close (window);
-        break;
-
       case GDK_KEY_r:
         marker_editor_refresh_preview (editor);
         break;
@@ -593,6 +585,18 @@ marker_window_init (MarkerWindow *window)
   { // SETUP ACTIONS //
     GAction *action = NULL;
     GtkApplication *app = marker_get_app ();
+
+    action = G_ACTION (g_simple_action_new ("closedocument", NULL));
+    g_signal_connect_swapped (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (marker_window_close_current_document), window);
+    const gchar *closedocument_accels[] = { "<Ctrl>w", NULL };
+    gtk_application_set_accels_for_action (app, "win.closedocument", closedocument_accels);
+    g_action_map_add_action (G_ACTION_MAP (window), action);
+
+    action = G_ACTION (g_simple_action_new ("close", NULL));
+    g_signal_connect_swapped (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (marker_window_try_close), window);
+    const gchar *close_accels[] = { "<Shift><Ctrl>w", NULL };
+    gtk_application_set_accels_for_action (app, "win.close", close_accels);
+    g_action_map_add_action (G_ACTION_MAP (window), action);
 
     action = G_ACTION (g_simple_action_new ("zoomoriginal", NULL));
     g_signal_connect (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (action_zoom_original), window);
