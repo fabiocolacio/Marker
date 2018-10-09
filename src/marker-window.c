@@ -1198,9 +1198,13 @@ marker_window_close_current_document (MarkerWindow *window)
       gtk_widget_destroy (GTK_WIDGET (editor));
       window->editors_counter--;
 
-      if (window->editors_counter < 1)
+      if (window->editors_counter == 1)
       {
         marker_window_hide_sidebar (window);
+      }
+      else if (window->editors_counter < 1)
+      {
+        marker_window_try_close (window);
       }
 
       /** Select the last available row if no new is automatically selected **/
