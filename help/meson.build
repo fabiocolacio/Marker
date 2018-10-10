@@ -4,7 +4,7 @@ gnome.yelp(
   sources: [
     'index.page',
     'introduction.page',
-    'sketcher.page',
+    'pictures.page',
     'complex-data.page',
     'settings.page',
     'legal.xml'

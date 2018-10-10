@@ -47,7 +47,7 @@
 		<tbody>
 		  <tr>
 		    <td>
-		      <p>*italic* or _italic_</p>
+		      <p>*text*</p>
 		    </td>
 		    <td>
 		      <p>Italic</p>
@@ -55,7 +55,7 @@
 		  </tr>
 		  <tr>
 		    <td>
-		      <p>**bold**</p>
+		      <p>**text**</p>
 		    </td>
 		    <td>
 		      <p>Bold</p>
@@ -63,18 +63,44 @@
 		  </tr>
 		  <tr>
 		    <td>
-		      <p>__underlined__</p>
+		      <p>`text`</p>
 		    </td>
 		    <td>
-		      <p>Underlined</p>
+		      <p>Monospace</p>
 		    </td>
 		  </tr>
 		  <tr>
 		    <td>
-		      <p>`monospace`</p>
+		      <p># title</p>
 		    </td>
 		    <td>
-		      <p>Monospace text</p>
+		      <p>Level 1 title</p>
+		    </td>
+		  </tr>
+		  <tr>
+		    <td>
+		      <p>###### title</p>
+		    </td>
+		    <td>
+		      <p>Level 6 title</p>
+		    </td>
+		  </tr>
+		  <tr>
+		    <td>
+		      <p>- item</p>
+		      <p>- item</p>
+		    </td>
+		    <td>
+		      <p>Bulleted list</p>
+		    </td>
+		  </tr>
+		  <tr>
+		    <td>
+		      <p>1. item</p>
+		      <p>2. item</p>
+		    </td>
+		    <td>
+		      <p>Numbered list</p>
 		    </td>
 		  </tr>
 		</tbody>

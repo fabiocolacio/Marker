@@ -6,25 +6,8 @@
         <property name="visible">True</property>
         <property name="orientation">vertical</property>
         <property name="margin">8</property>
-        <!-- Appmenu entries going at the beginning of the menu -->
+        <!-- Zoom Controls -->
         <child>
-          <object class="GtkBox" id="appmenu_popover_items_start">
-            <property name="visible">False</property>
-            <property name="can_focus">False</property>
-            <property name="orientation">vertical</property>
-            <property name="margin-bottom">8</property>
-            <child>
-              <object class="GtkModelButton">
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="text" translatable="yes">New Window</property>
-                <property name="action-name">app.new</property>
-              </object>
-            </child>
-          </object>
-        </child>
-        <child>
-          <!-- Zoom Controls -->
           <object class="GtkBox">
             <property name="visible">True</property>
             <property name="orientation">horizontal</property>
@@ -83,6 +66,31 @@
                 <property name="fill">True</property>
                 <property name="position">2</property>
               </packing>
+            </child>
+          </object>
+        </child>
+        <!-- Appmenu entries going at the beginning of the menu -->
+        <child>
+          <object class="GtkBox" id="appmenu_popover_items_start">
+            <property name="visible">False</property>
+            <property name="can_focus">False</property>
+            <property name="orientation">vertical</property>
+            <property name="margin-bottom">8</property>
+            <child>
+              <object class="GtkModelButton">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="text" translatable="yes">New Window</property>
+                <property name="action-name">app.new</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkSeparator">
+                <property name="visible">True</property>
+                <property name="orientation">horizontal</property>
+                <property name="margin-top">6</property>
+                <property name="margin-bottom">6</property>
+              </object>
             </child>
           </object>
         </child>
@@ -240,3 +248,4 @@
     </child>
   </object>
 </interface>
+
