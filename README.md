@@ -34,15 +34,15 @@ unfinished features.
 
 ## Screenshots
 
-![scrot.png](scrot.png)
+![scrot.png](help/C/figures/scrot.png)
 
-![scrot1.png](scrot1.png)
+![scrot1.png](help/C/figures/scrot1.png)
 
-![scrot2.png](scrot2.png)
+![scrot2.png](help/C/figures/scrot2.png)
 
-![sketcher.png](sketcher.png)
+![sketcher.png](help/C/figures/sketcher.png)
 
-![slides.png](slides.png)
+![slides.png](help/C/figures/slides.png)
 
 ## Packages
 
