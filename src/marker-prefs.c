@@ -301,18 +301,6 @@ marker_prefs_set_show_right_margin(gboolean state)
   g_settings_set_boolean(prefs.editor_settings, "show-right-margin", state);
 }
 
-gboolean
-marker_prefs_get_gnome_appmenu()
-{
-  return g_settings_get_boolean(prefs.window_settings, "gnome-appmenu");
-}
-
-void
-marker_prefs_set_gnome_appmenu(gboolean state)
-{
-  g_settings_set_boolean(prefs.window_settings, "gnome-appmenu", state);
-}
-
 MarkerViewMode
 marker_prefs_get_default_view_mode()
 {
@@ -697,15 +685,6 @@ math_backend_changed (GtkComboBox* combo_box,
   refresh_preview();
 }
 
-
-static void
-use_gnome_appmenu_toggled(GtkToggleButton* button,
-                          gpointer         user_data)
-{
-  gboolean state = gtk_toggle_button_get_active(button);
-  marker_prefs_set_gnome_appmenu(state);
-}
-
 void
 marker_prefs_show_window()
 {
@@ -840,10 +819,6 @@ marker_prefs_show_window()
   gtk_toggle_button_set_active(check_button, marker_prefs_get_spell_check());
 
   check_button =
-    GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "use_appmenu_check_button"));
-  gtk_toggle_button_set_active(check_button, marker_prefs_get_gnome_appmenu());
-
-  check_button =
     GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "enable_dark_mode_check_button"));
   gtk_toggle_button_set_active(check_button, marker_prefs_get_use_dark_theme());
 
@@ -928,9 +903,6 @@ marker_prefs_show_window()
   gtk_builder_add_callback_symbol(builder,
                                   "show_right_margin_toggled",
                                   G_CALLBACK(show_right_margin_toggled));
-  gtk_builder_add_callback_symbol(builder,
-                                  "use_gnome_appmenu_toggled",
-                                  G_CALLBACK(use_gnome_appmenu_toggled));
   gtk_builder_add_callback_symbol(builder,
                                   "enable_dark_mode_toggled",
                                   G_CALLBACK(enable_dark_mode_toggled));

@@ -71,7 +71,7 @@ marker_init(GtkApplication* app)
   const gchar *quit_accels[] = { "<Ctrl>q", NULL };
   gtk_application_set_accels_for_action (app, "app.quit", quit_accels);
 
-  if (marker_prefs_get_gnome_appmenu())
+  if (gtk_application_prefers_app_menu(app))
   {
     GtkBuilder* builder =
       gtk_builder_new_from_resource("/com/github/fabiocolacio/marker/ui/marker-appmenu.ui");
