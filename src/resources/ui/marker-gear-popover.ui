@@ -1,59 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <object class="GtkBox" id="appmenu_popover_items">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="orientation">vertical</property>
-    <child>
-      <object class="GtkSeparator">
-        <property name="visible">True</property>
-        <property name="orientation">horizontal</property>
-        <property name="margin-top">6</property>
-        <property name="margin-bottom">6</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkModelButton">
-        <property name="visible">True</property>
-        <property name="can_focus">True</property>
-        <property name="text" translatable="yes">New Window</property>
-        <property name="action-name">app.new</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkSeparator">
-        <property name="visible">True</property>
-        <property name="orientation">horizontal</property>
-        <property name="margin-top">6</property>
-        <property name="margin-bottom">6</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkModelButton">
-        <property name="visible">True</property>
-        <property name="can_focus">True</property>
-        <property name="text" translatable="yes">Preferences</property>
-        <property name="action-name">app.prefs</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkModelButton">
-        <property name="visible">True</property>
-        <property name="can_focus">True</property>
-        <property name="text" translatable="yes">Keyboard Shortcuts</property>
-        <property name="action-name">app.shortcuts</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkModelButton">
-        <property name="visible">True</property>
-        <property name="can_focus">True</property>
-        <property name="text" translatable="yes">About Marker</property>
-        <property name="action-name">app.about</property>
-      </object>
-    </child>
-  </object>
-
   <object class="GtkPopoverMenu" id="gear_menu_popover">
     <child>
       <object class="GtkBox" id="gear_menu_popover_vbox">
@@ -119,6 +65,29 @@
                 <property name="fill">True</property>
                 <property name="position">2</property>
               </packing>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox" id="appmenu_popover_items_start">
+            <property name="visible">False</property>
+            <property name="can_focus">False</property>
+            <property name="orientation">vertical</property>
+            <child>
+              <object class="GtkSeparator">
+                <property name="visible">True</property>
+                <property name="orientation">horizontal</property>
+                <property name="margin-top">6</property>
+                <property name="margin-bottom">6</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkModelButton">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="text" translatable="yes">New Window</property>
+                <property name="action-name">app.new</property>
+              </object>
             </child>
           </object>
         </child>
@@ -196,8 +165,55 @@
               <object class="GtkModelButton">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
-                <property name="text" translatable="yes">View</property>
+                <property name="text" translatable="yes">View Mode</property>
                 <property name="menu-name">view</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox" id="appmenu_popover_items_end">
+            <property name="visible">False</property>
+            <property name="can_focus">False</property>
+            <property name="orientation">vertical</property>
+            <child>
+              <object class="GtkModelButton">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="text" translatable="yes">Preferences</property>
+                <property name="action-name">app.prefs</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkSeparator">
+                <property name="visible">True</property>
+                <property name="orientation">horizontal</property>
+                <property name="margin-top">6</property>
+                <property name="margin-bottom">6</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkModelButton">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="text" translatable="yes">Keyboard Shortcuts</property>
+                <property name="action-name">app.shortcuts</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkModelButton">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="text" translatable="yes">Help</property>
+                <property name="action-name">app.help</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkModelButton">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="text" translatable="yes">About Marker</property>
+                <property name="action-name">app.about</property>
               </object>
             </child>
           </object>
@@ -215,7 +231,7 @@
           <object class="GtkModelButton">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="text" translatable="yes">View</property>
+            <property name="text" translatable="yes">View Mode</property>
             <property name="inverted">True</property>
             <property name="menu-name">main</property>
             <property name="centered">True</property>
@@ -225,7 +241,7 @@
           <object class="GtkModelButton" id="editor_only_mode_btn">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="text" translatable="yes">Editor Only Mode</property>
+            <property name="text" translatable="yes">Editor Only</property>
             <property name="action-name">win.editoronlymode</property>
           </object>
         </child>
@@ -233,7 +249,7 @@
           <object class="GtkModelButton" id="preview_only_mode_btn">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="text" translatable="yes">Preview Only Mode</property>
+            <property name="text" translatable="yes">Preview Only</property>
             <property name="action-name">win.previewonlymode</property>
           </object>
         </child>
@@ -241,7 +257,7 @@
           <object class="GtkModelButton" id="dual_pane_mode_btn">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="text" translatable="yes">Dual Pane Mode</property>
+            <property name="text" translatable="yes">Dual Pane</property>
             <property name="action-name">win.dualpanemode</property>
           </object>
         </child>
@@ -249,7 +265,7 @@
           <object class="GtkModelButton" id="dual_window_mode_btn">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="text" translatable="yes">Dual Window Mode</property>
+            <property name="text" translatable="yes">Dual Window</property>
             <property name="action-name">win.dualwindowmode</property>
           </object>
         </child>

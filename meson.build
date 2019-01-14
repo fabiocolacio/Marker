@@ -18,6 +18,8 @@ EXECUTABLE_NAME = 'marker'
 
 gnome = import('gnome')
 
+subdir('help')
+
 res = gnome.compile_resources(
   'marker_resources',
   'src/resources/marker.gresource.xml',
@@ -84,7 +86,6 @@ ext_deps =[
   dependency('webkit2gtk-4.0')
 ]
 
-
 add_global_arguments(
   '-DSTYLES_DIR="@0@/"'.format(STYLES_DIR),
   '-DSCRIPTS_DIR="@0@/"'.format(SCRIPTS_DIR),
@@ -148,7 +149,6 @@ install_subdir(
   install_dir : APP_DIR
 )
 
-
 install_subdir(
   'data/scripts',
   install_dir : APP_DIR
@@ -158,6 +158,5 @@ install_subdir(
   'data/icons',
   install_dir : APP_DIR
 )
-
 
 meson.add_install_script('post-install.sh')

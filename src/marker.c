@@ -52,15 +52,16 @@ static const GOptionEntry CLI_OPTIONS[] =
   { NULL }
 };
 
-const int APP_MENU_ACTION_ENTRIES_LEN = 5;
+const int APP_MENU_ACTION_ENTRIES_LEN = 6;
 
 const GActionEntry APP_MENU_ACTION_ENTRIES[] =
 {
   { "new", new_cb, NULL, NULL, NULL },
-  { "quit", marker_quit_cb, NULL, NULL, NULL },
-  { "about", marker_about_cb, NULL, NULL, NULL },
   { "prefs", marker_prefs_cb, NULL, NULL, NULL },
-  { "shortcuts", marker_shortcuts_cb, NULL, NULL, NULL }
+  { "shortcuts", marker_shortcuts_cb, NULL, NULL, NULL },
+  { "help", marker_help_cb, NULL, NULL, NULL },
+  { "about", marker_about_cb, NULL, NULL, NULL },
+  { "quit", marker_quit_cb, NULL, NULL, NULL }
 };
 
 static void
@@ -142,6 +143,19 @@ marker_prefs_cb(GSimpleAction* action,
   marker_prefs_show_window();
 }
 
+void
+marker_help_cb(GSimpleAction* action,
+               GVariant*      parameter,
+               gpointer       user_data)
+{
+  GtkWindow *window;
+  GtkApplication *application = user_data;
+  GError *error = NULL;
+
+  window = gtk_application_get_active_window (application);
+  gtk_show_uri_on_window (window, "help:Marker",
+                          gtk_get_current_event_time (), &error);
+}
 
 void
 marker_about_cb(GSimpleAction* action,
