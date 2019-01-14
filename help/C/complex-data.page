@@ -1,0 +1,46 @@
+<page xmlns="http://projectmallard.org/1.0/"
+      xmlns:its="http://www.w3.org/2005/11/its"
+      type="topic" style="task"
+      id="complex-data">
+
+  <info>
+    <link type="guide" xref="index#advanced"/>
+    <include href="legal.xml" xmlns="http://www.w3.org/2001/XInclude"/>
+
+    <desc>Add graphs, math formulas or diagrams to your documents.</desc>
+  </info>
+
+  <title>Insertion of complex data</title>
+
+  <p><app>Marker</app> allows you to use modules for rendering complex data, such as graphs, math formulas and diagrams. The full documentation of the languages used by these modules will not be described here, but can be found online.</p>
+  <p>These features can be enabled or disabled in the preferences window.</p>
+
+  <section id="katex">
+    <title>KaTeX</title>
+    <p>Add beautiful math formulas to your markdown documents using KaTeX:</p>
+    <p>Mathematic formulas can be written, in the syntax of the LaTeX language, between two <code>$$</code> tags.</p>
+    <media type="image" mime="image/png" height="400" src="figures/scrot1.png">
+      <!--This is the alt text, as read out by screen readers and if the image is
+      missing. It also describes how to re-create the image.-->
+      <p>Math fomulas rendered by KaTeX.</p>
+    </media>
+  </section>
+
+  <section id="charter">
+    <title>Charter</title>
+    <p>Create line graphs, bar graphs, or scatter plots in your documents using Charter.</p>
+    <media type="image" mime="image/png" height="400" src="figures/scrot2.png">
+      <!--This is the alt text, as read out by screen readers and if the image is
+      missing. It also describes how to re-create the image.-->
+      <p>Graph rendering using Charter.</p>
+    </media>
+    <p>More informations <link href="https://github.com/Mandarancio/charter/">here</link>.</p>
+  </section>
+
+  <section id="mermaid">
+    <title>Mermaid</title>
+    <p>Create flowcharts or diagrams in your markdown documents using Mermaid</p>
+    <p>More informations <link href="https://mermaidjs.github.io/">here</link>.</p>
+  </section>
+
+</page>

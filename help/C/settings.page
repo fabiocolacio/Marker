@@ -1,0 +1,40 @@
+<page xmlns="http://projectmallard.org/1.0/"
+      xmlns:its="http://www.w3.org/2005/11/its"
+      type="topic" style="task"
+      id="settings">
+
+  <info>
+    <link type="guide" xref="index#advanced"/>
+    <include href="legal.xml" xmlns="http://www.w3.org/2001/XInclude"/>
+
+    <desc>Customize your favorite mardown editor.</desc>
+  </info>
+
+  <title>Settings</title>
+
+  <p>Several aspects of Marker are customizable.</p>
+
+  <section id="editor">
+    <title>Editor</title>
+    <p>These settings is about the behavior and the appearance of the code editor.</p>
+    <p>Features such as check spelling, numerotation of the lines, or coloration theme are concerned by this section.</p>
+  </section>
+
+  <section id="preview">
+    <title>Preview</title>
+    <p>These settings is about the behavior and the appearance of the preview.</p>
+    <p>Features such as CSS theme or <link xref="complex-data">complex data rendering</link> are concerned by this section.</p>
+  </section>
+
+  <section id="window">
+    <title>Window</title>
+    <p>The global layout of the app can be set from the <gui>Preferences</gui> dialog or from the primary window menu:</p>
+    <list>
+      <item><p>Editor only mode</p></item>
+      <item><p>Preview only mode</p></item>
+      <item><p>Dual window mode</p></item>
+      <item><p>Dual pane mode</p></item>
+    </list>
+  </section>
+
+</page>
