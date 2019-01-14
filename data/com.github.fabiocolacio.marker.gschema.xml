@@ -164,14 +164,5 @@
       <summary>Enter dark-mode</summary>
       <description>When this is enabled, the dark variant of the current gtk theme will be used.</description>
     </key>
-
-    <key name="gnome-appmenu" type="b">
-      <default>true</default>
-      <summary>Use GNOME Appmenu</summary>
-      <description>
-        If this is enabled, various app-wide actions will be found in the GNOME appmenu.
-        If this is disabled, the actions will still be available in the menu button on each window.
-      </description>
-    </key>
   </schema>
 </schemalist>

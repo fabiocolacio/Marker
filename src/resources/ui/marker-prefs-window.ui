@@ -65,7 +65,7 @@
             <property name="margin_top">18</property>
             <property name="margin_bottom">18</property>
             <property name="orientation">vertical</property>
-            <property name="spacing">6</property>
+            <property name="spacing">12</property>
             <child>
               <object class="GtkCheckButton" id="show_line_numbers_check_button">
                 <property name="label" translatable="yes">Show line numbers</property>
@@ -125,6 +125,7 @@
                     <property name="expand">False</property>
                     <property name="fill">True</property>
                     <property name="position">1</property>
+                    <property name="pack-type">end</property>
                   </packing>
                 </child>
               </object>
@@ -164,6 +165,7 @@
                     <property name="expand">False</property>
                     <property name="fill">True</property>
                     <property name="position">1</property>
+                    <property name="pack-type">end</property>
                   </packing>
                 </child>
               </object>
@@ -247,6 +249,7 @@
                     <property name="expand">False</property>
                     <property name="fill">True</property>
                     <property name="position">1</property>
+                    <property name="pack-type">end</property>
                   </packing>
                 </child>
               </object>
@@ -333,6 +336,7 @@
                     <property name="expand">False</property>
                     <property name="fill">True</property>
                     <property name="position">1</property>
+                    <property name="pack-type">end</property>
                   </packing>
                 </child>
               </object>
@@ -363,7 +367,7 @@
             <property name="margin_top">18</property>
             <property name="margin_bottom">18</property>
             <property name="orientation">vertical</property>
-            <property name="spacing">6</property>
+            <property name="spacing">12</property>
             <child>
               <object class="GtkBox">
                 <property name="visible">True</property>
@@ -393,6 +397,7 @@
                     <property name="expand">False</property>
                     <property name="fill">True</property>
                     <property name="position">1</property>
+                    <property name="pack-type">end</property>
                   </packing>
                 </child>
               </object>
@@ -432,6 +437,7 @@
                     <property name="expand">False</property>
                     <property name="fill">True</property>
                     <property name="position">1</property>
+                    <property name="pack-type">end</property>
                   </packing>
                 </child>
               </object>
@@ -517,6 +523,7 @@
                     <property name="expand">False</property>
                     <property name="fill">True</property>
                     <property name="position">1</property>
+                    <property name="pack-type">end</property>
                   </packing>
                 </child>
               </object>
@@ -551,7 +558,7 @@
             <property name="margin_top">18</property>
             <property name="margin_bottom">18</property>
             <property name="orientation">vertical</property>
-            <property name="spacing">6</property>
+            <property name="spacing">12</property>
             <child>
               <object class="GtkBox">
                 <property name="visible">True</property>
@@ -581,6 +588,7 @@
                     <property name="expand">False</property>
                     <property name="fill">True</property>
                     <property name="position">1</property>
+                    <property name="pack-type">end</property>
                   </packing>
                 </child>
               </object>
@@ -588,21 +596,6 @@
                 <property name="expand">False</property>
                 <property name="fill">True</property>
                 <property name="position">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkCheckButton" id="use_appmenu_check_button">
-                <property name="label" translatable="yes">Use GNOME appmenu (requires app restart)</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">False</property>
-                <property name="draw_indicator">True</property>
-                <signal name="toggled" handler="use_gnome_appmenu_toggled" swapped="no"/>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">1</property>
               </packing>
             </child>
             <child>
@@ -617,7 +610,7 @@
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">True</property>
-                <property name="position">2</property>
+                <property name="position">1</property>
               </packing>
             </child>
           </object>
