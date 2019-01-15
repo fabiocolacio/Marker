@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<interface>
+<interface domain="marker">
   <requires lib="gtk+" version="3.16"/>
   
   <object class="GtkImage" id="open-menu">
@@ -17,7 +17,7 @@
     <child>
       <object class="GtkButton" id="open_btn">
         <property name="visible">True</property>
-        <property name="label">Open…</property>
+        <property name="label" translatable="yes">Open…</property>
         <property name="action-name">win.open</property>
       </object>
       <packing>
@@ -27,7 +27,7 @@
     <child>
       <object class="GtkButton" id="save_btn">
         <property name="visible">True</property>
-        <property name="label">Save</property>
+        <property name="label" translatable="yes">Save</property>
         <property name="action-name">win.save</property>
       </object>
       <packing>

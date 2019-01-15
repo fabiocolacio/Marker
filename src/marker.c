@@ -22,6 +22,9 @@
 #include <gtk/gtk.h>
 #include <stdlib.h>
 
+#include <locale.h>
+#include <glib/gi18n.h>
+
 #include "marker-prefs.h"
 #include "marker-window.h"
 #include "marker-exporter.h"
@@ -178,13 +181,14 @@ marker_about_cb(GSimpleAction* action,
   gtk_about_dialog_set_logo_icon_name(dialog, "com.github.fabiocolacio.marker");
   gtk_about_dialog_set_program_name(dialog, "Marker");
   gtk_about_dialog_set_version(dialog, MARKER_VERSION);
-  gtk_about_dialog_set_comments(dialog, "A markdown editor for GNOME");
+  gtk_about_dialog_set_comments(dialog, _("A markdown editor for GNOME"));
   gtk_about_dialog_set_website(dialog, "https://github.com/fabiocolacio/Marker");
-  gtk_about_dialog_set_website_label(dialog, "Marker on Github");
+  gtk_about_dialog_set_website_label(dialog, _("Report bugs and ideas on github"));
   gtk_about_dialog_set_copyright(dialog, "Copyright 2017-2018 Fabio Colacio");
   gtk_about_dialog_set_license_type(dialog, GTK_LICENSE_GPL_3_0);
   gtk_about_dialog_set_authors(dialog, authors);
   gtk_about_dialog_set_artists(dialog, artists);
+  gtk_about_dialog_set_translator_credits(dialog, _("translator-credits"));
 
   GtkWindow* window = gtk_application_get_active_window(app);
   gtk_window_set_transient_for(GTK_WINDOW(dialog), window);
@@ -308,6 +312,12 @@ int
 main(int    argc,
      char** argv)
 {
+
+  /* Initialize gettext support */
+  bindtextdomain ("marker", LOCALE_DIR);
+  bind_textdomain_codeset ("marker", "UTF-8");
+  textdomain ("marker");
+
   app = gtk_application_new("com.github.fabiocolacio.marker",
                             G_APPLICATION_HANDLES_OPEN);
   g_signal_connect(app, "activate", G_CALLBACK(activate), NULL);
