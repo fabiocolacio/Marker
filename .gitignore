@@ -2,3 +2,4 @@ build
 resources.c
 *~
 .vscode
+_build
