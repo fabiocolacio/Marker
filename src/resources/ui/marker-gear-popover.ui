@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<interface>
+<interface domain="marker">
   <object class="GtkPopoverMenu" id="gear_menu_popover">
     <child>
       <object class="GtkBox" id="gear_menu_popover_vbox">
