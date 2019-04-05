@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Generated with glade 3.20.2 -->
-<interface>
+<interface domain="marker">
   <requires lib="gtk+" version="3.20"/>
   <object class="GtkImage" id="add_img">
     <property name="visible">True</property>
@@ -109,7 +109,7 @@
   <object class="GtkHeaderBar" id="header_bar">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="title">Sketcher</property>
+    <property name="title" translatable="yes">Sketcher</property>
     <child>
       <object class="GtkBox" id="box">
         <property name="visible">True</property>
@@ -120,7 +120,7 @@
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">False</property>
-            <property name="tooltip_text">Pen Tool</property>
+            <property name="tooltip_text" translatable="yes">Pen Tool</property>
             <property name="image">pen_img</property>
             <property name="active">True</property>
             <property name="draw_indicator">False</property>
@@ -137,7 +137,7 @@
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">False</property>
-            <property name="tooltip_text">Eraser Tool</property>
+            <property name="tooltip_text" translatable="yes">Eraser Tool</property>
             <property name="image">eraser_img</property>
             <property name="draw_indicator">False</property>
             <property name="group">pen_radio_button</property>
@@ -154,7 +154,7 @@
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">False</property>
-            <property name="tooltip_text">Text Insertion Tool</property>
+            <property name="tooltip_text" translatable="yes">Text Insertion Tool</property>
             <property name="image">text_img</property>
             <property name="draw_indicator">False</property>
             <property name="group">pen_radio_button</property>
@@ -176,7 +176,7 @@
         <property name="visible">True</property>
         <property name="can_focus">True</property>
         <property name="receives_default">True</property>
-        <property name="tooltip_text">Color Chooser</property>
+        <property name="tooltip_text" translatable="yes">Color Chooser</property>
         <property name="use_alpha">True</property>
         <property name="color">#000000000000</property>
         <property name="alpha">65535</property>
@@ -268,7 +268,7 @@
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
-            <property name="tooltip_text">Insert the sketch</property>
+            <property name="tooltip_text" translatable="yes">Insert the sketch</property>
             <property name="image">add_img</property>
             <signal name="clicked" handler="insert_sketch_cb" swapped="no"/>
           </object>
@@ -283,7 +283,7 @@
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
-            <property name="tooltip_text">Cancel the sketch</property>
+            <property name="tooltip_text" translatable="yes">Cancel the sketch</property>
             <property name="image">close_img</property>
             <signal name="clicked" handler="close_cb" swapped="no"/>
           </object>

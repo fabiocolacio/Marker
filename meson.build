@@ -13,12 +13,15 @@ SCRIPTS_DIR = join_paths(APP_DIR, 'scripts')
 HIGHLIGHT_STYLES_DIR = join_paths(join_paths(SCRIPTS_DIR, 'highlight'),'styles')
 WEB_EXTENSIONS_DIRECTORY = join_paths(APP_DIR, 'extensions')
 APPDATA_DIR = join_paths(DATA_DIR, 'appdata')
+LOCALE_DIR = join_paths(PREFIX, get_option('localedir'))
 
 EXECUTABLE_NAME = 'marker'
 
 gnome = import('gnome')
 
+i18n = import('i18n')
 subdir('help')
+subdir('po')
 
 res = gnome.compile_resources(
   'marker_resources',
@@ -92,6 +95,7 @@ add_global_arguments(
   '-DICONS_DIR="@0@/"'.format(ICONS_DIR),
   '-DHIGHLIGHT_STYLES_DIR="@0@/"'.format(HIGHLIGHT_STYLES_DIR),
   '-DMARKER_VERSION="@0@"'.format(meson.project_version()),
+  '-DLOCALE_DIR="@0@"'.format(LOCALE_DIR),
   '-DCOMMON_DIR="@0@/"'.format(COMMON_DIR),
   '-DWEB_EXTENSIONS_DIRECTORY="@0@"'.format(WEB_EXTENSIONS_DIRECTORY),
   language : 'c'
