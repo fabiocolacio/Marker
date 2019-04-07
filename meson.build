@@ -12,7 +12,7 @@ COMMON_DIR = join_paths(APP_DIR, 'common')
 SCRIPTS_DIR = join_paths(APP_DIR, 'scripts')
 HIGHLIGHT_STYLES_DIR = join_paths(join_paths(SCRIPTS_DIR, 'highlight'),'styles')
 WEB_EXTENSIONS_DIRECTORY = join_paths(APP_DIR, 'extensions')
-APPDATA_DIR = join_paths(DATA_DIR, 'appdata')
+APPDATA_DIR = join_paths(DATA_DIR, 'metainfo')
 LOCALE_DIR = join_paths(PREFIX, get_option('localedir'))
 
 EXECUTABLE_NAME = 'marker'
