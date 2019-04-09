@@ -35,7 +35,7 @@ to upstream libraries such as *hoedown* and *charter* should try to match the st
 
 ### Header (.h) files
 
-Function prototypes have the function name start at column 22, the the opening
+Function prototypes have the function name start at column 22, the opening
 parenthases at column 66, and the last asterisk for pointer types, at column 86:
 
 ```C
