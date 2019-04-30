@@ -1,7 +1,7 @@
-# SOME DESCRIPTIVE TITLE.
+# Russian translation of Marker.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the marker package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Artem Polishchuk <ego.cordatus@gmail.com, 2019.
 #
 msgid ""
 msgstr ""
