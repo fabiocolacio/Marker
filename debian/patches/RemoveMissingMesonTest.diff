@@ -1,0 +1,11 @@
+Remove mesontest check as command is missing in Buster
+--- a/configure
++++ b/configure
+@@ -78,7 +78,6 @@
+ }
+ 
+ sanitycheck MESON 'meson'
+-sanitycheck MESONTEST 'mesontest'
+ sanitycheck NINJA 'ninja' 'ninja-build'
+ 
+ declare -A default_options=(
