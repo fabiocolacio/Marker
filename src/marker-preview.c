@@ -52,14 +52,21 @@ G_DEFINE_TYPE(MarkerPreview, marker_preview, WEBKIT_TYPE_WEB_VIEW)
 
 static gboolean
 open_uri (WebKitPolicyDecision *decision) {
-  WebKitResponsePolicyDecision* policy_decision = WEBKIT_RESPONSE_POLICY_DECISION(decision);
-  const gchar * uri = webkit_uri_request_get_uri(webkit_response_policy_decision_get_request(policy_decision));
-  GtkApplication * app = marker_get_app();
-  GList* windows = gtk_application_get_windows(app);
-  time_t now = time(0);
-  gtk_show_uri_on_window (windows->data, uri, now, NULL);
-  webkit_policy_decision_ignore(decision);
-  return TRUE;
+  WebKitNavigationPolicyDecision *nav_dec = WEBKIT_NAVIGATION_POLICY_DECISION(decision);
+  WebKitNavigationAction *action = webkit_navigation_policy_decision_get_navigation_action (nav_dec);
+  WebKitURIRequest *request = webkit_navigation_action_get_request (action);
+  /* Open only http requests in default browser */
+  /* FIXME: Open also other request like ftp in default browser */
+  if (webkit_uri_request_get_http_method(request) != NULL) {
+    const gchar * uri = webkit_uri_request_get_uri(request);
+    GtkApplication * app = marker_get_app();
+    GList* windows = gtk_application_get_windows(app);
+    time_t now = time(0);
+    gtk_show_uri_on_window (windows->data, uri, now, NULL);
+    webkit_policy_decision_ignore(decision);
+    return TRUE;
+  }
+  return FALSE;
 }
 
 static gboolean
@@ -72,7 +79,8 @@ navigate(WebKitPolicyDecision *decision)
   g_print(">> %s\n", uri);
   **/
 
-  return FALSE;
+  /* if request is http ignore default policy and open uri in default browser*/
+  return open_uri (decision);
 }
 
 static gboolean
@@ -81,9 +89,6 @@ decide_policy_cb (WebKitWebView *web_view,
                   WebKitPolicyDecisionType type)
 {
     switch (type) {
-    case WEBKIT_POLICY_DECISION_TYPE_RESPONSE:
-        /* ignore default policy and open uri in default browser*/
-        return open_uri(decision);
     case WEBKIT_POLICY_DECISION_TYPE_NAVIGATION_ACTION:
         return navigate(decision);
     default:
