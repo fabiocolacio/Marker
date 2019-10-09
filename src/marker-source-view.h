@@ -34,7 +34,8 @@ MarkerSourceView        *marker_source_view_new                      (void);
 gboolean                 marker_source_view_get_modified             (MarkerSourceView   *source_view);
 void                     marker_source_view_set_modified             (MarkerSourceView   *source_view,
                                                                       gboolean            modified);
-gchar                   *marker_source_view_get_text                 (MarkerSourceView   *source_view);
+gchar                   *marker_source_view_get_text                 (MarkerSourceView   *source_view,
+                                                                      gboolean            include_position);
 void                     marker_source_view_set_text                 (MarkerSourceView   *source_view,
                                                                       const char         *text,
                                                                       size_t              size);

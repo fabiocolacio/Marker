@@ -191,7 +191,6 @@ scroll_event_cb (GtkWidget *widget,
   MarkerPreview *preview = MARKER_PREVIEW (widget);
 
   GdkEventScroll *scroll_event = (GdkEventScroll *) event;
-
   guint state = scroll_event->state;
   if ((state & GDK_CONTROL_MASK) != 0)
   {
@@ -214,6 +213,7 @@ static void
 load_changed_cb (WebKitWebView   *preview,
                  WebKitLoadEvent  event)
 {
+  gchar *script;
   switch (event)
   {
     case WEBKIT_LOAD_STARTED:
@@ -226,6 +226,9 @@ load_changed_cb (WebKitWebView   *preview,
       break;
 
     case WEBKIT_LOAD_FINISHED:
+      script = g_strdup_printf ("var elem = window.document.getElementById('cursor_pos'); elem.scrollIntoView();");
+      webkit_web_view_run_javascript(preview, script, NULL, NULL, NULL);
+      g_free (script);
       break;
   }
 }
@@ -251,7 +254,7 @@ scroll_js_finished_cb (GObject      *object,
     g_print ("Error running scroll script: %s", error->message);
     g_error_free (error);
     return;
-  }
+  } 
 
   webkit_javascript_result_unref (js_result);
 }
@@ -295,12 +298,13 @@ marker_preview_new(void)
 {
   MarkerPreview * obj =  g_object_new(MARKER_TYPE_PREVIEW, NULL);
   webkit_web_view_set_zoom_level (WEBKIT_WEB_VIEW (obj), makrer_prefs_get_zoom_level ());
+  
 
-  /*** FOR DEBUG PURPOSE ONLY
+  // FOR DEBUG PURPOSE ONLY
   WebKitSettings * settings = webkit_web_view_get_settings(WEBKIT_WEB_VIEW(obj));
   webkit_settings_set_enable_write_console_messages_to_stdout(settings, TRUE);
   webkit_web_view_set_settings(WEBKIT_WEB_VIEW(obj), settings);
-  ***/
+  //***/
 
   return obj;
 }
@@ -400,6 +404,7 @@ marker_preview_render_markdown(MarkerPreview* preview,
 
   GBytes *bhtml = g_string_free_to_bytes(g_string_new(html));
   webkit_web_view_load_bytes(web_view, bhtml, "text/html", "UTF-8", uri);
+  
   g_free(uri);
   // g_free(shtml);
   free(html);

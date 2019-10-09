@@ -362,10 +362,10 @@ marker_editor_refresh_preview (MarkerEditor *editor)
 
   editor->needs_refresh = FALSE;
 
-  g_autofree gchar *markdown = marker_source_view_get_text (editor->source_view);
+  g_autofree gchar *markdown = marker_source_view_get_text (editor->source_view, true);
 
   const char* css_theme = (marker_prefs_get_use_css_theme()) ? marker_prefs_get_css_theme() : NULL;
-    g_autofree gchar *uri = (G_IS_FILE(editor->file)) ? g_file_get_path(editor->file) : NULL;
+  g_autofree gchar *uri = (G_IS_FILE(editor->file)) ? g_file_get_path(editor->file) : NULL;
 
   marker_preview_render_markdown(editor->preview, markdown, css_theme, uri);
 }
@@ -504,7 +504,7 @@ marker_editor_save_file (MarkerEditor *editor)
 
   if (fp)
   {
-    g_autofree gchar *buffer = marker_source_view_get_text (editor->source_view);
+    g_autofree gchar *buffer = marker_source_view_get_text (editor->source_view, false);
     fputs (buffer, fp);
     fclose (fp);
   }

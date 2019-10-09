@@ -45,9 +45,6 @@ marker_sources = [
   res
 ]
 
-scroll_extension = [
-  'src/webkit-extension/scroll-extension.c'
-]
 
 click_extension = [
   'src/webkit-extension/click-extension.c'
@@ -101,14 +98,6 @@ add_global_arguments(
   language : 'c'
 )
 
-shared_library(
-  'scroll-extension',
-  sources : [scroll_extension],
-  dependencies : ext_deps,
-  install : true,
-  link_args: '-lm',
-  install_dir: WEB_EXTENSIONS_DIRECTORY
-)
 
 executable(
   EXECUTABLE_NAME,

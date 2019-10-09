@@ -180,12 +180,21 @@ marker_source_view_set_modified(MarkerSourceView* source_view,
 }
 
 gchar*
-marker_source_view_get_text(MarkerSourceView* source_view)
+marker_source_view_get_text(MarkerSourceView* source_view,
+                            gboolean          include_position)
 {
   GtkTextBuffer* buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(source_view));
   GtkTextIter start, end;
   gtk_text_buffer_get_start_iter(buffer, &start);
   gtk_text_buffer_get_end_iter(buffer, &end);
+  if (include_position && !gtk_text_iter_equal(&start, &end)) {
+    gchar * identifier = g_strdup("<span id=\"cursor_pos\"></span>"); 
+    GtkTextIter pos;
+    gtk_text_buffer_get_selection_bounds (buffer, &pos, NULL);
+    gchar * beginning = gtk_text_buffer_get_text(buffer, &start, &pos, FALSE);
+    gchar * ending = gtk_text_buffer_get_text(buffer, &pos, &end, FALSE);
+    return g_strconcat(beginning, identifier, ending, NULL);
+  }
   return gtk_text_buffer_get_text(buffer, &start, &end, FALSE);
 }
 

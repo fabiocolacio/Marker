@@ -981,7 +981,7 @@ marker_window_new_editor_from_file (MarkerWindow *window,
     if (editor != NULL) {
         active_file = marker_editor_get_file (editor);
         source_view = marker_editor_get_source_view (editor);
-        md = marker_source_view_get_text (source_view);
+        md = marker_source_view_get_text (source_view, false);
 
         if (strcmp (md, "") == 0 && active_file == NULL) {
           marker_window_close_current_document (window);

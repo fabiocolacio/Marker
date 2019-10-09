@@ -165,7 +165,7 @@ marker_exporter_show_export_dialog(MarkerWindow* window)
     MarkerPreview *preview = marker_editor_get_preview(editor);
 
     MarkerSourceView *source_view = marker_editor_get_source_view (editor);
-    markdown = marker_source_view_get_text (source_view);
+    markdown = marker_source_view_get_text (source_view, false);
 
     GFile * source = marker_editor_get_file(editor);
     char * base_folder = NULL;
