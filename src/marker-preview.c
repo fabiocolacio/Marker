@@ -213,7 +213,6 @@ static void
 load_changed_cb (WebKitWebView   *preview,
                  WebKitLoadEvent  event)
 {
-  gchar *script;
   switch (event)
   {
     case WEBKIT_LOAD_STARTED:
@@ -226,9 +225,6 @@ load_changed_cb (WebKitWebView   *preview,
       break;
 
     case WEBKIT_LOAD_FINISHED:
-      script = g_strdup_printf ("var elem = window.document.getElementById('cursor_pos'); elem.scrollIntoView();");
-      webkit_web_view_run_javascript(preview, script, NULL, NULL, NULL);
-      g_free (script);
       break;
   }
 }
@@ -300,11 +296,11 @@ marker_preview_new(void)
   webkit_web_view_set_zoom_level (WEBKIT_WEB_VIEW (obj), makrer_prefs_get_zoom_level ());
   
 
-  // FOR DEBUG PURPOSE ONLY
+  /***
   WebKitSettings * settings = webkit_web_view_get_settings(WEBKIT_WEB_VIEW(obj));
   webkit_settings_set_enable_write_console_messages_to_stdout(settings, TRUE);
   webkit_web_view_set_settings(WEBKIT_WEB_VIEW(obj), settings);
-  //***/
+  ***/
 
   return obj;
 }
