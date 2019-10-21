@@ -102,7 +102,7 @@ add_global_arguments(
 )
 
 shared_library(
-  'extensions/scroll-extension',
+  'scroll-extension',
   sources : [scroll_extension],
   dependencies : ext_deps,
   install : true,
