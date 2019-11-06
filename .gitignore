@@ -3,3 +3,5 @@ resources.c
 *~
 .vscode
 _build
+*.sublime-project
+*.sublime-workspace
