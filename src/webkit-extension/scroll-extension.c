@@ -70,16 +70,16 @@ page_created_cb (WebKitWebExtension *extension,
     g_signal_connect (web_page, "document-loaded",
                       G_CALLBACK (document_loaded_cb),
                       0);
-    g_signal_connect (web_page, "send-request",
-                      G_CALLBACK (send_request_cb),
-                      0);
+    /** g_signal_connect (web_page, "send-request",
+     *G_CALLBACK (send_request_cb),
+     * 0); **/
 }
 
 
 G_MODULE_EXPORT void
 webkit_web_extension_initialize (WebKitWebExtension *extension)
 {
-  g_print("scroll extension initialized\n");
+  g_print("scroll 2.0 extension initialized\n");
   g_signal_connect (extension, "page-created",
                     G_CALLBACK (page_created_cb),
                     NULL);
