@@ -90,12 +90,17 @@ decide_policy_cb (WebKitWebView *web_view,
 {
     switch (type) {
     case WEBKIT_POLICY_DECISION_TYPE_NAVIGATION_ACTION:
-        return navigate(decision);
-    default:
-        /* Making no decision results in webkit_policy_decision_use(). */
-        return FALSE;
+      return navigate(decision);
+    case WEBKIT_POLICY_DECISION_TYPE_RESPONSE:
+      webkit_policy_decision_use (decision);
+      break;
+    case WEBKIT_POLICY_DECISION_TYPE_NEW_WINDOW_ACTION:
+      return navigate(decision);
+    default:  
+      /* Making no decision results in webkit_policy_decision_use(). */
+      return FALSE;
     }
-    return FALSE;
+    return TRUE;
 }
 
 
@@ -354,7 +359,7 @@ marker_preview_render_markdown(MarkerPreview* preview,
                                const char*    markdown,
                                const char*    css_theme,
                                const char*    base_uri,
-                               int            cursros)
+                               int            cursor)
 {
   MarkerMathJSMode katex_mode = MATHJS_OFF;
   if (marker_prefs_get_use_mathjs()) {
@@ -380,7 +385,7 @@ marker_preview_render_markdown(MarkerPreview* preview,
                                        highlight_mode,
                                        mermaid_mode,
                                        css_theme,
-                                       cursros);
+                                       cursor);
 
   WebKitWebView* web_view = WEBKIT_WEB_VIEW(preview);
 
@@ -397,14 +402,12 @@ marker_preview_render_markdown(MarkerPreview* preview,
   if (base_uri) {
     uri = g_filename_to_uri  (g_locale_from_utf8(base_uri, strlen(base_uri), NULL, NULL, NULL), NULL, NULL);
   }else {
-    uri = g_strdup("file://internal.md");
+    uri = g_strdup("file:///internal.html");
   }
-
-  GBytes *bhtml = g_string_free_to_bytes(g_string_new(html));
-  webkit_web_view_load_bytes(web_view, bhtml, "text/html", "UTF-8", uri);
-  
+  webkit_web_view_load_html(web_view 
+                            ,html
+                            ,uri);
   g_free(uri);
-  // g_free(shtml);
   free(html);
 }
 

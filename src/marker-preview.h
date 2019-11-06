@@ -42,8 +42,9 @@ void                 marker_preview_render_markdown              (MarkerPreview 
                                                                   const char         *markdown,
                                                                   const char         *css_theme,
                                                                   const char         *base_uri,
-                                                                  int  				  cursor);
-WebKitPrintOperationResponse
+                                                                  int  		        cursor);
+
+WebKitPrintOperationResponse                 
                      marker_preview_run_print_dialog             (MarkerPreview      *preview,
                                                                   GtkWindow          *parent);
 void                 marker_preview_print_pdf                    (MarkerPreview*     preview,
