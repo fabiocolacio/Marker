@@ -26,6 +26,7 @@
 #include "marker-prefs.h"
 #include "marker-utils.h"
 
+#include <glib.h>
 #include <gtkspell/gtkspell.h>
 
 struct _MarkerSourceView

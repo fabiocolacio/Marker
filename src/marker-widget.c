@@ -19,8 +19,6 @@
  *
  */
 
-#include <gtk/gtk.h>
-
 #include <string.h>
 
 #include "marker-string.h"

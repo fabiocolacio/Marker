@@ -25,13 +25,13 @@ static void
 on_click(WebKitDOMEventTarget * target,
       gpointer               user_data)
 {
-    WebKitDOMElement* element =  target;
-    WebKitDOMDocument * document = webkit_dom_node_get_owner_document (element);
+    WebKitDOMElement* element =  (WebKitDOMElement*)target;
+    WebKitDOMDocument * document = (WebKitDOMDocument *)webkit_dom_node_get_owner_document ((WebKitDOMNode*)element);
     if (element && document)
     {    
         gdouble offset = webkit_dom_element_get_offset_top (element) +
                          webkit_dom_element_get_client_top (element);
-        glong doc_height = webkit_dom_html_document_get_height (document);
+        glong doc_height = webkit_dom_html_document_get_height ((WebKitDOMHTMLDocument*)document);
 
         gdouble ratio = offset / doc_height;
         g_print("position: %f, ratio: %f\n",offset, ratio);        
@@ -57,13 +57,13 @@ enable_click_callback(WebKitDOMElement * element)
             gulong i = 0;
             for (;i<n;i++)
             {
-                WebKitDOMElement * child = webkit_dom_html_collection_item(children, i);
+                WebKitDOMElement * child = (WebKitDOMElement*)webkit_dom_html_collection_item(children, i);
                 enable_click_callback(child);
             }
         }
         else
         {
-            webkit_dom_event_target_add_event_listener(element, "click", 
+            webkit_dom_event_target_add_event_listener((WebKitDOMEventTarget*) element, "click", 
                                                         click_callback,
                                                         FALSE,
                                                         NULL);
@@ -86,12 +86,12 @@ disable_click_callback(WebKitDOMElement * element)
         gulong i = 0;
         for (;i<n;i++)
         {
-            WebKitDOMElement * child = webkit_dom_html_collection_item(children, i);
-            webkit_dom_event_target_remove_event_listener(child,
+            WebKitDOMNode * child = webkit_dom_html_collection_item(children, i);
+            webkit_dom_event_target_remove_event_listener((WebKitDOMEventTarget*) child,
                                                             "click",
                                                             click_callback,
                                                             FALSE);
-            disable_click_callback(child);
+            disable_click_callback((WebKitDOMElement*)child);
         }
     }
 }
@@ -101,7 +101,7 @@ create_body(WebKitWebPage   *web_page,
                 gpointer     user_data)
 {
     WebKitDOMDocument * document = webkit_web_page_get_dom_document (web_page);
-    WebKitDOMElement* body = webkit_dom_document_get_body (document);
+    WebKitDOMElement* body = (WebKitDOMElement*)webkit_dom_document_get_body (document);
     if (body){
         /*retatch body click listener*/
         enable_click_callback(body);        
@@ -115,7 +115,7 @@ remove_body(WebKitWebPage     *web_page,
                        gpointer           user_data)
 {
     WebKitDOMDocument * document = webkit_web_page_get_dom_document (web_page);
-    WebKitDOMElement* body = webkit_dom_document_get_body (document);
+    WebKitDOMElement* body = (WebKitDOMElement*)webkit_dom_document_get_body (document);
     if (body){
         /*detach body click listener*/          
         disable_click_callback(body);          

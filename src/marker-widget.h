@@ -22,6 +22,8 @@
 #ifndef __MARKER_WIDGET_H__
 #define __MARKER_WIDGET_H__
 
+#include <gtk/gtk.h>
+
 void                 marker_widget_combo_box_set_string_model    (GtkComboBox        *combo_box,
                                                                   GtkTreeModel       *list);
 void                 marker_widget_populate_combo_box_with_strings
