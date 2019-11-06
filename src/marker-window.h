@@ -58,6 +58,9 @@ void                 marker_window_new_editor_from_file          (MarkerWindow  
 
 void                 marker_window_search                        (MarkerWindow       *window);
 
+void 				 marker_window_refresh_all_preview			 (MarkerWindow       *window);
+
+
 G_END_DECLS
 
 #endif

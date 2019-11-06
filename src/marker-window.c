@@ -1269,3 +1269,26 @@ marker_window_search (MarkerWindow       *window)
     marker_editor_toggle_search_bar(window->active_editor);
   }
 }
+
+void 
+marker_window_refresh_all_preview(MarkerWindow       *window)
+{
+  GtkTreeModel * model = GTK_TREE_MODEL(window->documents_tree_store);
+  gint rows = gtk_tree_model_iter_n_children (model, NULL);
+
+  if (rows > 0)
+  {
+    /** If there are documents open check for unsaved ones**/
+    gint i;
+    GtkTreeIter iter;
+    for (i = 0; i < rows; i++)
+    {
+      gtk_tree_model_get_iter(model, &iter, gtk_tree_path_new_from_indices (i, -1));
+      MarkerEditor *editor;
+      gtk_tree_model_get (model, &iter, EDITOR_COLUMN, &editor, -1);
+      if (editor) {
+        marker_editor_refresh_preview (editor);  
+      }
+    }
+  }
+}

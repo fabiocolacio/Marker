@@ -433,8 +433,7 @@ refresh_preview ()
     if (MARKER_IS_WINDOW(item->data))
     {
       MarkerWindow *window = item->data;
-      MarkerEditor *editor = marker_window_get_active_editor (window);
-      marker_editor_refresh_preview (editor);
+      marker_window_refresh_all_preview(window);
     }
   }
 }
@@ -637,7 +636,6 @@ css_chosen(GtkComboBox* combo_box,
   marker_prefs_set_css_theme(choice);
 
   free(choice);
-
   refresh_preview();
 }
 
