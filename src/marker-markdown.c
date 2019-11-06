@@ -33,6 +33,15 @@
 #include "marker-markdown.h"
 #include "marker-prefs.h"
 
+struct css_buffer_{
+  gchar * location;
+  char * css; 
+  char * scidown;
+} typedef css_buffer_;
+
+css_buffer_ buffer_ = {0, 0, 0};
+
+
 char* html_header(MarkerMathJSMode    mathjs_mode,
                   MarkerHighlightMode highlight_mode,
                   MarkerMermaidMode   mermaid_mode)
@@ -207,6 +216,71 @@ localization get_local()
   return local;
 }
 
+char* 
+marker_markdown_css(const char* css_link)
+{
+  if (!css_link){
+    return "";
+  }
+  if (g_strcmp0(css_link, buffer_.location) == 0) {
+    return buffer_.css;
+  } 
+  if (buffer_.location) {
+    free(buffer_.location);
+    free(buffer_.css);
+  }
+  buffer_.location = g_strdup(css_link);
+  buffer_.css = NULL;
+  FILE* fp = NULL;
+  gchar * path = g_strdup_printf("%s%s", STYLES_DIR, css_link);
+  fp = fopen(path, "r");
+  g_free(path);
+  
+  if (fp)
+  {
+    
+    fseek(fp , 0 , SEEK_END);
+    long size = ftell(fp);
+    rewind(fp);
+
+    buffer_.css = (char*) malloc(sizeof(char) * size);
+    fread(buffer_.css, 1, size, fp);
+
+    fclose(fp);
+  }
+
+  return buffer_.css;
+}
+
+char* 
+marker_markdown_scidown_css()
+{
+  if (buffer_.scidown != 0) {
+    return buffer_.scidown;
+  }
+
+  buffer_.scidown = NULL;
+  FILE* fp = NULL;
+  gchar * path = g_strdup_printf("%s%s", STYLES_DIR, "scidown.css");
+  fp = fopen(path, "r");
+  g_free(path);
+  
+  if (fp)
+  {
+    
+    fseek(fp , 0 , SEEK_END);
+    long size = ftell(fp);
+    rewind(fp);
+
+    buffer_.scidown = (char*) malloc(sizeof(char) * size);
+    fread(buffer_.scidown, 1, size, fp);
+
+    fclose(fp);
+  }
+
+  return buffer_.scidown;
+}
+
 char*
 marker_markdown_to_html(const char*         markdown,
                         size_t              size,
@@ -228,16 +302,8 @@ marker_markdown_to_html(const char*         markdown,
   char * header = html_header(katex_mode, highlight_mode, mermaid_mode);
 
   char * ref;
-  if (stylesheet_location)
-  {
-    ref = header;
-    header = g_strdup_printf("%s<link rel=\"stylesheet\" type=\"text/css\" href=\"file://%s%s\">\n", header, STYLES_DIR, stylesheet_location);
-    free(ref);
-  }
-
-  /*COMMON CSS STYLING*/
   ref = header;
-  header = g_strdup_printf("%s<link rel=\"stylesheet\" type=\"text/css\" href=\"file://%s/%s\">\n", header, COMMON_DIR, "scidown.css");
+  header = g_strdup_printf("%s<style>\n%s\n%s\n</style>\n", header, marker_markdown_css(stylesheet_location), marker_markdown_scidown_css());
   free(ref);
 
   char * footer = html_footer(katex_mode, highlight_mode, mermaid_mode);
@@ -281,24 +347,7 @@ marker_markdown_to_html_with_css_inline(const char*         markdown,
   char* html = NULL;
 
 
-  FILE* fp = NULL;
-  gchar * path = g_strdup_printf("%s%s", STYLES_DIR, stylesheet_location);
-  fp = fopen(path, "r");
-  g_free(path);
-  char* inline_css = NULL;
-  if (fp)
-  {
-    inline_css = NULL;
-
-    fseek(fp , 0 , SEEK_END);
-    long size = ftell(fp);
-    rewind(fp);
-
-    inline_css = (char*) malloc(sizeof(char) * size);
-    fread(inline_css, 1, size, fp);
-
-    fclose(fp);
-  }
+  char* inline_css = marker_markdown_css(stylesheet_location);
 
   hoedown_renderer* renderer;
   hoedown_document* document;
@@ -309,24 +358,7 @@ marker_markdown_to_html_with_css_inline(const char*         markdown,
 
   char * header = html_header(katex_mode, highlight_mode, mermaid_mode);
 
-  /*To be fixed.*/
-  char * common_path;
-  common_path = g_strdup_printf("%s/%s", COMMON_DIR, "scidown.css");
-
-  fp = fopen(common_path, "r");
-  char* common_css = NULL;
-  if (fp)
-  {
-    fseek(fp , 0 , SEEK_END);
-    long size = ftell(fp);
-    rewind(fp);
-
-    common_css = (char*) malloc(sizeof(char) * size);
-    fread(common_css, 1, size, fp);
-
-    fclose(fp);
-  }
-  free(common_path);
+  char* common_css = marker_markdown_scidown_css();
 
 
   if(inline_css && common_css) {
