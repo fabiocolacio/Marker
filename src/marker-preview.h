@@ -41,7 +41,8 @@ void                 marker_preview_zoom_in                      (MarkerPreview 
 void                 marker_preview_render_markdown              (MarkerPreview      *preview,
                                                                   const char         *markdown,
                                                                   const char         *css_theme,
-                                                                  const char         *base_uri);
+                                                                  const char         *base_uri,
+                                                                  int  				  cursor);
 WebKitPrintOperationResponse
                      marker_preview_run_print_dialog             (MarkerPreview      *preview,
                                                                   GtkWindow          *parent);

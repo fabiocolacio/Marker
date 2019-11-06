@@ -199,6 +199,16 @@ marker_source_view_get_text(MarkerSourceView* source_view,
   return gtk_text_buffer_get_text(buffer, &start, &end, FALSE);
 }
 
+int                      
+marker_source_view_get_cursor_position (MarkerSourceView   *source_view)
+{
+  GtkTextBuffer* buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(source_view));
+  GtkTextIter pos;
+  gtk_text_buffer_get_selection_bounds (buffer, &pos, NULL);
+  return gtk_text_iter_get_offset(&pos);
+}
+
+
 void
 marker_source_view_set_text(MarkerSourceView* source_view,
                             const char*       text,

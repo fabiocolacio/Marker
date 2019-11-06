@@ -235,7 +235,8 @@ marker_exporter_show_export_dialog(MarkerWindow* window)
                                                                               (marker_prefs_get_use_mermaid()
                                                                                 ? MERMAID_NET
                                                                                 : MERMAID_OFF),
-                                                                              stylesheet_path),
+                                                                              stylesheet_path, 
+                                                                              -1),
                                       stylesheet_path,
                                       filename);
         break;

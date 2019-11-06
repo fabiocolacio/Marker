@@ -353,7 +353,8 @@ void
 marker_preview_render_markdown(MarkerPreview* preview,
                                const char*    markdown,
                                const char*    css_theme,
-                               const char*    base_uri)
+                               const char*    base_uri,
+                               int            cursros)
 {
   MarkerMathJSMode katex_mode = MATHJS_OFF;
   if (marker_prefs_get_use_mathjs()) {
@@ -378,7 +379,8 @@ marker_preview_render_markdown(MarkerPreview* preview,
                                        katex_mode,
                                        highlight_mode,
                                        mermaid_mode,
-                                       css_theme);
+                                       css_theme,
+                                       cursros);
 
   WebKitWebView* web_view = WEBKIT_WEB_VIEW(preview);
 

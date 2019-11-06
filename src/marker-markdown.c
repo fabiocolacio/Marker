@@ -288,7 +288,8 @@ marker_markdown_to_html(const char*         markdown,
                         MarkerMathJSMode     katex_mode,
                         MarkerHighlightMode highlight_mode,
                         MarkerMermaidMode   mermaid_mode,
-                        const char*         stylesheet_location)
+                        const char*         stylesheet_location,
+                        int                 cursor_position)
 {
   char* html = NULL;
 
@@ -320,7 +321,7 @@ marker_markdown_to_html(const char*         markdown,
                                   16);
 
   buffer = hoedown_buffer_new(500);
-  hoedown_document_render(document, buffer, (uint8_t*) markdown, size);
+  hoedown_document_render(document, buffer, (uint8_t*) markdown, size, cursor_position);
 
   g_free(header);
   g_free(footer);
@@ -342,7 +343,8 @@ marker_markdown_to_html_with_css_inline(const char*         markdown,
                                         MarkerMathJSMode     katex_mode,
                                         MarkerHighlightMode highlight_mode,
                                         MarkerMermaidMode   mermaid_mode,
-                                        const char*         stylesheet_location)
+                                        const char*         stylesheet_location,
+                                        int                 cursor_position)
 {
   char* html = NULL;
 
@@ -398,7 +400,7 @@ marker_markdown_to_html_with_css_inline(const char*         markdown,
                                   16);
 
   buffer = hoedown_buffer_new(500);
-  hoedown_document_render(document, buffer, (uint8_t*) markdown, size);
+  hoedown_document_render(document, buffer, (uint8_t*) markdown, size, cursor_position);
 
   g_free(footer);
   g_free(header);
@@ -444,7 +446,7 @@ marker_markdown_to_latex(const char*         markdown,
                                   16);
 
   buffer = hoedown_buffer_new(500);
-  hoedown_document_render(document, buffer, (uint8_t*) markdown, size);
+  hoedown_document_render(document, buffer, (uint8_t*) markdown, size, -1);
 
   const char* buf_cstr = hoedown_buffer_cstr(buffer);
   latex = strdup(buf_cstr);
@@ -472,7 +474,8 @@ marker_markdown_to_html_file(const char*         markdown,
                                        katex_mode,
                                        highlight_mode,
                                        mermaid_mode,
-                                       stylesheet_location);
+                                       stylesheet_location, 
+                                       -1);
   FILE* fp = fopen(filepath, "w");
   if (fp && html)
   {
@@ -498,7 +501,8 @@ marker_markdown_to_html_file_with_css_inline(const char*         markdown,
                                                        katex_mode,
                                                        highlight_mode,
                                                        mermaid_mode,
-                                                       stylesheet_location);
+                                                       stylesheet_location, 
+                                                       -1);
   FILE* fp = fopen(filepath, "w");
   if (fp && html)
   {

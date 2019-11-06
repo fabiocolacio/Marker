@@ -362,12 +362,13 @@ marker_editor_refresh_preview (MarkerEditor *editor)
 
   editor->needs_refresh = FALSE;
 
-  g_autofree gchar *markdown = marker_source_view_get_text (editor->source_view, true);
+  g_autofree gchar *markdown = marker_source_view_get_text (editor->source_view, false);
+  int cursor = marker_source_view_get_cursor_position(editor->source_view);
 
   const char* css_theme = (marker_prefs_get_use_css_theme()) ? marker_prefs_get_css_theme() : NULL;
   g_autofree gchar *uri = (G_IS_FILE(editor->file)) ? g_file_get_path(editor->file) : NULL;
 
-  marker_preview_render_markdown(editor->preview, markdown, css_theme, uri);
+  marker_preview_render_markdown(editor->preview, markdown, css_theme, uri, cursor);
 }
 
 MarkerViewMode
