@@ -37,15 +37,15 @@
   <screenshots>
     <screenshot type="default">
       <caption>The main view</caption>
-      <image>https://raw.githubusercontent.com/fabiocolacio/Marker/master/scrot1.png</image>
+      <image>https://raw.githubusercontent.com/fabiocolacio/Marker/master/help/C/figures/scrot1.png</image>
     </screenshot>
     <screenshot>
       <caption>Some plotting</caption>
-      <image>https://raw.githubusercontent.com/fabiocolacio/Marker/master/scrot2.png</image>
+      <image>https://raw.githubusercontent.com/fabiocolacio/Marker/master/help/C/figures/scrot2.png</image>
     </screenshot>
     <screenshot>
       <caption>The sketch editor</caption>
-      <image>https://raw.githubusercontent.com/fabiocolacio/Marker/master/sketcher.png</image>
+      <image>https://raw.githubusercontent.com/fabiocolacio/Marker/master/help/C/figures/sketcher.png</image>
     </screenshot>
   </screenshots>
 
@@ -75,6 +75,15 @@
                 <li>Fixed a glitch where documents opened in preview mode were scrolled to the bottom.</li>
                 <li>Fixed a glitch causing two appmenus to appear in non-gnome environments.</li>
                 <li>Fixed a glitch where code blocks didn't have monospaced font in the preview with some themes.</li>
+            </ul>
+        </description>
+   </release>
+    <release version="2019.11.06" date="2019-11-06">
+        <description>
+            <ul>
+                <li>Preview stick to the editing text better.</li>
+                <li>Fixed crash on file opening.</li>
+                <li>Added the ability to choose any view mode when launching from cli.</li>
             </ul>
         </description>
    </release>
