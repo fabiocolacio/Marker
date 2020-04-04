@@ -1,7 +1,7 @@
 /*
  * marker-preview.c
  *
- * Copyright (C) 2017 - 2018 Fabio Colacio
+ * Copyright (C) 2017-2020 - 2018 Fabio Colacio
  *
  * Marker is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public License as
@@ -402,11 +402,12 @@ marker_preview_render_markdown(MarkerPreview* preview,
   if (base_uri) {
     uri = g_filename_to_uri  (g_locale_from_utf8(base_uri, strlen(base_uri), NULL, NULL, NULL), NULL, NULL);
   }else {
-    uri = g_strdup("file:///internal.html");
+    uri = g_strdup_printf ("file://%s", getenv("HOME"));
   }
   webkit_web_view_load_html(web_view 
                             ,html
                             ,uri);
+
   g_free(uri);
   free(html);
 }

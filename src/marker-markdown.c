@@ -1,7 +1,7 @@
 /*
  * marker-markdown.c
  *
- * Copyright (C) 2017 - 2018 Fabio Colacio
+ * Copyright (C) 2017-2020 - 2018 Fabio Colacio
  *
  * Marker is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public License as
@@ -124,7 +124,6 @@ char* html_header(MarkerMathJSMode    mathjs_mode,
   }
 
   char * buffer = g_strdup_printf("%s\n%s\n%s\n%s\n%s\n%s\n",mathjs_css, highlight_css, mathjs_script, mathjs_auto, highlight_script, mermaid_script);
-
 
   g_free(mathjs_script);
   g_free(mathjs_auto);
@@ -332,6 +331,8 @@ marker_markdown_to_html(const char*         markdown,
   hoedown_html_renderer_free(renderer);
   hoedown_document_free(document);
   hoedown_buffer_free(buffer);
+
+  g_print ("Generated HTML:\n%s\n", html);
 
   return html;
 }

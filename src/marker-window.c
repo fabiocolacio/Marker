@@ -1,7 +1,7 @@
 /*
  * marker-window.c
  *
- * Copyright (C) 2017 - 2018 Fabio Colacio
+ * Copyright (C) 2017-2020 - 2018 Fabio Colacio
  *
  * Marker is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public License as
