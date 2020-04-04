@@ -332,8 +332,6 @@ marker_markdown_to_html(const char*         markdown,
   hoedown_document_free(document);
   hoedown_buffer_free(buffer);
 
-  g_print ("Generated HTML:\n%s\n", html);
-
   return html;
 }
 
