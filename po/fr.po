@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: marker 1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-01-15 17:13+0100\n"
-"PO-Revision-Date: 2020-04-04 16:08+0200\n"
+"PO-Revision-Date: 2020-04-04 16:19+0200\n"
 "Last-Translator: Romain F. T.>\n"
 "Language-Team: français\n"
 "Language: fr\n"
@@ -150,7 +150,7 @@ msgstr "Aperçu"
 
 #: src/resources/ui/marker-prefs-window.ui:570
 msgid "Default view mode: "
-msgstr "Mode d’affichage par défaut "
+msgstr "Mode d’affichage par défaut : "
 
 #: src/resources/ui/marker-prefs-window.ui:603
 msgid "Enable dark mode"
@@ -367,7 +367,9 @@ msgstr "Rapporter des bugs et des idées sur GitHub"
 
 #: src/marker.c:191
 msgid "translator-credits"
-msgstr "Romain F. T., Ildegarde59"
+msgstr ""
+"Romain F. T.\n"
+"Ildegarde59"
 
 #: src/marker-editor.c:248
 msgid "Untitled.md"
