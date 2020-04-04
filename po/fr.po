@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: marker 1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-01-15 17:13+0100\n"
-"PO-Revision-Date: 2018-06-16 20:01+0200\n"
+"PO-Revision-Date: 2020-04-04 15:47+0200\n"
 "Last-Translator: Romain F. T.>\n"
 "Language-Team: français\n"
 "Language: fr\n"
@@ -17,6 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: Poedit 2.3\n"
 
 #: src/resources/ui/marker-appmenu.ui:6
 #: src/resources/ui/marker-gear-popover.ui:88
@@ -77,7 +78,7 @@ msgstr "Retour à la ligne"
 
 #: src/resources/ui/marker-prefs-window.ui:105
 msgid "Show right margin at column: "
-msgstr "Montrer une marge dextre à la colonne n° "
+msgstr "Montrer une marge dextre à la colonne nº"
 
 #: src/resources/ui/marker-prefs-window.ui:145
 msgid "Check spelling for language: "
@@ -149,7 +150,7 @@ msgstr "Aperçu"
 
 #: src/resources/ui/marker-prefs-window.ui:570
 msgid "Default view mode: "
-msgstr "Mode d'affichage par défaut"
+msgstr "Mode d’affichage par défaut "
 
 #: src/resources/ui/marker-prefs-window.ui:603
 msgid "Enable dark mode"
@@ -197,7 +198,7 @@ msgstr "Fermer le document"
 #: src/resources/ui/marker-shortcuts-window.ui:62
 msgctxt "shortcut window"
 msgid "Editing"
-msgstr "Éditeur"
+msgstr "Édition"
 
 #: src/resources/ui/marker-shortcuts-window.ui:67
 msgctxt "shortcut window"
@@ -257,27 +258,27 @@ msgstr "(Dés)activer le mode plein écran"
 #: src/resources/ui/marker-shortcuts-window.ui:149
 msgctxt "shortcut window"
 msgid "Switch to editor-only mode"
-msgstr "Passer au mode \"éditeur seulement\""
+msgstr "Passer au mode “éditeur seulement”"
 
 #: src/resources/ui/marker-shortcuts-window.ui:156
 msgctxt "shortcut window"
 msgid "Switch to preview-only mode"
-msgstr "Passer au mode \"aperçu seulement\""
+msgstr "Passer au mode “aperçu seulement”"
 
 #: src/resources/ui/marker-shortcuts-window.ui:163
 msgctxt "shortcut window"
 msgid "Switch to dual-pane mode"
-msgstr "Passer au mode \"deux panneaux\""
+msgstr "Passer au mode “deux panneaux”"
 
 #: src/resources/ui/marker-shortcuts-window.ui:170
 msgctxt "shortcut window"
 msgid "Switch to dual-window mode"
-msgstr "Passer au mode \"deux fenêtres\""
+msgstr "Passer au mode “deux fenêtres”"
 
 #: src/resources/ui/marker-shortcuts-window.ui:177
 msgctxt "shortcut window"
 msgid "Quit the application"
-msgstr "Quitter l'application"
+msgstr "Quitter l’application"
 
 #: src/resources/ui/marker-sketcher-window.ui:112
 msgid "Sketcher"
@@ -301,11 +302,11 @@ msgstr "Choisir une couleur"
 
 #: src/resources/ui/marker-sketcher-window.ui:271
 msgid "Insert the sketch"
-msgstr "Insérer l'esquisse"
+msgstr "Insérer l’esquisse"
 
 #: src/resources/ui/marker-sketcher-window.ui:286
 msgid "Cancel the sketch"
-msgstr "Annuler l'esquisse"
+msgstr "Annuler l’esquisse"
 
 #: src/resources/ui/marker-gear-popover.ui:22
 msgid "Zoom Out"
@@ -342,7 +343,7 @@ msgstr "Imprimer…"
 #: src/resources/ui/marker-gear-popover.ui:168
 #: src/resources/ui/marker-gear-popover.ui:234
 msgid "View Mode"
-msgstr "Mode d'affichage"
+msgstr "Mode d’affichage"
 
 #: src/resources/ui/marker-gear-popover.ui:215
 msgid "About Marker"
@@ -358,17 +359,16 @@ msgstr "Enregistrer"
 
 #: src/marker.c:184
 msgid "A markdown editor for GNOME"
-msgstr "Un éditeur de markdown pour GNOME."
+msgstr "Un éditeur de markdown pour GNOME. "
 
 #: src/marker.c:186
 msgid "Report bugs and ideas on github"
-msgstr ""
+msgstr "Rapporter des bugs et des idées sur GitHub"
 
 #: src/marker.c:191
 msgid "translator-credits"
-msgstr "Romain F. T."
+msgstr "Romain F. T. "
 
 #: src/marker-editor.c:248
 msgid "Untitled.md"
 msgstr "Sans titre.md"
-
