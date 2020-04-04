@@ -1,5 +1,5 @@
 project('Marker', 'c',
-  version : '2018.07.03',
+  version : '2020.04.04',
   license : 'GPL3'
 )
 

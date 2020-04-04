@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright 2018 Fabio Colacio <fabio.colacio.dev@gmail.com> -->
+<!-- Copyright 2018-2020 Fabio Colacio <fabio.colacio.dev@gmail.com> -->
 <component type="desktop-application">
   <id>com.github.fabiocolacio.marker.desktop</id>
   <metadata_license>FSFAP</metadata_license>
   <project_license>GPL-3.0</project_license>
   <name>Marker</name>
-  <summary>Powerful markdown editor</summary>
+  <summary>Powerful markdown editor for the GNOME desktop.</summary>
 
   <description>
     <p>Features:</p>
@@ -58,6 +58,14 @@
   </provides>
 
   <releases>
+    <release version="2020.04.04" date="2020-04-04">
+      <description>
+        <ul>
+          <li>Fixed a bug where equations weren't being rendered properly.</li>
+          <li>Improved localizations.</li>
+        </ul>
+      </description>
+    </release>
    <release version="2018.07.03" date="2018-07-03">
         <description>
             <ul>
