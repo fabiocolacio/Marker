@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: marker 1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-01-15 17:13+0100\n"
-"PO-Revision-Date: 2020-04-04 15:51+0200\n"
+"PO-Revision-Date: 2020-04-04 16:08+0200\n"
 "Last-Translator: Romain F. T.>\n"
 "Language-Team: français\n"
 "Language: fr\n"
@@ -106,7 +106,7 @@ msgstr "<b>Tabulations</b>"
 
 #: src/resources/ui/marker-prefs-window.ui:278
 msgid "Enable automatic indentation"
-msgstr "Activer l'indentation automatique"
+msgstr "Activer l’indentation automatique"
 
 #: src/resources/ui/marker-prefs-window.ui:293
 msgid "Insert spaces instead of tabs"
@@ -208,7 +208,7 @@ msgstr "Appliquer du gras à la sélection"
 #: src/resources/ui/marker-shortcuts-window.ui:74
 msgctxt "shortcut window"
 msgid "Make selection italic"
-msgstr "Appliquer de l'italique à la sélection"
+msgstr "Appliquer de l’italique à la sélection"
 
 #: src/resources/ui/marker-shortcuts-window.ui:81
 msgctxt "shortcut window"
@@ -359,7 +359,7 @@ msgstr "Enregistrer"
 
 #: src/marker.c:184
 msgid "A markdown editor for GNOME"
-msgstr "Un éditeur de markdown pour GNOME."
+msgstr "Un éditeur de markdown pour GNOME"
 
 #: src/marker.c:186
 msgid "Report bugs and ideas on github"
@@ -367,7 +367,7 @@ msgstr "Rapporter des bugs et des idées sur GitHub"
 
 #: src/marker.c:191
 msgid "translator-credits"
-msgstr "Romain F. T."
+msgstr "Romain F. T., Ildegarde59"
 
 #: src/marker-editor.c:248
 msgid "Untitled.md"
