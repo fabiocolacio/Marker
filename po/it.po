@@ -369,4 +369,4 @@ msgstr "Albano Battistella"
 
 #: src/marker-editor.c:248
 msgid "Untitled.md"
-msgstr ""
+msgstr "Senza titolo.md"
