@@ -829,7 +829,15 @@ marker_window_init (MarkerWindow *window)
 
   /** Window **/
   marker_window_hide_sidebar (window);
-  gtk_window_set_default_size(GTK_WINDOW(window), 900, 600);
+  guint width = marker_prefs_get_window_width();
+  guint height = marker_prefs_get_window_height();
+  if (width == 0) {
+    marker_prefs_set_window_width(900);
+  }
+  if (height == 0) {
+    marker_prefs_set_window_height(600);
+  }
+  gtk_window_set_default_size(GTK_WINDOW(window), width, height);
   gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
   g_signal_connect(window, "delete-event", G_CALLBACK(window_deleted_event_cb), window);
 
