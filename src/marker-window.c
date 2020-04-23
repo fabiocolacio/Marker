@@ -85,12 +85,14 @@ get_current_iter(MarkerWindow *window,
  * @parent The parent window for this dialog to be transient for, or NULL
  *
  * Shows a dialog asking the user to proceed closing a document without saving,
- * or to cancel the close operation
+ * save and exit, or to cancel the close operation
  *
- * Returns: TRUE if the user would like to proceed without saving. FALSE if the user
- * wants to cancel the operation.
+ * Returns: 
+ * GTK_RESPONSE_NO if the user would like to proceed without saving.
+ * GTK_RESPONSE_YES if the user would like to save and exit
+ * GTK_RESPONSE_CANCEL if the user wants to cancel the operation
  */
-static gboolean
+static gint
 show_unsaved_documents_warning (MarkerWindow *window)
 {
   g_assert (MARKER_IS_WINDOW (window));
@@ -100,13 +102,14 @@ show_unsaved_documents_warning (MarkerWindow *window)
 
 
   GtkWidget *dialog;
+  gchar *save_or_save_as = "Save";
   if (G_IS_FILE (file))
   {
     g_autofree gchar *filename = g_file_get_basename (file);
     dialog = gtk_message_dialog_new_with_markup(GTK_WINDOW (window),
                                                 GTK_DIALOG_MODAL,
                                                 GTK_MESSAGE_QUESTION,
-                                                GTK_BUTTONS_OK_CANCEL,
+                                                GTK_BUTTONS_NONE,
                                                 "<span weight='bold' size='larger'>"
                                                 "Discard changes to the document '%s'?"
                                                 "</span>\n\n"
@@ -119,22 +122,30 @@ show_unsaved_documents_warning (MarkerWindow *window)
     dialog = gtk_message_dialog_new_with_markup(GTK_WINDOW (window),
                                                 GTK_DIALOG_MODAL,
                                                 GTK_MESSAGE_QUESTION,
-                                                GTK_BUTTONS_OK_CANCEL,
+                                                GTK_BUTTONS_NONE,
                                                 "<span weight='bold' size='larger'>"
                                                 "Discard changes to the document?"
                                                 "</span>\n\n"
                                                 "The document has unsaved changes "
                                                 "that will be lost if it is closed now.");
+
+    save_or_save_as = "Save as";
   }
+
+  gtk_dialog_add_buttons(dialog,
+                        "Close without Saving",
+                        GTK_RESPONSE_NO,
+                        "Cancel",
+                        GTK_RESPONSE_CANCEL,
+                        save_or_save_as,
+                        GTK_RESPONSE_YES,
+                        NULL);
 
   gint response = gtk_dialog_run(GTK_DIALOG(dialog));
 
   gtk_widget_destroy (GTK_WIDGET (dialog));
 
-  if (response == GTK_RESPONSE_OK)
-    return TRUE;
-
-  return FALSE;
+  return response;
 }
 
 static void
@@ -1135,12 +1146,12 @@ marker_window_open_sketcher (MarkerWindow *window)
   marker_sketcher_window_show (GTK_WINDOW (window), file, source_view);
 }
 
-gboolean
+gint
 marker_window_try_close (MarkerWindow *window)
 {
   g_assert (MARKER_IS_WINDOW (window));
 
-  gboolean status = TRUE;
+  gint response = GTK_RESPONSE_NO;
 
   gboolean has_unsaved = FALSE;
   GtkTreeModel * model = GTK_TREE_MODEL(window->documents_tree_store);
@@ -1160,10 +1171,14 @@ marker_window_try_close (MarkerWindow *window)
     }
 
     if (has_unsaved)
-      status = show_unsaved_documents_warning (window);
+      response = show_unsaved_documents_warning (window);
 
     MarkerEditor *editor = marker_window_get_active_editor (window);
-    if (status)
+
+    if (response == GTK_RESPONSE_YES)
+      marker_window_save_active_file (window);
+
+    if (response != GTK_RESPONSE_CANCEL)
     {
       marker_editor_closing(editor);
       gtk_widget_destroy (GTK_WIDGET (window));
@@ -1173,7 +1188,7 @@ marker_window_try_close (MarkerWindow *window)
     /** Else just close **/
     gtk_widget_destroy (GTK_WIDGET (window));
   }
-  return status;
+  return response;
 }
 
 void
@@ -1182,12 +1197,16 @@ marker_window_close_current_document (MarkerWindow *window)
   g_assert (MARKER_IS_WINDOW (window));
 
   MarkerEditor *editor = marker_window_get_active_editor (window);
-  gboolean status = TRUE;
+  gint response = GTK_RESPONSE_NO;
 
   if (marker_editor_has_unsaved_changes (editor))
-    status = show_unsaved_documents_warning (window);
+    response = show_unsaved_documents_warning (window);
 
-  if (status)
+  if (response == GTK_RESPONSE_YES)
+  {
+    marker_window_save_active_file (window);
+  }
+  if (response != GTK_RESPONSE_CANCEL)
   {
     GtkTreeIter iter;
     GtkTreeModel *model;
