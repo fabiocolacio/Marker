@@ -831,10 +831,12 @@ marker_window_init (MarkerWindow *window)
   marker_window_hide_sidebar (window);
   guint width = marker_prefs_get_window_width();
   guint height = marker_prefs_get_window_height();
-  if (width == 0) {
+  if (width == 0)
+  {
     marker_prefs_set_window_width(900);
   }
-  if (height == 0) {
+  if (height == 0)
+  {
     marker_prefs_set_window_height(600);
   }
   gtk_window_set_default_size(GTK_WINDOW(window), width, height);
