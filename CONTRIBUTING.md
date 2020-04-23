@@ -20,7 +20,7 @@ to upstream libraries such as *hoedown* and *charter* should try to match the st
 ### General
 
 * Indentations are done with 2 spaces
-* There is always a space before opening parenthases
+* There is always a space before opening parentheses
 * Curly braces are on their own lines
 * When declaring pointer-type variables, the ``*`` is paired with the variable name
 * Since we are working heavily with gnome libraries, use glib types and functions over C standards when possible
