@@ -1,6 +1,6 @@
 # <img width="30" src="data/com.github.fabiocolacio.marker.svg"/>Marker
 
-Marker is a markdown editor for linux made with Gtk+-3.0
+Marker is a markdown editor for linux made with GTK+-3.0
 
 **NOTE:** Issues regarding markdown parsing should go to the [scidown repo](https://github.com/mandarancio/scidown).
 
@@ -16,10 +16,10 @@ Marker is a markdown editor for linux made with Gtk+-3.0
   * External document inclusion
   * Equations, figures, table and listings with reference id and caption
   * Internal references
-* Extra scientific syntax of SciDwon [wiki](https://github.com/Mandarancio/scidown/wiki/)
-* TeX math rendering with [KaTeX](https://khan.github.io/KaTeX/) and [MathJax](mathjax.org/)
+* Extra scientific syntax of SciDown on its [wiki](https://github.com/Mandarancio/scidown/wiki/)
+* TeX math rendering with [KaTeX](https://khan.github.io/KaTeX/) or [MathJax](mathjax.org/)
 * Support for [mermaid](https://mermaidjs.github.io/) diagrams
-* Support for [charter](https://github.com/Mandarancio/charter/) for plot
+* Support for [charter](https://github.com/Mandarancio/charter/) for plotting
 * Syntax highlighting for code blocks with [highlight.js](https://highlightjs.org/)
 * Integrated sketch editor
 * Flexible export options with [pandoc](https://pandoc.org/)
@@ -29,7 +29,7 @@ Marker is a markdown editor for linux made with Gtk+-3.0
   * DOCX
 * Custom CSS themes
 * Custom syntax themes
-* Native Gtk+3 application
+* Native GTK+3 application
 
 ## Screenshots
 
