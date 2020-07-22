@@ -93,7 +93,6 @@ marker_exporter_export_pandoc(const char*        markdown,
         system(command);
       }
 
-      free(command);
       remove(ftmp);
     }
   }
