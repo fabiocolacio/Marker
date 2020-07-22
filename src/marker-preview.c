@@ -21,6 +21,7 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <libintl.h>
 
 #include <glib.h>
 #include <time.h>
@@ -451,7 +452,7 @@ marker_preview_print_pdf(MarkerPreview*     preview,
 
     gtk_print_settings_set(print_s, GTK_PRINT_SETTINGS_OUTPUT_FILE_FORMAT, "pdf");
     gtk_print_settings_set(print_s, GTK_PRINT_SETTINGS_OUTPUT_URI, uri);
-    gtk_print_settings_set(print_s, GTK_PRINT_SETTINGS_PRINTER, "Print to File");
+    gtk_print_settings_set(print_s, GTK_PRINT_SETTINGS_PRINTER, dgettext ("gtk30", "Print to File"));
 
     if (orientation == GTK_PAGE_ORIENTATION_PORTRAIT) {
       gtk_page_setup_set_paper_size(gtk_page_setup, gtk_paper_size);
