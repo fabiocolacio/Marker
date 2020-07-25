@@ -127,20 +127,23 @@ marker_exporter_show_export_dialog(MarkerWindow* window)
   gtk_file_filter_add_pattern (filter, "*.pdf");
   gtk_file_chooser_add_filter (chooser, filter);
 
-  filter = gtk_file_filter_new ();
-  gtk_file_filter_set_name (filter, "RTF");
-  gtk_file_filter_add_pattern (filter, "*.rtf");
-  gtk_file_chooser_add_filter (chooser, filter);
+  if (g_find_program_in_path ("pandoc"))
+  {
+    filter = gtk_file_filter_new ();
+    gtk_file_filter_set_name (filter, "RTF");
+    gtk_file_filter_add_pattern (filter, "*.rtf");
+    gtk_file_chooser_add_filter (chooser, filter);
 
-  filter = gtk_file_filter_new ();
-  gtk_file_filter_set_name (filter, "DOCX");
-  gtk_file_filter_add_pattern (filter, "*.docx");
-  gtk_file_chooser_add_filter (chooser, filter);
+    filter = gtk_file_filter_new ();
+    gtk_file_filter_set_name (filter, "DOCX");
+    gtk_file_filter_add_pattern (filter, "*.docx");
+    gtk_file_chooser_add_filter (chooser, filter);
 
-  filter = gtk_file_filter_new ();
-  gtk_file_filter_set_name (filter, "ODT");
-  gtk_file_filter_add_pattern (filter, "*.odt");
-  gtk_file_chooser_add_filter (chooser, filter);
+    filter = gtk_file_filter_new ();
+    gtk_file_filter_set_name (filter, "ODT");
+    gtk_file_filter_add_pattern (filter, "*.odt");
+    gtk_file_chooser_add_filter (chooser, filter);
+  }
 
   filter = gtk_file_filter_new ();
   gtk_file_filter_set_name (filter, "LATEX");
