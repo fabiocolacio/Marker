@@ -87,8 +87,7 @@ char* html_header(MarkerMathJSMode    mathjs_mode,
       } else
       {
         mathjs_css = g_strdup(" ");
-        mathjs_script = g_strdup_printf("<script src=\"file://%smathjax/MathJax.js?config=TeX-AMS_HTML\"></script>",
-                                        SCRIPTS_DIR);
+        mathjs_script = g_strdup_printf("<script src=\"file:///usr/share/javascript/mathjax/MathJax.js?config=TeX-AMS_HTML\"></script>");
         mathjs_auto = g_strdup(" ");
       }
       break;
