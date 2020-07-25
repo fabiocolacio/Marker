@@ -5,13 +5,14 @@ project('Marker', 'c',
 
 PREFIX = get_option('prefix')
 DATA_DIR = join_paths(PREFIX, 'share')
+LIBS_DIR = join_paths(PREFIX, 'lib')
 APP_DIR = join_paths(DATA_DIR, 'com.github.fabiocolacio.marker')
 ICONS_DIR = join_paths(APP_DIR, 'icons')
 STYLES_DIR = join_paths(APP_DIR, 'styles')
 COMMON_DIR = join_paths(APP_DIR, 'common')
 SCRIPTS_DIR = join_paths(APP_DIR, 'scripts')
 HIGHLIGHT_STYLES_DIR = join_paths(join_paths(SCRIPTS_DIR, 'highlight'),'styles')
-WEB_EXTENSIONS_DIRECTORY = join_paths(APP_DIR, 'extensions')
+WEB_EXTENSIONS_DIRECTORY = join_paths(LIBS_DIR, 'Marker.extensions')
 APPDATA_DIR = join_paths(DATA_DIR, 'metainfo')
 LOCALE_DIR = join_paths(PREFIX, get_option('localedir'))
 
