@@ -127,8 +127,11 @@ marker_exporter_show_export_dialog(MarkerWindow* window)
   gtk_file_filter_add_pattern (filter, "*.pdf");
   gtk_file_chooser_add_filter (chooser, filter);
 
-  if (g_find_program_in_path ("pandoc"))
+  gchar *pandoc_path = g_find_program_in_path ("pandoc");
+  if (pandoc_path != NULL)
   {
+    g_free (pandoc_path);
+    
     filter = gtk_file_filter_new ();
     gtk_file_filter_set_name (filter, "RTF");
     gtk_file_filter_add_pattern (filter, "*.rtf");
@@ -225,24 +228,27 @@ marker_exporter_show_export_dialog(MarkerWindow* window)
                                       filename);
         break;
 
-      default:
-        marker_exporter_export_pandoc(marker_markdown_to_html_with_css_inline(markdown,
-                                                                              len,
-                                                                              base_folder,
-                                                                              (marker_prefs_get_use_mathjs())
-                                                                                ? MATHJS_NET
-                                                                                : MATHJS_OFF,
-                                                                              (marker_prefs_get_use_highlight())
-                                                                                ? HIGHLIGHT_NET
-                                                                                : HIGHLIGHT_OFF,
-                                                                              (marker_prefs_get_use_mermaid()
-                                                                                ? MERMAID_NET
-                                                                                : MERMAID_OFF),
-                                                                              stylesheet_path, 
-                                                                              -1),
-                                      stylesheet_path,
-                                      filename);
-        break;
+    default:
+      {
+	char *html = marker_markdown_to_html_with_css_inline(markdown,
+							     len,
+							     base_folder,
+							     (marker_prefs_get_use_mathjs())
+							     ? MATHJS_NET
+							     : MATHJS_OFF,
+							     (marker_prefs_get_use_highlight())
+							     ? HIGHLIGHT_NET
+							     : HIGHLIGHT_OFF,
+							     (marker_prefs_get_use_mermaid()
+							      ? MERMAID_NET
+							      : MERMAID_OFF),
+							     stylesheet_path, 
+							     -1);
+	  
+        marker_exporter_export_pandoc(html, stylesheet_path, filename);
+
+	free(html);
+      }
     }
   }
 
