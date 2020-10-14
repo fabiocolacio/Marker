@@ -105,7 +105,7 @@ show_unsaved_documents_warning (MarkerWindow *window)
     g_autofree gchar *filename = g_file_get_basename (file);
     dialog = gtk_message_dialog_new_with_markup(GTK_WINDOW (window),
                                                 GTK_DIALOG_MODAL,
-                                                GTK_MESSAGE_QUESTION,
+                                                GTK_MESSAGE_WARNING,
                                                 GTK_BUTTONS_OK_CANCEL,
                                                 "<span weight='bold' size='larger'>"
                                                 "Discard changes to the document '%s'?"
@@ -118,7 +118,7 @@ show_unsaved_documents_warning (MarkerWindow *window)
   {
     dialog = gtk_message_dialog_new_with_markup(GTK_WINDOW (window),
                                                 GTK_DIALOG_MODAL,
-                                                GTK_MESSAGE_QUESTION,
+                                                GTK_MESSAGE_WARNING,
                                                 GTK_BUTTONS_OK_CANCEL,
                                                 "<span weight='bold' size='larger'>"
                                                 "Discard changes to the document?"
