@@ -93,6 +93,8 @@ get_current_iter(MarkerWindow *window,
 static gboolean
 show_unsaved_documents_warning (MarkerWindow *window)
 {
+  const gchar *cancel_text = "Cancel";
+  const gchar *ok_text = "Discard";
   g_assert (MARKER_IS_WINDOW (window));
 
   MarkerEditor *editor = marker_window_get_active_editor (window);
@@ -106,7 +108,7 @@ show_unsaved_documents_warning (MarkerWindow *window)
     dialog = gtk_message_dialog_new_with_markup(GTK_WINDOW (window),
                                                 GTK_DIALOG_MODAL,
                                                 GTK_MESSAGE_WARNING,
-                                                GTK_BUTTONS_OK_CANCEL,
+                                                GTK_BUTTONS_NONE,
                                                 "<span weight='bold' size='larger'>"
                                                 "Discard changes to the document '%s'?"
                                                 "</span>\n\n"
@@ -119,13 +121,20 @@ show_unsaved_documents_warning (MarkerWindow *window)
     dialog = gtk_message_dialog_new_with_markup(GTK_WINDOW (window),
                                                 GTK_DIALOG_MODAL,
                                                 GTK_MESSAGE_WARNING,
-                                                GTK_BUTTONS_OK_CANCEL,
+                                                GTK_BUTTONS_NONE,
                                                 "<span weight='bold' size='larger'>"
                                                 "Discard changes to the document?"
                                                 "</span>\n\n"
                                                 "The document has unsaved changes "
                                                 "that will be lost if it is closed now.");
   }
+
+  gtk_dialog_add_buttons(GTK_DIALOG (dialog),
+                         cancel_text,
+                         GTK_RESPONSE_CANCEL,
+                         ok_text,
+                         GTK_RESPONSE_OK,
+                         (char *)0);
 
   gint response = gtk_dialog_run(GTK_DIALOG(dialog));
 
