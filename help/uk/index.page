@@ -1,0 +1,28 @@
+<page xmlns="http://projectmallard.org/1.0/"
+      xmlns:its="http://www.w3.org/2005/11/its"
+      type="guide" id="index" style="2column">
+
+  <info>
+    <title type="text">Marker</title>
+    <include href="legal.xml" xmlns="http://www.w3.org/2001/XInclude"/>
+    <credit type="author">
+      <name>Fabio Colacio</name>
+      <years>2017-2018</years>
+    </credit>
+    <desc><app>Marker</app> - це простий, але надійний редактор Markdown для стільниці GNOME.</desc>
+  </info>
+
+  <title>
+  <media type="image" mime="image/png" src="figures/icon.png" its:translate="no"/>
+  Marker
+  </title>
+
+  <section id="start" style="2column">
+    <title>Перші кроки</title>
+  </section>
+
+  <section id="advanced" style="2column">
+    <title>Додаткові можливості</title>
+  </section>
+
+</page>

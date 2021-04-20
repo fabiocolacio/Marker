@@ -1,0 +1,120 @@
+<page xmlns="http://projectmallard.org/1.0/"
+      xmlns:its="http://www.w3.org/2005/11/its"
+      type="topic" style="task"
+      id="introduction">
+
+  <info>
+    <link type="guide" xref="index#start"/>
+    <include href="legal.xml" xmlns="http://www.w3.org/2001/XInclude"/>
+
+    <desc>Вступ до <app>Marker</app>, редактора markdown для GNOME.</desc>
+  </info>
+
+  <title>Вступ</title>
+
+  <p><app>Marker</app>надасть вам доступ до простого, але надійного
+способу редагування і перегляду файлів Markdown. Він динамічно показує
+попередній перегляд вашої роботи і підтримує додаткові можливості.</p>
+
+  <p>Файли легко відкривати, редагувати, переглядати і зберігати.
+Праворуч від вікна панель меню містить інші можливості, зокрема друк,
+налаштування масштаб або зміна параметрів.</p>
+
+  <media type="image" mime="image/png" height="400" src="figures/scrot.png">
+    <!--This is the alt text, as read out by screen readers and if the image is
+    missing. It also describes how to re-create the image.-->
+    <p>Taking notes in the dual-pane mode.</p>
+  </media>
+
+  <section id="mardown">
+    <title>Формат Markdown</title>
+
+    <p>Markdown - це легка мова розмітки з простим форматуванням тексту.
+    Текст залишається придатним для читання людиною, його просто буде
+    показати у HTML або у інших форматах файлів.</p>
+
+    <p>Ось кілька прикладів.</p>
+
+    <table rules="rows" frame="top bottom">
+    <thead>
+      <tr>
+        <td>
+          <p>Форматування</p>
+        </td>
+        <td>
+          <p>Синтаксис</p>
+        </td>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <p>*текст*</p>
+        </td>
+        <td>
+          <p>Похилий</p>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <p>**текст**</p>
+        </td>
+        <td>
+          <p>Жирний</p>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <p>`текст`</p>
+        </td>
+        <td>
+          <p>Моноширинний</p>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <p># заголовок</p>
+        </td>
+        <td>
+          <p>Заголовок 1-го рівня</p>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <p>###### заголовок</p>
+        </td>
+        <td>
+          <p>Заголовок 6-го рівня</p>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <p>- елемент</p>
+          <p>- елемент</p>
+        </td>
+        <td>
+          <p>Список з позначками</p>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <p>1. елемент</p>
+          <p>2. елемент</p>
+        </td>
+        <td>
+          <p>Список пронумерований</p>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <p>[посилання](http://example.org)</p>
+        </td>
+        <td>
+          <p>Посилання</p>
+        </td>
+      </tr>
+    </tbody>
+    </table>
+  </section>
+
+</page>

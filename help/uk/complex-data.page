@@ -1,0 +1,50 @@
+<page xmlns="http://projectmallard.org/1.0/"
+      xmlns:its="http://www.w3.org/2005/11/its"
+      type="topic" style="task"
+      id="complex-data">
+
+  <info>
+    <link type="guide" xref="index#advanced"/>
+    <include href="legal.xml" xmlns="http://www.w3.org/2001/XInclude"/>
+
+    <desc>Додайте до ваших документів графіки, математичні формули або діаграми.</desc>
+  </info>
+
+  <title>Вставлення складних даних</title>
+
+  <p><app>Marker</app> надає вам змогу використовувати модулі для
+відображення комплексних даних, зокрема графіки, математичні формули і
+діаграми. Документація мов, які використовуються цими модулями, не буде
+вказана тут, але її можна знайти в мережі. </p>
+
+  <p>Ці можливості можна увімкнути або вимкнути у вікні налаштувань.</p>
+
+  <section id="katex">
+    <title>KaTeX</title>
+    <p>Додайте чудові математичні формули до ваших документів у вигляді позначок за допомогою KaTeX:</p>
+    <p>Математичні формули можна писати у синтаксисі мови LaTeX між двома мітками <code>$$</code>.</p>
+    <media type="image" mime="image/png" height="400" src="figures/scrot1.png">
+      <!--This is the alt text, as read out by screen readers and if the image is
+      missing. It also describes how to re-create the image.-->
+      <p>Математична фомула, показана KaTeX.</p>
+    </media>
+  </section>
+
+  <section id="charter">
+    <title>Charter</title>
+    <p>Створіть лінійні графіки, стовпчикові графіки або графіки розсіювання у ваших документах за допомогою Charter.</p>
+    <media type="image" mime="image/png" height="400" src="figures/scrot2.png">
+      <!--This is the alt text, as read out by screen readers and if the image is
+      missing. It also describes how to re-create the image.-->
+      <p>Graph rendering using Charter.</p>
+    </media>
+    <p>Додаткові відомості <link href="https://github.com/Mandarancio/charter/">тут</link>.</p>
+  </section>
+
+  <section id="mermaid">
+    <title>Mermaid</title>
+    <p>Створюйте блоксхеми або діаграми у ваших документах використовуючи Mermaid</p>
+    <p>Додаткові відомості <link href="https://mermaidjs.github.io/">тут</link>.</p>
+  </section>
+
+</page>

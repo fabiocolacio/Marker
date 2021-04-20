@@ -1,0 +1,40 @@
+<page xmlns="http://projectmallard.org/1.0/"
+      xmlns:its="http://www.w3.org/2005/11/its"
+      type="topic" style="task"
+      id="settings">
+
+  <info>
+    <link type="guide" xref="index#advanced"/>
+    <include href="legal.xml" xmlns="http://www.w3.org/2001/XInclude"/>
+
+    <desc>Налаштуйте ваш улюблений редактор mardown.</desc>
+  </info>
+
+  <title>Налаштування</title>
+
+  <p>Декілька речей у Маркері можна змінювати.</p>
+
+  <section id="editor">
+    <title>Редактор</title>
+    <p>Ці параметри стосуються поведінки і вигляду редактора коду.</p>
+    <p>Можливості перевірки правопису, нумерації рядків або теми кольорів можна знайти у цьому розділі.</p>
+  </section>
+
+  <section id="preview">
+    <title>Попередній перегляд</title>
+    <p>Ці параметри стосуються поведінки і вигляду попереднього перегляду.</p>
+    <p>Можливості, на зразок теми CSS або <link xref="complex-data">комплексного показу даних</link>, стосуються цього розділу.</p>
+  </section>
+
+  <section id="window">
+    <title>Вікно</title>
+    <p>Загальне компонування програми можна встановити за допомогою діалогового вікна <gui>Налаштування</gui> або за допомогою меню головного вікна:</p>
+    <list>
+      <item><p>Режим лише редактора</p></item>
+      <item><p>Режим лише перегляду</p></item>
+      <item><p>Режим подвійного вікна</p></item>
+      <item><p>Режим подвійної панелі</p></item>
+    </list>
+  </section>
+
+</page>

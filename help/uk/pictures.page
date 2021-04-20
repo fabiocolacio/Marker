@@ -1,0 +1,34 @@
+<page xmlns="http://projectmallard.org/1.0/"
+      xmlns:its="http://www.w3.org/2005/11/its"
+      type="topic" style="task"
+      id="pictures">
+
+  <info>
+    <link type="guide" xref="index#start"/>
+    <include href="legal.xml" xmlns="http://www.w3.org/2001/XInclude"/>
+
+    <desc>Вставити зображення і малюнки до вашого документа.</desc>
+  </info>
+
+  <title>Зображення і малюнки</title>
+
+  <section>
+    <title>Вставити існуючий файл зображення</title>
+
+    <p>Ви можете вставити зображення до документа за допомогою синтаксису <code>![опис зображення](/path/of/the/picture)</code>. Шлях може бути абсолютним або відносним. Цей шлях також працює з URI файла.
+</p>
+  </section>
+  <section>
+    <title>Sketcher, інтегрований інструмент малювання</title>
+
+    <p><app>Маркер</app> містить <app>Скетчер</app> — діалогове вікно, за допомогою якого ви зможете додати базове зображення до вашого документа.</p>
+    <p>Ви можете запустити <app>Sketcher</app> натиснувши <key>Ctrl</key>+<key>D</key>.</p>
+    <media type="image" mime="image/png" height="400" src="figures/sketcher.png">
+      <!-- This is the alt text, as read out by screen readers and if the image is
+           missing. It also describes how to re-create the image. -->
+      <p>Використання Скетчера для математичних формул може не бути найкращою ідеєю.</p>
+    </media>
+    <p>Можна використовувати олівець, гумку і інструмент для вставлення тексту. Ви можете змінити колір або розмір цих інструментів.</p>
+    <p>Скасування і повторення дій можна робити за допомогою клавіатури.</p>
+  </section>
+</page>
