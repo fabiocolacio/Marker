@@ -92,7 +92,7 @@
               <object class="GtkShortcutsShortcut">
                 <property name="visible">1</property>
                 <property name="accelerator">&lt;ctrl&gt;d</property>
-                <property name="title" context="shortcut window">Draw a sketch</property>
+                <property name="title" translatable="yes" context="shortcut window">Draw a sketch</property>
               </object>
             </child>
             <child>
