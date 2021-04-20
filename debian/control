@@ -1,5 +1,5 @@
 Source: marker
-Section: unknown
+Section: gnome
 Priority: optional
 Maintainer: Olivier Bitsch <olivier.b@iabsis.com>
 Build-Depends: debhelper (>= 9), autotools-dev, libgtkspell3-3-dev, pandoc, libgtksourceview-3.0-dev, libgtk-3-dev (>= 3.20), libwebkit2gtk-4.0-dev, meson
@@ -10,6 +10,7 @@ Vcs-Git: https://github.com/fabiocolacio/Marker
 
 Package: marker
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}, libgtkspell3-3-0, libgtksourceview-3.0-1, libgtk-3-0 (>= 3.20), libwebkit2gtk-4.0-37
+Recommends: pandoc
 Description: A gtk3 markdown editor
- Marker is a markdown editor for linux made with Gtk+-3.0
+ Marker is a markdown editor for GNU/Linux made with Gtk+-3.0
