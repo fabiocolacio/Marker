@@ -1,0 +1,362 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-05-17 10:25+0200\n"
+"PO-Revision-Date: 2021-05-17 10:47+0200\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.4.3\n"
+"Last-Translator: \n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: es\n"
+
+#: src/resources/ui/marker-appmenu.ui:6
+#: src/resources/ui/marker-gear-popover.ui:88
+msgid "New Window"
+msgstr "Ventana nueva"
+
+#: src/resources/ui/marker-appmenu.ui:12
+#: src/resources/ui/marker-prefs-window.ui:46
+#: src/resources/ui/marker-gear-popover.ui:191
+msgid "Preferences"
+msgstr "Preferencias"
+
+#: src/resources/ui/marker-appmenu.ui:18
+#: src/resources/ui/marker-gear-popover.ui:199
+msgid "Keyboard Shortcuts"
+msgstr "Atajos de teclado"
+
+#: src/resources/ui/marker-appmenu.ui:22
+#: src/resources/ui/marker-gear-popover.ui:207
+msgid "Help"
+msgstr "Ayuda"
+
+#: src/resources/ui/marker-appmenu.ui:26
+msgid "About"
+msgstr "Acerca de"
+
+#: src/resources/ui/marker-appmenu.ui:30
+msgid "Quit"
+msgstr "Salir"
+
+#: src/resources/ui/marker-prefs-window.ui:31
+#: src/resources/ui/marker-gear-popover.ui:244
+msgid "Editor Only"
+msgstr "Sólo editor"
+
+#: src/resources/ui/marker-prefs-window.ui:34
+#: src/resources/ui/marker-gear-popover.ui:252
+msgid "Preview Only"
+msgstr "Sólo vista previa"
+
+#: src/resources/ui/marker-prefs-window.ui:37
+#: src/resources/ui/marker-gear-popover.ui:260
+msgid "Dual Pane"
+msgstr "Doble panel"
+
+#: src/resources/ui/marker-prefs-window.ui:40
+#: src/resources/ui/marker-gear-popover.ui:268
+msgid "Dual Window"
+msgstr "Doble ventana"
+
+#: src/resources/ui/marker-prefs-window.ui:71
+msgid "Show line numbers"
+msgstr "Mostrar números de línea"
+
+#: src/resources/ui/marker-prefs-window.ui:86
+msgid "Wrap text"
+msgstr "Envolver texto"
+
+#: src/resources/ui/marker-prefs-window.ui:105
+msgid "Show right margin at column: "
+msgstr "Mostrar el margen derecho en la columna: "
+
+#: src/resources/ui/marker-prefs-window.ui:145
+msgid "Check spelling for language: "
+msgstr "Comprobar la ortografía del idioma: "
+
+#: src/resources/ui/marker-prefs-window.ui:180
+msgid "Show spaces"
+msgstr "Mostrar espacios"
+
+#: src/resources/ui/marker-prefs-window.ui:197
+msgid "<b>Highlighting</b>"
+msgstr "<b>Resaltar</b>"
+
+#: src/resources/ui/marker-prefs-window.ui:209
+msgid "Highlight current line"
+msgstr "Resaltar la línea actual"
+
+#: src/resources/ui/marker-prefs-window.ui:229
+msgid "Highlight syntax with theme:"
+msgstr "Resaltar la sintaxis con el tema:"
+
+#: src/resources/ui/marker-prefs-window.ui:266
+msgid "<b>Tab Stops</b>"
+msgstr "<b>Paradas de pestañas</b>"
+
+#: src/resources/ui/marker-prefs-window.ui:278
+msgid "Enable automatic indentation"
+msgstr "Activar el sangrado automático"
+
+#: src/resources/ui/marker-prefs-window.ui:293
+msgid "Insert spaces instead of tabs"
+msgstr "Insertar espacios en lugar de tabulaciones"
+
+#: src/resources/ui/marker-prefs-window.ui:315
+msgid "Tabulation width:"
+msgstr "Ancho de la tabulación:"
+
+#: src/resources/ui/marker-prefs-window.ui:355
+msgid "Editor"
+msgstr "Editor"
+
+#: src/resources/ui/marker-prefs-window.ui:377
+msgid "Use css theme: "
+msgstr "Utilizar el tema css: "
+
+#: src/resources/ui/marker-prefs-window.ui:417
+msgid "Highlight code blocks with theme:"
+msgstr "Resaltar los bloques de código con el tema:"
+
+#: src/resources/ui/marker-prefs-window.ui:452
+msgid "Enable Mermaid"
+msgstr "Activar Mermaid"
+
+#: src/resources/ui/marker-prefs-window.ui:467
+msgid "Enable Charter"
+msgstr "Activar Charter"
+
+#: src/resources/ui/marker-prefs-window.ui:484
+msgid "<b>Math</b>"
+msgstr "<b>Math</b>"
+
+#: src/resources/ui/marker-prefs-window.ui:500
+msgid "Render Math"
+msgstr "Renderizar Math"
+
+#: src/resources/ui/marker-prefs-window.ui:545
+msgid "Preview"
+msgstr "Vista previa"
+
+#: src/resources/ui/marker-prefs-window.ui:570
+msgid "Default view mode: "
+msgstr "Modo de vista por defecto: "
+
+#: src/resources/ui/marker-prefs-window.ui:603
+msgid "Enable dark mode"
+msgstr "Activar modo oscuro"
+
+#: src/resources/ui/marker-prefs-window.ui:625
+msgid "Window"
+msgstr "Ventana"
+
+#: src/resources/ui/marker-shortcuts-window.ui:14
+msgctxt "shortcut window"
+msgid "Documents"
+msgstr "Documentos"
+
+#: src/resources/ui/marker-shortcuts-window.ui:19
+msgctxt "shortcut window"
+msgid "Create a new document"
+msgstr "Crear un documento nuevo"
+
+#: src/resources/ui/marker-shortcuts-window.ui:26
+msgctxt "shortcut window"
+msgid "Open a document"
+msgstr "Abrir un documento"
+
+#: src/resources/ui/marker-shortcuts-window.ui:33
+msgctxt "shortcut window"
+msgid "Open a document in a new window"
+msgstr "Abrir un documento en una ventana nueva"
+
+#: src/resources/ui/marker-shortcuts-window.ui:40
+msgctxt "shortcut window"
+msgid "Save the document"
+msgstr "Guardar el documento"
+
+#: src/resources/ui/marker-shortcuts-window.ui:47
+msgctxt "shortcut window"
+msgid "Save the document with a new filename"
+msgstr "Guardar el documento con un nombre de archivo nuevo"
+
+#: src/resources/ui/marker-shortcuts-window.ui:54
+msgctxt "shortcut window"
+msgid "Close the document"
+msgstr "Cerrar el documento"
+
+#: src/resources/ui/marker-shortcuts-window.ui:62
+msgctxt "shortcut window"
+msgid "Editing"
+msgstr "Edición"
+
+#: src/resources/ui/marker-shortcuts-window.ui:67
+msgctxt "shortcut window"
+msgid "Make selection bold"
+msgstr "Poner la selección en negrita"
+
+#: src/resources/ui/marker-shortcuts-window.ui:74
+msgctxt "shortcut window"
+msgid "Make selection italic"
+msgstr "Poner la selección en cursiva"
+
+#: src/resources/ui/marker-shortcuts-window.ui:81
+msgctxt "shortcut window"
+msgid "Make selection monospace"
+msgstr "Poner la selección en monoespaciada"
+
+#: src/resources/ui/marker-shortcuts-window.ui:88
+msgctxt "shortcut window"
+msgid "Insert link"
+msgstr "Insertar enlace"
+
+#: src/resources/ui/marker-shortcuts-window.ui:95
+msgctxt "shortcut window"
+msgid "Draw a sketch"
+msgstr "Dibujar un esquema"
+
+#: src/resources/ui/marker-shortcuts-window.ui:102
+msgctxt "shortcut window"
+msgid "Search in the document"
+msgstr "Buscar en el documento"
+
+#: src/resources/ui/marker-shortcuts-window.ui:110
+msgctxt "shortcut window"
+msgid "Tools"
+msgstr "Herramientas"
+
+#: src/resources/ui/marker-shortcuts-window.ui:115
+msgctxt "shortcut window"
+msgid "Print the document"
+msgstr "Imprimir el documento"
+
+#: src/resources/ui/marker-shortcuts-window.ui:123
+msgctxt "shortcut window"
+msgid "Window"
+msgstr "Ventana"
+
+#: src/resources/ui/marker-shortcuts-window.ui:128
+msgctxt "shortcut window"
+msgid "Open a new window"
+msgstr "Abrir una ventana nueva"
+
+#: src/resources/ui/marker-shortcuts-window.ui:135
+msgctxt "shortcut window"
+msgid "Close all windows"
+msgstr "Cerrar todas las ventanas"
+
+#: src/resources/ui/marker-shortcuts-window.ui:142
+msgctxt "shortcut window"
+msgid "Toggle fullscreen mode"
+msgstr "Conmutar al modo de pantalla completa"
+
+#: src/resources/ui/marker-shortcuts-window.ui:149
+msgctxt "shortcut window"
+msgid "Switch to editor-only mode"
+msgstr "Cambiar al modo de sólo editor"
+
+#: src/resources/ui/marker-shortcuts-window.ui:156
+msgctxt "shortcut window"
+msgid "Switch to preview-only mode"
+msgstr "Cambiar al modo de sólo vista previa"
+
+#: src/resources/ui/marker-shortcuts-window.ui:163
+msgctxt "shortcut window"
+msgid "Switch to dual-pane mode"
+msgstr "Cambiar al modo de doble panel"
+
+#: src/resources/ui/marker-shortcuts-window.ui:170
+msgctxt "shortcut window"
+msgid "Switch to dual-window mode"
+msgstr "Cambiar al modo de doble ventana"
+
+#: src/resources/ui/marker-shortcuts-window.ui:177
+msgctxt "shortcut window"
+msgid "Quit the application"
+msgstr "Salir de la aplicación"
+
+#: src/resources/ui/marker-sketcher-window.ui:112
+msgid "Sketcher"
+msgstr "Esquematizar"
+
+#: src/resources/ui/marker-sketcher-window.ui:123
+msgid "Pen Tool"
+msgstr "Herramienta de bolígrafo"
+
+#: src/resources/ui/marker-sketcher-window.ui:140
+msgid "Eraser Tool"
+msgstr "Herramienta de borrado"
+
+#: src/resources/ui/marker-sketcher-window.ui:157
+msgid "Text Insertion Tool"
+msgstr "Herramienta de inserción de texto"
+
+#: src/resources/ui/marker-sketcher-window.ui:179
+msgid "Color Chooser"
+msgstr "Selector de color"
+
+#: src/resources/ui/marker-sketcher-window.ui:271
+msgid "Insert the sketch"
+msgstr "Insertar el esquema"
+
+#: src/resources/ui/marker-sketcher-window.ui:286
+msgid "Cancel the sketch"
+msgstr "Cancelar el esquema"
+
+#: src/resources/ui/marker-gear-popover.ui:22
+msgid "Zoom Out"
+msgstr "Alejar"
+
+#: src/resources/ui/marker-gear-popover.ui:41
+msgid "Zoom Reset"
+msgstr "Restablecer zoom"
+
+#: src/resources/ui/marker-gear-popover.ui:54
+msgid "Zoom In"
+msgstr "Ampliar"
+
+#: src/resources/ui/marker-gear-popover.ui:112
+msgid "Fullscreen"
+msgstr "Pantalla completa"
+
+#: src/resources/ui/marker-gear-popover.ui:120
+msgid "Sidebar"
+msgstr "Barra lateral"
+
+#: src/resources/ui/marker-gear-popover.ui:136
+msgid "Save As…"
+msgstr "Guardar como…"
+
+#: src/resources/ui/marker-gear-popover.ui:144
+msgid "Export…"
+msgstr "Exportar…"
+
+#: src/resources/ui/marker-gear-popover.ui:152
+msgid "Print…"
+msgstr "Imprimir…"
+
+#: src/resources/ui/marker-gear-popover.ui:168
+#: src/resources/ui/marker-gear-popover.ui:234
+msgid "View Mode"
+msgstr "Modo de visualización"
+
+#: src/resources/ui/marker-gear-popover.ui:215
+msgid "About Marker"
+msgstr "Acerca de Marker"
+
+#: src/resources/ui/marker-headerbar.ui:20
+msgid "Open…"
+msgstr "Abrir…"
+
+#: src/resources/ui/marker-headerbar.ui:30
+msgid "Save"
+msgstr "Guardar"
