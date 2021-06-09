@@ -219,6 +219,11 @@ msgctxt "shortcut window"
 msgid "Insert link"
 msgstr "Füge Link ein"
 
+#: src/resources/ui/marker-shortcuts-window.ui:95
+msgctxt "shortcut window"
+msgid "Draw a sketch"
+msgstr "Erstelle eine Zeichnung"
+
 #: src/resources/ui/marker-shortcuts-window.ui:102
 msgctxt "shortcut window"
 msgid "Search in the document"
