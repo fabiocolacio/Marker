@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: marker\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-01-15 17:13+0100\n"
-"PO-Revision-Date: 2021-06-09 12:41+0200\n"
+"PO-Revision-Date: 2021-06-14 14:55+0200\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -376,3 +376,27 @@ msgstr "Übersetzer"
 #: src/marker-editor.c:248
 msgid "Untitled.md"
 msgstr "Unbenannt.md"
+
+#: src/marker-window.c:96
+msgid "Cancel"
+msgstr "Abbrechen"
+
+#: src/marker-window.c:96
+msgid "Discard"
+msgstr "Verwerfen"
+
+#: src/marker-window.c:113
+msgid "Discard changes to the document '%s'?"
+msgstr "Änderungen am Dokument '%s' verwerfen?"
+
+#: src/marker-window.c:115
+msgid "The document has unsaved changes "
+msgstr "Dieses Dokument hat ungesicherte Änderungen, "
+
+#: src/marker-window.c:116
+msgid "that will be lost if it is closed now."
+msgstr "die verloren gehen, wenn es geschlossen wird."
+
+#: src/marker-window.c:126
+msgid "Discard changes to the document?"
+msgstr "Änderungen am Dokument verwerfen?"
