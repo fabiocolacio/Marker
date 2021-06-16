@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: marker\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-01-15 17:13+0100\n"
-"PO-Revision-Date: 2021-06-16 12:12+0200\n"
+"PO-Revision-Date: 2021-06-16 12:20+0200\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -363,7 +363,7 @@ msgstr "Speichern"
 
 #: src/marker.c:184
 msgid "A markdown editor for GNOME"
-msgstr "Ein Markdown Editor für GNOME"
+msgstr "Ein Markdown-Editor für GNOME"
 
 #: src/marker.c:186
 msgid "Report bugs and ideas on github"
