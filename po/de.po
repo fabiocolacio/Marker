@@ -390,10 +390,12 @@ msgid "Discard changes to the document '%s'?"
 msgstr "Änderungen am Dokument '%s' verwerfen?"
 
 #: src/marker-window.c:115
+#: src/marker-window.c:128
 msgid "The document has unsaved changes "
 msgstr "Dieses Dokument hat ungesicherte Änderungen, "
 
 #: src/marker-window.c:116
+#: src/marker-window.c:129
 msgid "that will be lost if it is closed now."
 msgstr "die verloren gehen, wenn es geschlossen wird."
 
