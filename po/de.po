@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: marker\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-01-15 17:13+0100\n"
-"PO-Revision-Date: 2021-06-16 12:20+0200\n"
+"PO-Revision-Date: 2021-06-16 12:22+0200\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -400,3 +400,8 @@ msgstr "die verloren gehen, wenn es geschlossen wird."
 #: src/marker-window.c:126
 msgid "Discard changes to the document?"
 msgstr "Änderungen am Dokument verwerfen?"
+
+#: src/marker-window.c:751
+msgctxt "sidebar"
+msgid "Documents"
+msgstr "Dokumente"
