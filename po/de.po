@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: marker\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-01-15 17:13+0100\n"
-"PO-Revision-Date: 2021-06-14 14:55+0200\n"
+"PO-Revision-Date: 2021-06-16 12:00+0200\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -97,7 +97,7 @@ msgstr "Hebe aktuelle Zeile hervor"
 
 #: src/resources/ui/marker-prefs-window.ui:229
 msgid "Highlight syntax with theme:"
-msgstr "Hervorhebungssyntax mit Thema:"
+msgstr "Syntaxhervorhebung mit Farbschema:"
 
 #: src/resources/ui/marker-prefs-window.ui:266
 msgid "<b>Tab Stops</b>"
@@ -125,7 +125,7 @@ msgstr "Benutze CSS-Thema:"
 
 #: src/resources/ui/marker-prefs-window.ui:417
 msgid "Highlight code blocks with theme:"
-msgstr "Hervorhebung von Code-Blöcken mit Thema:"
+msgstr "Hervorhebung von Code-Blöcken mit Farbschema:"
 
 #: src/resources/ui/marker-prefs-window.ui:452
 msgid "Enable Mermaid"
