@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: marker\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-01-15 17:13+0100\n"
-"PO-Revision-Date: 2021-06-16 12:22+0200\n"
+"PO-Revision-Date: 2021-06-19 19:47+0200\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -371,7 +371,9 @@ msgstr "Berichte über Fehler und Ideen auf GitHub"
 
 #: src/marker.c:191
 msgid "translator-credits"
-msgstr "Übersetzer"
+msgstr ""
+"Tim Klocke https://github.com/taaem\n"
+"Sven Frotscher https://github.com/sven-frotscher"
 
 #: src/marker-editor.c:248
 msgid "Untitled.md"
@@ -389,13 +391,11 @@ msgstr "Verwerfen"
 msgid "Discard changes to the document '%s'?"
 msgstr "Änderungen am Dokument '%s' verwerfen?"
 
-#: src/marker-window.c:115
-#: src/marker-window.c:128
+#: src/marker-window.c:115 src/marker-window.c:128
 msgid "The document has unsaved changes "
 msgstr "Dieses Dokument hat ungesicherte Änderungen, "
 
-#: src/marker-window.c:116
-#: src/marker-window.c:129
+#: src/marker-window.c:116 src/marker-window.c:129
 msgid "that will be lost if it is closed now."
 msgstr "die verloren gehen, wenn es geschlossen wird."
 
