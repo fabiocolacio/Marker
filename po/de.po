@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: marker\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-01-15 17:13+0100\n"
-"PO-Revision-Date: 2019-07-14 20:18+0200\n"
+"PO-Revision-Date: 2021-06-19 19:47+0200\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.2.3\n"
-"Last-Translator: taaem <taaem@mailbox.org>\n"
+"X-Generator: Poedit 2.0.6\n"
+"Last-Translator: Sven Frotscher <sven.frotscher@gmail.com>\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Language: de\n"
 
@@ -60,16 +60,16 @@ msgstr "Nur Vorschau"
 #: src/resources/ui/marker-prefs-window.ui:37
 #: src/resources/ui/marker-gear-popover.ui:260
 msgid "Dual Pane"
-msgstr "Doppel Panel"
+msgstr "Doppel-Panel"
 
 #: src/resources/ui/marker-prefs-window.ui:40
 #: src/resources/ui/marker-gear-popover.ui:268
 msgid "Dual Window"
-msgstr "Doppel Fester"
+msgstr "Doppel-Fenster"
 
 #: src/resources/ui/marker-prefs-window.ui:71
 msgid "Show line numbers"
-msgstr "Zeige Zeilennummer"
+msgstr "Zeige Zeilennummern"
 
 #: src/resources/ui/marker-prefs-window.ui:86
 msgid "Wrap text"
@@ -89,7 +89,7 @@ msgstr "Zeige Leerzeichen"
 
 #: src/resources/ui/marker-prefs-window.ui:197
 msgid "<b>Highlighting</b>"
-msgstr "<b>Hervorhebung:</b>"
+msgstr "<b>Hervorhebung</b>"
 
 #: src/resources/ui/marker-prefs-window.ui:209
 msgid "Highlight current line"
@@ -97,7 +97,7 @@ msgstr "Hebe aktuelle Zeile hervor"
 
 #: src/resources/ui/marker-prefs-window.ui:229
 msgid "Highlight syntax with theme:"
-msgstr "Hervorhebungssyntax mit Thema:"
+msgstr "Syntaxhervorhebung mit Farbschema:"
 
 #: src/resources/ui/marker-prefs-window.ui:266
 msgid "<b>Tab Stops</b>"
@@ -121,15 +121,15 @@ msgstr "Editor"
 
 #: src/resources/ui/marker-prefs-window.ui:377
 msgid "Use css theme: "
-msgstr "Benutze CSS-Thema"
+msgstr "Benutze CSS-Thema:"
 
 #: src/resources/ui/marker-prefs-window.ui:417
 msgid "Highlight code blocks with theme:"
-msgstr "Hervorhebung von Code-Blöcken mit Thema:"
+msgstr "Hervorhebung von Code-Blöcken mit Farbschema:"
 
 #: src/resources/ui/marker-prefs-window.ui:452
 msgid "Enable Mermaid"
-msgstr "Aktiviere Meerjungfrau"
+msgstr "Aktiviere Mermaid"
 
 #: src/resources/ui/marker-prefs-window.ui:467
 msgid "Enable Charter"
@@ -141,7 +141,7 @@ msgstr "<b>Mathematik</b>"
 
 #: src/resources/ui/marker-prefs-window.ui:500
 msgid "Render Math"
-msgstr "Render Mathematik"
+msgstr "Mathematik rendern"
 
 #: src/resources/ui/marker-prefs-window.ui:545
 msgid "Preview"
@@ -212,12 +212,17 @@ msgstr "Kursive Schrift für Auswahl"
 #: src/resources/ui/marker-shortcuts-window.ui:81
 msgctxt "shortcut window"
 msgid "Make selection monospace"
-msgstr "Monospace Schrift für Auswahl"
+msgstr "Monospace-Schrift für Auswahl"
 
 #: src/resources/ui/marker-shortcuts-window.ui:88
 msgctxt "shortcut window"
 msgid "Insert link"
 msgstr "Füge Link ein"
+
+#: src/resources/ui/marker-shortcuts-window.ui:95
+msgctxt "shortcut window"
+msgid "Draw a sketch"
+msgstr "Erstelle eine Zeichnung"
 
 #: src/resources/ui/marker-shortcuts-window.ui:102
 msgctxt "shortcut window"
@@ -281,7 +286,7 @@ msgstr "Beende die Anwendung"
 
 #: src/resources/ui/marker-sketcher-window.ui:112
 msgid "Sketcher"
-msgstr "Zeichner"
+msgstr "Zeichnen"
 
 #: src/resources/ui/marker-sketcher-window.ui:123
 msgid "Pen Tool"
@@ -301,11 +306,11 @@ msgstr "Farbwähler"
 
 #: src/resources/ui/marker-sketcher-window.ui:271
 msgid "Insert the sketch"
-msgstr "Einfügen"
+msgstr "Zeichnung einfügen"
 
 #: src/resources/ui/marker-sketcher-window.ui:286
 msgid "Cancel the sketch"
-msgstr "Abbrechen"
+msgstr "Zeichnung abbrechen"
 
 #: src/resources/ui/marker-gear-popover.ui:22
 msgid "Zoom Out"
@@ -321,7 +326,7 @@ msgstr "Vergrößern"
 
 #: src/resources/ui/marker-gear-popover.ui:112
 msgid "Fullscreen"
-msgstr "Vollbildschirm"
+msgstr "Vollbild"
 
 #: src/resources/ui/marker-gear-popover.ui:120
 msgid "Sidebar"
@@ -333,7 +338,7 @@ msgstr "Speichern unter..."
 
 #: src/resources/ui/marker-gear-popover.ui:144
 msgid "Export…"
-msgstr "Exportieren"
+msgstr "Exportieren..."
 
 #: src/resources/ui/marker-gear-popover.ui:152
 msgid "Print…"
@@ -358,7 +363,7 @@ msgstr "Speichern"
 
 #: src/marker.c:184
 msgid "A markdown editor for GNOME"
-msgstr "Ein Markdown Editor für GNOME"
+msgstr "Ein Markdown-Editor für GNOME"
 
 #: src/marker.c:186
 msgid "Report bugs and ideas on github"
@@ -366,8 +371,39 @@ msgstr "Berichte über Fehler und Ideen auf GitHub"
 
 #: src/marker.c:191
 msgid "translator-credits"
-msgstr "Übersetzer"
+msgstr ""
+"Tim Klocke https://github.com/taaem\n"
+"Sven Frotscher https://github.com/sven-frotscher"
 
 #: src/marker-editor.c:248
 msgid "Untitled.md"
 msgstr "Unbenannt.md"
+
+#: src/marker-window.c:96
+msgid "Cancel"
+msgstr "Abbrechen"
+
+#: src/marker-window.c:96
+msgid "Discard"
+msgstr "Verwerfen"
+
+#: src/marker-window.c:113
+msgid "Discard changes to the document '%s'?"
+msgstr "Änderungen am Dokument '%s' verwerfen?"
+
+#: src/marker-window.c:115 src/marker-window.c:128
+msgid "The document has unsaved changes "
+msgstr "Dieses Dokument hat ungesicherte Änderungen, "
+
+#: src/marker-window.c:116 src/marker-window.c:129
+msgid "that will be lost if it is closed now."
+msgstr "die verloren gehen, wenn es geschlossen wird."
+
+#: src/marker-window.c:126
+msgid "Discard changes to the document?"
+msgstr "Änderungen am Dokument verwerfen?"
+
+#: src/marker-window.c:751
+msgctxt "sidebar"
+msgid "Documents"
+msgstr "Dokumente"

@@ -7,3 +7,4 @@ src/resources/ui/marker-window-main-view.ui
 src/resources/ui/marker-headerbar.ui
 src/marker.c
 src/marker-editor.c
+src/marker-window.c
