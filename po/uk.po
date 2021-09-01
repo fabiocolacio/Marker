@@ -1,409 +1,373 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the marker package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
 msgid ""
 msgstr ""
 "Project-Id-Version: marker\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-01-15 17:13+0100\n"
-"PO-Revision-Date: 2021-06-19 19:47+0200\n"
-"Language-Team: \n"
+"POT-Creation-Date: 2021-03-15 19:30+0200\n"
+"PO-Revision-Date: 2021-03-15 18:53+0200\n"
+"Last-Translator: Volodymyr M. Lisivka <vlisivka@gmail.com>\n"
+"Language-Team: Ukrainian http://linux.org.ua\n"
+"Language: uk\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.0.6\n"
-"Last-Translator: Sven Frotscher <sven.frotscher@gmail.com>\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"Language: de\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<12 || n%100>14) ? 1 : 2);\n"
 
 #: src/resources/ui/marker-appmenu.ui:6
 #: src/resources/ui/marker-gear-popover.ui:88
 msgid "New Window"
-msgstr "Neues Fenster"
+msgstr "Нове вікно"
 
 #: src/resources/ui/marker-appmenu.ui:12
 #: src/resources/ui/marker-prefs-window.ui:46
-#: src/resources/ui/marker-gear-popover.ui:183
+#: src/resources/ui/marker-gear-popover.ui:191
 msgid "Preferences"
-msgstr "Einstellungen"
+msgstr "Параметри"
 
 #: src/resources/ui/marker-appmenu.ui:18
 #: src/resources/ui/marker-gear-popover.ui:199
 msgid "Keyboard Shortcuts"
-msgstr "Tastenkombinationen"
+msgstr "Клавіатурні скорочення"
 
 #: src/resources/ui/marker-appmenu.ui:22
 #: src/resources/ui/marker-gear-popover.ui:207
 msgid "Help"
-msgstr "Hilfe"
+msgstr "Довідка"
 
 #: src/resources/ui/marker-appmenu.ui:26
 msgid "About"
-msgstr "Über"
+msgstr "Про програму"
 
 #: src/resources/ui/marker-appmenu.ui:30
 msgid "Quit"
-msgstr "Beenden"
+msgstr "Завершити"
 
 #: src/resources/ui/marker-prefs-window.ui:31
 #: src/resources/ui/marker-gear-popover.ui:244
 msgid "Editor Only"
-msgstr "Nur Editor"
+msgstr "Тільки редактор"
 
 #: src/resources/ui/marker-prefs-window.ui:34
 #: src/resources/ui/marker-gear-popover.ui:252
 msgid "Preview Only"
-msgstr "Nur Vorschau"
+msgstr "Тільки попередній перегляд"
 
 #: src/resources/ui/marker-prefs-window.ui:37
 #: src/resources/ui/marker-gear-popover.ui:260
 msgid "Dual Pane"
-msgstr "Doppel-Panel"
+msgstr "Подвійна панель"
 
 #: src/resources/ui/marker-prefs-window.ui:40
 #: src/resources/ui/marker-gear-popover.ui:268
 msgid "Dual Window"
-msgstr "Doppel-Fenster"
+msgstr "Подвійне вікно"
 
 #: src/resources/ui/marker-prefs-window.ui:71
 msgid "Show line numbers"
-msgstr "Zeige Zeilennummern"
+msgstr "Показати номери рядків"
 
 #: src/resources/ui/marker-prefs-window.ui:86
 msgid "Wrap text"
-msgstr "Zeilenumbruch"
+msgstr "Переносити текст"
 
 #: src/resources/ui/marker-prefs-window.ui:105
 msgid "Show right margin at column: "
-msgstr "Zeige rechten Rand bei Spalte: "
+msgstr "Показувати праве поле на стовпці №: "
 
 #: src/resources/ui/marker-prefs-window.ui:145
 msgid "Check spelling for language: "
-msgstr "Prüfe die Rechtschreibung für Sprache: "
+msgstr "Перевірити правопис для мови:"
 
 #: src/resources/ui/marker-prefs-window.ui:180
 msgid "Show spaces"
-msgstr "Zeige Leerzeichen"
+msgstr "Показувати пробіли"
 
 #: src/resources/ui/marker-prefs-window.ui:197
 msgid "<b>Highlighting</b>"
-msgstr "<b>Hervorhebung</b>"
+msgstr "<b>Підсвітка синтаксису</b>"
 
 #: src/resources/ui/marker-prefs-window.ui:209
 msgid "Highlight current line"
-msgstr "Hebe aktuelle Zeile hervor"
+msgstr "Підсвічувати поточний рядок"
 
 #: src/resources/ui/marker-prefs-window.ui:229
 msgid "Highlight syntax with theme:"
-msgstr "Syntaxhervorhebung mit Farbschema:"
+msgstr "Підсвічувати синтакс темою:"
 
 #: src/resources/ui/marker-prefs-window.ui:266
 msgid "<b>Tab Stops</b>"
-msgstr "<b>Tabulator</b>"
+msgstr "<b>Табстопи</b>"
 
 #: src/resources/ui/marker-prefs-window.ui:278
 msgid "Enable automatic indentation"
-msgstr "Aktiviere automatische Einrückung"
+msgstr "Дозволити автоматичні відступи"
 
 #: src/resources/ui/marker-prefs-window.ui:293
 msgid "Insert spaces instead of tabs"
-msgstr "Füge Leerzeichen statt Tabs ein"
+msgstr "Вставляти пробіли замість табуляцій"
 
 #: src/resources/ui/marker-prefs-window.ui:315
 msgid "Tabulation width:"
-msgstr "Tabulatorenbreite:"
+msgstr "Ширина табуляції:"
 
 #: src/resources/ui/marker-prefs-window.ui:355
 msgid "Editor"
-msgstr "Editor"
+msgstr "Редактор"
 
 #: src/resources/ui/marker-prefs-window.ui:377
 msgid "Use css theme: "
-msgstr "Benutze CSS-Thema:"
+msgstr "Використовувати css тему: "
 
 #: src/resources/ui/marker-prefs-window.ui:417
 msgid "Highlight code blocks with theme:"
-msgstr "Hervorhebung von Code-Blöcken mit Farbschema:"
+msgstr "Підсвічувати блоки коду темою:"
 
 #: src/resources/ui/marker-prefs-window.ui:452
 msgid "Enable Mermaid"
-msgstr "Aktiviere Mermaid"
+msgstr "Увімкнути Mermaid"
 
 #: src/resources/ui/marker-prefs-window.ui:467
 msgid "Enable Charter"
-msgstr "Aktiviere Charter"
+msgstr "Увімкнути графіки Charter"
 
 #: src/resources/ui/marker-prefs-window.ui:484
 msgid "<b>Math</b>"
-msgstr "<b>Mathematik</b>"
+msgstr "<b>Математик</b>"
 
 #: src/resources/ui/marker-prefs-window.ui:500
 msgid "Render Math"
-msgstr "Mathematik rendern"
+msgstr "Малювати математику"
 
 #: src/resources/ui/marker-prefs-window.ui:545
 msgid "Preview"
-msgstr "Vorschau"
+msgstr "Перегляд"
 
 #: src/resources/ui/marker-prefs-window.ui:570
 msgid "Default view mode: "
-msgstr "Voreingestellter Darstellungsmodus: "
+msgstr "Типовий режим перегляду: "
 
 #: src/resources/ui/marker-prefs-window.ui:603
 msgid "Enable dark mode"
-msgstr "Aktiviere Dunkelmodus"
+msgstr "Увімкнути темний режим"
 
 #: src/resources/ui/marker-prefs-window.ui:625
 msgid "Window"
-msgstr "Fenster"
+msgstr "Вікно"
 
 #: src/resources/ui/marker-shortcuts-window.ui:14
 msgctxt "shortcut window"
 msgid "Documents"
-msgstr "Dokumente"
+msgstr "Документи"
 
 #: src/resources/ui/marker-shortcuts-window.ui:19
 msgctxt "shortcut window"
 msgid "Create a new document"
-msgstr "Erstelle ein neues Dokument"
+msgstr "Створити новий документ"
 
 #: src/resources/ui/marker-shortcuts-window.ui:26
 msgctxt "shortcut window"
 msgid "Open a document"
-msgstr "Öffne ein Dokument"
+msgstr "Відкрити документ"
 
 #: src/resources/ui/marker-shortcuts-window.ui:33
 msgctxt "shortcut window"
 msgid "Open a document in a new window"
-msgstr "Öffne ein Dokument in einem neuen Fenster"
+msgstr "Відкрити документ у новому вікні"
 
 #: src/resources/ui/marker-shortcuts-window.ui:40
 msgctxt "shortcut window"
 msgid "Save the document"
-msgstr "Speichere das Dokument"
+msgstr "Зберегти документ"
 
 #: src/resources/ui/marker-shortcuts-window.ui:47
 msgctxt "shortcut window"
 msgid "Save the document with a new filename"
-msgstr "Speichere das Dokument mit einem neuen Dateinamen"
+msgstr "Зберегти документ з новою назвою файла"
 
 #: src/resources/ui/marker-shortcuts-window.ui:54
 msgctxt "shortcut window"
 msgid "Close the document"
-msgstr "Schließe das Dokument"
+msgstr "Закрити документ"
 
 #: src/resources/ui/marker-shortcuts-window.ui:62
 msgctxt "shortcut window"
 msgid "Editing"
-msgstr "Bearbeitung"
+msgstr "Редагування"
 
 #: src/resources/ui/marker-shortcuts-window.ui:67
 msgctxt "shortcut window"
 msgid "Make selection bold"
-msgstr "Fette Schrift für Auswahl"
+msgstr "Зробити вибране жирним"
 
 #: src/resources/ui/marker-shortcuts-window.ui:74
 msgctxt "shortcut window"
 msgid "Make selection italic"
-msgstr "Kursive Schrift für Auswahl"
+msgstr "Зробити вибране курсивом"
 
 #: src/resources/ui/marker-shortcuts-window.ui:81
 msgctxt "shortcut window"
 msgid "Make selection monospace"
-msgstr "Monospace-Schrift für Auswahl"
+msgstr "Зробити вибране моноширинним"
 
 #: src/resources/ui/marker-shortcuts-window.ui:88
 msgctxt "shortcut window"
 msgid "Insert link"
-msgstr "Füge Link ein"
+msgstr "Вставити посилання"
 
 #: src/resources/ui/marker-shortcuts-window.ui:95
 msgctxt "shortcut window"
 msgid "Draw a sketch"
-msgstr "Erstelle eine Zeichnung"
+msgstr "Намалювати зображення"
 
 #: src/resources/ui/marker-shortcuts-window.ui:102
 msgctxt "shortcut window"
 msgid "Search in the document"
-msgstr "Suche im Dokument"
+msgstr "Пошук у документі"
 
 #: src/resources/ui/marker-shortcuts-window.ui:110
 msgctxt "shortcut window"
 msgid "Tools"
-msgstr "Werkzeuge"
+msgstr "Інструменти"
 
 #: src/resources/ui/marker-shortcuts-window.ui:115
 msgctxt "shortcut window"
 msgid "Print the document"
-msgstr "Drucke das Dokument"
+msgstr "Друкувати документ"
 
 #: src/resources/ui/marker-shortcuts-window.ui:123
 msgctxt "shortcut window"
 msgid "Window"
-msgstr "Fenster"
+msgstr "Вікно"
 
 #: src/resources/ui/marker-shortcuts-window.ui:128
 msgctxt "shortcut window"
 msgid "Open a new window"
-msgstr "Öffne ein neues Fenster"
+msgstr "Відкрити нове вікно"
 
 #: src/resources/ui/marker-shortcuts-window.ui:135
 msgctxt "shortcut window"
 msgid "Close all windows"
-msgstr "Schließe alle Fenster"
+msgstr "Закрити всі вікна"
 
 #: src/resources/ui/marker-shortcuts-window.ui:142
 msgctxt "shortcut window"
 msgid "Toggle fullscreen mode"
-msgstr "Schalte Vollbildmodus um"
+msgstr "Перемкнути повноекранний режим"
 
 #: src/resources/ui/marker-shortcuts-window.ui:149
 msgctxt "shortcut window"
 msgid "Switch to editor-only mode"
-msgstr "Wechsle in den Nur-Editor-Modus"
+msgstr "Перемкнути в режим тільки для редагування"
 
 #: src/resources/ui/marker-shortcuts-window.ui:156
 msgctxt "shortcut window"
 msgid "Switch to preview-only mode"
-msgstr "Wechsle in den Nur-Vorschau-Modus"
+msgstr "Перемкнути в режим тільки для попереднього перегляду"
 
 #: src/resources/ui/marker-shortcuts-window.ui:163
 msgctxt "shortcut window"
 msgid "Switch to dual-pane mode"
-msgstr "Wechsle in den Doppel-Panel-Modus"
+msgstr "Перемкнути на подвійні панелі"
 
 #: src/resources/ui/marker-shortcuts-window.ui:170
 msgctxt "shortcut window"
 msgid "Switch to dual-window mode"
-msgstr "Wechsle in den Doppel-Fenster-Modus"
+msgstr "Перемкнутися у режим двох вікон"
 
 #: src/resources/ui/marker-shortcuts-window.ui:177
 msgctxt "shortcut window"
 msgid "Quit the application"
-msgstr "Beende die Anwendung"
+msgstr "Завершити роботу програми"
 
 #: src/resources/ui/marker-sketcher-window.ui:112
 msgid "Sketcher"
-msgstr "Zeichnen"
+msgstr "Мольберт"
 
 #: src/resources/ui/marker-sketcher-window.ui:123
 msgid "Pen Tool"
-msgstr "Stift-Werkzeug"
+msgstr "Олівець"
 
 #: src/resources/ui/marker-sketcher-window.ui:140
 msgid "Eraser Tool"
-msgstr "Radier-Werkzeug"
+msgstr "Гумка"
 
 #: src/resources/ui/marker-sketcher-window.ui:157
 msgid "Text Insertion Tool"
-msgstr "Text-Werkzeug"
+msgstr "Інструмент для вставки тексту"
 
 #: src/resources/ui/marker-sketcher-window.ui:179
 msgid "Color Chooser"
-msgstr "Farbwähler"
+msgstr "Вибір кольорів"
 
 #: src/resources/ui/marker-sketcher-window.ui:271
 msgid "Insert the sketch"
-msgstr "Zeichnung einfügen"
+msgstr "Вставити зображення"
 
 #: src/resources/ui/marker-sketcher-window.ui:286
 msgid "Cancel the sketch"
-msgstr "Zeichnung abbrechen"
+msgstr "Скасувати зображення"
 
 #: src/resources/ui/marker-gear-popover.ui:22
 msgid "Zoom Out"
-msgstr "Verkleinern"
+msgstr "Зменшити"
 
 #: src/resources/ui/marker-gear-popover.ui:41
 msgid "Zoom Reset"
-msgstr "Größe zurücksetzen"
+msgstr "Відновити масштаб"
 
 #: src/resources/ui/marker-gear-popover.ui:54
 msgid "Zoom In"
-msgstr "Vergrößern"
+msgstr "Збільшити"
 
 #: src/resources/ui/marker-gear-popover.ui:112
 msgid "Fullscreen"
-msgstr "Vollbild"
+msgstr "На повний екран"
 
 #: src/resources/ui/marker-gear-popover.ui:120
 msgid "Sidebar"
-msgstr "Seitenleiste"
+msgstr "Бічна панель"
 
 #: src/resources/ui/marker-gear-popover.ui:136
 msgid "Save As…"
-msgstr "Speichern unter..."
+msgstr "Зберегти як…"
 
 #: src/resources/ui/marker-gear-popover.ui:144
 msgid "Export…"
-msgstr "Exportieren..."
+msgstr "Експортувати…"
 
 #: src/resources/ui/marker-gear-popover.ui:152
 msgid "Print…"
-msgstr "Drucken..."
+msgstr "Друкувати…"
 
 #: src/resources/ui/marker-gear-popover.ui:168
 #: src/resources/ui/marker-gear-popover.ui:234
 msgid "View Mode"
-msgstr "Darstellungsmodus"
+msgstr "Режим перегляду"
 
 #: src/resources/ui/marker-gear-popover.ui:215
 msgid "About Marker"
-msgstr "Über Marker"
+msgstr "Про Marker"
 
 #: src/resources/ui/marker-headerbar.ui:20
 msgid "Open…"
-msgstr "Öffnen..."
+msgstr "Відкрити…"
 
 #: src/resources/ui/marker-headerbar.ui:30
 msgid "Save"
-msgstr "Speichern"
+msgstr "Зберегти"
 
 #: src/marker.c:184
 msgid "A markdown editor for GNOME"
-msgstr "Ein Markdown-Editor für GNOME"
+msgstr "Редактор Markdown для GNOME"
 
 #: src/marker.c:186
 msgid "Report bugs and ideas on github"
-msgstr "Berichte über Fehler und Ideen auf GitHub"
+msgstr "Повідомити про помилки та ідеї на github"
 
 #: src/marker.c:191
 msgid "translator-credits"
-msgstr ""
-"Tim Klocke https://github.com/taaem\n"
-"Sven Frotscher https://github.com/sven-frotscher"
+msgstr "Володимир Лісівка <vlisivka@gmail.com>"
 
 #: src/marker-editor.c:248
 msgid "Untitled.md"
-msgstr "Unbenannt.md"
-
-#: src/marker-window.c:96
-msgid "Cancel"
-msgstr "Abbrechen"
-
-#: src/marker-window.c:96
-msgid "Discard"
-msgstr "Verwerfen"
-
-#: src/marker-window.c:113
-msgid "Discard changes to the document '%s'?"
-msgstr "Änderungen am Dokument '%s' verwerfen?"
-
-#: src/marker-window.c:115 src/marker-window.c:128
-msgid "The document has unsaved changes "
-msgstr "Dieses Dokument hat ungesicherte Änderungen, "
-
-#: src/marker-window.c:116 src/marker-window.c:129
-msgid "that will be lost if it is closed now."
-msgstr "die verloren gehen, wenn es geschlossen wird."
-
-#: src/marker-window.c:126
-msgid "Discard changes to the document?"
-msgstr "Änderungen am Dokument verwerfen?"
-
-#: src/marker-window.c:751
-msgctxt "sidebar"
-msgid "Documents"
-msgstr "Dokumente"
+msgstr "Без назви.md"

@@ -2,408 +2,372 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the marker package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# liulitchi <xingzuo88@qq.com>, 2021.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: marker\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-01-15 17:13+0100\n"
-"PO-Revision-Date: 2021-06-19 19:47+0200\n"
-"Language-Team: \n"
+"POT-Creation-Date: 2021-08-09 21:13+0800\n"
+"PO-Revision-Date: 2021-08-09 21:48+0800\n"
+"Last-Translator: liulitchi <xingzuo88@qq.com>\n"
+"Language-Team: Chinese <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.0.6\n"
-"Last-Translator: Sven Frotscher <sven.frotscher@gmail.com>\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"Language: de\n"
+"X-Generator: Gtranslator 3.38.0\n"
+"Language: zh\n"
 
 #: src/resources/ui/marker-appmenu.ui:6
 #: src/resources/ui/marker-gear-popover.ui:88
 msgid "New Window"
-msgstr "Neues Fenster"
+msgstr "新窗口"
 
 #: src/resources/ui/marker-appmenu.ui:12
 #: src/resources/ui/marker-prefs-window.ui:46
 #: src/resources/ui/marker-gear-popover.ui:183
 msgid "Preferences"
-msgstr "Einstellungen"
+msgstr "偏好设置"
 
 #: src/resources/ui/marker-appmenu.ui:18
 #: src/resources/ui/marker-gear-popover.ui:199
 msgid "Keyboard Shortcuts"
-msgstr "Tastenkombinationen"
+msgstr "快捷键"
 
 #: src/resources/ui/marker-appmenu.ui:22
 #: src/resources/ui/marker-gear-popover.ui:207
 msgid "Help"
-msgstr "Hilfe"
+msgstr "帮助"
 
 #: src/resources/ui/marker-appmenu.ui:26
 msgid "About"
-msgstr "Über"
+msgstr "关于"
 
 #: src/resources/ui/marker-appmenu.ui:30
 msgid "Quit"
-msgstr "Beenden"
+msgstr "退出"
 
 #: src/resources/ui/marker-prefs-window.ui:31
 #: src/resources/ui/marker-gear-popover.ui:244
 msgid "Editor Only"
-msgstr "Nur Editor"
+msgstr "仅限编辑"
 
 #: src/resources/ui/marker-prefs-window.ui:34
 #: src/resources/ui/marker-gear-popover.ui:252
 msgid "Preview Only"
-msgstr "Nur Vorschau"
+msgstr "仅限预览"
 
 #: src/resources/ui/marker-prefs-window.ui:37
 #: src/resources/ui/marker-gear-popover.ui:260
 msgid "Dual Pane"
-msgstr "Doppel-Panel"
+msgstr "双面板"
 
 #: src/resources/ui/marker-prefs-window.ui:40
 #: src/resources/ui/marker-gear-popover.ui:268
 msgid "Dual Window"
-msgstr "Doppel-Fenster"
+msgstr "双窗口"
 
 #: src/resources/ui/marker-prefs-window.ui:71
 msgid "Show line numbers"
-msgstr "Zeige Zeilennummern"
+msgstr "显示行号"
 
 #: src/resources/ui/marker-prefs-window.ui:86
 msgid "Wrap text"
-msgstr "Zeilenumbruch"
+msgstr "换行"
 
 #: src/resources/ui/marker-prefs-window.ui:105
 msgid "Show right margin at column: "
-msgstr "Zeige rechten Rand bei Spalte: "
+msgstr "显示当列右边距："
 
 #: src/resources/ui/marker-prefs-window.ui:145
 msgid "Check spelling for language: "
-msgstr "Prüfe die Rechtschreibung für Sprache: "
+msgstr "检查单词拼写："
 
 #: src/resources/ui/marker-prefs-window.ui:180
 msgid "Show spaces"
-msgstr "Zeige Leerzeichen"
+msgstr "显示空间"
 
 #: src/resources/ui/marker-prefs-window.ui:197
 msgid "<b>Highlighting</b>"
-msgstr "<b>Hervorhebung</b>"
+msgstr "<b>高亮</b>"
 
 #: src/resources/ui/marker-prefs-window.ui:209
 msgid "Highlight current line"
-msgstr "Hebe aktuelle Zeile hervor"
+msgstr "当前行高亮"
 
 #: src/resources/ui/marker-prefs-window.ui:229
 msgid "Highlight syntax with theme:"
-msgstr "Syntaxhervorhebung mit Farbschema:"
+msgstr "突出显示主题的语法："
 
 #: src/resources/ui/marker-prefs-window.ui:266
 msgid "<b>Tab Stops</b>"
-msgstr "<b>Tabulator</b>"
+msgstr "<b>制表位</b>"
 
 #: src/resources/ui/marker-prefs-window.ui:278
 msgid "Enable automatic indentation"
-msgstr "Aktiviere automatische Einrückung"
+msgstr "启用自动缩进"
 
 #: src/resources/ui/marker-prefs-window.ui:293
 msgid "Insert spaces instead of tabs"
-msgstr "Füge Leerzeichen statt Tabs ein"
+msgstr "插入空格，而非制表符"
 
 #: src/resources/ui/marker-prefs-window.ui:315
 msgid "Tabulation width:"
-msgstr "Tabulatorenbreite:"
+msgstr "制表宽度："
 
 #: src/resources/ui/marker-prefs-window.ui:355
 msgid "Editor"
-msgstr "Editor"
+msgstr "编辑器"
 
 #: src/resources/ui/marker-prefs-window.ui:377
 msgid "Use css theme: "
-msgstr "Benutze CSS-Thema:"
+msgstr "使用 CSS 主题："
 
 #: src/resources/ui/marker-prefs-window.ui:417
 msgid "Highlight code blocks with theme:"
-msgstr "Hervorhebung von Code-Blöcken mit Farbschema:"
+msgstr "突出显示主题的代码块："
 
 #: src/resources/ui/marker-prefs-window.ui:452
 msgid "Enable Mermaid"
-msgstr "Aktiviere Mermaid"
+msgstr "启用 Mermaid"
 
 #: src/resources/ui/marker-prefs-window.ui:467
 msgid "Enable Charter"
-msgstr "Aktiviere Charter"
+msgstr "启用 Charter"
 
 #: src/resources/ui/marker-prefs-window.ui:484
 msgid "<b>Math</b>"
-msgstr "<b>Mathematik</b>"
+msgstr "<b>Math</b>"
 
 #: src/resources/ui/marker-prefs-window.ui:500
 msgid "Render Math"
-msgstr "Mathematik rendern"
+msgstr "数学公式渲染"
 
 #: src/resources/ui/marker-prefs-window.ui:545
 msgid "Preview"
-msgstr "Vorschau"
+msgstr "预览"
 
 #: src/resources/ui/marker-prefs-window.ui:570
 msgid "Default view mode: "
-msgstr "Voreingestellter Darstellungsmodus: "
+msgstr "默认浏览模式："
 
 #: src/resources/ui/marker-prefs-window.ui:603
 msgid "Enable dark mode"
-msgstr "Aktiviere Dunkelmodus"
+msgstr "启用暗黑模式："
 
 #: src/resources/ui/marker-prefs-window.ui:625
 msgid "Window"
-msgstr "Fenster"
+msgstr "窗口"
 
 #: src/resources/ui/marker-shortcuts-window.ui:14
 msgctxt "shortcut window"
 msgid "Documents"
-msgstr "Dokumente"
+msgstr "文档"
 
 #: src/resources/ui/marker-shortcuts-window.ui:19
 msgctxt "shortcut window"
 msgid "Create a new document"
-msgstr "Erstelle ein neues Dokument"
+msgstr "创建新文档"
 
 #: src/resources/ui/marker-shortcuts-window.ui:26
 msgctxt "shortcut window"
 msgid "Open a document"
-msgstr "Öffne ein Dokument"
+msgstr "打开文档"
 
 #: src/resources/ui/marker-shortcuts-window.ui:33
 msgctxt "shortcut window"
 msgid "Open a document in a new window"
-msgstr "Öffne ein Dokument in einem neuen Fenster"
+msgstr "在新窗口打开某文档"
 
 #: src/resources/ui/marker-shortcuts-window.ui:40
 msgctxt "shortcut window"
 msgid "Save the document"
-msgstr "Speichere das Dokument"
+msgstr "保存文档"
 
 #: src/resources/ui/marker-shortcuts-window.ui:47
 msgctxt "shortcut window"
 msgid "Save the document with a new filename"
-msgstr "Speichere das Dokument mit einem neuen Dateinamen"
+msgstr "保存文档为一新文件名"
 
 #: src/resources/ui/marker-shortcuts-window.ui:54
 msgctxt "shortcut window"
 msgid "Close the document"
-msgstr "Schließe das Dokument"
+msgstr "关闭文档"
 
 #: src/resources/ui/marker-shortcuts-window.ui:62
 msgctxt "shortcut window"
 msgid "Editing"
-msgstr "Bearbeitung"
+msgstr "编辑"
 
 #: src/resources/ui/marker-shortcuts-window.ui:67
 msgctxt "shortcut window"
 msgid "Make selection bold"
-msgstr "Fette Schrift für Auswahl"
+msgstr "加粗所选文字"
 
 #: src/resources/ui/marker-shortcuts-window.ui:74
 msgctxt "shortcut window"
 msgid "Make selection italic"
-msgstr "Kursive Schrift für Auswahl"
+msgstr "所选文字斜体化"
 
 #: src/resources/ui/marker-shortcuts-window.ui:81
 msgctxt "shortcut window"
 msgid "Make selection monospace"
-msgstr "Monospace-Schrift für Auswahl"
+msgstr "所选文字等宽"
 
 #: src/resources/ui/marker-shortcuts-window.ui:88
 msgctxt "shortcut window"
 msgid "Insert link"
-msgstr "Füge Link ein"
-
-#: src/resources/ui/marker-shortcuts-window.ui:95
-msgctxt "shortcut window"
-msgid "Draw a sketch"
-msgstr "Erstelle eine Zeichnung"
+msgstr "插入链接"
 
 #: src/resources/ui/marker-shortcuts-window.ui:102
 msgctxt "shortcut window"
 msgid "Search in the document"
-msgstr "Suche im Dokument"
+msgstr "在文档中搜索"
 
 #: src/resources/ui/marker-shortcuts-window.ui:110
 msgctxt "shortcut window"
 msgid "Tools"
-msgstr "Werkzeuge"
+msgstr "工具"
 
 #: src/resources/ui/marker-shortcuts-window.ui:115
 msgctxt "shortcut window"
 msgid "Print the document"
-msgstr "Drucke das Dokument"
+msgstr "打印文档"
 
 #: src/resources/ui/marker-shortcuts-window.ui:123
 msgctxt "shortcut window"
 msgid "Window"
-msgstr "Fenster"
+msgstr "窗口"
 
 #: src/resources/ui/marker-shortcuts-window.ui:128
 msgctxt "shortcut window"
 msgid "Open a new window"
-msgstr "Öffne ein neues Fenster"
+msgstr "打开新窗口"
 
 #: src/resources/ui/marker-shortcuts-window.ui:135
 msgctxt "shortcut window"
 msgid "Close all windows"
-msgstr "Schließe alle Fenster"
+msgstr "关闭所有窗口"
 
 #: src/resources/ui/marker-shortcuts-window.ui:142
 msgctxt "shortcut window"
 msgid "Toggle fullscreen mode"
-msgstr "Schalte Vollbildmodus um"
+msgstr "切换为全屏模式"
 
 #: src/resources/ui/marker-shortcuts-window.ui:149
 msgctxt "shortcut window"
 msgid "Switch to editor-only mode"
-msgstr "Wechsle in den Nur-Editor-Modus"
+msgstr "转为仅限编辑模式"
 
 #: src/resources/ui/marker-shortcuts-window.ui:156
 msgctxt "shortcut window"
 msgid "Switch to preview-only mode"
-msgstr "Wechsle in den Nur-Vorschau-Modus"
+msgstr "转为仅限预览模式"
 
 #: src/resources/ui/marker-shortcuts-window.ui:163
 msgctxt "shortcut window"
 msgid "Switch to dual-pane mode"
-msgstr "Wechsle in den Doppel-Panel-Modus"
+msgstr "转为双面板模式"
 
 #: src/resources/ui/marker-shortcuts-window.ui:170
 msgctxt "shortcut window"
 msgid "Switch to dual-window mode"
-msgstr "Wechsle in den Doppel-Fenster-Modus"
+msgstr "转为双窗口模式"
 
 #: src/resources/ui/marker-shortcuts-window.ui:177
 msgctxt "shortcut window"
 msgid "Quit the application"
-msgstr "Beende die Anwendung"
+msgstr "关闭应用"
 
 #: src/resources/ui/marker-sketcher-window.ui:112
 msgid "Sketcher"
-msgstr "Zeichnen"
+msgstr "草稿"
 
 #: src/resources/ui/marker-sketcher-window.ui:123
 msgid "Pen Tool"
-msgstr "Stift-Werkzeug"
+msgstr "面板工具"
 
 #: src/resources/ui/marker-sketcher-window.ui:140
 msgid "Eraser Tool"
-msgstr "Radier-Werkzeug"
+msgstr "擦除工具"
 
 #: src/resources/ui/marker-sketcher-window.ui:157
 msgid "Text Insertion Tool"
-msgstr "Text-Werkzeug"
+msgstr "文本插入工具"
 
 #: src/resources/ui/marker-sketcher-window.ui:179
 msgid "Color Chooser"
-msgstr "Farbwähler"
+msgstr "颜色选项"
 
 #: src/resources/ui/marker-sketcher-window.ui:271
 msgid "Insert the sketch"
-msgstr "Zeichnung einfügen"
+msgstr "插入草稿"
 
 #: src/resources/ui/marker-sketcher-window.ui:286
 msgid "Cancel the sketch"
-msgstr "Zeichnung abbrechen"
+msgstr "取消草稿"
 
 #: src/resources/ui/marker-gear-popover.ui:22
 msgid "Zoom Out"
-msgstr "Verkleinern"
+msgstr "缩小"
 
 #: src/resources/ui/marker-gear-popover.ui:41
 msgid "Zoom Reset"
-msgstr "Größe zurücksetzen"
+msgstr "重置缩放"
 
 #: src/resources/ui/marker-gear-popover.ui:54
 msgid "Zoom In"
-msgstr "Vergrößern"
+msgstr "放大"
 
 #: src/resources/ui/marker-gear-popover.ui:112
 msgid "Fullscreen"
-msgstr "Vollbild"
+msgstr "全屏"
 
 #: src/resources/ui/marker-gear-popover.ui:120
 msgid "Sidebar"
-msgstr "Seitenleiste"
+msgstr "侧边栏"
 
 #: src/resources/ui/marker-gear-popover.ui:136
 msgid "Save As…"
-msgstr "Speichern unter..."
+msgstr "保存为..."
 
 #: src/resources/ui/marker-gear-popover.ui:144
 msgid "Export…"
-msgstr "Exportieren..."
+msgstr "导出为..."
 
 #: src/resources/ui/marker-gear-popover.ui:152
 msgid "Print…"
-msgstr "Drucken..."
+msgstr "打印..."
 
 #: src/resources/ui/marker-gear-popover.ui:168
 #: src/resources/ui/marker-gear-popover.ui:234
 msgid "View Mode"
-msgstr "Darstellungsmodus"
+msgstr "浏览模式"
 
 #: src/resources/ui/marker-gear-popover.ui:215
 msgid "About Marker"
-msgstr "Über Marker"
+msgstr "关于 Marker"
 
 #: src/resources/ui/marker-headerbar.ui:20
 msgid "Open…"
-msgstr "Öffnen..."
+msgstr "打开..."
 
 #: src/resources/ui/marker-headerbar.ui:30
 msgid "Save"
-msgstr "Speichern"
+msgstr "保存"
 
 #: src/marker.c:184
 msgid "A markdown editor for GNOME"
-msgstr "Ein Markdown-Editor für GNOME"
+msgstr "一款 Markdown 编辑器，来自 GNOME 团队"
 
 #: src/marker.c:186
 msgid "Report bugs and ideas on github"
-msgstr "Berichte über Fehler und Ideen auf GitHub"
+msgstr "在 github 上指出错误，或提交建议"
 
 #: src/marker.c:191
 msgid "translator-credits"
-msgstr ""
-"Tim Klocke https://github.com/taaem\n"
-"Sven Frotscher https://github.com/sven-frotscher"
+msgstr "翻译人员"
 
 #: src/marker-editor.c:248
 msgid "Untitled.md"
-msgstr "Unbenannt.md"
-
-#: src/marker-window.c:96
-msgid "Cancel"
-msgstr "Abbrechen"
-
-#: src/marker-window.c:96
-msgid "Discard"
-msgstr "Verwerfen"
-
-#: src/marker-window.c:113
-msgid "Discard changes to the document '%s'?"
-msgstr "Änderungen am Dokument '%s' verwerfen?"
-
-#: src/marker-window.c:115 src/marker-window.c:128
-msgid "The document has unsaved changes "
-msgstr "Dieses Dokument hat ungesicherte Änderungen, "
-
-#: src/marker-window.c:116 src/marker-window.c:129
-msgid "that will be lost if it is closed now."
-msgstr "die verloren gehen, wenn es geschlossen wird."
-
-#: src/marker-window.c:126
-msgid "Discard changes to the document?"
-msgstr "Änderungen am Dokument verwerfen?"
-
-#: src/marker-window.c:751
-msgctxt "sidebar"
-msgid "Documents"
-msgstr "Dokumente"
+msgstr "Untitled.md"

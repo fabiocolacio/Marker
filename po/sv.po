@@ -1,409 +1,373 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the marker package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Åke Engelbrektson <eson@svenskasprakfiler.se>, 2021.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: marker\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-01-15 17:13+0100\n"
-"PO-Revision-Date: 2021-06-19 19:47+0200\n"
+"PO-Revision-Date: 2021-03-28 11:40+0200\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.0.6\n"
-"Last-Translator: Sven Frotscher <sven.frotscher@gmail.com>\n"
+"X-Generator: Poedit 2.3\n"
+"Last-Translator: Åke Engelbrektson <eson@svenskasprakfiler.se>\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"Language: de\n"
+"Language: sv\n"
 
 #: src/resources/ui/marker-appmenu.ui:6
 #: src/resources/ui/marker-gear-popover.ui:88
 msgid "New Window"
-msgstr "Neues Fenster"
+msgstr "Nytt fönster"
 
 #: src/resources/ui/marker-appmenu.ui:12
 #: src/resources/ui/marker-prefs-window.ui:46
 #: src/resources/ui/marker-gear-popover.ui:183
 msgid "Preferences"
-msgstr "Einstellungen"
+msgstr "Inställningar"
 
 #: src/resources/ui/marker-appmenu.ui:18
 #: src/resources/ui/marker-gear-popover.ui:199
 msgid "Keyboard Shortcuts"
-msgstr "Tastenkombinationen"
+msgstr "Tangenbordsgenvägar"
 
 #: src/resources/ui/marker-appmenu.ui:22
 #: src/resources/ui/marker-gear-popover.ui:207
 msgid "Help"
-msgstr "Hilfe"
+msgstr "Hjälp"
 
 #: src/resources/ui/marker-appmenu.ui:26
 msgid "About"
-msgstr "Über"
+msgstr "Om"
 
 #: src/resources/ui/marker-appmenu.ui:30
 msgid "Quit"
-msgstr "Beenden"
+msgstr "Avsluta"
 
 #: src/resources/ui/marker-prefs-window.ui:31
 #: src/resources/ui/marker-gear-popover.ui:244
 msgid "Editor Only"
-msgstr "Nur Editor"
+msgstr "Endast redigerare"
 
 #: src/resources/ui/marker-prefs-window.ui:34
 #: src/resources/ui/marker-gear-popover.ui:252
 msgid "Preview Only"
-msgstr "Nur Vorschau"
+msgstr "Endast förhandsgranskning"
 
 #: src/resources/ui/marker-prefs-window.ui:37
 #: src/resources/ui/marker-gear-popover.ui:260
 msgid "Dual Pane"
-msgstr "Doppel-Panel"
+msgstr "Dubbelpanel"
 
 #: src/resources/ui/marker-prefs-window.ui:40
 #: src/resources/ui/marker-gear-popover.ui:268
 msgid "Dual Window"
-msgstr "Doppel-Fenster"
+msgstr "Dubbelfönster"
 
 #: src/resources/ui/marker-prefs-window.ui:71
 msgid "Show line numbers"
-msgstr "Zeige Zeilennummern"
+msgstr "Visa radnummer"
 
 #: src/resources/ui/marker-prefs-window.ui:86
 msgid "Wrap text"
-msgstr "Zeilenumbruch"
+msgstr "Radbryt"
 
 #: src/resources/ui/marker-prefs-window.ui:105
 msgid "Show right margin at column: "
-msgstr "Zeige rechten Rand bei Spalte: "
+msgstr "Visa höger marginal vid kolumn: "
 
 #: src/resources/ui/marker-prefs-window.ui:145
 msgid "Check spelling for language: "
-msgstr "Prüfe die Rechtschreibung für Sprache: "
+msgstr "Kontrollera stavning för språk: "
 
 #: src/resources/ui/marker-prefs-window.ui:180
 msgid "Show spaces"
-msgstr "Zeige Leerzeichen"
+msgstr "Visa blanksteg"
 
 #: src/resources/ui/marker-prefs-window.ui:197
 msgid "<b>Highlighting</b>"
-msgstr "<b>Hervorhebung</b>"
+msgstr "<b>Färgmarkering</b>"
 
 #: src/resources/ui/marker-prefs-window.ui:209
 msgid "Highlight current line"
-msgstr "Hebe aktuelle Zeile hervor"
+msgstr "Färgmarkera aktuell rad"
 
 #: src/resources/ui/marker-prefs-window.ui:229
 msgid "Highlight syntax with theme:"
-msgstr "Syntaxhervorhebung mit Farbschema:"
+msgstr "Färgmarkera syntax med tema:"
 
 #: src/resources/ui/marker-prefs-window.ui:266
 msgid "<b>Tab Stops</b>"
-msgstr "<b>Tabulator</b>"
+msgstr "<b>Tabulatorstopp</b>"
 
 #: src/resources/ui/marker-prefs-window.ui:278
 msgid "Enable automatic indentation"
-msgstr "Aktiviere automatische Einrückung"
+msgstr "Aktivera automatiskt indrag"
 
 #: src/resources/ui/marker-prefs-window.ui:293
 msgid "Insert spaces instead of tabs"
-msgstr "Füge Leerzeichen statt Tabs ein"
+msgstr "Infoga blanksteg istället för tabbar"
 
 #: src/resources/ui/marker-prefs-window.ui:315
 msgid "Tabulation width:"
-msgstr "Tabulatorenbreite:"
+msgstr "Tabulatorsbredd:"
 
 #: src/resources/ui/marker-prefs-window.ui:355
 msgid "Editor"
-msgstr "Editor"
+msgstr "Redigerare"
 
 #: src/resources/ui/marker-prefs-window.ui:377
 msgid "Use css theme: "
-msgstr "Benutze CSS-Thema:"
+msgstr "Använd CSS-tema: "
 
 #: src/resources/ui/marker-prefs-window.ui:417
 msgid "Highlight code blocks with theme:"
-msgstr "Hervorhebung von Code-Blöcken mit Farbschema:"
+msgstr "Färgmarkera kodblock med tema:"
 
 #: src/resources/ui/marker-prefs-window.ui:452
 msgid "Enable Mermaid"
-msgstr "Aktiviere Mermaid"
+msgstr "Aktivera Mermaid"
 
 #: src/resources/ui/marker-prefs-window.ui:467
 msgid "Enable Charter"
-msgstr "Aktiviere Charter"
+msgstr "Aktivera Charter"
 
 #: src/resources/ui/marker-prefs-window.ui:484
 msgid "<b>Math</b>"
-msgstr "<b>Mathematik</b>"
+msgstr "<b>Mattematik</b>"
 
 #: src/resources/ui/marker-prefs-window.ui:500
 msgid "Render Math"
-msgstr "Mathematik rendern"
+msgstr "Rendera mattematik"
 
 #: src/resources/ui/marker-prefs-window.ui:545
 msgid "Preview"
-msgstr "Vorschau"
+msgstr "Förhandsgranska"
 
 #: src/resources/ui/marker-prefs-window.ui:570
 msgid "Default view mode: "
-msgstr "Voreingestellter Darstellungsmodus: "
+msgstr "Standardvisningsläge: "
 
 #: src/resources/ui/marker-prefs-window.ui:603
 msgid "Enable dark mode"
-msgstr "Aktiviere Dunkelmodus"
+msgstr "Aktivera mörkt läge"
 
 #: src/resources/ui/marker-prefs-window.ui:625
 msgid "Window"
-msgstr "Fenster"
+msgstr "Fönster"
 
 #: src/resources/ui/marker-shortcuts-window.ui:14
 msgctxt "shortcut window"
 msgid "Documents"
-msgstr "Dokumente"
+msgstr "Dokument"
 
 #: src/resources/ui/marker-shortcuts-window.ui:19
 msgctxt "shortcut window"
 msgid "Create a new document"
-msgstr "Erstelle ein neues Dokument"
+msgstr "Skapa ett nytt dokument"
 
 #: src/resources/ui/marker-shortcuts-window.ui:26
 msgctxt "shortcut window"
 msgid "Open a document"
-msgstr "Öffne ein Dokument"
+msgstr "Öppna ett dokument"
 
 #: src/resources/ui/marker-shortcuts-window.ui:33
 msgctxt "shortcut window"
 msgid "Open a document in a new window"
-msgstr "Öffne ein Dokument in einem neuen Fenster"
+msgstr "Öppna ett dokument i nytt fönster"
 
 #: src/resources/ui/marker-shortcuts-window.ui:40
 msgctxt "shortcut window"
 msgid "Save the document"
-msgstr "Speichere das Dokument"
+msgstr "Spara dokumentet"
 
 #: src/resources/ui/marker-shortcuts-window.ui:47
 msgctxt "shortcut window"
 msgid "Save the document with a new filename"
-msgstr "Speichere das Dokument mit einem neuen Dateinamen"
+msgstr "Spara dokumentet med nytt filnamn"
 
 #: src/resources/ui/marker-shortcuts-window.ui:54
 msgctxt "shortcut window"
 msgid "Close the document"
-msgstr "Schließe das Dokument"
+msgstr "Stäng dokumentet"
 
 #: src/resources/ui/marker-shortcuts-window.ui:62
 msgctxt "shortcut window"
 msgid "Editing"
-msgstr "Bearbeitung"
+msgstr "Redigering"
 
 #: src/resources/ui/marker-shortcuts-window.ui:67
 msgctxt "shortcut window"
 msgid "Make selection bold"
-msgstr "Fette Schrift für Auswahl"
+msgstr "Gör markeringen fetstilt"
 
 #: src/resources/ui/marker-shortcuts-window.ui:74
 msgctxt "shortcut window"
 msgid "Make selection italic"
-msgstr "Kursive Schrift für Auswahl"
+msgstr "Gör markeringen kursiv"
 
 #: src/resources/ui/marker-shortcuts-window.ui:81
 msgctxt "shortcut window"
 msgid "Make selection monospace"
-msgstr "Monospace-Schrift für Auswahl"
+msgstr "Gör markeringen monospace"
 
 #: src/resources/ui/marker-shortcuts-window.ui:88
 msgctxt "shortcut window"
 msgid "Insert link"
-msgstr "Füge Link ein"
-
-#: src/resources/ui/marker-shortcuts-window.ui:95
-msgctxt "shortcut window"
-msgid "Draw a sketch"
-msgstr "Erstelle eine Zeichnung"
+msgstr "Infoga länk"
 
 #: src/resources/ui/marker-shortcuts-window.ui:102
 msgctxt "shortcut window"
 msgid "Search in the document"
-msgstr "Suche im Dokument"
+msgstr "Sök i dokumentet"
 
 #: src/resources/ui/marker-shortcuts-window.ui:110
 msgctxt "shortcut window"
 msgid "Tools"
-msgstr "Werkzeuge"
+msgstr "Verktyg"
 
 #: src/resources/ui/marker-shortcuts-window.ui:115
 msgctxt "shortcut window"
 msgid "Print the document"
-msgstr "Drucke das Dokument"
+msgstr "Skriv ut dokumentet"
 
 #: src/resources/ui/marker-shortcuts-window.ui:123
 msgctxt "shortcut window"
 msgid "Window"
-msgstr "Fenster"
+msgstr "Fönster"
 
 #: src/resources/ui/marker-shortcuts-window.ui:128
 msgctxt "shortcut window"
 msgid "Open a new window"
-msgstr "Öffne ein neues Fenster"
+msgstr "Öppna ett nytt fönster"
 
 #: src/resources/ui/marker-shortcuts-window.ui:135
 msgctxt "shortcut window"
 msgid "Close all windows"
-msgstr "Schließe alle Fenster"
+msgstr "Stäng alla fönster"
 
 #: src/resources/ui/marker-shortcuts-window.ui:142
 msgctxt "shortcut window"
 msgid "Toggle fullscreen mode"
-msgstr "Schalte Vollbildmodus um"
+msgstr "Helskärmsläge av/på"
 
 #: src/resources/ui/marker-shortcuts-window.ui:149
 msgctxt "shortcut window"
 msgid "Switch to editor-only mode"
-msgstr "Wechsle in den Nur-Editor-Modus"
+msgstr "Växla till endast redigerare"
 
 #: src/resources/ui/marker-shortcuts-window.ui:156
 msgctxt "shortcut window"
 msgid "Switch to preview-only mode"
-msgstr "Wechsle in den Nur-Vorschau-Modus"
+msgstr "Växla till endast förhandsgranskning"
 
 #: src/resources/ui/marker-shortcuts-window.ui:163
 msgctxt "shortcut window"
 msgid "Switch to dual-pane mode"
-msgstr "Wechsle in den Doppel-Panel-Modus"
+msgstr "Växla till dubbelpanel"
 
 #: src/resources/ui/marker-shortcuts-window.ui:170
 msgctxt "shortcut window"
 msgid "Switch to dual-window mode"
-msgstr "Wechsle in den Doppel-Fenster-Modus"
+msgstr "Växla till dubbelfönster"
 
 #: src/resources/ui/marker-shortcuts-window.ui:177
 msgctxt "shortcut window"
 msgid "Quit the application"
-msgstr "Beende die Anwendung"
+msgstr "Avsluta programmet"
 
 #: src/resources/ui/marker-sketcher-window.ui:112
 msgid "Sketcher"
-msgstr "Zeichnen"
+msgstr "Sketcher"
 
 #: src/resources/ui/marker-sketcher-window.ui:123
 msgid "Pen Tool"
-msgstr "Stift-Werkzeug"
+msgstr "Pennverktyg"
 
 #: src/resources/ui/marker-sketcher-window.ui:140
 msgid "Eraser Tool"
-msgstr "Radier-Werkzeug"
+msgstr "Raderverktyg"
 
 #: src/resources/ui/marker-sketcher-window.ui:157
 msgid "Text Insertion Tool"
-msgstr "Text-Werkzeug"
+msgstr "Textverktyg"
 
 #: src/resources/ui/marker-sketcher-window.ui:179
 msgid "Color Chooser"
-msgstr "Farbwähler"
+msgstr "Färgväljare"
 
 #: src/resources/ui/marker-sketcher-window.ui:271
 msgid "Insert the sketch"
-msgstr "Zeichnung einfügen"
+msgstr "Infoga skissen"
 
 #: src/resources/ui/marker-sketcher-window.ui:286
 msgid "Cancel the sketch"
-msgstr "Zeichnung abbrechen"
+msgstr "Avbryt skissen"
 
 #: src/resources/ui/marker-gear-popover.ui:22
 msgid "Zoom Out"
-msgstr "Verkleinern"
+msgstr "Zooma ut"
 
 #: src/resources/ui/marker-gear-popover.ui:41
 msgid "Zoom Reset"
-msgstr "Größe zurücksetzen"
+msgstr "Återställ zoom"
 
 #: src/resources/ui/marker-gear-popover.ui:54
 msgid "Zoom In"
-msgstr "Vergrößern"
+msgstr "Zooma In"
 
 #: src/resources/ui/marker-gear-popover.ui:112
 msgid "Fullscreen"
-msgstr "Vollbild"
+msgstr "Helskärm"
 
 #: src/resources/ui/marker-gear-popover.ui:120
 msgid "Sidebar"
-msgstr "Seitenleiste"
+msgstr "Sidofält"
 
 #: src/resources/ui/marker-gear-popover.ui:136
 msgid "Save As…"
-msgstr "Speichern unter..."
+msgstr "Spara som…"
 
 #: src/resources/ui/marker-gear-popover.ui:144
 msgid "Export…"
-msgstr "Exportieren..."
+msgstr "Exportera…"
 
 #: src/resources/ui/marker-gear-popover.ui:152
 msgid "Print…"
-msgstr "Drucken..."
+msgstr "Skriv ut…"
 
 #: src/resources/ui/marker-gear-popover.ui:168
 #: src/resources/ui/marker-gear-popover.ui:234
 msgid "View Mode"
-msgstr "Darstellungsmodus"
+msgstr "Visningsläge"
 
 #: src/resources/ui/marker-gear-popover.ui:215
 msgid "About Marker"
-msgstr "Über Marker"
+msgstr "Om Marker"
 
 #: src/resources/ui/marker-headerbar.ui:20
 msgid "Open…"
-msgstr "Öffnen..."
+msgstr "Öppna…"
 
 #: src/resources/ui/marker-headerbar.ui:30
 msgid "Save"
-msgstr "Speichern"
+msgstr "Spara"
 
 #: src/marker.c:184
 msgid "A markdown editor for GNOME"
-msgstr "Ein Markdown-Editor für GNOME"
+msgstr "En markdown-redigerare för GNOME"
 
 #: src/marker.c:186
 msgid "Report bugs and ideas on github"
-msgstr "Berichte über Fehler und Ideen auf GitHub"
+msgstr "Rapportera fel och idéer på GitHub"
 
 #: src/marker.c:191
 msgid "translator-credits"
-msgstr ""
-"Tim Klocke https://github.com/taaem\n"
-"Sven Frotscher https://github.com/sven-frotscher"
+msgstr "Åke Engelbrektson <eson@svenskasprakfiler.se>"
 
 #: src/marker-editor.c:248
 msgid "Untitled.md"
-msgstr "Unbenannt.md"
-
-#: src/marker-window.c:96
-msgid "Cancel"
-msgstr "Abbrechen"
-
-#: src/marker-window.c:96
-msgid "Discard"
-msgstr "Verwerfen"
-
-#: src/marker-window.c:113
-msgid "Discard changes to the document '%s'?"
-msgstr "Änderungen am Dokument '%s' verwerfen?"
-
-#: src/marker-window.c:115 src/marker-window.c:128
-msgid "The document has unsaved changes "
-msgstr "Dieses Dokument hat ungesicherte Änderungen, "
-
-#: src/marker-window.c:116 src/marker-window.c:129
-msgid "that will be lost if it is closed now."
-msgstr "die verloren gehen, wenn es geschlossen wird."
-
-#: src/marker-window.c:126
-msgid "Discard changes to the document?"
-msgstr "Änderungen am Dokument verwerfen?"
-
-#: src/marker-window.c:751
-msgctxt "sidebar"
-msgid "Documents"
-msgstr "Dokumente"
+msgstr "Namnlös.md"
