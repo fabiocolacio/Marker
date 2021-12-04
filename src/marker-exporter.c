@@ -83,7 +83,7 @@ marker_exporter_export_pandoc(const char*        markdown,
       char* command = NULL;
 
       asprintf(&command,
-               "pandoc -s -c %s -o %s %s",
+               "pandoc -s -c \"%s\" -o \"%s\" \"%s\"",
                stylesheet_path,
                outfile,
                ftmp);
