@@ -37,6 +37,9 @@ GitHub.css ->
 GitHub2.css ->
 [MacDownApp/macdown](https://github.com/MacDownApp/macdown)
 
+GithubDark.css ->
+[OzakIOne/markdown-github-dark](https://github.com/OzakIOne/markdown-github-dark)
+
 Solarized (Dark).css ->
 [MacDownApp/macdown](https://github.com/MacDownApp/macdown)
 
