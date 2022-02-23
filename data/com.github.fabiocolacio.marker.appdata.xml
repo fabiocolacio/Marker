@@ -5,7 +5,9 @@
   <metadata_license>FSFAP</metadata_license>
   <project_license>GPL-3.0</project_license>
   <name>Marker</name>
+  <name xml:lang="ko">마커</name>
   <summary>Powerful markdown editor for the GNOME desktop.</summary>
+  <summary xml:lang="ko">그놈 데스크탑을 위한 강력한 마크다운 편집기입니다.</summary>
 
   <description>
     <p>Features:</p>
