@@ -1,7 +1,21 @@
 [Desktop Entry]
 Name=Marker
+Name[en_US]=Marker
+Name[es]=Marker
+Name[fr]=Marker
+Name[ja]=マーカー
+Name[ko]=마커
+Name[ru]=Marker
+Name[zh_CN]=Marker
 GenericName=Markdown Editor
 Comment=A simple markdown editor for GTK+
+Comment[en_US]=A simple markdown editor for GTK+
+Comment[es]=Un simple editor de rebajas para GTK+
+Comment[fr]=Un simple éditeur de démarquage pour GTK+
+Comment[ja]=シンプルなGTK+用マークダウンエディタ
+Comment[ko]=심플한 GTK+용 마크다운 편집기
+Comment[ru]=Простой редактор разметки для GTK+
+Comment[zh_CN]=简单的GTK+用Markdown编辑器
 Categories=GTK;Utility;
 Exec=marker %u
 Icon=com.github.fabiocolacio.marker
@@ -9,5 +23,4 @@ Terminal=false
 Type=Application
 X-GNOME-Gettext-Domain=marker
 Keywords=marker;markdown;editor;web;
-Name[en_US]=Marker
 MimeType=text/x-markdown;
