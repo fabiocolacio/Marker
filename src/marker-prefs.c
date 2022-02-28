@@ -48,6 +48,30 @@ marker_prefs_set_use_dark_theme(gboolean state)
   g_settings_set_boolean(prefs.window_settings, "enable-dark-mode", state);
 }
 
+guint
+marker_prefs_get_window_width()
+{
+  return g_settings_get_uint(prefs.window_settings, "window-width");
+}
+
+void
+marker_prefs_set_window_width(guint width)
+{
+  g_settings_set_uint(prefs.window_settings, "window-width", width);
+}
+
+guint
+marker_prefs_get_window_height()
+{
+  return g_settings_get_uint(prefs.window_settings, "window-height");
+}
+
+void
+marker_prefs_set_window_height(guint height)
+{
+  g_settings_set_uint(prefs.window_settings, "window-height", height);
+}
+
 gboolean
 marker_prefs_get_use_syntax_theme()
 {

@@ -164,5 +164,15 @@
       <summary>Enter dark-mode</summary>
       <description>When this is enabled, the dark variant of the current gtk theme will be used.</description>
     </key>
+
+    <key name="window-width" type="u">
+      <default>900</default>
+      <summary>Window width</summary>
+    </key>
+
+    <key name="window-height" type="u">
+      <default>600</default>
+      <summary>Window height</summary>
+    </key>
   </schema>
 </schemalist>
