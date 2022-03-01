@@ -174,5 +174,10 @@
       <default>600</default>
       <summary>Window height</summary>
     </key>
+
+    <key name="editor-pane-width" type="u">
+      <default>450</default>
+      <summary>Editor pane width (in Dual Pane mode)</summary>
+    </key>
   </schema>
 </schemalist>

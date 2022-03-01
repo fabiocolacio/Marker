@@ -1159,10 +1159,14 @@ marker_window_try_close (MarkerWindow *window)
 
   // Save window size in the preferences
   gint width, height;
-  gtk_window_get_size (window, &width, &height);
+  gtk_window_get_size (GTK_WINDOW (window), &width, &height);
   g_print ("saved window size: %d x %d\n", width, height);
   marker_prefs_set_window_width (width);
   marker_prefs_set_window_height (height);
+
+  guint editor_width = marker_editor_get_pane_width (window->active_editor);
+  g_print ("saved editor pane width: %d\n", editor_width);
+  marker_prefs_set_editor_pane_width (editor_width);
 
   if (rows > 0)
   {

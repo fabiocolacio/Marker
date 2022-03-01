@@ -36,6 +36,8 @@ guint                marker_prefs_get_window_width               (void);
 void                 marker_prefs_set_window_width               (guint               width);
 guint                marker_prefs_get_window_height              (void);
 void                 marker_prefs_set_window_height              (guint               height);
+guint                marker_prefs_get_editor_pane_width          (void);
+void                 marker_prefs_set_editor_pane_width          (guint               width);
 char                *marker_prefs_get_syntax_theme               (void);
 void                 marker_prefs_set_syntax_theme               (const char         *theme);
 gboolean             marker_prefs_get_use_syntax_theme           (void);

@@ -72,6 +72,18 @@ marker_prefs_set_window_height(guint height)
   g_settings_set_uint(prefs.window_settings, "window-height", height);
 }
 
+guint
+marker_prefs_get_editor_pane_width()
+{
+  return g_settings_get_uint(prefs.window_settings, "editor-pane-width");
+}
+
+void
+marker_prefs_set_editor_pane_width(guint width)
+{
+  g_settings_set_uint(prefs.window_settings, "editor-pane-width", width);
+}
+
 gboolean
 marker_prefs_get_use_syntax_theme()
 {

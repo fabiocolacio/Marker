@@ -436,6 +436,8 @@ marker_editor_set_view_mode (MarkerEditor   *editor,
     case DUAL_PANE_MODE:
       gtk_paned_add1 (GTK_PANED (paned), source_scroll);
       gtk_paned_add2 (GTK_PANED (paned), preview);
+      // load saved pane width from the preferences
+      gtk_paned_set_position (GTK_PANED (paned), marker_prefs_get_editor_pane_width ());
       gtk_widget_grab_focus (GTK_WIDGET (editor->source_view));
       break;
 
@@ -452,6 +454,22 @@ marker_editor_set_view_mode (MarkerEditor   *editor,
       break;
   }
 
+}
+
+
+guint
+marker_editor_get_pane_width (MarkerEditor *editor)
+{
+  // editor pane width is valid only for dual pane mode
+  if(marker_editor_get_view_mode (editor) == DUAL_PANE_MODE)
+  {
+    return gtk_paned_get_position (GTK_PANED (editor->paned));
+  }
+  else
+  {
+    // return last saved value
+    return marker_prefs_get_editor_pane_width ();
+  }
 }
 
 void
