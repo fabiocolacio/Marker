@@ -179,5 +179,10 @@
       <default>450</default>
       <summary>Editor pane width (in Dual Pane mode)</summary>
     </key>
+
+    <key name="show-sidebar" type="b">
+      <default>false</default>
+      <summary>Whether the sidebar is shown</summary>
+    </key>
   </schema>
 </schemalist>

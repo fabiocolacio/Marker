@@ -85,6 +85,18 @@ marker_prefs_set_editor_pane_width(guint width)
 }
 
 gboolean
+marker_prefs_get_show_sidebar()
+{
+  return g_settings_get_boolean(prefs.window_settings, "show-sidebar");
+}
+
+void
+marker_prefs_set_show_sidebar(gboolean state)
+{
+  g_settings_set_boolean(prefs.window_settings, "show-sidebar", state);
+}
+
+gboolean
 marker_prefs_get_use_syntax_theme()
 {
   return g_settings_get_boolean(prefs.editor_settings, "enable-syntax-theme");

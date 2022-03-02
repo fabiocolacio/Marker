@@ -162,6 +162,8 @@ action_sidebar (GSimpleAction *action,
     gboolean state = g_variant_get_boolean (value);
 
     g_simple_action_set_state (action, value);
+    // save whether the sidebar is shown
+    marker_prefs_set_show_sidebar (state);
 
     if (state) {
         marker_window_show_sidebar (MARKER_WINDOW (window));
@@ -842,6 +844,12 @@ marker_window_init (MarkerWindow *window)
   }
   gtk_window_set_default_size(GTK_WINDOW(window), width, height);
   gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
+
+  if (marker_prefs_get_show_sidebar())
+  {
+    // show sidebar and set the "Sidebar" button as activated
+    g_action_group_activate_action(G_ACTION_MAP (window), "sidebar", NULL);
+  }
   g_signal_connect(window, "delete-event", G_CALLBACK(window_deleted_event_cb), window);
 
   g_object_unref (builder);
