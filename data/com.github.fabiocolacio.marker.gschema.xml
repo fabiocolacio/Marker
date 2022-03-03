@@ -175,6 +175,11 @@
       <summary>Window height</summary>
     </key>
 
+    <key name="window-position" type="(ii)">
+      <default>(-1, -1)</default>
+      <summary>Window position (x, y)</summary>
+    </key>
+
     <key name="editor-pane-width" type="u">
       <default>450</default>
       <summary>Editor pane width (in Dual Pane mode)</summary>

@@ -72,6 +72,20 @@ marker_prefs_set_window_height(guint height)
   g_settings_set_uint(prefs.window_settings, "window-height", height);
 }
 
+void
+marker_prefs_get_window_position(gint *pos_x,
+                                 gint *pos_y)
+{
+  g_settings_get(prefs.window_settings, "window-position", "(ii)", pos_x, pos_y);
+}
+
+void
+marker_prefs_set_window_position(gint pos_x,
+                                 gint pos_y)
+{
+  g_settings_set(prefs.window_settings, "window-position", "(ii)", pos_x, pos_y);
+}
+
 guint
 marker_prefs_get_editor_pane_width()
 {

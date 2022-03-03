@@ -36,6 +36,10 @@ guint                marker_prefs_get_window_width               (void);
 void                 marker_prefs_set_window_width               (guint               width);
 guint                marker_prefs_get_window_height              (void);
 void                 marker_prefs_set_window_height              (guint               height);
+void                 marker_prefs_get_window_position            (gint               *pos_x,
+                                                                  gint               *pos_y);
+void                 marker_prefs_set_window_position            (gint                pos_x,
+                                                                  gint                pos_y);
 guint                marker_prefs_get_editor_pane_width          (void);
 void                 marker_prefs_set_editor_pane_width          (guint               width);
 gboolean             marker_prefs_get_show_sidebar               (void);
