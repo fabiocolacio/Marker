@@ -52,6 +52,7 @@ MarkerEditor        *marker_editor_new_from_file                 (GFile         
 MarkerViewMode       marker_editor_get_view_mode                 (MarkerEditor       *editor);
 void                 marker_editor_set_view_mode                 (MarkerEditor       *editor,
                                                                   MarkerViewMode      view_mode);
+guint                marker_editor_get_pane_width                (MarkerEditor       *editor);
 void                 marker_editor_refresh_preview               (MarkerEditor       *editor);
 void                 marker_editor_open_file                     (MarkerEditor       *editor,
                                                                   GFile              *file);

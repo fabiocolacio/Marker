@@ -72,6 +72,44 @@ marker_prefs_set_window_height(guint height)
   g_settings_set_uint(prefs.window_settings, "window-height", height);
 }
 
+void
+marker_prefs_get_window_position(gint *pos_x,
+                                 gint *pos_y)
+{
+  g_settings_get(prefs.window_settings, "window-position", "(ii)", pos_x, pos_y);
+}
+
+void
+marker_prefs_set_window_position(gint pos_x,
+                                 gint pos_y)
+{
+  g_settings_set(prefs.window_settings, "window-position", "(ii)", pos_x, pos_y);
+}
+
+guint
+marker_prefs_get_editor_pane_width()
+{
+  return g_settings_get_uint(prefs.window_settings, "editor-pane-width");
+}
+
+void
+marker_prefs_set_editor_pane_width(guint width)
+{
+  g_settings_set_uint(prefs.window_settings, "editor-pane-width", width);
+}
+
+gboolean
+marker_prefs_get_show_sidebar()
+{
+  return g_settings_get_boolean(prefs.window_settings, "show-sidebar");
+}
+
+void
+marker_prefs_set_show_sidebar(gboolean state)
+{
+  g_settings_set_boolean(prefs.window_settings, "show-sidebar", state);
+}
+
 gboolean
 marker_prefs_get_use_syntax_theme()
 {

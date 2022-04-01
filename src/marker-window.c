@@ -171,6 +171,8 @@ action_sidebar (GSimpleAction *action,
     gboolean state = g_variant_get_boolean (value);
 
     g_simple_action_set_state (action, value);
+    // save whether the sidebar is shown
+    marker_prefs_set_show_sidebar (state);
 
     if (state) {
         marker_window_show_sidebar (MARKER_WINDOW (window));
@@ -851,6 +853,21 @@ marker_window_init (MarkerWindow *window)
   }
   gtk_window_set_default_size(GTK_WINDOW(window), width, height);
   gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
+
+  gint pos_x = 0, pos_y = 0;
+  marker_prefs_get_window_position( &pos_x, &pos_y);
+  g_print ("window position loaded from the preferences: %d, %d\n", pos_x, pos_y);
+  // require restored window position to be positive
+  if (pos_y >= 0 && pos_x >= 0)
+  {
+    gtk_window_move (GTK_WINDOW(window), pos_x, pos_y);
+  }
+
+  if (marker_prefs_get_show_sidebar())
+  {
+    // show sidebar and set the "Sidebar" button as activated
+    g_action_group_activate_action(G_ACTION_MAP (window), "sidebar", NULL);
+  }
   g_signal_connect(window, "delete-event", G_CALLBACK(window_deleted_event_cb), window);
 
   g_object_unref (builder);
@@ -1166,12 +1183,21 @@ marker_window_try_close (MarkerWindow *window)
   GtkTreeModel * model = GTK_TREE_MODEL(window->documents_tree_store);
   gint rows = gtk_tree_model_iter_n_children (model, NULL);
 
-  // Save window size in the preferences
+  // Save window size and position in the preferences
   gint width, height;
-  gtk_window_get_size (window, &width, &height);
+  gtk_window_get_size (GTK_WINDOW (window), &width, &height);
   g_print ("saved window size: %d x %d\n", width, height);
   marker_prefs_set_window_width (width);
   marker_prefs_set_window_height (height);
+
+  gint pos_x = 0, pos_y = 0;
+  gtk_window_get_position(GTK_WINDOW (window), &pos_x, &pos_y);
+  g_print ("saved window position: %d, %d\n", pos_x, pos_y);
+  marker_prefs_set_window_position (pos_x, pos_y);
+
+  guint editor_width = marker_editor_get_pane_width (window->active_editor);
+  g_print ("saved editor pane width: %d\n", editor_width);
+  marker_prefs_set_editor_pane_width (editor_width);
 
   if (rows > 0)
   {
