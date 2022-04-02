@@ -1,15 +1,14 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the marker package.
-# ALBANO BATTISTELLA <albano_battistella@hotmail.com>, 2020.
+# ALBANO BATTISTELLA <albano_battistella@hotmail.com>, 2020,2022.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: marker\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-01-15 17:13+0100\n"
-"PO-Revision-Date: 2020-04-05 10:21+0100\n"
+"PO-Revision-Date: 2022-04-02 10:21+0100\n"
 "Last-Translator: Albano Battistella <albano_battistella@hotmail.com>\n"
 "Language-Team: Italian <LL@li.org>\n"
 "Language: It\n"
@@ -328,15 +327,15 @@ msgstr "Barra Laterale"
 
 #: src/resources/ui/marker-gear-popover.ui:136
 msgid "Save As…"
-msgstr "Salva Come..."
+msgstr "Salva Come…"
 
 #: src/resources/ui/marker-gear-popover.ui:144
 msgid "Export…"
-msgstr "Esporta..."
+msgstr "Esporta…"
 
 #: src/resources/ui/marker-gear-popover.ui:152
 msgid "Print…"
-msgstr "Stampa..."
+msgstr "Stampa…"
 
 #: src/resources/ui/marker-gear-popover.ui:168
 #: src/resources/ui/marker-gear-popover.ui:234
@@ -349,7 +348,7 @@ msgstr "Informazioni su Marker"
 
 #: src/resources/ui/marker-headerbar.ui:20
 msgid "Open…"
-msgstr "Apri..."
+msgstr "Apri…"
 
 #: src/resources/ui/marker-headerbar.ui:30
 msgid "Save"
