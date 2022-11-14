@@ -1,0 +1,374 @@
+# Turkish translation for com.github.fabiocolacio.marker
+# Copyright (C) 2022 com.github.fabiocolacio.marker's COPYRIGHT HOLDER
+# This file is distributed under the same license as the com.github.fabiocolacio.marker package.
+#
+# Sabri Ünal <libreajans@gmail.com>, 2022.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: com.github.fabiocolacio.marker\n"
+"Report-Msgid-Bugs-To: https://github.com/fabiocolacio/Marker/issues\n"
+"POT-Creation-Date: 2022-11-14 16:24+0300\n"
+"PO-Revision-Date: 2022-11-14 16:42+0300\n"
+"Last-Translator: Sabri Ünal <libreajans@gmail.com>\n"
+"Language-Team: Turkish <gnome-turk@gnome.org>\n"
+"Language: tr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Poedit 3.1.1\n"
+
+#: src/resources/ui/marker-appmenu.ui:6
+#: src/resources/ui/marker-gear-popover.ui:88
+msgid "New Window"
+msgstr "Yeni Pencere"
+
+#: src/resources/ui/marker-appmenu.ui:12
+#: src/resources/ui/marker-prefs-window.ui:46
+#: src/resources/ui/marker-gear-popover.ui:183
+msgid "Preferences"
+msgstr "Tercihler"
+
+#: src/resources/ui/marker-appmenu.ui:18
+#: src/resources/ui/marker-gear-popover.ui:199
+msgid "Keyboard Shortcuts"
+msgstr "Klavye Kısayolları"
+
+#: src/resources/ui/marker-appmenu.ui:22
+#: src/resources/ui/marker-gear-popover.ui:207
+msgid "Help"
+msgstr "Yardım"
+
+#: src/resources/ui/marker-appmenu.ui:26
+msgid "About"
+msgstr "Hakkında"
+
+#: src/resources/ui/marker-appmenu.ui:30
+msgid "Quit"
+msgstr "Çık"
+
+#: src/resources/ui/marker-prefs-window.ui:31
+#: src/resources/ui/marker-gear-popover.ui:244
+msgid "Editor Only"
+msgstr "Sadece Düzenleyici"
+
+#: src/resources/ui/marker-prefs-window.ui:34
+#: src/resources/ui/marker-gear-popover.ui:252
+msgid "Preview Only"
+msgstr "Sadece Ön İzleme"
+
+#: src/resources/ui/marker-prefs-window.ui:37
+#: src/resources/ui/marker-gear-popover.ui:260
+msgid "Dual Pane"
+msgstr "Çift Panel"
+
+#: src/resources/ui/marker-prefs-window.ui:40
+#: src/resources/ui/marker-gear-popover.ui:268
+msgid "Dual Window"
+msgstr "Çift Pencere"
+
+#: src/resources/ui/marker-prefs-window.ui:71
+msgid "Show line numbers"
+msgstr "Satır numaralarını göster"
+
+#: src/resources/ui/marker-prefs-window.ui:86
+msgid "Wrap text"
+msgstr "Metni sar"
+
+#: src/resources/ui/marker-prefs-window.ui:105
+msgid "Show right margin at column: "
+msgstr "Sağ kenar boşluğunu sütunda göster: "
+
+#: src/resources/ui/marker-prefs-window.ui:145
+msgid "Check spelling for language: "
+msgstr "Yazım denetimi dili: "
+
+#: src/resources/ui/marker-prefs-window.ui:180
+msgid "Show spaces"
+msgstr "Boşlukları göster"
+
+#: src/resources/ui/marker-prefs-window.ui:197
+msgid "<b>Highlighting</b>"
+msgstr "<b>Vurgulama</b>"
+
+#: src/resources/ui/marker-prefs-window.ui:209
+msgid "Highlight current line"
+msgstr "Geçerli satırı vurgula"
+
+#: src/resources/ui/marker-prefs-window.ui:229
+msgid "Highlight syntax with theme:"
+msgstr "Söz dizimi vurgulama teması:"
+
+#: src/resources/ui/marker-prefs-window.ui:266
+msgid "<b>Tab Stops</b>"
+msgstr "<b>Sekme Durakları</b>"
+
+#: src/resources/ui/marker-prefs-window.ui:278
+msgid "Enable automatic indentation"
+msgstr "Kendiliğinden girintilemeyi etkinleştir"
+
+#: src/resources/ui/marker-prefs-window.ui:293
+msgid "Insert spaces instead of tabs"
+msgstr "Sekme yerine boşluk ekle"
+
+#: src/resources/ui/marker-prefs-window.ui:315
+msgid "Tabulation width:"
+msgstr "Tablo genişliği:"
+
+#: src/resources/ui/marker-prefs-window.ui:355
+msgid "Editor"
+msgstr "Düzenleyici"
+
+#: src/resources/ui/marker-prefs-window.ui:377
+msgid "Use css theme: "
+msgstr "CSS teması kullan: "
+
+#: src/resources/ui/marker-prefs-window.ui:417
+msgid "Highlight code blocks with theme:"
+msgstr "Kod bloğu vurgulama teması:"
+
+#: src/resources/ui/marker-prefs-window.ui:452
+msgid "Enable Mermaid"
+msgstr "Mermaidʼi Etkinleştir"
+
+#: src/resources/ui/marker-prefs-window.ui:467
+msgid "Enable Charter"
+msgstr "Charterʼı Etkinleştir"
+
+#: src/resources/ui/marker-prefs-window.ui:484
+msgid "<b>Math</b>"
+msgstr "<b>Matematik</b>"
+
+#: src/resources/ui/marker-prefs-window.ui:500
+msgid "Render Math"
+msgstr "Matematiği Görselleştir"
+
+#: src/resources/ui/marker-prefs-window.ui:545
+msgid "Preview"
+msgstr "Ön izleme"
+
+#: src/resources/ui/marker-prefs-window.ui:570
+msgid "Default view mode: "
+msgstr "Öntanımlı görünüm kipi: "
+
+#: src/resources/ui/marker-prefs-window.ui:603
+msgid "Enable dark mode"
+msgstr "Koyu kipi etkinleştir"
+
+#: src/resources/ui/marker-prefs-window.ui:625
+msgid "Window"
+msgstr "Pencere"
+
+#: src/resources/ui/marker-shortcuts-window.ui:14
+msgctxt "shortcut window"
+msgid "Documents"
+msgstr "Belgeler"
+
+#: src/resources/ui/marker-shortcuts-window.ui:19
+msgctxt "shortcut window"
+msgid "Create a new document"
+msgstr "Yeni belge oluştur"
+
+#: src/resources/ui/marker-shortcuts-window.ui:26
+msgctxt "shortcut window"
+msgid "Open a document"
+msgstr "Belge aç"
+
+#: src/resources/ui/marker-shortcuts-window.ui:33
+msgctxt "shortcut window"
+msgid "Open a document in a new window"
+msgstr "Yeni pencerede yeni belge oluştur"
+
+#: src/resources/ui/marker-shortcuts-window.ui:40
+msgctxt "shortcut window"
+msgid "Save the document"
+msgstr "Belgeyi kaydet"
+
+#: src/resources/ui/marker-shortcuts-window.ui:47
+msgctxt "shortcut window"
+msgid "Save the document with a new filename"
+msgstr "Belgeyi yeni dosya adıyla kaydet"
+
+#: src/resources/ui/marker-shortcuts-window.ui:54
+msgctxt "shortcut window"
+msgid "Close the document"
+msgstr "Belgeyi kapat"
+
+#: src/resources/ui/marker-shortcuts-window.ui:62
+msgctxt "shortcut window"
+msgid "Editing"
+msgstr "Düzenleme"
+
+#: src/resources/ui/marker-shortcuts-window.ui:67
+msgctxt "shortcut window"
+msgid "Make selection bold"
+msgstr "Seçimi kalın yap"
+
+#: src/resources/ui/marker-shortcuts-window.ui:74
+msgctxt "shortcut window"
+msgid "Make selection italic"
+msgstr "Seçimi eğik yap"
+
+#: src/resources/ui/marker-shortcuts-window.ui:81
+msgctxt "shortcut window"
+msgid "Make selection monospace"
+msgstr "Seçimi eş aralıklı yap"
+
+#: src/resources/ui/marker-shortcuts-window.ui:88
+msgctxt "shortcut window"
+msgid "Insert link"
+msgstr "Bağlantı ekle"
+
+#: src/resources/ui/marker-shortcuts-window.ui:102
+msgctxt "shortcut window"
+msgid "Search in the document"
+msgstr "Belge içinde ara"
+
+#: src/resources/ui/marker-shortcuts-window.ui:110
+msgctxt "shortcut window"
+msgid "Tools"
+msgstr "Araçlar"
+
+#: src/resources/ui/marker-shortcuts-window.ui:115
+msgctxt "shortcut window"
+msgid "Print the document"
+msgstr "Belgeyi yazdır"
+
+#: src/resources/ui/marker-shortcuts-window.ui:123
+msgctxt "shortcut window"
+msgid "Window"
+msgstr "Pencere"
+
+#: src/resources/ui/marker-shortcuts-window.ui:128
+msgctxt "shortcut window"
+msgid "Open a new window"
+msgstr "Yeni pencere aç"
+
+#: src/resources/ui/marker-shortcuts-window.ui:135
+msgctxt "shortcut window"
+msgid "Close all windows"
+msgstr "Tüm pencereleri kapat"
+
+#: src/resources/ui/marker-shortcuts-window.ui:142
+msgctxt "shortcut window"
+msgid "Toggle fullscreen mode"
+msgstr "Tam ekran kipini aç/kapat"
+
+#: src/resources/ui/marker-shortcuts-window.ui:149
+msgctxt "shortcut window"
+msgid "Switch to editor-only mode"
+msgstr "Sadece editör kipine geç"
+
+#: src/resources/ui/marker-shortcuts-window.ui:156
+msgctxt "shortcut window"
+msgid "Switch to preview-only mode"
+msgstr "Sadece önizleme kipine geç"
+
+#: src/resources/ui/marker-shortcuts-window.ui:163
+msgctxt "shortcut window"
+msgid "Switch to dual-pane mode"
+msgstr "Çift panel kipine geç"
+
+#: src/resources/ui/marker-shortcuts-window.ui:170
+msgctxt "shortcut window"
+msgid "Switch to dual-window mode"
+msgstr "Çift pencere kipine geç"
+
+#: src/resources/ui/marker-shortcuts-window.ui:177
+msgctxt "shortcut window"
+msgid "Quit the application"
+msgstr "Uygulamadan çık"
+
+#: src/resources/ui/marker-sketcher-window.ui:112
+msgid "Sketcher"
+msgstr "Karalama"
+
+#: src/resources/ui/marker-sketcher-window.ui:123
+msgid "Pen Tool"
+msgstr "Kalem Aracı"
+
+#: src/resources/ui/marker-sketcher-window.ui:140
+msgid "Eraser Tool"
+msgstr "Silgi Aracı"
+
+#: src/resources/ui/marker-sketcher-window.ui:157
+msgid "Text Insertion Tool"
+msgstr "Metin Ekleme Aracı"
+
+#: src/resources/ui/marker-sketcher-window.ui:179
+msgid "Color Chooser"
+msgstr "Renk Seçici"
+
+#: src/resources/ui/marker-sketcher-window.ui:271
+msgid "Insert the sketch"
+msgstr "Karalamaya yerleştir"
+
+#: src/resources/ui/marker-sketcher-window.ui:286
+msgid "Cancel the sketch"
+msgstr "Karalamayı iptal et"
+
+#: src/resources/ui/marker-gear-popover.ui:22
+msgid "Zoom Out"
+msgstr "Uzaklaştır"
+
+#: src/resources/ui/marker-gear-popover.ui:41
+msgid "Zoom Reset"
+msgstr "Yakınlaştırmayı Sıfırla"
+
+#: src/resources/ui/marker-gear-popover.ui:54
+msgid "Zoom In"
+msgstr "Yankınlaştır"
+
+#: src/resources/ui/marker-gear-popover.ui:112
+msgid "Fullscreen"
+msgstr "Tam ekran"
+
+#: src/resources/ui/marker-gear-popover.ui:120
+msgid "Sidebar"
+msgstr "Kenar çubuğu"
+
+#: src/resources/ui/marker-gear-popover.ui:136
+msgid "Save As…"
+msgstr "Farklı Kaydet…"
+
+#: src/resources/ui/marker-gear-popover.ui:144
+msgid "Export…"
+msgstr "Dışa aktar…"
+
+#: src/resources/ui/marker-gear-popover.ui:152
+msgid "Print…"
+msgstr "Yazdır…"
+
+#: src/resources/ui/marker-gear-popover.ui:168
+#: src/resources/ui/marker-gear-popover.ui:234
+msgid "View Mode"
+msgstr "Görünüm Kipi"
+
+#: src/resources/ui/marker-gear-popover.ui:215
+msgid "About Marker"
+msgstr "Marker Hakkında"
+
+#: src/resources/ui/marker-headerbar.ui:20
+msgid "Open…"
+msgstr "Aç…"
+
+#: src/resources/ui/marker-headerbar.ui:30
+msgid "Save"
+msgstr "Kaydet"
+
+#: src/marker.c:184
+msgid "A markdown editor for GNOME"
+msgstr "GNOME için markdown düzenleyici"
+
+#: src/marker.c:186
+msgid "Report bugs and ideas on github"
+msgstr "Hataları ve önerilerinizi github üstünden bildirebilirsiniz"
+
+#: src/marker.c:191
+msgid "translator-credits"
+msgstr "Sabri Ünal <libreajans@gmail.com>"
+
+#: src/marker-editor.c:248
+msgid "Untitled.md"
+msgstr "Basliksiz.md"
