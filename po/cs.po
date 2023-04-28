@@ -1,0 +1,373 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the marker package.
+# FIRST AUTHOR Amerey.eu <info@amerey.eu>, 2023.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: marker\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-01-15 17:13+0100\n"
+"PO-Revision-Date: 2023-04-15 12:43+0200\n"
+"Last-Translator: Amerey.eu <info@amerey.eu>\n"
+"Language-Team: \n"
+"Language: cs\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n>=2 && n<=4 ? 1 : 2);\n"
+"X-Generator: Poedit 3.1.1\n"
+
+#: src/resources/ui/marker-appmenu.ui:6
+#: src/resources/ui/marker-gear-popover.ui:88
+msgid "New Window"
+msgstr "Nové okno"
+
+#: src/resources/ui/marker-appmenu.ui:12
+#: src/resources/ui/marker-prefs-window.ui:46
+#: src/resources/ui/marker-gear-popover.ui:183
+msgid "Preferences"
+msgstr "Předvolby"
+
+#: src/resources/ui/marker-appmenu.ui:18
+#: src/resources/ui/marker-gear-popover.ui:199
+msgid "Keyboard Shortcuts"
+msgstr "Klávesové zkratky"
+
+#: src/resources/ui/marker-appmenu.ui:22
+#: src/resources/ui/marker-gear-popover.ui:207
+msgid "Help"
+msgstr "Nápověda"
+
+#: src/resources/ui/marker-appmenu.ui:26
+msgid "About"
+msgstr "O aplikaci"
+
+#: src/resources/ui/marker-appmenu.ui:30
+msgid "Quit"
+msgstr "Ukončit"
+
+#: src/resources/ui/marker-prefs-window.ui:31
+#: src/resources/ui/marker-gear-popover.ui:244
+msgid "Editor Only"
+msgstr "Pouze editor"
+
+#: src/resources/ui/marker-prefs-window.ui:34
+#: src/resources/ui/marker-gear-popover.ui:252
+msgid "Preview Only"
+msgstr "Pouze náhled"
+
+#: src/resources/ui/marker-prefs-window.ui:37
+#: src/resources/ui/marker-gear-popover.ui:260
+msgid "Dual Pane"
+msgstr "Okna vedle sebe"
+
+#: src/resources/ui/marker-prefs-window.ui:40
+#: src/resources/ui/marker-gear-popover.ui:268
+msgid "Dual Window"
+msgstr "Samostatná okna"
+
+#: src/resources/ui/marker-prefs-window.ui:71
+msgid "Show line numbers"
+msgstr "Zobrazit čísla řádků"
+
+#: src/resources/ui/marker-prefs-window.ui:86
+msgid "Wrap text"
+msgstr "Zalomit text"
+
+#: src/resources/ui/marker-prefs-window.ui:105
+msgid "Show right margin at column: "
+msgstr "Zobrazit pravý okraj ve sloupci: "
+
+#: src/resources/ui/marker-prefs-window.ui:145
+msgid "Check spelling for language: "
+msgstr "Kontrola pravopisu pro jazyk: "
+
+#: src/resources/ui/marker-prefs-window.ui:180
+msgid "Show spaces"
+msgstr "Zobrazit mezery"
+
+#: src/resources/ui/marker-prefs-window.ui:197
+msgid "<b>Highlighting</b>"
+msgstr "<b>Zvýraznění</b>"
+
+#: src/resources/ui/marker-prefs-window.ui:209
+msgid "Highlight current line"
+msgstr "Zvýraznit aktuální řádek"
+
+#: src/resources/ui/marker-prefs-window.ui:229
+msgid "Highlight syntax with theme:"
+msgstr "Zvýraznit syntaxi pomocí tématu:"
+
+#: src/resources/ui/marker-prefs-window.ui:266
+msgid "<b>Tab Stops</b>"
+msgstr "<b>Zarážky tabulátoru</b>"
+
+#: src/resources/ui/marker-prefs-window.ui:278
+msgid "Enable automatic indentation"
+msgstr "Povolit automatické odsazení"
+
+#: src/resources/ui/marker-prefs-window.ui:293
+msgid "Insert spaces instead of tabs"
+msgstr "Místo tabulátorů vložit mezery"
+
+#: src/resources/ui/marker-prefs-window.ui:315
+msgid "Tabulation width:"
+msgstr "Šířka tabulátoru:"
+
+#: src/resources/ui/marker-prefs-window.ui:355
+msgid "Editor"
+msgstr "Editor"
+
+#: src/resources/ui/marker-prefs-window.ui:377
+msgid "Use css theme: "
+msgstr "Použít motiv css: "
+
+#: src/resources/ui/marker-prefs-window.ui:417
+msgid "Highlight code blocks with theme:"
+msgstr "Zvýraznit bloky kódu pomocí motivu:"
+
+#: src/resources/ui/marker-prefs-window.ui:452
+msgid "Enable Mermaid"
+msgstr "Povolit Mermaid"
+
+#: src/resources/ui/marker-prefs-window.ui:467
+msgid "Enable Charter"
+msgstr "Povolit Charter"
+
+#: src/resources/ui/marker-prefs-window.ui:484
+msgid "<b>Math</b>"
+msgstr "<b>Vzorce</b>"
+
+#: src/resources/ui/marker-prefs-window.ui:500
+msgid "Render Math"
+msgstr "Vykreslovat vzorce"
+
+#: src/resources/ui/marker-prefs-window.ui:545
+msgid "Preview"
+msgstr "Náhled"
+
+#: src/resources/ui/marker-prefs-window.ui:570
+msgid "Default view mode: "
+msgstr "Výchozí režim zobrazení: "
+
+#: src/resources/ui/marker-prefs-window.ui:603
+msgid "Enable dark mode"
+msgstr "Povolit tmavý režim"
+
+#: src/resources/ui/marker-prefs-window.ui:625
+msgid "Window"
+msgstr "Okno"
+
+#: src/resources/ui/marker-shortcuts-window.ui:14
+msgctxt "shortcut window"
+msgid "Documents"
+msgstr "Soubory"
+
+#: src/resources/ui/marker-shortcuts-window.ui:19
+msgctxt "shortcut window"
+msgid "Create a new document"
+msgstr "Vytvořit nový soubor"
+
+#: src/resources/ui/marker-shortcuts-window.ui:26
+msgctxt "shortcut window"
+msgid "Open a document"
+msgstr "Otevřít soubor"
+
+#: src/resources/ui/marker-shortcuts-window.ui:33
+msgctxt "shortcut window"
+msgid "Open a document in a new window"
+msgstr "Otevřít soubor v novém okně"
+
+#: src/resources/ui/marker-shortcuts-window.ui:40
+msgctxt "shortcut window"
+msgid "Save the document"
+msgstr "Uložit soubor"
+
+#: src/resources/ui/marker-shortcuts-window.ui:47
+msgctxt "shortcut window"
+msgid "Save the document with a new filename"
+msgstr "Uložit soubor jako"
+
+#: src/resources/ui/marker-shortcuts-window.ui:54
+msgctxt "shortcut window"
+msgid "Close the document"
+msgstr "Zavřít soubor"
+
+#: src/resources/ui/marker-shortcuts-window.ui:62
+msgctxt "shortcut window"
+msgid "Editing"
+msgstr "Editace"
+
+#: src/resources/ui/marker-shortcuts-window.ui:67
+msgctxt "shortcut window"
+msgid "Make selection bold"
+msgstr "Tučně"
+
+#: src/resources/ui/marker-shortcuts-window.ui:74
+msgctxt "shortcut window"
+msgid "Make selection italic"
+msgstr "Kurzíva"
+
+#: src/resources/ui/marker-shortcuts-window.ui:81
+msgctxt "shortcut window"
+msgid "Make selection monospace"
+msgstr "Monospace"
+
+#: src/resources/ui/marker-shortcuts-window.ui:88
+msgctxt "shortcut window"
+msgid "Insert link"
+msgstr "Vložit odkaz"
+
+#: src/resources/ui/marker-shortcuts-window.ui:102
+msgctxt "shortcut window"
+msgid "Search in the document"
+msgstr "Hledat v dokumentu"
+
+#: src/resources/ui/marker-shortcuts-window.ui:110
+msgctxt "shortcut window"
+msgid "Tools"
+msgstr "Nástroje"
+
+#: src/resources/ui/marker-shortcuts-window.ui:115
+msgctxt "shortcut window"
+msgid "Print the document"
+msgstr "Tisk"
+
+#: src/resources/ui/marker-shortcuts-window.ui:123
+msgctxt "shortcut window"
+msgid "Window"
+msgstr "Okno"
+
+#: src/resources/ui/marker-shortcuts-window.ui:128
+msgctxt "shortcut window"
+msgid "Open a new window"
+msgstr "Otevřít nové okno"
+
+#: src/resources/ui/marker-shortcuts-window.ui:135
+msgctxt "shortcut window"
+msgid "Close all windows"
+msgstr "Zavřít všechna okna"
+
+#: src/resources/ui/marker-shortcuts-window.ui:142
+msgctxt "shortcut window"
+msgid "Toggle fullscreen mode"
+msgstr "Přepnout režim celé obrazovky"
+
+#: src/resources/ui/marker-shortcuts-window.ui:149
+msgctxt "shortcut window"
+msgid "Switch to editor-only mode"
+msgstr "Přepnout do režimu editoru"
+
+#: src/resources/ui/marker-shortcuts-window.ui:156
+msgctxt "shortcut window"
+msgid "Switch to preview-only mode"
+msgstr "Přepnout do režimu náhledu"
+
+#: src/resources/ui/marker-shortcuts-window.ui:163
+msgctxt "shortcut window"
+msgid "Switch to dual-pane mode"
+msgstr "Přepnout do režimu oken vedle sebe"
+
+#: src/resources/ui/marker-shortcuts-window.ui:170
+msgctxt "shortcut window"
+msgid "Switch to dual-window mode"
+msgstr "Přepnout do režimu samostatných oken"
+
+#: src/resources/ui/marker-shortcuts-window.ui:177
+msgctxt "shortcut window"
+msgid "Quit the application"
+msgstr "Ukončit aplikaci"
+
+#: src/resources/ui/marker-sketcher-window.ui:112
+msgid "Sketcher"
+msgstr "Skica"
+
+#: src/resources/ui/marker-sketcher-window.ui:123
+msgid "Pen Tool"
+msgstr "Nástroj Pero"
+
+#: src/resources/ui/marker-sketcher-window.ui:140
+msgid "Eraser Tool"
+msgstr "Nástroj Guma"
+
+#: src/resources/ui/marker-sketcher-window.ui:157
+msgid "Text Insertion Tool"
+msgstr "Nástroj pro vkládání textu"
+
+#: src/resources/ui/marker-sketcher-window.ui:179
+msgid "Color Chooser"
+msgstr "Výběr barvy"
+
+#: src/resources/ui/marker-sketcher-window.ui:271
+msgid "Insert the sketch"
+msgstr "Vložit skicu"
+
+#: src/resources/ui/marker-sketcher-window.ui:286
+msgid "Cancel the sketch"
+msgstr "Zrušit skicu"
+
+#: src/resources/ui/marker-gear-popover.ui:22
+msgid "Zoom Out"
+msgstr "Oddálit"
+
+#: src/resources/ui/marker-gear-popover.ui:41
+msgid "Zoom Reset"
+msgstr "Obnovení přiblížení"
+
+#: src/resources/ui/marker-gear-popover.ui:54
+msgid "Zoom In"
+msgstr "Přiblížit"
+
+#: src/resources/ui/marker-gear-popover.ui:112
+msgid "Fullscreen"
+msgstr "Celá obrazovka"
+
+#: src/resources/ui/marker-gear-popover.ui:120
+msgid "Sidebar"
+msgstr "Postranní panel"
+
+#: src/resources/ui/marker-gear-popover.ui:136
+msgid "Save As…"
+msgstr "Uložit jako…"
+
+#: src/resources/ui/marker-gear-popover.ui:144
+msgid "Export…"
+msgstr "Exportovat…"
+
+#: src/resources/ui/marker-gear-popover.ui:152
+msgid "Print…"
+msgstr "Tisk…"
+
+#: src/resources/ui/marker-gear-popover.ui:168
+#: src/resources/ui/marker-gear-popover.ui:234
+msgid "View Mode"
+msgstr "Režim zobrazení"
+
+#: src/resources/ui/marker-gear-popover.ui:215
+msgid "About Marker"
+msgstr "O aplikaci Marker"
+
+#: src/resources/ui/marker-headerbar.ui:20
+msgid "Open…"
+msgstr "Otevřít…"
+
+#: src/resources/ui/marker-headerbar.ui:30
+msgid "Save"
+msgstr "Uložit"
+
+#: src/marker.c:184
+msgid "A markdown editor for GNOME"
+msgstr "Markdown editor pro GNOME"
+
+#: src/marker.c:186
+msgid "Report bugs and ideas on github"
+msgstr "Nahlaste chyby a nápady na github"
+
+#: src/marker.c:191
+msgid "translator-credits"
+msgstr "Amerey.eu"
+
+#: src/marker-editor.c:248
+msgid "Untitled.md"
+msgstr "Nepojmenovaný.md"
