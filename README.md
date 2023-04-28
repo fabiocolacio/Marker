@@ -49,9 +49,8 @@ Marker is a markdown editor for linux made with GTK+-3.0
 * [Flathub (thanks to @jsparber and @bertob)](https://flathub.org/apps/details/com.github.fabiocolacio.marker)
 * [Arch Linux^AUR (thanks to @mmetak)](https://aur.archlinux.org/packages/marker-git/)
 * [Arch Linux package (thanks to @City-busz)](https://www.archlinux.org/packages/community/x86_64/marker/)
-* [Ubuntu PPA (thanks to @apandada1 and @olivierb2)](https://launchpad.net/~apandada1/+archive/ubuntu/marker)
-* [Arch Linux (thanks to @mmetak)](https://aur.archlinux.org/packages/marker-git/)
-
+* [Ubuntu PPA Stable (thanks to @apandada1 and @olivierb2)](https://launchpad.net/~apandada1/+archive/ubuntu/marker)
+* [Ubuntu PPA Daily builds (thanks to @apandada1 and @olivierb2)](https://launchpad.net/~apandada1/+archive/ubuntu/marker-daily)
 
 ## Installation From Source
 
