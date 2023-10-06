@@ -109,11 +109,11 @@ show_unsaved_documents_warning (MarkerWindow *window)
                                                 GTK_DIALOG_MODAL,
                                                 GTK_MESSAGE_WARNING,
                                                 GTK_BUTTONS_NONE,
-                                                "<span weight='bold' size='larger'>"
+                                                _("<span weight='bold' size='larger'>"
                                                 "Discard changes to the document '%s'?"
                                                 "</span>\n\n"
                                                 "The document has unsaved changes "
-                                                "that will be lost if it is closed now.",
+                                                "that will be lost if it is closed now."),
                                                 filename);
   }
   else
@@ -122,11 +122,11 @@ show_unsaved_documents_warning (MarkerWindow *window)
                                                 GTK_DIALOG_MODAL,
                                                 GTK_MESSAGE_WARNING,
                                                 GTK_BUTTONS_NONE,
-                                                "<span weight='bold' size='larger'>"
+                                                _("<span weight='bold' size='larger'>"
                                                 "Discard changes to the document?"
                                                 "</span>\n\n"
                                                 "The document has unsaved changes "
-                                                "that will be lost if it is closed now.");
+                                                "that will be lost if it is closed now."));
   }
 
   gtk_dialog_add_buttons(GTK_DIALOG (dialog),
@@ -1055,10 +1055,10 @@ marker_window_open_file (MarkerWindow *window)
 {
   g_assert (MARKER_IS_WINDOW (window));
 
-  g_autoptr (GtkFileChooserNative) dialog = gtk_file_chooser_native_new ("Open",
+  g_autoptr (GtkFileChooserNative) dialog = gtk_file_chooser_native_new (_("Open"),
                                                               GTK_WINDOW (window),
                                                               GTK_FILE_CHOOSER_ACTION_OPEN,
-                                                              "_Open", "_Cancel");
+                                                              _("_Open"), _("_Cancel"));
   gint response = gtk_native_dialog_run (GTK_NATIVE_DIALOG (dialog));
 
   if (response == GTK_RESPONSE_ACCEPT)
@@ -1072,10 +1072,10 @@ void
 marker_window_open_file_in_new_window (MarkerWindow *window)
 {
   g_assert (MARKER_IS_WINDOW (window));
-  g_autoptr (GtkFileChooserNative) dialog = gtk_file_chooser_native_new ("Open",
+  g_autoptr (GtkFileChooserNative) dialog = gtk_file_chooser_native_new (_("Open"),
                                                               GTK_WINDOW (window),
                                                               GTK_FILE_CHOOSER_ACTION_OPEN,
-                                                              "_Open", "_Cancel");
+                                                              _("_Open"), _("_Cancel"));
 
   gint response = gtk_native_dialog_run (GTK_NATIVE_DIALOG (dialog));
 
@@ -1090,10 +1090,10 @@ void
 marker_window_save_active_file_as (MarkerWindow *window)
 {
   g_assert (MARKER_IS_WINDOW (window));
-  g_autoptr (GtkFileChooserNative) dialog = gtk_file_chooser_native_new ("Save As",
+  g_autoptr (GtkFileChooserNative) dialog = gtk_file_chooser_native_new (_("Save As"),
                                                                          GTK_WINDOW (window),
                                                                          GTK_FILE_CHOOSER_ACTION_SAVE,
-                                                                         "_Save", "_Cancel");
+                                                                         _("_Save"), _("_Cancel"));
 
   gtk_file_chooser_set_do_overwrite_confirmation(GTK_FILE_CHOOSER(dialog), TRUE);
 
