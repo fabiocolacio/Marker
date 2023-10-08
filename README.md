@@ -51,6 +51,8 @@ Marker is a markdown editor for linux made with GTK+-3.0
 * [Arch Linux package (thanks to @City-busz)](https://www.archlinux.org/packages/community/x86_64/marker/)
 * [Ubuntu PPA Stable (thanks to @apandada1 and @olivierb2)](https://launchpad.net/~apandada1/+archive/ubuntu/marker)
 * [Ubuntu PPA Daily builds (thanks to @apandada1 and @olivierb2)](https://launchpad.net/~apandada1/+archive/ubuntu/marker-daily)
+* [Snap Store](https://snapcraft.io/static/images/badges/en/snap-store-black.svg)](https://snapcraft.io/marker)
+
 
 ## Installation From Source
 
