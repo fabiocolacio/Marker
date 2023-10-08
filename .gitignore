@@ -2,6 +2,7 @@ build
 resources.c
 *~
 .vscode
+.cache
 _build
 *.sublime-project
 *.sublime-workspace
