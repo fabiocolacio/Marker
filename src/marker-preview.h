@@ -22,7 +22,7 @@
 #ifndef __MARKER_PREVIEW_H__
 #define __MARKER_PREVIEW_H__
 
-#include <webkit2/webkit2.h>
+#include <webkit/webkit.h>
 #include "scidown/src/constants.h"
 
 

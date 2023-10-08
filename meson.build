@@ -79,15 +79,15 @@ hoedown_sources = [
 ]
 
 deps = [
-  dependency('gtk+-3.0', version : '>=3.20'),
+  dependency('gtk4', version : '>=4.10'),
   dependency('glib-2.0'),
-  dependency('gtksourceview-3.0'),
-  dependency('webkit2gtk-4.1'),
+  dependency('gtksourceview-5'),
+  dependency('webkitgtk-6.0'),
   dependency('gtkspell3-3.0')
 ]
 
 ext_deps =[
-  dependency('webkit2gtk-4.1')
+  dependency('webkitgtk-6.0')
 ]
 
 add_global_arguments(

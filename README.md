@@ -60,7 +60,7 @@ Marker is a markdown editor for linux made with GTK+-3.0
 
 * meson >= 0.37.0 (install only)
 * gtk3-devel >= 3.20
-* gtksourceview3-devel
+* gtksourceview5-devel
 * webkitgtk4-devel
 * pandoc
 * gtkspell
