@@ -64,6 +64,7 @@ Marker is a markdown editor for linux made with GTK+-3.0
 * webkitgtk4-devel
 * pandoc
 * gtkspell
+* itstool
 
 ### Build Instructions
 
