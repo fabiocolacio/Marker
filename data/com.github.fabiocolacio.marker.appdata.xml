@@ -5,9 +5,7 @@
   <metadata_license>FSFAP</metadata_license>
   <project_license>GPL-3.0</project_license>
   <name>Marker</name>
-  <name xml:lang="ko">마커</name>
   <summary>Powerful markdown editor for the GNOME desktop.</summary>
-  <summary xml:lang="ko">그놈 데스크탑을 위한 강력한 마크다운 편집기입니다.</summary>
 
   <description>
     <p>Features:</p>
@@ -61,7 +59,7 @@
 
   <releases>
     <release version="2020.04.04" date="2020-04-04">
-      <description>
+      <description translatable="no">
         <ul>
           <li>Fixed a bug where equations weren't being rendered properly.</li>
           <li>Improved localizations.</li>
@@ -69,7 +67,7 @@
       </description>
     </release>
     <release version="2019.11.06" date="2019-11-06">
-        <description>
+        <description translatable="no">
             <ul>
                 <li>Preview stick to the editing text better.</li>
                 <li>Fixed crash on file opening.</li>
@@ -78,7 +76,7 @@
         </description>
    </release>
     <release version="2018.07.03" date="2018-07-03">
-        <description>
+        <description translatable="no">
             <ul>
                 <li>Added ability to export documents from the cli.</li>
                 <li>Added vim-like shortcuts (h,j,k,l,g,G) to the previewer.</li>
@@ -90,7 +88,7 @@
         </description>
    </release>
    <release version="2018.04.27" date="2018-04-27">
-        <description>
+        <description translatable="no">
             <ul>
                 <li>Added right-to-left language support</li>
                 <li>Added support for beamer classes for making presentations</li>
@@ -101,7 +99,7 @@
    <release version="2018.03.09" date="2018-03-09">
    </release>
    <release version="2018.01.23" date="2018-01-23">
-      <description>
+      <description translatable="no">
         <p>Initial Flathub release</p>
       </description>
     </release>

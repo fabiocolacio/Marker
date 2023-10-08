@@ -103,11 +103,11 @@ marker_exporter_export_pandoc(const char*        markdown,
 void
 marker_exporter_show_export_dialog(MarkerWindow* window)
 {
-  GtkDialog *dialog = GTK_DIALOG(gtk_file_chooser_dialog_new ("Export",
+  GtkDialog *dialog = GTK_DIALOG(gtk_file_chooser_dialog_new (_("Export"),
                                                               GTK_WINDOW(window),
                                                               GTK_FILE_CHOOSER_ACTION_SAVE,
-                                                              "Cancel", GTK_RESPONSE_CANCEL,
-                                                              "Export", GTK_RESPONSE_ACCEPT,
+                                                              _("Cancel"), GTK_RESPONSE_CANCEL,
+                                                              _("Export"), GTK_RESPONSE_ACCEPT,
                                                               NULL));
 
   GtkFileChooser *chooser = GTK_FILE_CHOOSER (dialog);
