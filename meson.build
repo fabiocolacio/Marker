@@ -83,7 +83,8 @@ deps = [
   dependency('glib-2.0'),
   dependency('gtksourceview-5'),
   dependency('webkitgtk-6.0'),
-  dependency('gtkspell3-3.0')
+  dependency('gtkspell3-3.0'),
+  dependency('libadwaita-1')
 ]
 
 ext_deps =[
