@@ -273,7 +273,7 @@ msgid "Highlight.js CSS theme."
 msgstr ""
 
 #: data/com.github.fabiocolacio.marker.gschema.xml:141
-msgid "The css theme to use for the synthax highlight."
+msgid "The css theme to use for the syntax highlight."
 msgstr ""
 
 #: data/com.github.fabiocolacio.marker.gschema.xml:145
