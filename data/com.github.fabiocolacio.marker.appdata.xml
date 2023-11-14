@@ -17,15 +17,7 @@
       <li>Support for charter plots</li>
       <li>Syntax highlighting for code blocks</li>
       <li>Integrated sketch editor</li>
-      <li>Exports to
-        <ul>
-          <li>PDF</li>
-          <li>RTF</li>
-          <li>ODT</li>
-          <li>DOCx</li>
-          <li>LaTeX</li>
-        </ul>
-      </li>
+      <li>Exports to PDF, RTF, ODT, DOCx and LaTeX</li>
       <li>Custom CSS themes</li>
       <li>Custom syntax themes</li>
       <li>Figure captioning and numbering</li>
