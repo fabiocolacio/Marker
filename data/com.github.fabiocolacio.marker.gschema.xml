@@ -138,7 +138,7 @@
     <key name="highlight-theme" type="s">
       <default>'default'</default>
       <summary>Highlight.js CSS theme.</summary>
-      <description>The css theme to use for the synthax highlight.</description>
+      <description>The css theme to use for the syntax highlight.</description>
     </key>
     <key name="charter-toggle" type="b">
       <default>false</default>

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: marker\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-06 17:59+0300\n"
+"POT-Creation-Date: 2023-11-14 09:42+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -70,47 +70,31 @@ msgstr ""
 msgid "Integrated sketch editor"
 msgstr ""
 
-#: data/com.github.fabiocolacio.marker.appdata.xml:22
-msgid "PDF"
+#: data/com.github.fabiocolacio.marker.appdata.xml:20
+msgid "Exports to PDF, RTF, ODT, DOCx and LaTeX"
 msgstr ""
 
-#: data/com.github.fabiocolacio.marker.appdata.xml:23
-msgid "RTF"
-msgstr ""
-
-#: data/com.github.fabiocolacio.marker.appdata.xml:24
-msgid "ODT"
-msgstr ""
-
-#: data/com.github.fabiocolacio.marker.appdata.xml:25
-msgid "DOCx"
-msgstr ""
-
-#: data/com.github.fabiocolacio.marker.appdata.xml:26
-msgid "LaTeX"
-msgstr ""
-
-#: data/com.github.fabiocolacio.marker.appdata.xml:29
+#: data/com.github.fabiocolacio.marker.appdata.xml:21
 msgid "Custom CSS themes"
 msgstr ""
 
-#: data/com.github.fabiocolacio.marker.appdata.xml:30
+#: data/com.github.fabiocolacio.marker.appdata.xml:22
 msgid "Custom syntax themes"
 msgstr ""
 
-#: data/com.github.fabiocolacio.marker.appdata.xml:31
+#: data/com.github.fabiocolacio.marker.appdata.xml:23
 msgid "Figure captioning and numbering"
 msgstr ""
 
-#: data/com.github.fabiocolacio.marker.appdata.xml:39
+#: data/com.github.fabiocolacio.marker.appdata.xml:31
 msgid "The main view"
 msgstr ""
 
-#: data/com.github.fabiocolacio.marker.appdata.xml:43
+#: data/com.github.fabiocolacio.marker.appdata.xml:35
 msgid "Some plotting"
 msgstr ""
 
-#: data/com.github.fabiocolacio.marker.appdata.xml:47
+#: data/com.github.fabiocolacio.marker.appdata.xml:39
 msgid "The sketch editor"
 msgstr ""
 
@@ -273,7 +257,7 @@ msgid "Highlight.js CSS theme."
 msgstr ""
 
 #: data/com.github.fabiocolacio.marker.gschema.xml:141
-msgid "The css theme to use for the synthax highlight."
+msgid "The css theme to use for the syntax highlight."
 msgstr ""
 
 #: data/com.github.fabiocolacio.marker.gschema.xml:145
