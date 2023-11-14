@@ -1,23 +1,327 @@
 # Turkish translation for com.github.fabiocolacio.marker
-# Copyright (C) 2022 com.github.fabiocolacio.marker's COPYRIGHT HOLDER
+# Copyright (C) 2022-2023 com.github.fabiocolacio.marker's COPYRIGHT HOLDER
 # This file is distributed under the same license as the com.github.fabiocolacio.marker package.
 #
-# Sabri Ünal <libreajans@gmail.com>, 2022.
+# Sabri Ünal <libreajans@gmail.com>, 2022, 2023.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: com.github.fabiocolacio.marker\n"
-"Report-Msgid-Bugs-To: https://github.com/fabiocolacio/Marker/issues\n"
-"POT-Creation-Date: 2022-11-14 16:24+0300\n"
-"PO-Revision-Date: 2022-11-14 16:42+0300\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-11-14 09:42+0300\n"
+"PO-Revision-Date: 2023-11-14 09:45+0300\n"
 "Last-Translator: Sabri Ünal <libreajans@gmail.com>\n"
-"Language-Team: Turkish <gnome-turk@gnome.org>\n"
+"Language-Team: Turkish <takim@gnome.org.tr>\n"
 "Language: tr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Poedit 3.1.1\n"
+"X-Generator: Poedit 3.4.1\n"
+
+#: data/com.github.fabiocolacio.marker.desktop:3
+#: data/com.github.fabiocolacio.marker.appdata.xml:7
+msgid "Marker"
+msgstr "Marker"
+
+#: data/com.github.fabiocolacio.marker.desktop:11
+msgid "Markdown Editor"
+msgstr "Markdown Düzenleyici"
+
+#: data/com.github.fabiocolacio.marker.desktop:12
+msgid "A simple markdown editor for GTK+"
+msgstr "GTK için basit bir markdown düzenleyici"
+
+#: data/com.github.fabiocolacio.marker.desktop:26
+msgid "marker;markdown;editor;web;"
+msgstr "marker;markdown;editor;web;düzenleyici;"
+
+# Konumu gereği nokta ile bitmemeli.
+#: data/com.github.fabiocolacio.marker.appdata.xml:8
+msgid "Powerful markdown editor for the GNOME desktop."
+msgstr "GNOME masaüstü için güçlü markdown düzenleyici"
+
+#: data/com.github.fabiocolacio.marker.appdata.xml:11
+msgid "Features:"
+msgstr "Özellikler:"
+
+#: data/com.github.fabiocolacio.marker.appdata.xml:13
+msgid "View and edit markdown documents"
+msgstr "Markdown belgelerini görüntüleme ve düzenleme"
+
+#: data/com.github.fabiocolacio.marker.appdata.xml:14
+msgid "Convert markdown documents to HTML"
+msgstr "Markdown belgelerini HTML’ye dönüştürme"
+
+#: data/com.github.fabiocolacio.marker.appdata.xml:15
+msgid "Tex math rendering"
+msgstr "Tex matematik işleme"
+
+#: data/com.github.fabiocolacio.marker.appdata.xml:16
+msgid "Support for mermaid diagrams"
+msgstr "Mermaid diyagramları desteği"
+
+#: data/com.github.fabiocolacio.marker.appdata.xml:17
+msgid "Support for charter plots"
+msgstr "Charter çizimleri desteği"
+
+#: data/com.github.fabiocolacio.marker.appdata.xml:18
+msgid "Syntax highlighting for code blocks"
+msgstr "Kod blokları için söz dizimi vurgulama"
+
+#: data/com.github.fabiocolacio.marker.appdata.xml:19
+msgid "Integrated sketch editor"
+msgstr "Tümleşik eskiz düzenleyici"
+
+#: data/com.github.fabiocolacio.marker.appdata.xml:20
+msgid "Exports to PDF, RTF, ODT, DOCx, LaTeX"
+msgstr "PDF, RTF, ODT, DOCx, LaTeX dışa aktarma"
+
+#: data/com.github.fabiocolacio.marker.appdata.xml:21
+msgid "Custom CSS themes"
+msgstr "Özel CSS temaları"
+
+#: data/com.github.fabiocolacio.marker.appdata.xml:22
+msgid "Custom syntax themes"
+msgstr "Özel söz dizimi temaları"
+
+#: data/com.github.fabiocolacio.marker.appdata.xml:23
+msgid "Figure captioning and numbering"
+msgstr "Şekil başlıklandırma ve numaralandırma"
+
+#: data/com.github.fabiocolacio.marker.appdata.xml:31
+msgid "The main view"
+msgstr "Ana görünüm"
+
+#: data/com.github.fabiocolacio.marker.appdata.xml:35
+msgid "Some plotting"
+msgstr "Bazı çizimler"
+
+#: data/com.github.fabiocolacio.marker.appdata.xml:39
+msgid "The sketch editor"
+msgstr "Eskiz düzenleyici"
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:24
+msgid "Syntax Theme"
+msgstr "Söz dizimi Teması"
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:25
+msgid "The syntax theme to use for the editor."
+msgstr "Düzenleyici için kullanılacak söz dizimi teması."
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:30
+msgid "Enable Syntax Theme"
+msgstr "Söz dizimi Temasını Etkinleştir"
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:31
+msgid "Whether to use a syntax theme in the editor."
+msgstr "Düzenleyicide söz dizimi teması kullanılma durumu."
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:36
+msgid "Show Line Numbers"
+msgstr "Satır Numaralarını Göster"
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:37
+msgid "Whether to show line numbers in the editor."
+msgstr "Düzenleyicide satır numaralarının gösterilme durumu."
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:42
+msgid "Show Right Margin"
+msgstr "Sağ Kenar Boşluğunu Göster"
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:43
+msgid "Whether to show a margin on the right side of the editor."
+msgstr "Düzenleyicinin sağ tarafında kenar boşluğu gösterilme durumu."
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:48
+msgid "The column at which the right margin should be shown"
+msgstr "Sağ kenar boşluğunun gösterilmesi gereken sütun"
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:49
+msgid ""
+"Sets the column where the right margin will appear when 'show-right-margin' "
+"is enabled"
+msgstr ""
+"'show-right-margin' etkinleştirildiğinde sağ kenar boşluğunun görüneceği "
+"sütunu ayarlar"
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:54
+msgid "Wrap Text"
+msgstr "Metni Sar"
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:55
+msgid "Whether to wrap text in the editor."
+msgstr "Düzenleyicide metnin sarılma durumu."
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:60
+msgid "Show Spaces"
+msgstr "Boşlukları Göster"
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:61
+msgid "Whether to show spaces and tabulation in the editor."
+msgstr "Düzenleyicide boşlukların ve sekmelerin gösterilme durumu."
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:66
+msgid "Highlight Current Line"
+msgstr "Geçerli Satırı Vurgula"
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:67
+msgid "Whether to highlight the line with the cursor in the editor."
+msgstr "Düzenleyicide imlecin bulunduğu satırın vurgulanma durumu."
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:72
+msgid "Use spaces instead of tabs"
+msgstr "Sekmeler yerine boşluk kullan"
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:73
+msgid "Use spaces instead of tabs in the editor."
+msgstr "Düzenleyicide sekmeler yerine boşluk kullan."
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:78
+msgid "Width of tabulation in characters."
+msgstr "Karakter cinsinden sekme genişliği."
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:79
+msgid "Set the width of tabulation in characters in the editor."
+msgstr "Düzenleyicide sekme genişliğini karakter cinsinden ayarla."
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:84
+msgid "Auto-indent code"
+msgstr "Otomatik girintili kod"
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:85
+msgid "Auto-indent code in the editor."
+msgstr "Düzenleyicide kodu kendiliğinden girintile."
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:90
+msgid "Spell Check"
+msgstr "Yazım Denetimi"
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:91
+msgid "Spell check using gtkspell."
+msgstr "Gtkspell kullanarak yazım denetimi."
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:96
+msgid "Language for spell check"
+msgstr "Yazım denetimi dili"
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:97
+msgid "Selected language for spell check."
+msgstr "Yazım denetimi için seçilen dil."
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:104
+msgid "CSS Theme"
+msgstr "CSS Teması"
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:105
+msgid "The css theme to use for the preview."
+msgstr "Ön izleme için kullanılacak css teması."
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:110
+msgid "Enable CSS theme in Preview"
+msgstr "Önizlemede CSS temasını etkinleştir"
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:111
+msgid "Use a CSS theme in the live preview"
+msgstr "Canlı ön izlemede CSS teması kullan"
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:116
+msgid "Enable math in Preview"
+msgstr "Ön izlemede matematiği etkinleştir"
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:117
+msgid "Use js back-end to render math in the live preview."
+msgstr "Canlı ön izlemede matematik işlemek için js arka ucunu kullan."
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:122
+msgid "Math Back-end"
+msgstr "Matematik Arka Ucu"
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:123
+msgid "Select the js math rendering back-end."
+msgstr "Js matematik işleme arka ucunu seç."
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:128
+msgid "Enable highlight.js in Preview"
+msgstr "Önizlemede highlight.js’yi etkinleştir"
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:129
+msgid "Use highlight.js in the live preview."
+msgstr "Canlı ön izlemede highlight.js kullan."
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:134
+msgid "Enable mermaid.js in Preview"
+msgstr "Önizlemede mermaid.js’yi etkinleştir"
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:135
+msgid "Use mermaid.js to show diagram in the live preview."
+msgstr "Canlı ön izlemede diyagram göstermek için mermaid.js kullan."
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:140
+msgid "Highlight.js CSS theme."
+msgstr "Highlight.js CSS teması."
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:141
+msgid "The css theme to use for the syntax highlight."
+msgstr "Söz dizimi vurgusu için kullanılacak css teması."
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:145
+msgid "Enable Charter extension in Preview"
+msgstr "Önizlemede Charter uzantısını etkinleştir"
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:146
+msgid "Enable Charter extension in the live preview."
+msgstr "Canlı önizlemede Charter uzantısını etkinleştir."
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:150
+msgid "Zoom level of the preview"
+msgstr "Ön izlemenin yakınlaştırma düzeyi"
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:151
+msgid "Zoom level of the preview widget"
+msgstr "Ön izleme parçacığınının yakınlaştırma düzeyi"
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:158
+#: src/resources/ui/marker-gear-popover.ui:168
+#: src/resources/ui/marker-gear-popover.ui:234
+msgid "View Mode"
+msgstr "Görünüm Kipi"
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:159
+msgid "Controls how to organize the editor and preview areas on the screen."
+msgstr ""
+"Ekrandaki düzenleyici ve ön izleme alanlarının nasıl düzenleneceğini "
+"denetler."
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:164
+msgid "Enter dark-mode"
+msgstr "Koyu kipe gir"
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:165
+msgid ""
+"When this is enabled, the dark variant of the current gtk theme will be used."
+msgstr ""
+"Bu etkinleştirildiğinde, geçerli gtk temasının karanlık sürümü kullanılır."
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:170
+msgid "Window width"
+msgstr "Pencere genişliği"
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:175
+msgid "Window height"
+msgstr "Pencere yüksekliği"
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:180
+msgid "Window position (x, y)"
+msgstr "Pencere konumu (x, y)"
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:185
+msgid "Editor pane width (in Dual Pane mode)"
+msgstr "Düzenleyici panel genişliği (Çift Panel kipinde)"
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:190
+msgid "Whether the sidebar is shown"
+msgstr "Kenar çubuğunun gösterilme durumu"
 
 #: src/resources/ui/marker-appmenu.ui:6
 #: src/resources/ui/marker-gear-popover.ui:88
@@ -26,7 +330,7 @@ msgstr "Yeni Pencere"
 
 #: src/resources/ui/marker-appmenu.ui:12
 #: src/resources/ui/marker-prefs-window.ui:46
-#: src/resources/ui/marker-gear-popover.ui:183
+#: src/resources/ui/marker-gear-popover.ui:191
 msgid "Preferences"
 msgstr "Tercihler"
 
@@ -114,7 +418,7 @@ msgstr "Sekme yerine boşluk ekle"
 
 #: src/resources/ui/marker-prefs-window.ui:315
 msgid "Tabulation width:"
-msgstr "Tablo genişliği:"
+msgstr "Sekme genişliği:"
 
 #: src/resources/ui/marker-prefs-window.ui:355
 msgid "Editor"
@@ -220,6 +524,11 @@ msgctxt "shortcut window"
 msgid "Insert link"
 msgstr "Bağlantı ekle"
 
+#: src/resources/ui/marker-shortcuts-window.ui:95
+msgctxt "shortcut window"
+msgid "Draw a sketch"
+msgstr "Eskiz çiz"
+
 #: src/resources/ui/marker-shortcuts-window.ui:102
 msgctxt "shortcut window"
 msgid "Search in the document"
@@ -258,7 +567,7 @@ msgstr "Tam ekran kipini aç/kapat"
 #: src/resources/ui/marker-shortcuts-window.ui:149
 msgctxt "shortcut window"
 msgid "Switch to editor-only mode"
-msgstr "Sadece editör kipine geç"
+msgstr "Sadece düzenleyici kipine geç"
 
 #: src/resources/ui/marker-shortcuts-window.ui:156
 msgctxt "shortcut window"
@@ -282,7 +591,7 @@ msgstr "Uygulamadan çık"
 
 #: src/resources/ui/marker-sketcher-window.ui:112
 msgid "Sketcher"
-msgstr "Karalama"
+msgstr "Eskizci"
 
 #: src/resources/ui/marker-sketcher-window.ui:123
 msgid "Pen Tool"
@@ -302,11 +611,11 @@ msgstr "Renk Seçici"
 
 #: src/resources/ui/marker-sketcher-window.ui:271
 msgid "Insert the sketch"
-msgstr "Karalamaya yerleştir"
+msgstr "Eskizi yerleştir"
 
 #: src/resources/ui/marker-sketcher-window.ui:286
 msgid "Cancel the sketch"
-msgstr "Karalamayı iptal et"
+msgstr "Eskizi iptal et"
 
 #: src/resources/ui/marker-gear-popover.ui:22
 msgid "Zoom Out"
@@ -322,11 +631,11 @@ msgstr "Yankınlaştır"
 
 #: src/resources/ui/marker-gear-popover.ui:112
 msgid "Fullscreen"
-msgstr "Tam ekran"
+msgstr "Tam Ekran"
 
 #: src/resources/ui/marker-gear-popover.ui:120
 msgid "Sidebar"
-msgstr "Kenar çubuğu"
+msgstr "Kenar Çubuğu"
 
 #: src/resources/ui/marker-gear-popover.ui:136
 msgid "Save As…"
@@ -334,16 +643,11 @@ msgstr "Farklı Kaydet…"
 
 #: src/resources/ui/marker-gear-popover.ui:144
 msgid "Export…"
-msgstr "Dışa aktar…"
+msgstr "Dışa Aktar…"
 
 #: src/resources/ui/marker-gear-popover.ui:152
 msgid "Print…"
 msgstr "Yazdır…"
-
-#: src/resources/ui/marker-gear-popover.ui:168
-#: src/resources/ui/marker-gear-popover.ui:234
-msgid "View Mode"
-msgstr "Görünüm Kipi"
 
 #: src/resources/ui/marker-gear-popover.ui:215
 msgid "About Marker"
@@ -372,3 +676,70 @@ msgstr "Sabri Ünal <libreajans@gmail.com>"
 #: src/marker-editor.c:248
 msgid "Untitled.md"
 msgstr "Basliksiz.md"
+
+#: src/marker-exporter.c:106 src/marker-exporter.c:110
+msgid "Export"
+msgstr "Dışa Aktar"
+
+#: src/marker-exporter.c:109
+msgid "Cancel"
+msgstr "İptal"
+
+#: src/marker-window.c:112
+#, c-format
+msgid ""
+"<span weight='bold' size='larger'>Discard changes to the document '%s'?</"
+"span>\n"
+"\n"
+"The document has unsaved changes that will be lost if it is closed now."
+msgstr ""
+"<span weight='bold' size='larger'>'%s'belgesindeki değişiklikler gözden "
+"çıkarılsın mı?</span>\n"
+"\n"
+"Belgede, şimdi kapatılırsa kaybolacak kaydedilmemiş değişiklikler var."
+
+#: src/marker-window.c:125
+msgid ""
+"<span weight='bold' size='larger'>Discard changes to the document?</span>\n"
+"\n"
+"The document has unsaved changes that will be lost if it is closed now."
+msgstr ""
+"<span weight='bold' size='larger'>Belgesindeki değişiklikler gözden "
+"çıkarılsın mı?</span>\n"
+"\n"
+"Belgede, şimdi kapatılırsa kaybolacak kaydedilmemiş değişiklikler var."
+
+#: src/marker-window.c:1058 src/marker-window.c:1075
+msgid "Open"
+msgstr "Aç"
+
+#: src/marker-window.c:1061 src/marker-window.c:1078
+msgid "_Open"
+msgstr "_Aç"
+
+#: src/marker-window.c:1061 src/marker-window.c:1078 src/marker-window.c:1096
+msgid "_Cancel"
+msgstr "İ_ptal"
+
+#: src/marker-window.c:1093
+msgid "Save As"
+msgstr "Farklı Kaydet"
+
+#: src/marker-window.c:1096
+msgid "_Save"
+msgstr "_Kaydet"
+
+#~ msgid "PDF"
+#~ msgstr "PDF"
+
+#~ msgid "RTF"
+#~ msgstr "RTF"
+
+#~ msgid "ODT"
+#~ msgstr "ODT"
+
+#~ msgid "DOCx"
+#~ msgstr "DOCx"
+
+#~ msgid "LaTeX"
+#~ msgstr "LaTeX"
