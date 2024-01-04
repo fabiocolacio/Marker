@@ -1,4 +1,4 @@
-# SOME DESCRIPTIVE TITLE.
+# Czech translation for Marker.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the marker package.
 # FIRST AUTHOR Amerey.eu <info@amerey.eu>, 2023.
@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: marker\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-01-15 17:13+0100\n"
-"PO-Revision-Date: 2023-04-15 12:43+0200\n"
+"POT-Creation-Date: 2023-10-06 17:59+0300\n"
+"PO-Revision-Date: 2024-01-04 18:08+0100\n"
 "Last-Translator: Amerey.eu <info@amerey.eu>\n"
 "Language-Team: \n"
 "Language: cs\n"
@@ -16,7 +16,324 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n>=2 && n<=4 ? 1 : 2);\n"
-"X-Generator: Poedit 3.1.1\n"
+"X-Generator: Poedit 3.4\n"
+
+#: data/com.github.fabiocolacio.marker.desktop:3
+#: data/com.github.fabiocolacio.marker.appdata.xml:7
+msgid "Marker"
+msgstr "Marker"
+
+#: data/com.github.fabiocolacio.marker.desktop:11
+msgid "Markdown Editor"
+msgstr "Markdown editor"
+
+#: data/com.github.fabiocolacio.marker.desktop:12
+msgid "A simple markdown editor for GTK+"
+msgstr "Markdown editor pro GTK+"
+
+#: data/com.github.fabiocolacio.marker.desktop:26
+msgid "marker;markdown;editor;web;"
+msgstr "marker;markdown;editor;web;"
+
+#: data/com.github.fabiocolacio.marker.appdata.xml:8
+msgid "Powerful markdown editor for the GNOME desktop."
+msgstr "Markdown editor pro GNOME."
+
+#: data/com.github.fabiocolacio.marker.appdata.xml:11
+msgid "Features:"
+msgstr "Vlastnosti:"
+
+#: data/com.github.fabiocolacio.marker.appdata.xml:13
+msgid "View and edit markdown documents"
+msgstr "Prohlížení a úprava markdown dokumentů"
+
+#: data/com.github.fabiocolacio.marker.appdata.xml:14
+msgid "Convert markdown documents to HTML"
+msgstr "Převod markdown dokumentů do HTML"
+
+#: data/com.github.fabiocolacio.marker.appdata.xml:15
+msgid "Tex math rendering"
+msgstr "Vykreslování matematických vzorců"
+
+#: data/com.github.fabiocolacio.marker.appdata.xml:16
+msgid "Support for mermaid diagrams"
+msgstr "Podpora pro mermaid diagramy"
+
+#: data/com.github.fabiocolacio.marker.appdata.xml:17
+msgid "Support for charter plots"
+msgstr "Podpora charter diagramů"
+
+#: data/com.github.fabiocolacio.marker.appdata.xml:18
+msgid "Syntax highlighting for code blocks"
+msgstr "Zvýraznění syntaxe pro bloky kódu"
+
+#: data/com.github.fabiocolacio.marker.appdata.xml:19
+msgid "Integrated sketch editor"
+msgstr "Integrovaný editor náčrtů"
+
+#: data/com.github.fabiocolacio.marker.appdata.xml:22
+msgid "PDF"
+msgstr "PDF"
+
+#: data/com.github.fabiocolacio.marker.appdata.xml:23
+msgid "RTF"
+msgstr "RTF"
+
+#: data/com.github.fabiocolacio.marker.appdata.xml:24
+msgid "ODT"
+msgstr "ODT"
+
+#: data/com.github.fabiocolacio.marker.appdata.xml:25
+msgid "DOCx"
+msgstr "DOCx"
+
+#: data/com.github.fabiocolacio.marker.appdata.xml:26
+msgid "LaTeX"
+msgstr "LaTeX"
+
+#: data/com.github.fabiocolacio.marker.appdata.xml:29
+msgid "Custom CSS themes"
+msgstr "Vlastní témata CSS"
+
+#: data/com.github.fabiocolacio.marker.appdata.xml:30
+msgid "Custom syntax themes"
+msgstr "Vlastní témata syntaxe"
+
+#: data/com.github.fabiocolacio.marker.appdata.xml:31
+msgid "Figure captioning and numbering"
+msgstr "Popis a číslování obrázku"
+
+#: data/com.github.fabiocolacio.marker.appdata.xml:39
+msgid "The main view"
+msgstr "Hlavní pohled"
+
+#: data/com.github.fabiocolacio.marker.appdata.xml:43
+msgid "Some plotting"
+msgstr "ukázka diagramu"
+
+#: data/com.github.fabiocolacio.marker.appdata.xml:47
+msgid "The sketch editor"
+msgstr "Editor náčrtů"
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:24
+msgid "Syntax Theme"
+msgstr "Motiv syntaxe"
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:25
+msgid "The syntax theme to use for the editor."
+msgstr "Motiv syntaxe, které má editor použít."
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:30
+msgid "Enable Syntax Theme"
+msgstr "Povolit motiv syntaxe"
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:31
+msgid "Whether to use a syntax theme in the editor."
+msgstr "Zda se má v editoru použít téma syntaxe."
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:36
+msgid "Show Line Numbers"
+msgstr "Zobrazit čísla řádků"
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:37
+msgid "Whether to show line numbers in the editor."
+msgstr "Zda se mají v editoru zobrazovat čísla řádků."
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:42
+msgid "Show Right Margin"
+msgstr "Zobrazit pravý okraj"
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:43
+msgid "Whether to show a margin on the right side of the editor."
+msgstr "Zda se má zobrazit okraj na pravé straně editoru."
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:48
+msgid "The column at which the right margin should be shown"
+msgstr "Sloupec, u kterého má být zobrazen pravý okraj"
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:49
+msgid ""
+"Sets the column where the right margin will appear when 'show-right-margin' "
+"is enabled"
+msgstr ""
+"Nastaví sloupec, ve kterém se zobrazí pravý okraj, když je povoleno "
+"'zobrazit-pravý-okraj'"
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:54
+msgid "Wrap Text"
+msgstr "Zalomit text"
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:55
+msgid "Whether to wrap text in the editor."
+msgstr "Zda zalamovat text v editoru."
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:60
+msgid "Show Spaces"
+msgstr "Zobrazit mezery"
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:61
+msgid "Whether to show spaces and tabulation in the editor."
+msgstr "Zda se v editoru mají zobrazovat mezery a tabelace."
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:66
+msgid "Highlight Current Line"
+msgstr "Zvýraznit aktuální řádek"
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:67
+msgid "Whether to highlight the line with the cursor in the editor."
+msgstr "Zda se má v editoru zvýraznit řádek s kurzorem."
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:72
+msgid "Use spaces instead of tabs"
+msgstr "Místo tabulátorů použít mezery"
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:73
+msgid "Use spaces instead of tabs in the editor."
+msgstr "Místo tabulátorů použít mezery v editoru."
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:78
+msgid "Width of tabulation in characters."
+msgstr "Šířka tabelování ve znacích."
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:79
+msgid "Set the width of tabulation in characters in the editor."
+msgstr "Nastavení šířky tabelování ve znacích v editoru."
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:84
+msgid "Auto-indent code"
+msgstr "Automatické odsazení kódu"
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:85
+msgid "Auto-indent code in the editor."
+msgstr "Automatické odsazení kódu v editoru."
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:90
+msgid "Spell Check"
+msgstr "Kontrola pravopisu"
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:91
+msgid "Spell check using gtkspell."
+msgstr "Kontrola pravopisu pomocí gtkspell."
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:96
+msgid "Language for spell check"
+msgstr "Jazyk pro kontrolu pravopisu"
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:97
+msgid "Selected language for spell check."
+msgstr "Vybraný jazyk pro kontrolu pravopisu."
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:104
+msgid "CSS Theme"
+msgstr "Téma CSS"
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:105
+msgid "The css theme to use for the preview."
+msgstr "Motiv CSS, který se má použít pro náhled."
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:110
+msgid "Enable CSS theme in Preview"
+msgstr "Povolit motiv CSS v náhledu"
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:111
+msgid "Use a CSS theme in the live preview"
+msgstr "Použijte motiv CSS v živém náhledu"
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:116
+msgid "Enable math in Preview"
+msgstr "Povolit matematické vzorce v náhledu"
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:117
+msgid "Use js back-end to render math in the live preview."
+msgstr "Použijte js back-end k vykreslení matematiky v živém náhledu."
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:122
+msgid "Math Back-end"
+msgstr "Matematický back-end"
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:123
+msgid "Select the js math rendering back-end."
+msgstr "Vyberte back-end vykreslování matematiky js."
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:128
+msgid "Enable highlight.js in Preview"
+msgstr "Povolit highlight.js v náhledu"
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:129
+msgid "Use highlight.js in the live preview."
+msgstr "Použijte highlight.js v živém náhledu."
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:134
+msgid "Enable mermaid.js in Preview"
+msgstr "Povolit mermaid.js v náhledu"
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:135
+msgid "Use mermaid.js to show diagram in the live preview."
+msgstr "Použijte mermaid.js k zobrazení diagramu v živém náhledu."
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:140
+msgid "Highlight.js CSS theme."
+msgstr "Highlight.js CSS motiv."
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:141
+msgid "The css theme to use for the synthax highlight."
+msgstr "Téma css, které se má použít pro zvýraznění syntaxe."
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:145
+msgid "Enable Charter extension in Preview"
+msgstr "Povolit rozšíření Charter v náhledu"
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:146
+msgid "Enable Charter extension in the live preview."
+msgstr "Povolte rozšíření Charter v živém náhledu."
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:150
+msgid "Zoom level of the preview"
+msgstr "Úroveň přiblížení náhledu"
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:151
+msgid "Zoom level of the preview widget"
+msgstr "Úroveň přiblížení widgetu náhledu"
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:158
+#: src/resources/ui/marker-gear-popover.ui:168
+#: src/resources/ui/marker-gear-popover.ui:234
+msgid "View Mode"
+msgstr "Režim zobrazení"
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:159
+msgid "Controls how to organize the editor and preview areas on the screen."
+msgstr "Řídí způsob uspořádání editoru a oblastí náhledu na obrazovce."
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:164
+msgid "Enter dark-mode"
+msgstr "Tmavý režim"
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:165
+msgid ""
+"When this is enabled, the dark variant of the current gtk theme will be used."
+msgstr ""
+"Pokud je toto povoleno, použije se tmavá varianta aktuálního motivu gtk."
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:170
+msgid "Window width"
+msgstr "Šířka okna"
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:175
+msgid "Window height"
+msgstr "Výška okna"
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:180
+msgid "Window position (x, y)"
+msgstr "Pozice okna (x, y)"
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:185
+msgid "Editor pane width (in Dual Pane mode)"
+msgstr "Šířka panelu editoru (v režimu dvou panelů)"
+
+#: data/com.github.fabiocolacio.marker.gschema.xml:190
+msgid "Whether the sidebar is shown"
+msgstr "Zda je zobrazen postranní panel"
 
 #: src/resources/ui/marker-appmenu.ui:6
 #: src/resources/ui/marker-gear-popover.ui:88
@@ -25,7 +342,7 @@ msgstr "Nové okno"
 
 #: src/resources/ui/marker-appmenu.ui:12
 #: src/resources/ui/marker-prefs-window.ui:46
-#: src/resources/ui/marker-gear-popover.ui:183
+#: src/resources/ui/marker-gear-popover.ui:191
 msgid "Preferences"
 msgstr "Předvolby"
 
@@ -219,6 +536,11 @@ msgctxt "shortcut window"
 msgid "Insert link"
 msgstr "Vložit odkaz"
 
+#: src/resources/ui/marker-shortcuts-window.ui:95
+msgctxt "shortcut window"
+msgid "Draw a sketch"
+msgstr "Vytvořit náčrt"
+
 #: src/resources/ui/marker-shortcuts-window.ui:102
 msgctxt "shortcut window"
 msgid "Search in the document"
@@ -281,7 +603,7 @@ msgstr "Ukončit aplikaci"
 
 #: src/resources/ui/marker-sketcher-window.ui:112
 msgid "Sketcher"
-msgstr "Skica"
+msgstr "Náčrty"
 
 #: src/resources/ui/marker-sketcher-window.ui:123
 msgid "Pen Tool"
@@ -301,11 +623,11 @@ msgstr "Výběr barvy"
 
 #: src/resources/ui/marker-sketcher-window.ui:271
 msgid "Insert the sketch"
-msgstr "Vložit skicu"
+msgstr "Vložit náčrt"
 
 #: src/resources/ui/marker-sketcher-window.ui:286
 msgid "Cancel the sketch"
-msgstr "Zrušit skicu"
+msgstr "Zrušit náčrt"
 
 #: src/resources/ui/marker-gear-popover.ui:22
 msgid "Zoom Out"
@@ -339,11 +661,6 @@ msgstr "Exportovat…"
 msgid "Print…"
 msgstr "Tisk…"
 
-#: src/resources/ui/marker-gear-popover.ui:168
-#: src/resources/ui/marker-gear-popover.ui:234
-msgid "View Mode"
-msgstr "Režim zobrazení"
-
 #: src/resources/ui/marker-gear-popover.ui:215
 msgid "About Marker"
 msgstr "O aplikaci Marker"
@@ -371,3 +688,55 @@ msgstr "Amerey.eu"
 #: src/marker-editor.c:248
 msgid "Untitled.md"
 msgstr "Nepojmenovaný.md"
+
+#: src/marker-exporter.c:106 src/marker-exporter.c:110
+msgid "Export"
+msgstr "Exportovat"
+
+#: src/marker-exporter.c:109
+msgid "Cancel"
+msgstr "Zrušit"
+
+#: src/marker-window.c:112
+#, c-format
+msgid ""
+"<span weight='bold' size='larger'>Discard changes to the document '%s'?</"
+"span>\n"
+"\n"
+"The document has unsaved changes that will be lost if it is closed now."
+msgstr ""
+"<span weight='bold' size='larger'>Zrušit změny dokumentu '%s'?</span>\n"
+"\n"
+"Dokument obsahuje neuložené změny, které budou ztraceny, pokud jej nyní "
+"zavřete."
+
+#: src/marker-window.c:125
+msgid ""
+"<span weight='bold' size='larger'>Discard changes to the document?</span>\n"
+"\n"
+"The document has unsaved changes that will be lost if it is closed now."
+msgstr ""
+"<span weight='bold' size='larger'>Zrušit změny v dokumentu?</span>\n"
+"\n"
+"Dokument obsahuje neuložené změny, které budou ztraceny, pokud jej nyní "
+"zavřete."
+
+#: src/marker-window.c:1058 src/marker-window.c:1075
+msgid "Open"
+msgstr "Otevřít"
+
+#: src/marker-window.c:1061 src/marker-window.c:1078
+msgid "_Open"
+msgstr "_Otevřít"
+
+#: src/marker-window.c:1061 src/marker-window.c:1078 src/marker-window.c:1096
+msgid "_Cancel"
+msgstr "_Zrušit"
+
+#: src/marker-window.c:1093
+msgid "Save As"
+msgstr "Uložit jako"
+
+#: src/marker-window.c:1096
+msgid "_Save"
+msgstr "_Uložit"
