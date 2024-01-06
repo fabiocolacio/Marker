@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Copyright 2018-2020 Fabio Colacio <fabio.colacio.dev@gmail.com> -->
 <component type="desktop-application">
-  <id>com.github.fabiocolacio.marker.desktop</id>
+  <id>com.github.fabiocolacio.marker</id>
   <metadata_license>FSFAP</metadata_license>
   <project_license>GPL-3.0</project_license>
   <name>Marker</name>
-  <summary>Powerful markdown editor for the GNOME desktop.</summary>
+  <summary>Powerful markdown editor for the GNOME desktop</summary>
 
   <description>
     <p>Features:</p>
@@ -17,15 +17,7 @@
       <li>Support for charter plots</li>
       <li>Syntax highlighting for code blocks</li>
       <li>Integrated sketch editor</li>
-      <li>Exports to
-        <ul>
-          <li>PDF</li>
-          <li>RTF</li>
-          <li>ODT</li>
-          <li>DOCx</li>
-          <li>LaTeX</li>
-        </ul>
-      </li>
+      <li>Exports to PDF, RTF, ODT, DOCx and LaTeX</li>
       <li>Custom CSS themes</li>
       <li>Custom syntax themes</li>
       <li>Figure captioning and numbering</li>
@@ -33,6 +25,7 @@
   </description>
 
   <launchable type="desktop-id">com.github.fabiocolacio.marker.desktop</launchable>
+  <translation type="gettext">marker</translation>
 
   <screenshots>
     <screenshot type="default">
@@ -50,11 +43,13 @@
   </screenshots>
 
   <url type="homepage">https://github.com/fabiocolacio/Marker</url>
-  <project_group>Marker</project_group>
+  <url type="bugtracker">https://github.com/fabiocolacio/Marker/issues</url>
+  <url type="vcs-browser">https://github.com/fabiocolacio/Marker</url>
+  <url type="translate">https://github.com/fabiocolacio/Marker/tree/master/po</url>
 
   <provides>
     <binary>marker</binary>
-    <id>com.github.fabiocolacio.marker</id>
+    <id>com.github.fabiocolacio.marker.desktop</id>
   </provides>
 
   <releases>
@@ -105,34 +100,6 @@
     </release>
   </releases>
 
- <content_rating type="oars-1.1">
-    <content_attribute id="violence-cartoon">none</content_attribute>
-    <content_attribute id="violence-fantasy">none</content_attribute>
-    <content_attribute id="violence-realistic">none</content_attribute>
-    <content_attribute id="violence-bloodshed">none</content_attribute>
-    <content_attribute id="violence-sexual">none</content_attribute>
-    <content_attribute id="violence-desecration">none</content_attribute>
-    <content_attribute id="violence-slavery">none</content_attribute>
-    <content_attribute id="violence-worship">none</content_attribute>
-    <content_attribute id="drugs-alcohol">none</content_attribute>
-    <content_attribute id="drugs-narcotics">none</content_attribute>
-    <content_attribute id="drugs-tobacco">none</content_attribute>
-    <content_attribute id="sex-nudity">none</content_attribute>
-    <content_attribute id="sex-themes">none</content_attribute>
-    <content_attribute id="sex-homosexuality">none</content_attribute>
-    <content_attribute id="sex-prostitution">none</content_attribute>
-    <content_attribute id="sex-adultery">none</content_attribute>
-    <content_attribute id="sex-appearance">none</content_attribute>
-    <content_attribute id="language-profanity">none</content_attribute>
-    <content_attribute id="language-humor">none</content_attribute>
-    <content_attribute id="language-discrimination">none</content_attribute>
-    <content_attribute id="social-chat">none</content_attribute>
-    <content_attribute id="social-info">none</content_attribute>
-    <content_attribute id="social-audio">none</content_attribute>
-    <content_attribute id="social-location">none</content_attribute>
-    <content_attribute id="social-contacts">none</content_attribute>
-    <content_attribute id="money-purchasing">none</content_attribute>
-    <content_attribute id="money-gambling">none</content_attribute>
-  </content_rating>
-  
+ <content_rating type="oars-1.1" />
+
 </component>
