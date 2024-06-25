@@ -101,6 +101,10 @@ h6 {
 }
 
 img {
+  max-width: 100%;
+  height: auto;
+  display: block; 
+  margin: 0 auto; 
   margin-bottom: 20px;
 }
 
@@ -231,4 +235,6 @@ kbd {
 figure figcaption {
   text-align: center;
   font-size: 12px;
+  margin-top: 5px;
+  font-style: italic;
 }
