@@ -122,6 +122,18 @@ marker_prefs_set_use_syntax_theme(gboolean state)
   g_settings_set_boolean(prefs.editor_settings, "enable-syntax-theme", state);
 }
 
+gboolean
+marker_prefs_get_auto_save() 
+{
+  return g_settings_get_boolean(prefs.preview_settings, "autosave-check-button" );
+}
+
+void
+marker_prefs_set_auto_save(gboolean state)
+{
+  g_settings_set_boolean(prefs.preview_settings, "autosave-check-button" , state); 
+}
+
 char*
 marker_prefs_get_css_theme()
 {

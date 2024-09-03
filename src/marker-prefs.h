@@ -70,6 +70,8 @@ gboolean             marker_prefs_get_show_right_margin          (void);
 void                 marker_prefs_set_show_right_margin          (gboolean            state);
 guint                marker_prefs_get_right_margin_position      (void);
 void                 marker_prefs_set_right_margin_position      (guint               position);
+gboolean             marker_prefs_get_auto_save                  (void);
+void                 marker_prefs_set_auto_save                  (gboolean            state);
 char                *marker_prefs_get_css_theme                  (void);
 void                 marker_prefs_set_css_theme                  (const char         *theme);
 gboolean             marker_prefs_get_use_css_theme              (void);
