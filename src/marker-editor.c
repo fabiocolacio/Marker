@@ -24,6 +24,7 @@
 #include <locale.h>
 #include <glib/gi18n.h>
 
+#include "glib.h"
 #include "marker-prefs.h"
 #include "marker-string.h"
 
@@ -50,6 +51,7 @@ struct _MarkerEditor
   gboolean              search_active;
   gboolean              needs_refresh;
   guint                 timer_id;
+  guint                 autosave_timer_id;
 
   GtkTextIter          *text_iter;
 };
@@ -71,6 +73,14 @@ emit_signal_subtitle_changed (MarkerEditor *editor)
   g_signal_emit_by_name (editor, "subtitle-changed", subtitle);
 }
 
+static gboolean
+autosave_timeout_cb (gpointer user_data){
+  MarkerEditor *editor = user_data;
+  if (marker_prefs_get_auto_save() && marker_editor_has_unsaved_changes(editor))
+    marker_editor_auto_save(editor);
+  return G_SOURCE_CONTINUE;
+  
+}
 static gboolean
 refresh_timeout_cb (gpointer user_data)
 {
@@ -316,6 +326,7 @@ marker_editor_init (MarkerEditor *editor)
   gtk_widget_show (GTK_WIDGET (editor));
 
   editor->timer_id = g_timeout_add (20, refresh_timeout_cb, editor);
+  editor->autosave_timer_id = g_timeout_add(60,autosave_timeout_cb ,editor );
 
   marker_editor_apply_prefs (editor);
 }
@@ -512,6 +523,26 @@ marker_editor_open_file (MarkerEditor *editor,
 }
 
 void
+marker_editor_auto_save(MarkerEditor *editor)
+{
+  g_assert (MARKER_IS_EDITOR (editor));
+  g_return_if_fail (G_IS_FILE (editor->file));
+
+  g_autofree gchar *filepath = g_file_get_path (editor->file);
+  g_autofree GString * str = g_string_new(filepath);
+  str = g_string_append(str, ".bkp");
+  
+  FILE *fp = fopen (str->str, "w");
+
+  if (fp)
+  {
+    g_autofree gchar *buffer = marker_source_view_get_text (editor->source_view, false);
+    fputs (buffer, fp);
+    fclose (fp);
+  }
+}
+
+void
 marker_editor_save_file (MarkerEditor *editor)
 {
   g_assert (MARKER_IS_EDITOR (editor));
@@ -685,6 +716,7 @@ void
 marker_editor_closing(MarkerEditor       *editor)
 {
   g_source_remove (editor->timer_id);
+  g_source_remove (editor->autosave_timer_id);
   editor->needs_refresh = FALSE;
 }
 
