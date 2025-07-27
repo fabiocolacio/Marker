@@ -283,6 +283,32 @@ default_font_changed(GSettings*   settings,
   g_free(custom_family);
 }
 
+static gboolean 
+update_other_editors_callback(gpointer user_data)
+{
+  guint *update_id_ptr = (guint *)user_data;
+  
+  GtkApplication *app = marker_get_app();
+  if (!app) {
+    *update_id_ptr = 0;
+    return G_SOURCE_REMOVE;
+  }
+  
+  GList *windows = gtk_application_get_windows(app);
+  for (GList *item = windows; item != NULL; item = item->next) {
+    if (MARKER_IS_WINDOW(item->data)) {
+      MarkerWindow *window = MARKER_WINDOW(item->data);
+      MarkerEditor *editor = marker_window_get_active_editor(window);
+      if (editor) {
+        marker_editor_apply_prefs(editor);
+      }
+    }
+  }
+  
+  *update_id_ptr = 0;
+  return G_SOURCE_REMOVE;
+}
+
 static gboolean
 on_scroll_event(GtkWidget* widget, GdkEventScroll* event, gpointer user_data)
 {
@@ -325,17 +351,21 @@ on_scroll_event(GtkWidget* widget, GdkEventScroll* event, gpointer user_data)
     
     /* Update font size if it changed */
     if (size_changed) {
+      /* Immediate update without throttling for better responsiveness */
       marker_prefs_set_editor_font_size(new_size);
-      /* Update all editors, not just this one */
-      GtkApplication *app = marker_get_app();
-      GList *windows = gtk_application_get_windows(app);
-      for (GList *item = windows; item != NULL; item = item->next) {
-        if (MARKER_IS_WINDOW(item->data)) {
-          MarkerWindow *window = item->data;
-          MarkerEditor *editor = marker_window_get_active_editor(window);
-          marker_editor_apply_prefs(editor);
-        }
+      
+      /* Update only the current source view immediately */
+      marker_source_view_update_font(MARKER_SOURCE_VIEW(widget));
+      
+      /* Schedule update for other editors if not already scheduled */
+      static guint update_id = 0;
+      if (update_id > 0) {
+        g_source_remove(update_id);
+        update_id = 0;
       }
+      
+      /* Defer updating other editors to avoid blocking */
+      update_id = g_timeout_add(100, (GSourceFunc)update_other_editors_callback, &update_id);
     }
     
     /* Return TRUE to consume the event and prevent scrolling */

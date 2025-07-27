@@ -482,6 +482,7 @@ marker_editor_open_file (MarkerEditor *editor,
     g_object_unref (editor->file);
 
   editor->file = file;
+  g_object_ref (file);
   editor->title = g_file_get_basename(file);
   editor->needs_refresh = TRUE;
 

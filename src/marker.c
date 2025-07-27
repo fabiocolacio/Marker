@@ -70,6 +70,15 @@ const GActionEntry APP_MENU_ACTION_ENTRIES[] =
 static void
 marker_init(GtkApplication* app)
 {
+  /* Initialize GtkSourceView language manager early to avoid warnings */
+  static gboolean language_manager_initialized = FALSE;
+  if (!language_manager_initialized) {
+    GtkSourceLanguageManager *language_manager = gtk_source_language_manager_get_default();
+    /* Force language manager to load language specs */
+    gtk_source_language_manager_get_language_ids(language_manager);
+    language_manager_initialized = TRUE;
+  }
+  
   marker_prefs_load();
 
   const gchar *quit_accels[] = { "<Ctrl>q", NULL };
@@ -163,6 +172,8 @@ marker_open_directory(GtkApplication* app, GFile* directory)
     g_error_free(error);
   }
   
+  /* Close enumerator to free file descriptors */
+  g_file_enumerator_close(enumerator, NULL, NULL);
   g_object_unref(enumerator);
   
   // Sort files alphabetically
@@ -172,18 +183,27 @@ marker_open_directory(GtkApplication* app, GFile* directory)
   if (markdown_files) {
     GList *l;
     gboolean first = TRUE;
+    gint file_count = 0;
+    const gint MAX_FILES = 50; /* Reasonable limit to prevent system overload */
     
     for (l = markdown_files; l != NULL; l = l->next) {
       GFile *file = G_FILE(l->data);
+      
+      if (file_count >= MAX_FILES) {
+        gchar *path = g_file_get_path(directory);
+        g_warning("Too many files to open at once from %s. Opening first %d files only.", path ? path : "directory", MAX_FILES);
+        g_free(path);
+        break;
+      }
       
       if (first) {
         marker_create_new_window_from_file(file);
         first = FALSE;
       } else {
-        g_object_ref(file);
         marker_open_file(file);
       }
       
+      file_count++;
       g_object_unref(file);
     }
     
@@ -229,7 +249,6 @@ marker_open(GtkApplication* app,
     if (file_type == G_FILE_TYPE_DIRECTORY) {
       marker_open_directory(app, file);
     } else {
-      g_object_ref(file);
       marker_open_file(file);
     }
   }
@@ -348,14 +367,24 @@ marker_has_app_menu()
 void
 marker_create_new_window()
 {
-  MarkerWindow *window = marker_window_new (app);
+  GtkApplication *application = marker_get_app();
+  if (!application) {
+    g_critical("Application not initialized when creating window");
+    return;
+  }
+  MarkerWindow *window = marker_window_new (application);
   gtk_widget_show (GTK_WIDGET (window));
 }
 
 void
 marker_create_new_window_from_file (GFile *file)
 {
-  MarkerWindow *window = marker_window_new_from_file (app, file);
+  GtkApplication *application = marker_get_app();
+  if (!application) {
+    g_critical("Application not initialized when creating window from file");
+    return;
+  }
+  MarkerWindow *window = marker_window_new_from_file (application, file);
   gtk_widget_show (GTK_WIDGET (window));
 
   if (preview_mode_arg)
@@ -384,19 +413,25 @@ marker_create_new_window_from_file (GFile *file)
 void
 marker_open_file (GFile *file)
 {
-  GList *windows = gtk_application_get_windows(app);
-  if (g_list_last(windows))
+  GtkApplication *application = marker_get_app();
+  if (!application) {
+    g_critical("Application not initialized in marker_open_file");
+    return;
+  }
+  
+  GList *windows = gtk_application_get_windows(application);
+  if (windows && g_list_last(windows))
   {
-    if (MARKER_IS_WINDOW(windows->data))
+    GList *last = g_list_last(windows);
+    if (last->data && MARKER_IS_WINDOW(last->data))
     {
-      MarkerWindow *window = MARKER_WINDOW(windows->data);
+      MarkerWindow *window = MARKER_WINDOW(last->data);
       marker_window_new_editor_from_file(window, file);
       return;
     }
   }
 
   marker_create_new_window_from_file(file);
-
 }
 
 void
