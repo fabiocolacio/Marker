@@ -96,6 +96,12 @@
       <summary>Language for spell check</summary>
       <description>Selected language for spell check.</description>
     </key>
+
+    <key name="editor-font-size" type="u">
+      <default>12</default>
+      <summary>Editor Font Size</summary>
+      <description>Font size for the editor in points.</description>
+    </key>
   </schema>
 
   <schema path="/com/github/fabiocolacio/marker/preferences/preview/" id="com.github.fabiocolacio.marker.preferences.preview">

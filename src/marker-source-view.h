@@ -53,6 +53,7 @@ void                     marker_source_view_set_spell_check          (MarkerSour
 void                     marker_source_view_set_spell_check_lang     (MarkerSourceView   *source_view,
                                                                       const gchar        *lang);
 int                      marker_source_view_get_cursor_position      (MarkerSourceView   *source_view);
+void                     marker_source_view_update_font              (MarkerSourceView   *source_view);
 
 GtkSourceSearchContext  *marker_source_get_search_context            (MarkerSourceView   *source_view);
 

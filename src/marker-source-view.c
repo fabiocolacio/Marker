@@ -247,7 +247,12 @@ default_font_changed(GSettings*   settings,
   MarkerSourceView* source_view = (MarkerSourceView*) user_data;
   gchar* fontname = g_settings_get_string(settings, key);
   PangoFontDescription* font = pango_font_description_from_string(fontname);
-  gtk_widget_modify_font(GTK_WIDGET(source_view), font);
+  
+  /* Apply the font size from preferences */
+  guint font_size = marker_prefs_get_editor_font_size();
+  pango_font_description_set_size(font, font_size * PANGO_SCALE);
+  
+  gtk_widget_override_font(GTK_WIDGET(source_view), font);
   pango_font_description_free(font);
   g_free(fontname);
 }
@@ -263,6 +268,11 @@ marker_source_view_init (MarkerSourceView *source_view)
   g_signal_connect (source_view->settings, "changed::monospace-font-name", G_CALLBACK (default_font_changed), source_view);
   gchar *fontname = g_settings_get_string (source_view->settings, "monospace-font-name");
   PangoFontDescription* font = pango_font_description_from_string (fontname);
+  
+  /* Apply the font size from preferences */
+  guint font_size = marker_prefs_get_editor_font_size();
+  pango_font_description_set_size(font, font_size * PANGO_SCALE);
+  
   gtk_widget_modify_font (GTK_WIDGET (source_view), font);
   pango_font_description_free (font);
   g_free (fontname);
@@ -289,6 +299,21 @@ MarkerSourceView*
 marker_source_view_new(void)
 {
   return g_object_new(MARKER_TYPE_SOURCE_VIEW, NULL);
+}
+
+void
+marker_source_view_update_font(MarkerSourceView* source_view)
+{
+  gchar *fontname = g_settings_get_string (source_view->settings, "monospace-font-name");
+  PangoFontDescription* font = pango_font_description_from_string (fontname);
+  
+  /* Apply the font size from preferences */
+  guint font_size = marker_prefs_get_editor_font_size();
+  pango_font_description_set_size(font, font_size * PANGO_SCALE);
+  
+  gtk_widget_modify_font (GTK_WIDGET (source_view), font);
+  pango_font_description_free (font);
+  g_free (fontname);
 }
 
 GtkSourceSearchContext*

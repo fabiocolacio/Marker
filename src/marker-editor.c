@@ -678,6 +678,9 @@ marker_editor_apply_prefs (MarkerEditor *editor)
 
   guint tab_width = marker_prefs_get_tab_width ();
   gtk_source_view_set_indent_width (source_view, tab_width);
+  
+  /* Update font size */
+  marker_source_view_update_font (MARKER_SOURCE_VIEW (source_view));
 }
 
 

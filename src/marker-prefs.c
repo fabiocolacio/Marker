@@ -315,6 +315,18 @@ marker_prefs_set_spell_check_language(const char* lang)
   g_settings_set_string(prefs.editor_settings, "spell-check-lang", lang);
 }
 
+guint
+marker_prefs_get_editor_font_size()
+{
+  return g_settings_get_uint(prefs.editor_settings, "editor-font-size");
+}
+
+void
+marker_prefs_set_editor_font_size(guint size)
+{
+  g_settings_set_uint(prefs.editor_settings, "editor-font-size", size);
+}
+
 gboolean
 marker_prefs_get_show_line_numbers()
 {
@@ -657,6 +669,15 @@ tab_width_value_changed(GtkSpinButton *spin_button,
 }
 
 static void
+editor_font_size_changed(GtkSpinButton *spin_button,
+                         gpointer       user_data)
+{
+  guint value = gtk_spin_button_get_value_as_int (spin_button);
+  marker_prefs_set_editor_font_size(value);
+  update_editors ();
+}
+
+static void
 right_margin_position_value_changed(GtkSpinButton* spin_button,
                                     gpointer       user_data)
 {
@@ -895,6 +916,10 @@ marker_prefs_show_window()
   gtk_spin_button_set_increments(spin_button, 1, 0);
   gtk_spin_button_set_value(spin_button, marker_prefs_get_tab_width());
 
+  spin_button =
+    GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "editor_font_size_spin"));
+  gtk_spin_button_set_value(spin_button, marker_prefs_get_editor_font_size());
+
   GtkWindow* window = GTK_WINDOW(gtk_builder_get_object(builder, "prefs_win"));
 	gtk_widget_show_all(GTK_WIDGET(window));
   gtk_window_present(window);
@@ -945,6 +970,9 @@ marker_prefs_show_window()
   gtk_builder_add_callback_symbol(builder,
                                   "tab_width_value_changed",
                                   G_CALLBACK(tab_width_value_changed));
+  gtk_builder_add_callback_symbol(builder,
+                                  "editor_font_size_changed",
+                                  G_CALLBACK(editor_font_size_changed));
   gtk_builder_add_callback_symbol(builder,
                                   "right_margin_position_value_changed",
                                   G_CALLBACK(right_margin_position_value_changed));
