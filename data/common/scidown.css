@@ -180,3 +180,12 @@ img {
 *:not(span){
   unicode-bidi: plaintext;
 }
+
+
+/* Mermaid auto adjust / scroll */
+.mermaid-wrapper {
+  overflow-x: auto;
+  overflow-y: auto;
+  max-width: 100%;
+  max-height: 100%;
+}

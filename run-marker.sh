@@ -8,5 +8,11 @@ BUILD_DIR="$SCRIPT_DIR/build"
 # Set the schema directory to the build directory
 export GSETTINGS_SCHEMA_DIR="$BUILD_DIR"
 
+# Set development mode flag
+export MARKER_DEV_MODE=1
+
+# Change to build directory so relative paths work
+cd "$BUILD_DIR"
+
 # Run marker from the build directory
-exec "$BUILD_DIR/marker" "$@"
+exec "./marker" "$@"

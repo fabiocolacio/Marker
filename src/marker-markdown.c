@@ -35,7 +35,7 @@
 
 struct css_buffer_{
   gchar * location;
-  char * css; 
+  char * css;
   char * scidown;
 } typedef css_buffer_;
 
@@ -214,7 +214,7 @@ localization get_local()
   return local;
 }
 
-char* 
+char*
 marker_markdown_css(const char* css_link)
 {
   if (!css_link){
@@ -222,7 +222,7 @@ marker_markdown_css(const char* css_link)
   }
   if (g_strcmp0(css_link, buffer_.location) == 0) {
     return buffer_.css;
-  } 
+  }
   if (buffer_.location) {
     free(buffer_.location);
     free(buffer_.css);
@@ -233,10 +233,10 @@ marker_markdown_css(const char* css_link)
   gchar * path = g_strdup_printf("%s%s", STYLES_DIR, css_link);
   fp = fopen(path, "r");
   g_free(path);
-  
+
   if (fp)
   {
-    
+
     fseek(fp , 0 , SEEK_END);
     long size = ftell(fp);
     rewind(fp);
@@ -250,7 +250,7 @@ marker_markdown_css(const char* css_link)
   return buffer_.css;
 }
 
-char* 
+char*
 marker_markdown_scidown_css()
 {
   if (buffer_.scidown != 0) {
@@ -259,19 +259,30 @@ marker_markdown_scidown_css()
 
   buffer_.scidown = NULL;
   FILE* fp = NULL;
-  gchar * path = g_strdup_printf("%s%s", STYLES_DIR, "scidown.css");
+  gchar * path;
+
+  // Check if we're in development mode via environment variable
+  const gchar *dev_mode = g_getenv("MARKER_DEV_MODE");
+  if (dev_mode) {
+    path = g_strdup("../data/common/scidown.css");
+  } else {
+    path = g_strdup_printf("%s%s", COMMON_DIR, "scidown.css");
+  }
+
   fp = fopen(path, "r");
+
   g_free(path);
-  
+
   if (fp)
   {
-    
+
     fseek(fp , 0 , SEEK_END);
     long size = ftell(fp);
     rewind(fp);
 
-    buffer_.scidown = (char*) malloc(sizeof(char) * size);
+    buffer_.scidown = (char*) malloc(sizeof(char) * (size + 1));
     fread(buffer_.scidown, 1, size, fp);
+    buffer_.scidown[size] = '\0';  // Null terminate
 
     fclose(fp);
   }
@@ -472,7 +483,7 @@ marker_markdown_to_html_file(const char*         markdown,
                                        katex_mode,
                                        highlight_mode,
                                        mermaid_mode,
-                                       stylesheet_location, 
+                                       stylesheet_location,
                                        -1);
   FILE* fp = fopen(filepath, "w");
   if (fp && html)
@@ -499,7 +510,7 @@ marker_markdown_to_html_file_with_css_inline(const char*         markdown,
                                                        katex_mode,
                                                        highlight_mode,
                                                        mermaid_mode,
-                                                       stylesheet_location, 
+                                                       stylesheet_location,
                                                        -1);
   FILE* fp = fopen(filepath, "w");
   if (fp && html)
