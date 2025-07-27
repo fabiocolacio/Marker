@@ -84,6 +84,18 @@ $ ninja
 $ sudo ninja install
 ```
 
+### Development/Testing (without installation)
+
+To run Marker for development/testing without installing:
+
+```bash
+# After building with ninja:
+$ GSETTINGS_SCHEMA_DIR=build ./build/marker
+
+# Or use the provided wrapper script:
+$ ./run-marker.sh
+```
+
 ## Donations/Tips
 
 If you like Marker and would like to support the development of this project, please donate below!

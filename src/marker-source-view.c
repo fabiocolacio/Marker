@@ -264,11 +264,20 @@ default_font_changed(GSettings*   settings,
                      gpointer     user_data)
 {
   MarkerSourceView* source_view = (MarkerSourceView*) user_data;
-  gchar* fontname = g_settings_get_string(settings, key);
+  gchar* custom_family = marker_prefs_get_editor_font_family();
+  gchar* fontname;
+  
+  if (custom_family && strlen(custom_family) > 0 && g_strcmp0(custom_family, "System Default") != 0) {
+    fontname = g_strdup(custom_family);
+  } else {
+    fontname = g_settings_get_string(settings, key);
+  }
+  
   guint font_size = marker_prefs_get_editor_font_size();
   
   apply_font_css(source_view, fontname, font_size);
   g_free(fontname);
+  g_free(custom_family);
 }
 
 static void
@@ -280,11 +289,21 @@ marker_source_view_init (MarkerSourceView *source_view)
   marker_source_view_set_language (source_view, "markdown");
   source_view->settings = g_settings_new ("org.gnome.desktop.interface");
   g_signal_connect (source_view->settings, "changed::monospace-font-name", G_CALLBACK (default_font_changed), source_view);
-  gchar *fontname = g_settings_get_string (source_view->settings, "monospace-font-name");
+  
+  gchar* custom_family = marker_prefs_get_editor_font_family();
+  gchar* fontname;
+  
+  if (custom_family && strlen(custom_family) > 0 && g_strcmp0(custom_family, "System Default") != 0) {
+    fontname = g_strdup(custom_family);
+  } else {
+    fontname = g_settings_get_string(source_view->settings, "monospace-font-name");
+  }
+  
   guint font_size = marker_prefs_get_editor_font_size();
   
   apply_font_css(source_view, fontname, font_size);
-  g_free (fontname);
+  g_free(fontname);
+  g_free(custom_family);
 
   gtk_source_view_set_insert_spaces_instead_of_tabs (GTK_SOURCE_VIEW (source_view), marker_prefs_get_replace_tabs ());
   gtk_source_view_set_tab_width (GTK_SOURCE_VIEW (source_view), marker_prefs_get_tab_width ());
@@ -313,11 +332,20 @@ marker_source_view_new(void)
 void
 marker_source_view_update_font(MarkerSourceView* source_view)
 {
-  gchar *fontname = g_settings_get_string (source_view->settings, "monospace-font-name");
+  gchar* custom_family = marker_prefs_get_editor_font_family();
+  gchar* fontname;
+  
+  if (custom_family && strlen(custom_family) > 0 && g_strcmp0(custom_family, "System Default") != 0) {
+    fontname = g_strdup(custom_family);
+  } else {
+    fontname = g_settings_get_string(source_view->settings, "monospace-font-name");
+  }
+  
   guint font_size = marker_prefs_get_editor_font_size();
   
   apply_font_css(source_view, fontname, font_size);
-  g_free (fontname);
+  g_free(fontname);
+  g_free(custom_family);
 }
 
 GtkSourceSearchContext*

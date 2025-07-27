@@ -102,6 +102,12 @@
       <summary>Editor Font Size</summary>
       <description>Font size for the editor in points.</description>
     </key>
+
+    <key name="editor-font-family" type="s">
+      <default>''</default>
+      <summary>Editor Font Family</summary>
+      <description>Font family for the editor. Empty string means use system monospace font.</description>
+    </key>
   </schema>
 
   <schema path="/com/github/fabiocolacio/marker/preferences/preview/" id="com.github.fabiocolacio.marker.preferences.preview">

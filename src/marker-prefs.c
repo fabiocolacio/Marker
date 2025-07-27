@@ -327,6 +327,18 @@ marker_prefs_set_editor_font_size(guint size)
   g_settings_set_uint(prefs.editor_settings, "editor-font-size", size);
 }
 
+gchar*
+marker_prefs_get_editor_font_family()
+{
+  return g_settings_get_string(prefs.editor_settings, "editor-font-family");
+}
+
+void
+marker_prefs_set_editor_font_family(const gchar* family)
+{
+  g_settings_set_string(prefs.editor_settings, "editor-font-family", family);
+}
+
 gboolean
 marker_prefs_get_show_line_numbers()
 {
@@ -479,6 +491,33 @@ marker_prefs_get_available_syntax_themes()
   }
 
   return list;
+}
+
+static void
+populate_font_families(GtkComboBox* combo_box)
+{
+  PangoFontMap* font_map = pango_cairo_font_map_get_default();
+  PangoFontFamily** families;
+  int n_families;
+  
+  pango_font_map_list_families(font_map, &families, &n_families);
+  
+  GtkListStore* store = GTK_LIST_STORE(gtk_combo_box_get_model(combo_box));
+  gtk_list_store_clear(store);
+  
+  /* Add "System Default" option */
+  GtkTreeIter iter;
+  gtk_list_store_append(store, &iter);
+  gtk_list_store_set(store, &iter, 0, "System Default", -1);
+  
+  /* Add all system font families */
+  for (int i = 0; i < n_families; i++) {
+    const char* family_name = pango_font_family_get_name(families[i]);
+    gtk_list_store_append(store, &iter);
+    gtk_list_store_set(store, &iter, 0, family_name, -1);
+  }
+  
+  g_free(families);
 }
 
 static void
@@ -675,6 +714,18 @@ editor_font_size_changed(GtkSpinButton *spin_button,
   guint value = gtk_spin_button_get_value_as_int (spin_button);
   marker_prefs_set_editor_font_size(value);
   update_editors ();
+}
+
+static void
+editor_font_family_changed(GtkComboBox *combo_box,
+                           gpointer     user_data)
+{
+  gchar* family = marker_widget_combo_box_get_active_str(combo_box);
+  if (family) {
+    marker_prefs_set_editor_font_family(family);
+    update_editors();
+    g_free(family);
+  }
 }
 
 static void
@@ -920,6 +971,30 @@ marker_prefs_show_window()
     GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "editor_font_size_spin"));
   gtk_spin_button_set_value(spin_button, marker_prefs_get_editor_font_size());
 
+  /* Setup font family combo box */
+  GtkComboBox* font_combo = GTK_COMBO_BOX(gtk_builder_get_object(builder, "editor_font_family_combo"));
+  
+  /* Set up cell renderer for font combo box */
+  GtkCellRenderer* font_cell_renderer = gtk_cell_renderer_text_new();
+  gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(font_combo), font_cell_renderer, TRUE);
+  gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(font_combo),
+                                 font_cell_renderer,
+                                 "text", 0,
+                                 NULL);
+  
+  populate_font_families(font_combo);
+  
+  /* Set current font family selection */
+  gchar* current_family = marker_prefs_get_editor_font_family();
+  if (current_family && strlen(current_family) > 0) {
+    GtkTreeModel* model = gtk_combo_box_get_model(font_combo);
+    gint model_len = gtk_tree_model_iter_n_children(model, NULL);
+    marker_widget_combo_box_set_active_str(font_combo, current_family, model_len);
+  } else {
+    gtk_combo_box_set_active(font_combo, 0); /* System Default */
+  }
+  g_free(current_family);
+
   GtkWindow* window = GTK_WINDOW(gtk_builder_get_object(builder, "prefs_win"));
 	gtk_widget_show_all(GTK_WIDGET(window));
   gtk_window_present(window);
@@ -973,6 +1048,9 @@ marker_prefs_show_window()
   gtk_builder_add_callback_symbol(builder,
                                   "editor_font_size_changed",
                                   G_CALLBACK(editor_font_size_changed));
+  gtk_builder_add_callback_symbol(builder,
+                                  "editor_font_family_changed",
+                                  G_CALLBACK(editor_font_family_changed));
   gtk_builder_add_callback_symbol(builder,
                                   "right_margin_position_value_changed",
                                   G_CALLBACK(right_margin_position_value_changed));

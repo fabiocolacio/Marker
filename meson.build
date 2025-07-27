@@ -139,6 +139,34 @@ install_data(
   install_dir : join_paths(DATA_DIR, 'glib-2.0/schemas')
 )
 
+# Compile schema locally for development
+glib_compile_schemas = find_program('glib-compile-schemas', required: false)
+if glib_compile_schemas.found()
+  # Copy schema to build directory and compile it
+  configure_file(
+    input: 'data/com.github.fabiocolacio.marker.gschema.xml',
+    output: 'com.github.fabiocolacio.marker.gschema.xml',
+    copy: true
+  )
+  
+  custom_target('gschemas.compiled',
+    input: 'data/com.github.fabiocolacio.marker.gschema.xml',
+    output: 'gschemas.compiled',
+    command: [glib_compile_schemas, meson.current_build_dir()],
+    build_by_default: true,
+    install: false
+  )
+  
+  # Print helpful development message
+  message('===================================================================')
+  message('Development build complete!')
+  message('To run Marker with local schemas for development, use one of:')
+  message('  1. GSETTINGS_SCHEMA_DIR=build ./build/marker')
+  message('  2. ./run-marker.sh  (if the wrapper script exists)')
+  message('  3. cd build && GSETTINGS_SCHEMA_DIR=. ./marker')
+  message('===================================================================')
+endif
+
 install_data(
   'data/com.github.fabiocolacio.marker.appdata.xml',
   install_dir : APPDATA_DIR
