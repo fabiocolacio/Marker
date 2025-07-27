@@ -106,6 +106,14 @@ marker_init(GtkApplication* app)
                NULL);
 }
 
+typedef struct {
+  GQueue *file_queue;
+  guint process_id;
+  GtkApplication *app;
+} FileOpenContext;
+
+static gboolean process_file_queue(gpointer user_data);
+
 static void
 activate(GtkApplication* app)
 {
@@ -179,39 +187,97 @@ marker_open_directory(GtkApplication* app, GFile* directory)
   // Sort files alphabetically
   markdown_files = g_list_sort(markdown_files, compare_files_by_name);
   
-  // Open all markdown files using the same approach as glob
-  if (markdown_files) {
-    GList *l;
-    gboolean first = TRUE;
-    gint file_count = 0;
-    const gint MAX_FILES = 50; /* Reasonable limit to prevent system overload */
+  // Create a queue context for directory files
+  if (markdown_files && g_list_length(markdown_files) > 0) {
+    FileOpenContext *context = g_new0(FileOpenContext, 1);
+    context->file_queue = g_queue_new();
+    context->app = app;
     
-    for (l = markdown_files; l != NULL; l = l->next) {
+    /* Hold application while processing directory files */
+    g_application_hold(G_APPLICATION(app));
+    
+    /* Add files to queue with limit */
+    GList *l;
+    gint file_count = 0;
+    const gint MAX_FILES = 50;
+    
+    for (l = markdown_files; l != NULL && file_count < MAX_FILES; l = l->next) {
       GFile *file = G_FILE(l->data);
-      
-      if (file_count >= MAX_FILES) {
-        gchar *path = g_file_get_path(directory);
-        g_warning("Too many files to open at once from %s. Opening first %d files only.", path ? path : "directory", MAX_FILES);
-        g_free(path);
-        break;
-      }
-      
-      if (first) {
-        marker_create_new_window_from_file(file);
-        first = FALSE;
-      } else {
-        marker_open_file(file);
-      }
-      
+      g_queue_push_tail(context->file_queue, file);
       file_count++;
-      g_object_unref(file);
+    }
+    
+    if (file_count >= MAX_FILES) {
+      gchar *path = g_file_get_path(directory);
+      g_warning("Too many files in %s. Opening first %d files only.", path ? path : "directory", MAX_FILES);
+      g_free(path);
+    }
+    
+    /* Free remaining files if any */
+    for (; l != NULL; l = l->next) {
+      g_object_unref(G_FILE(l->data));
     }
     
     g_list_free(markdown_files);
+    
+    /* Start processing files */
+    g_idle_add(process_file_queue, context);
   } else {
     // If no markdown files found, create empty window
+    if (markdown_files) g_list_free(markdown_files);
     marker_create_new_window();
   }
+}
+
+static gboolean
+process_file_queue(gpointer user_data)
+{
+  FileOpenContext *context = (FileOpenContext *)user_data;
+  
+  /* Check if there are more files to process */
+  if (g_queue_is_empty(context->file_queue)) {
+    /* All files processed, cleanup */
+    g_queue_free(context->file_queue);
+    g_application_release(G_APPLICATION(context->app));
+    g_free(context);
+    return G_SOURCE_REMOVE;
+  }
+  
+  /* Get the next file from the queue */
+  GFile *file = g_queue_pop_head(context->file_queue);
+  
+  /* Check if this is a directory */
+  GFileType file_type = g_file_query_file_type(file, G_FILE_QUERY_INFO_NONE, NULL);
+  
+  if (file_type == G_FILE_TYPE_DIRECTORY) {
+    marker_open_directory(context->app, file);
+  } else {
+    /* For the first file, create a new window if needed */
+    static gboolean first_file = TRUE;
+    if (first_file) {
+      GList *windows = gtk_application_get_windows(context->app);
+      if (!windows || g_list_length(windows) == 0) {
+        marker_create_new_window_from_file(file);
+      } else {
+        marker_open_file(file);
+      }
+      first_file = FALSE;
+    } else {
+      marker_open_file(file);
+    }
+  }
+  
+  g_object_unref(file);
+  
+  /* Process pending GTK events to allow UI to update */
+  while (gtk_events_pending()) {
+    gtk_main_iteration();
+  }
+  
+  /* Schedule next file processing with a small delay */
+  g_timeout_add(100, process_file_queue, context);
+  
+  return G_SOURCE_REMOVE;
 }
 
 static void
@@ -235,24 +301,24 @@ marker_open(GtkApplication* app,
     g_application_release (G_APPLICATION (app));
     return;
   }
- 
+  
+  /* Create a queue to process files sequentially */
+  FileOpenContext *context = g_new0(FileOpenContext, 1);
+  context->file_queue = g_queue_new();
+  context->app = app;
+  
+  /* Add all files to the queue */
   for (int i = 0; i < num_files; ++i)
   {
     GFile* file = files[i];
-    if (!file) {
-      continue;
-    }
-    
-    // Check if this is a directory
-    GFileType file_type = g_file_query_file_type(file, G_FILE_QUERY_INFO_NONE, NULL);
-    
-    if (file_type == G_FILE_TYPE_DIRECTORY) {
-      marker_open_directory(app, file);
-    } else {
-      marker_open_file(file);
+    if (file) {
+      g_object_ref(file);
+      g_queue_push_tail(context->file_queue, file);
     }
   }
-  g_application_release (G_APPLICATION (app));
+  
+  /* Start processing files one by one */
+  context->process_id = g_idle_add(process_file_queue, context);
 }
 
 void
