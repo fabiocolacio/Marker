@@ -563,7 +563,7 @@
                     <property name="can_focus">False</property>
                     <property name="model">math_backends</property>
                     <property name="active">0</property>
-                    <property name="entry_text_column">1</property>
+                    <property name="entry_text_column">0</property>
                     <signal name="changed" handler="math_backends_combo_changed_cb" swapped="no"/>
                   </object>
                   <packing>
