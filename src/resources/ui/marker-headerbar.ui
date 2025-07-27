@@ -14,6 +14,10 @@
     <property name="icon_name">view-dual-symbolic</property>
     <property name="icon_size">2</property>
   </object>
+  <object class="GtkImage" id="spell-check">
+    <property name="icon_name">tools-check-spelling-symbolic</property>
+    <property name="icon_size">2</property>
+  </object>
   
   <!-- Header Bar -->
   <object class="GtkHeaderBar" id="header_bar">
@@ -33,6 +37,17 @@
         <property name="visible">True</property>
         <property name="label" translatable="yes">Save</property>
         <property name="action-name">win.save</property>
+      </object>
+      <packing>
+        <property name="pack_type">start</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkToggleButton" id="spell_check_btn">
+        <property name="visible">True</property>
+        <property name="image">spell-check</property>
+        <property name="tooltip_text" translatable="yes">Toggle spell check</property>
+        <property name="action-name">win.togglespellcheck</property>
       </object>
       <packing>
         <property name="pack_type">start</property>

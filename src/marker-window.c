@@ -51,6 +51,7 @@ struct _MarkerWindow
   GtkHeaderBar         *header_bar;
   GtkButton            *zoom_original_btn;
   GtkButton            *view_mode_btn;
+  GtkToggleButton      *spell_check_btn;
 
   gboolean              is_fullscreen;
   GtkButton            *unfullscreen_btn;
@@ -394,6 +395,45 @@ action_toggle_view_mode (GSimpleAction *action,
   
   marker_editor_set_view_mode (editor, new_mode);
   update_view_mode_button_icon (window, new_mode);
+}
+
+static void
+action_toggle_spell_check (GSimpleAction *action,
+                           GVariant      *parameter,
+                           gpointer       user_data)
+{
+  MarkerWindow *window = user_data;
+  
+  /* Toggle the spell check preference */
+  gboolean current_state = marker_prefs_get_spell_check();
+  gboolean new_state = !current_state;
+  marker_prefs_set_spell_check (new_state);
+  
+  /* Apply to all editors in all windows and update buttons */
+  GtkApplication *app = marker_get_app();
+  if (!app) return;
+  
+  GList *windows = gtk_application_get_windows(app);
+  for (GList *win_item = windows; win_item != NULL; win_item = win_item->next) {
+    if (MARKER_IS_WINDOW(win_item->data)) {
+      MarkerWindow *win = MARKER_WINDOW(win_item->data);
+      
+      /* Update button state in each window */
+      if (win->spell_check_btn) {
+        gtk_toggle_button_set_active (win->spell_check_btn, new_state);
+      }
+      
+      /* Get all editors in this window */
+      GList *children = gtk_container_get_children(GTK_CONTAINER(win->editors_stack));
+      for (GList *child = children; child != NULL; child = child->next) {
+        if (MARKER_IS_EDITOR(child->data)) {
+          MarkerEditor *editor = MARKER_EDITOR(child->data);
+          marker_editor_apply_prefs(editor);
+        }
+      }
+      g_list_free(children);
+    }
+  }
 }
 
 gchar *
@@ -766,6 +806,12 @@ marker_window_init (MarkerWindow *window)
     gtk_application_set_accels_for_action (app, "win.toggleviewmode", toggleviewmode_accels);
     g_action_map_add_action (G_ACTION_MAP (window), action);
 
+    action = G_ACTION (g_simple_action_new ("togglespellcheck", NULL));
+    g_signal_connect (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (action_toggle_spell_check), window);
+    const gchar *togglespellcheck_accels[] = { "F7", NULL };
+    gtk_application_set_accels_for_action (app, "win.togglespellcheck", togglespellcheck_accels);
+    g_action_map_add_action (G_ACTION_MAP (window), action);
+
     action = G_ACTION (g_simple_action_new ("open", NULL));
     g_signal_connect_swapped (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (marker_window_open_file), window);
     const gchar *open_accels[] = { "<Ctrl>o", NULL }; 
@@ -913,6 +959,13 @@ marker_window_init (MarkerWindow *window)
 
   /** View Mode Button **/
   window->view_mode_btn = GTK_BUTTON (gtk_builder_get_object (builder, "view_mode_btn"));
+  
+  /** Spell Check Button **/
+  window->spell_check_btn = GTK_TOGGLE_BUTTON (gtk_builder_get_object (builder, "spell_check_btn"));
+  /* Set initial state */
+  if (window->spell_check_btn) {
+    gtk_toggle_button_set_active (window->spell_check_btn, marker_prefs_get_spell_check());
+  }
   
   /** Popover **/
   GtkMenuButton *menu_btn = GTK_MENU_BUTTON(gtk_builder_get_object(builder, "menu_btn"));
