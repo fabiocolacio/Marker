@@ -340,6 +340,18 @@ marker_prefs_set_editor_font_family(const gchar* family)
 }
 
 gboolean
+marker_prefs_get_use_ctrl_wheel_zoom()
+{
+  return g_settings_get_boolean(prefs.editor_settings, "use-ctrl-wheel-zoom");
+}
+
+void
+marker_prefs_set_use_ctrl_wheel_zoom(gboolean state)
+{
+  g_settings_set_boolean(prefs.editor_settings, "use-ctrl-wheel-zoom", state);
+}
+
+gboolean
 marker_prefs_get_show_line_numbers()
 {
   return g_settings_get_boolean(prefs.editor_settings, "show-line-numbers");
@@ -729,6 +741,14 @@ editor_font_family_changed(GtkComboBox *combo_box,
 }
 
 static void
+use_ctrl_wheel_zoom_toggled(GtkToggleButton* button,
+                           gpointer         user_data)
+{
+  gboolean state = gtk_toggle_button_get_active(button);
+  marker_prefs_set_use_ctrl_wheel_zoom(state);
+}
+
+static void
 right_margin_position_value_changed(GtkSpinButton* spin_button,
                                     gpointer       user_data)
 {
@@ -954,6 +974,10 @@ marker_prefs_show_window()
     GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "enable_dark_mode_check_button"));
   gtk_toggle_button_set_active(check_button, marker_prefs_get_use_dark_theme());
 
+  check_button =
+    GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "use_ctrl_wheel_zoom_check_button"));
+  gtk_toggle_button_set_active(check_button, marker_prefs_get_use_ctrl_wheel_zoom());
+
   spin_button =
     GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "right_margin_position_spin_button"));
   gtk_widget_set_sensitive(GTK_WIDGET(spin_button), marker_prefs_get_show_right_margin());
@@ -1078,6 +1102,9 @@ marker_prefs_show_window()
   gtk_builder_add_callback_symbol(builder,
                                   "enable_charter_toggled",
                                   G_CALLBACK(enable_charter_toggled));
+  gtk_builder_add_callback_symbol(builder,
+                                  "use_ctrl_wheel_zoom_toggled",
+                                  G_CALLBACK(use_ctrl_wheel_zoom_toggled));
   gtk_builder_connect_signals(builder, NULL);
 
   g_object_unref(builder);

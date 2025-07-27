@@ -64,6 +64,8 @@ guint                marker_prefs_get_editor_font_size           (void);
 void                 marker_prefs_set_editor_font_size           (guint               size);
 gchar               *marker_prefs_get_editor_font_family         (void);
 void                 marker_prefs_set_editor_font_family         (const gchar        *family);
+gboolean             marker_prefs_get_use_ctrl_wheel_zoom        (void);
+void                 marker_prefs_set_use_ctrl_wheel_zoom        (gboolean            state);
 gboolean             marker_prefs_get_show_line_numbers          (void);
 void                 marker_prefs_set_show_line_numbers          (gboolean            state);
 gboolean             marker_prefs_get_highlight_current_line     (void);

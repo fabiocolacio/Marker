@@ -25,6 +25,9 @@
 #include "marker-source-view.h"
 #include "marker-prefs.h"
 #include "marker-utils.h"
+#include "marker.h"
+#include "marker-window.h"
+#include "marker-editor.h"
 
 #include <glib.h>
 #include <gtkspell/gtkspell.h>
@@ -280,6 +283,69 @@ default_font_changed(GSettings*   settings,
   g_free(custom_family);
 }
 
+static gboolean
+on_scroll_event(GtkWidget* widget, GdkEventScroll* event, gpointer user_data)
+{
+  gboolean ctrl_pressed = (event->state & GDK_CONTROL_MASK) != 0;
+  gboolean zoom_enabled = marker_prefs_get_use_ctrl_wheel_zoom();
+  
+  /* Check if Ctrl key is pressed and the setting is enabled */
+  if (ctrl_pressed && zoom_enabled) {
+    guint current_size = marker_prefs_get_editor_font_size();
+    guint new_size = current_size;
+    gboolean size_changed = FALSE;
+    
+    /* Handle both discrete and smooth scrolling */
+    if (event->direction == GDK_SCROLL_UP) {
+      /* Discrete scroll up - increase font size */
+      if (current_size < 72) {
+        new_size = current_size + 1;
+        size_changed = TRUE;
+      }
+    } else if (event->direction == GDK_SCROLL_DOWN) {
+      /* Discrete scroll down - decrease font size */
+      if (current_size > 6) {
+        new_size = current_size - 1;
+        size_changed = TRUE;
+      }
+    } else if (event->direction == GDK_SCROLL_SMOOTH) {
+      /* Smooth scrolling - use delta values */
+      gdouble delta_x, delta_y;
+      if (gdk_event_get_scroll_deltas((GdkEvent*)event, &delta_x, &delta_y)) {
+        /* Negative delta_y means scroll up (increase font), positive means scroll down (decrease font) */
+        if (delta_y < -0.1 && current_size < 72) { /* Scroll up */
+          new_size = current_size + 1;
+          size_changed = TRUE;
+        } else if (delta_y > 0.1 && current_size > 6) { /* Scroll down */
+          new_size = current_size - 1;
+          size_changed = TRUE;
+        }
+      }
+    }
+    
+    /* Update font size if it changed */
+    if (size_changed) {
+      marker_prefs_set_editor_font_size(new_size);
+      /* Update all editors, not just this one */
+      GtkApplication *app = marker_get_app();
+      GList *windows = gtk_application_get_windows(app);
+      for (GList *item = windows; item != NULL; item = item->next) {
+        if (MARKER_IS_WINDOW(item->data)) {
+          MarkerWindow *window = item->data;
+          MarkerEditor *editor = marker_window_get_active_editor(window);
+          marker_editor_apply_prefs(editor);
+        }
+      }
+    }
+    
+    /* Return TRUE to consume the event and prevent scrolling */
+    return TRUE;
+  }
+  
+  /* Return FALSE to allow normal scrolling */
+  return FALSE;
+}
+
 static void
 marker_source_view_init (MarkerSourceView *source_view)
 {
@@ -287,6 +353,9 @@ marker_source_view_init (MarkerSourceView *source_view)
                                                                           NULL);
   source_view->search_context = search_context;
   marker_source_view_set_language (source_view, "markdown");
+  
+  /* Connect scroll event handler for Ctrl+wheel zoom */
+  g_signal_connect(source_view, "scroll-event", G_CALLBACK(on_scroll_event), NULL);
   source_view->settings = g_settings_new ("org.gnome.desktop.interface");
   g_signal_connect (source_view->settings, "changed::monospace-font-name", G_CALLBACK (default_font_changed), source_view);
   

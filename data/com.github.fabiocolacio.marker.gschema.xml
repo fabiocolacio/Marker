@@ -98,6 +98,7 @@
     </key>
 
     <key name="editor-font-size" type="u">
+      <range min="6" max="72"/>
       <default>12</default>
       <summary>Editor Font Size</summary>
       <description>Font size for the editor in points.</description>
@@ -107,6 +108,12 @@
       <default>''</default>
       <summary>Editor Font Family</summary>
       <description>Font family for the editor. Empty string means use system monospace font.</description>
+    </key>
+
+    <key name="use-ctrl-wheel-zoom" type="b">
+      <default>false</default>
+      <summary>Use Ctrl + mouse wheel for font size</summary>
+      <description>When enabled, Ctrl + mouse wheel will change the editor font size.</description>
     </key>
   </schema>
 
