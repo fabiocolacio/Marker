@@ -10,6 +10,10 @@
     <property name="icon_name">view-restore-symbolic</property>
     <property name="icon_size">2</property>
   </object>
+  <object class="GtkImage" id="view-mode">
+    <property name="icon_name">view-dual-symbolic</property>
+    <property name="icon_size">2</property>
+  </object>
   
   <!-- Header Bar -->
   <object class="GtkHeaderBar" id="header_bar">
@@ -29,6 +33,17 @@
         <property name="visible">True</property>
         <property name="label" translatable="yes">Save</property>
         <property name="action-name">win.save</property>
+      </object>
+      <packing>
+        <property name="pack_type">start</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkButton" id="view_mode_btn">
+        <property name="visible">True</property>
+        <property name="image">view-mode</property>
+        <property name="tooltip_text" translatable="yes">Toggle view mode</property>
+        <property name="action-name">win.toggleviewmode</property>
       </object>
       <packing>
         <property name="pack_type">start</property>

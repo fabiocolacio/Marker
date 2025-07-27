@@ -50,6 +50,7 @@ struct _MarkerWindow
   GtkBox               *header_box;
   GtkHeaderBar         *header_bar;
   GtkButton            *zoom_original_btn;
+  GtkButton            *view_mode_btn;
 
   gboolean              is_fullscreen;
   GtkButton            *unfullscreen_btn;
@@ -72,6 +73,8 @@ struct _MarkerWindow
 
 G_DEFINE_TYPE (MarkerWindow, marker_window, GTK_TYPE_APPLICATION_WINDOW);
 
+/* Forward declarations */
+static void update_view_mode_button_icon (MarkerWindow *window, MarkerViewMode mode);
 
 gboolean
 get_current_iter(MarkerWindow *window,
@@ -285,6 +288,7 @@ action_editor_only_mode (GSimpleAction *action,
   MarkerWindow *window = user_data;
   MarkerEditor *editor = marker_window_get_active_editor (window);
   marker_editor_set_view_mode (editor, EDITOR_ONLY_MODE);
+  update_view_mode_button_icon (window, EDITOR_ONLY_MODE);
 }
 
 static void
@@ -295,6 +299,7 @@ action_preview_only_mode (GSimpleAction *action,
   MarkerWindow *window = user_data;
   MarkerEditor *editor = marker_window_get_active_editor (window);
   marker_editor_set_view_mode (editor, PREVIEW_ONLY_MODE);
+  update_view_mode_button_icon (window, PREVIEW_ONLY_MODE);
 }
 
 static void
@@ -305,6 +310,7 @@ action_dual_pane_mode (GSimpleAction *action,
   MarkerWindow *window = user_data;
   MarkerEditor *editor = marker_window_get_active_editor (window);
   marker_editor_set_view_mode (editor, DUAL_PANE_MODE);
+  update_view_mode_button_icon (window, DUAL_PANE_MODE);
 }
 
 static void
@@ -315,6 +321,79 @@ action_dual_window_mode (GSimpleAction *action,
   MarkerWindow *window = user_data;
   MarkerEditor *editor = marker_window_get_active_editor (window);
   marker_editor_set_view_mode (editor, DUAL_WINDOW_MODE);
+  update_view_mode_button_icon (window, DUAL_WINDOW_MODE);
+}
+
+static void
+update_view_mode_button_icon (MarkerWindow *window, MarkerViewMode mode)
+{
+  if (!window->view_mode_btn) return;
+  
+  const gchar *icon_name;
+  const gchar *tooltip;
+  
+  switch (mode) {
+    case EDITOR_ONLY_MODE:
+      icon_name = "text-editor-symbolic";
+      tooltip = "Switch to Preview Only";
+      break;
+    case PREVIEW_ONLY_MODE:
+      icon_name = "view-continuous-symbolic";
+      tooltip = "Switch to Dual Pane";
+      break;
+    case DUAL_PANE_MODE:
+      icon_name = "view-dual-symbolic";
+      tooltip = "Switch to Editor Only";
+      break;
+    case DUAL_WINDOW_MODE:
+      icon_name = "view-fullscreen-symbolic";
+      tooltip = "Switch to Editor Only";
+      break;
+    default:
+      icon_name = "view-dual-symbolic";
+      tooltip = "Toggle view mode";
+      break;
+  }
+  
+  gtk_button_set_image (window->view_mode_btn, 
+                        gtk_image_new_from_icon_name (icon_name, GTK_ICON_SIZE_BUTTON));
+  gtk_widget_set_tooltip_text (GTK_WIDGET (window->view_mode_btn), tooltip);
+}
+
+static void
+action_toggle_view_mode (GSimpleAction *action,
+                         GVariant      *parameter,
+                         gpointer       user_data)
+{
+  MarkerWindow *window = user_data;
+  MarkerEditor *editor = marker_window_get_active_editor (window);
+  if (!editor) return;
+  
+  MarkerViewMode current_mode = marker_editor_get_view_mode (editor);
+  MarkerViewMode new_mode;
+  
+  /* Cycle through: EDITOR_ONLY -> PREVIEW_ONLY -> DUAL_PANE -> EDITOR_ONLY */
+  switch (current_mode) {
+    case EDITOR_ONLY_MODE:
+      new_mode = PREVIEW_ONLY_MODE;
+      break;
+    case PREVIEW_ONLY_MODE:
+      new_mode = DUAL_PANE_MODE;
+      break;
+    case DUAL_PANE_MODE:
+      new_mode = EDITOR_ONLY_MODE;
+      break;
+    case DUAL_WINDOW_MODE:
+      /* If in dual window mode, switch to editor only */
+      new_mode = EDITOR_ONLY_MODE;
+      break;
+    default:
+      new_mode = DUAL_PANE_MODE;
+      break;
+  }
+  
+  marker_editor_set_view_mode (editor, new_mode);
+  update_view_mode_button_icon (window, new_mode);
 }
 
 gchar *
@@ -458,6 +537,10 @@ rename_file_action_cb(GtkCellRendererText *cell,
 
         gtk_header_bar_set_title (window->header_bar, title);
         gtk_header_bar_set_subtitle (window->header_bar, subtitle);
+        
+        /* Update view mode button icon */
+        MarkerViewMode mode = marker_editor_get_view_mode (editor);
+        update_view_mode_button_icon (window, mode);
       }
     }
   }
@@ -488,6 +571,10 @@ tree_selection_changed_cb(GtkTreeSelection *selection,
     gtk_header_bar_set_subtitle (window->header_bar, subtitle);
     preview_zoom_changed_cb(marker_editor_get_preview(editor),
                             window);
+    
+    /* Update view mode button icon */
+    MarkerViewMode mode = marker_editor_get_view_mode (editor);
+    update_view_mode_button_icon (window, mode);
     g_free (name);
   }
 }
@@ -673,6 +760,12 @@ marker_window_init (MarkerWindow *window)
     gtk_application_set_accels_for_action (app, "win.dualwindowmode", dualwindowmode_accels);
     g_action_map_add_action (G_ACTION_MAP (window), action);
 
+    action = G_ACTION (g_simple_action_new ("toggleviewmode", NULL));
+    g_signal_connect (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (action_toggle_view_mode), window);
+    const gchar *toggleviewmode_accels[] = { "<Ctrl>Tab", NULL };
+    gtk_application_set_accels_for_action (app, "win.toggleviewmode", toggleviewmode_accels);
+    g_action_map_add_action (G_ACTION_MAP (window), action);
+
     action = G_ACTION (g_simple_action_new ("open", NULL));
     g_signal_connect_swapped (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (marker_window_open_file), window);
     const gchar *open_accels[] = { "<Ctrl>o", NULL }; 
@@ -818,6 +911,9 @@ marker_window_init (MarkerWindow *window)
   gtk_box_pack_start (header_box, GTK_WIDGET (header_bar), FALSE, TRUE, 0);
   gtk_widget_show (GTK_WIDGET (header_box));
 
+  /** View Mode Button **/
+  window->view_mode_btn = GTK_BUTTON (gtk_builder_get_object (builder, "view_mode_btn"));
+  
   /** Popover **/
   GtkMenuButton *menu_btn = GTK_MENU_BUTTON(gtk_builder_get_object(builder, "menu_btn"));
   gtk_builder_add_from_resource (builder, "/com/github/fabiocolacio/marker/ui/marker-gear-popover.ui", NULL);
@@ -906,6 +1002,10 @@ marker_window_add_editor(MarkerWindow *window,
   g_autofree gchar *subtitle = marker_editor_get_subtitle (marker_window_get_active_editor (window));
   gtk_header_bar_set_title (window->header_bar, title);
   gtk_header_bar_set_subtitle (window->header_bar, subtitle);
+  
+  /* Update view mode button icon */
+  MarkerViewMode mode = marker_editor_get_view_mode (editor);
+  update_view_mode_button_icon (window, mode);
 
 
   GtkTreeIter   iter;
