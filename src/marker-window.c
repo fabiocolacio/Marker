@@ -19,6 +19,8 @@
  *
  */
 
+#include <glib/gi18n.h>
+
 #include "marker.h"
 #include "marker-prefs.h"
 #include "marker-editor.h"
@@ -865,8 +867,8 @@ marker_window_init (MarkerWindow *window)
 
   if (marker_prefs_get_show_sidebar())
   {
-    // show sidebar and set the "Sidebar" button as activated
-    g_action_group_activate_action(G_ACTION_MAP (window), "sidebar", NULL);
+    /* show sidebar and set the "Sidebar" button as activated */
+    g_action_group_activate_action(G_ACTION_GROUP (window), "sidebar", NULL);
   }
   g_signal_connect(window, "delete-event", G_CALLBACK(window_deleted_event_cb), window);
 
