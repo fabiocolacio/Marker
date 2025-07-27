@@ -126,7 +126,9 @@ marker_open_directory(GtkApplication* app, GFile* directory)
 {
   GError *error = NULL;
   GFileEnumerator *enumerator = g_file_enumerate_children(directory,
-                                                          G_FILE_ATTRIBUTE_STANDARD_NAME,
+                                                          G_FILE_ATTRIBUTE_STANDARD_NAME ","
+                                                          G_FILE_ATTRIBUTE_STANDARD_TYPE ","
+                                                          G_FILE_ATTRIBUTE_STANDARD_SIZE,
                                                           G_FILE_QUERY_INFO_NONE,
                                                           NULL,
                                                           &error);
@@ -144,15 +146,19 @@ marker_open_directory(GtkApplication* app, GFile* directory)
   
   while ((info = g_file_enumerator_next_file(enumerator, NULL, &error)) != NULL) {
     const gchar *name = g_file_info_get_name(info);
+    GFileType file_type = g_file_info_get_file_type(info);
     
-    // Check if file has markdown extension
-    if (g_str_has_suffix(name, ".md") || 
-        g_str_has_suffix(name, ".markdown") ||
-        g_str_has_suffix(name, ".mdown") ||
-        g_str_has_suffix(name, ".mkd") ||
-        g_str_has_suffix(name, ".mkdn")) {
-      GFile *child = g_file_get_child(directory, name);
-      markdown_files = g_list_append(markdown_files, child);
+    // Only process regular files
+    if (file_type == G_FILE_TYPE_REGULAR) {
+      // Check if file has markdown extension
+      if (g_str_has_suffix(name, ".md") || 
+          g_str_has_suffix(name, ".markdown") ||
+          g_str_has_suffix(name, ".mdown") ||
+          g_str_has_suffix(name, ".mkd") ||
+          g_str_has_suffix(name, ".mkdn")) {
+        GFile *child = g_file_get_child(directory, name);
+        markdown_files = g_list_append(markdown_files, child);
+      }
     }
     
     g_object_unref(info);
