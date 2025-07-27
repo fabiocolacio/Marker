@@ -104,6 +104,96 @@ activate(GtkApplication* app)
   marker_create_new_window();
 }
 
+static gint
+compare_files_by_name(gconstpointer a, gconstpointer b)
+{
+  GFile *file_a = G_FILE(a);
+  GFile *file_b = G_FILE(b);
+  
+  gchar *name_a = g_file_get_basename(file_a);
+  gchar *name_b = g_file_get_basename(file_b);
+  
+  gint result = g_strcmp0(name_a, name_b);
+  
+  g_free(name_a);
+  g_free(name_b);
+  
+  return result;
+}
+
+static void
+marker_open_directory(GtkApplication* app, GFile* directory)
+{
+  GError *error = NULL;
+  GFileEnumerator *enumerator = g_file_enumerate_children(directory,
+                                                          G_FILE_ATTRIBUTE_STANDARD_NAME,
+                                                          G_FILE_QUERY_INFO_NONE,
+                                                          NULL,
+                                                          &error);
+  
+  if (error || !enumerator) {
+    if (error) {
+      g_warning("Failed to enumerate directory: %s", error->message);
+      g_error_free(error);
+    }
+    return;
+  }
+  
+  GFileInfo *info;
+  GList *markdown_files = NULL;
+  
+  while ((info = g_file_enumerator_next_file(enumerator, NULL, &error)) != NULL) {
+    const gchar *name = g_file_info_get_name(info);
+    
+    // Check if file has markdown extension
+    if (g_str_has_suffix(name, ".md") || 
+        g_str_has_suffix(name, ".markdown") ||
+        g_str_has_suffix(name, ".mdown") ||
+        g_str_has_suffix(name, ".mkd") ||
+        g_str_has_suffix(name, ".mkdn")) {
+      GFile *child = g_file_get_child(directory, name);
+      markdown_files = g_list_append(markdown_files, child);
+    }
+    
+    g_object_unref(info);
+  }
+  
+  if (error) {
+    g_warning("Error during directory enumeration: %s", error->message);
+    g_error_free(error);
+  }
+  
+  g_object_unref(enumerator);
+  
+  // Sort files alphabetically
+  markdown_files = g_list_sort(markdown_files, compare_files_by_name);
+  
+  // Open all markdown files using the same approach as glob
+  if (markdown_files) {
+    GList *l;
+    gboolean first = TRUE;
+    
+    for (l = markdown_files; l != NULL; l = l->next) {
+      GFile *file = G_FILE(l->data);
+      
+      if (first) {
+        marker_create_new_window_from_file(file);
+        first = FALSE;
+      } else {
+        g_object_ref(file);
+        marker_open_file(file);
+      }
+      
+      g_object_unref(file);
+    }
+    
+    g_list_free(markdown_files);
+  } else {
+    // If no markdown files found, create empty window
+    marker_create_new_window();
+  }
+}
+
 static void
 marker_open(GtkApplication* app,
             GFile**         files,
@@ -120,12 +210,28 @@ marker_open(GtkApplication* app,
     marker_exporter_export (infile_path, outfile_path);
     exit (0);
   }
+
+  if (!files || num_files <= 0) {
+    g_application_release (G_APPLICATION (app));
+    return;
+  }
  
   for (int i = 0; i < num_files; ++i)
   {
     GFile* file = files[i];
-    g_object_ref(file);
-    marker_open_file(file);
+    if (!file) {
+      continue;
+    }
+    
+    // Check if this is a directory
+    GFileType file_type = g_file_query_file_type(file, G_FILE_QUERY_INFO_NONE, NULL);
+    
+    if (file_type == G_FILE_TYPE_DIRECTORY) {
+      marker_open_directory(app, file);
+    } else {
+      g_object_ref(file);
+      marker_open_file(file);
+    }
   }
   g_application_release (G_APPLICATION (app));
 }

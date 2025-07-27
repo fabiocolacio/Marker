@@ -755,7 +755,7 @@ marker_window_init (MarkerWindow *window)
   gtk_tree_view_column_set_title(column, "Documents");
 
   renderer = gtk_cell_renderer_text_new();
-  g_object_set(renderer, "editable", TRUE, NULL);
+  g_object_set(renderer, "editable", FALSE, NULL);
   gtk_tree_view_column_pack_start(column, renderer, TRUE);
   gtk_tree_view_column_set_attributes(column, renderer,
                                       "markup", TITLE_COLUMN,
