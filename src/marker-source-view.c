@@ -240,20 +240,34 @@ marker_source_view_set_language(MarkerSourceView* source_view,
 }
 
 static void
+apply_font_css(MarkerSourceView* source_view, const gchar* fontname, guint font_size)
+{
+  gchar* css_font = g_strdup_printf("textview { font-family: \"%s\"; font-size: %upt; }", fontname, font_size);
+  GtkCssProvider* provider = gtk_css_provider_new();
+  GError* error = NULL;
+  
+  if (gtk_css_provider_load_from_data(provider, css_font, -1, &error)) {
+    GtkStyleContext* context = gtk_widget_get_style_context(GTK_WIDGET(source_view));
+    gtk_style_context_add_provider(context, GTK_STYLE_PROVIDER(provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+  } else {
+    g_warning("Failed to load CSS: %s", error ? error->message : "Unknown error");
+    if (error) g_error_free(error);
+  }
+  
+  g_object_unref(provider);
+  g_free(css_font);
+}
+
+static void
 default_font_changed(GSettings*   settings,
                      const gchar* key,
                      gpointer     user_data)
 {
   MarkerSourceView* source_view = (MarkerSourceView*) user_data;
   gchar* fontname = g_settings_get_string(settings, key);
-  PangoFontDescription* font = pango_font_description_from_string(fontname);
-  
-  /* Apply the font size from preferences */
   guint font_size = marker_prefs_get_editor_font_size();
-  pango_font_description_set_size(font, font_size * PANGO_SCALE);
   
-  gtk_widget_override_font(GTK_WIDGET(source_view), font);
-  pango_font_description_free(font);
+  apply_font_css(source_view, fontname, font_size);
   g_free(fontname);
 }
 
@@ -267,14 +281,9 @@ marker_source_view_init (MarkerSourceView *source_view)
   source_view->settings = g_settings_new ("org.gnome.desktop.interface");
   g_signal_connect (source_view->settings, "changed::monospace-font-name", G_CALLBACK (default_font_changed), source_view);
   gchar *fontname = g_settings_get_string (source_view->settings, "monospace-font-name");
-  PangoFontDescription* font = pango_font_description_from_string (fontname);
-  
-  /* Apply the font size from preferences */
   guint font_size = marker_prefs_get_editor_font_size();
-  pango_font_description_set_size(font, font_size * PANGO_SCALE);
   
-  gtk_widget_modify_font (GTK_WIDGET (source_view), font);
-  pango_font_description_free (font);
+  apply_font_css(source_view, fontname, font_size);
   g_free (fontname);
 
   gtk_source_view_set_insert_spaces_instead_of_tabs (GTK_SOURCE_VIEW (source_view), marker_prefs_get_replace_tabs ());
@@ -305,14 +314,9 @@ void
 marker_source_view_update_font(MarkerSourceView* source_view)
 {
   gchar *fontname = g_settings_get_string (source_view->settings, "monospace-font-name");
-  PangoFontDescription* font = pango_font_description_from_string (fontname);
-  
-  /* Apply the font size from preferences */
   guint font_size = marker_prefs_get_editor_font_size();
-  pango_font_description_set_size(font, font_size * PANGO_SCALE);
   
-  gtk_widget_modify_font (GTK_WIDGET (source_view), font);
-  pango_font_description_free (font);
+  apply_font_css(source_view, fontname, font_size);
   g_free (fontname);
 }
 

@@ -274,6 +274,7 @@ marker_exporter_export (const gchar *infile,
   GtkPageOrientation orientation = meta->doc_class == CLASS_BEAMER ?
     GTK_PAGE_ORIENTATION_LANDSCAPE :
     GTK_PAGE_ORIENTATION_PORTRAIT;
+  (void)orientation; /* TODO: Remove when PDF export is re-enabled */
 
   if (marker_string_ends_with (outfile, ".html")) {
     marker_markdown_to_html_file_with_css_inline(markdown, len, base_folder,
