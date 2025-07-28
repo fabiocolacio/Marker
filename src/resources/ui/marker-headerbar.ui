@@ -42,6 +42,10 @@
     <property name="icon_name">applications-graphics-symbolic</property>
     <property name="icon_size">2</property>
   </object>
+  <object class="GtkImage" id="insert-image">
+    <property name="icon_name">insert-image-symbolic</property>
+    <property name="icon_size">2</property>
+  </object>
   <object class="GtkImage" id="scroll-sync">
     <property name="icon_name">media-playlist-repeat-symbolic</property>
     <property name="icon_size">2</property>
@@ -133,6 +137,17 @@
         <property name="image">sketch</property>
         <property name="tooltip_text" translatable="yes">Draw sketch (Ctrl+D)</property>
         <property name="action-name">win.sketcher</property>
+      </object>
+      <packing>
+        <property name="pack_type">start</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkButton" id="insert_image_btn">
+        <property name="visible">True</property>
+        <property name="image">insert-image</property>
+        <property name="tooltip_text" translatable="yes">Insert image (Ctrl+Shift+I)</property>
+        <property name="action-name">win.insertimage</property>
       </object>
       <packing>
         <property name="pack_type">start</property>

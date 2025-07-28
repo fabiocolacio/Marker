@@ -87,6 +87,7 @@ static void action_toggle_line_numbers (GSimpleAction *action, GVariant *paramet
 static void action_toggle_wrap_text (GSimpleAction *action, GVariant *parameter, gpointer user_data);
 static void action_toggle_scroll_sync (GSimpleAction *action, GVariant *parameter, gpointer user_data);
 static void on_preferences_changed (GSettings *settings, gchar *key, gpointer user_data);
+static void action_insert_image (GSimpleAction *action, GVariant *parameter, gpointer user_data);
 
 gboolean
 get_current_iter(MarkerWindow *window,
@@ -208,6 +209,105 @@ action_link (GSimpleAction *action,
     MarkerEditor *editor = marker_window_get_active_editor (MARKER_WINDOW (window));
     MarkerSourceView *source_view = marker_editor_get_source_view (editor);
     marker_source_view_insert_link (source_view);
+}
+
+static void
+action_insert_image (GSimpleAction *action,
+                     GVariant      *parameter,
+                     gpointer       user_data)
+{
+    MarkerWindow *window = MARKER_WINDOW (user_data);
+    MarkerEditor *editor = marker_window_get_active_editor (window);
+    if (!editor) return;
+    
+    MarkerSourceView *source_view = marker_editor_get_source_view (editor);
+    if (!source_view) return;
+    
+    GtkWidget *dialog = gtk_file_chooser_dialog_new ("Insert Image",
+                                                      GTK_WINDOW (window),
+                                                      GTK_FILE_CHOOSER_ACTION_OPEN,
+                                                      "_Cancel", GTK_RESPONSE_CANCEL,
+                                                      "_Insert", GTK_RESPONSE_ACCEPT,
+                                                      NULL);
+    
+    /* Add file filters */
+    GtkFileFilter *filter = gtk_file_filter_new ();
+    gtk_file_filter_set_name (filter, "Image files");
+    gtk_file_filter_add_mime_type (filter, "image/png");
+    gtk_file_filter_add_mime_type (filter, "image/jpeg");
+    gtk_file_filter_add_mime_type (filter, "image/gif");
+    gtk_file_filter_add_mime_type (filter, "image/svg+xml");
+    gtk_file_filter_add_mime_type (filter, "image/webp");
+    gtk_file_filter_add_pattern (filter, "*.png");
+    gtk_file_filter_add_pattern (filter, "*.jpg");
+    gtk_file_filter_add_pattern (filter, "*.jpeg");
+    gtk_file_filter_add_pattern (filter, "*.gif");
+    gtk_file_filter_add_pattern (filter, "*.svg");
+    gtk_file_filter_add_pattern (filter, "*.webp");
+    gtk_file_chooser_add_filter (GTK_FILE_CHOOSER (dialog), filter);
+    
+    GtkFileFilter *all_filter = gtk_file_filter_new ();
+    gtk_file_filter_set_name (all_filter, "All files");
+    gtk_file_filter_add_pattern (all_filter, "*");
+    gtk_file_chooser_add_filter (GTK_FILE_CHOOSER (dialog), all_filter);
+    
+    /* Set current folder to document's folder if available */
+    GFile *doc_file = marker_editor_get_file (editor);
+    if (doc_file) {
+        GFile *parent = g_file_get_parent (doc_file);
+        if (parent) {
+            gchar *folder = g_file_get_path (parent);
+            gtk_file_chooser_set_current_folder (GTK_FILE_CHOOSER (dialog), folder);
+            g_free (folder);
+            g_object_unref (parent);
+        }
+    }
+    
+    if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT) {
+        gchar *filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
+        
+        /* Calculate relative path if document has a file */
+        gchar *relative_path = NULL;
+        gchar *alt_text = NULL;
+        
+        if (doc_file) {
+            GFile *img_file = g_file_new_for_path (filename);
+            GFile *doc_parent = g_file_get_parent (doc_file);
+            
+            if (doc_parent) {
+                relative_path = g_file_get_relative_path (doc_parent, img_file);
+                if (!relative_path) {
+                    /* If can't get relative path, use absolute */
+                    relative_path = g_strdup (filename);
+                }
+                g_object_unref (doc_parent);
+            }
+            g_object_unref (img_file);
+        } else {
+            /* No document file, use absolute path */
+            relative_path = g_strdup (filename);
+        }
+        
+        /* Extract filename for alt text */
+        alt_text = g_path_get_basename (filename);
+        /* Remove extension from alt text */
+        gchar *dot = strrchr (alt_text, '.');
+        if (dot) *dot = '\0';
+        
+        /* Insert HTML img tag */
+        gchar *img_tag = g_strdup_printf ("<img src=\"%s\" alt=\"%s\" width=\"800\" />", 
+                                          relative_path, alt_text);
+        
+        GtkTextBuffer *buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (source_view));
+        gtk_text_buffer_insert_at_cursor (buffer, img_tag, -1);
+        
+        g_free (img_tag);
+        g_free (alt_text);
+        g_free (relative_path);
+        g_free (filename);
+    }
+    
+    gtk_widget_destroy (dialog);
 }
 
 static void
@@ -849,6 +949,12 @@ marker_window_init (MarkerWindow *window)
     g_signal_connect_swapped (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (marker_window_open_sketcher), window);
     const gchar *sketcher_accels[] = { "<Ctrl>d", NULL };
     gtk_application_set_accels_for_action (app, "win.sketcher", sketcher_accels);
+    g_action_map_add_action (G_ACTION_MAP (window), action);
+    
+    action = G_ACTION (g_simple_action_new ("insertimage", NULL));
+    g_signal_connect (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (action_insert_image), window);
+    const gchar *insertimage_accels[] = { "<Ctrl><Shift>i", NULL };
+    gtk_application_set_accels_for_action (app, "win.insertimage", insertimage_accels);
     g_action_map_add_action (G_ACTION_MAP (window), action);
 
     action = G_ACTION (g_simple_action_new ("find", NULL));
