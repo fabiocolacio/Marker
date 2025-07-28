@@ -88,6 +88,8 @@ static void action_toggle_wrap_text (GSimpleAction *action, GVariant *parameter,
 static void action_toggle_scroll_sync (GSimpleAction *action, GVariant *parameter, gpointer user_data);
 static void on_preferences_changed (GSettings *settings, gchar *key, gpointer user_data);
 static void action_insert_image (GSimpleAction *action, GVariant *parameter, gpointer user_data);
+static void action_bullet_list (GSimpleAction *action, GVariant *parameter, gpointer user_data);
+static void action_numbered_list (GSimpleAction *action, GVariant *parameter, gpointer user_data);
 
 gboolean
 get_current_iter(MarkerWindow *window,
@@ -308,6 +310,36 @@ action_insert_image (GSimpleAction *action,
     }
     
     gtk_widget_destroy (dialog);
+}
+
+static void
+action_bullet_list (GSimpleAction *action,
+                    GVariant      *parameter,
+                    gpointer       user_data)
+{
+    MarkerWindow *window = MARKER_WINDOW (user_data);
+    MarkerEditor *editor = marker_window_get_active_editor (window);
+    if (!editor) return;
+    
+    MarkerSourceView *source_view = marker_editor_get_source_view (editor);
+    if (!source_view) return;
+    
+    marker_source_view_convert_to_bullet_list (source_view);
+}
+
+static void
+action_numbered_list (GSimpleAction *action,
+                      GVariant      *parameter,
+                      gpointer       user_data)
+{
+    MarkerWindow *window = MARKER_WINDOW (user_data);
+    MarkerEditor *editor = marker_window_get_active_editor (window);
+    if (!editor) return;
+    
+    MarkerSourceView *source_view = marker_editor_get_source_view (editor);
+    if (!source_view) return;
+    
+    marker_source_view_convert_to_numbered_list (source_view);
 }
 
 static void
@@ -961,6 +993,18 @@ marker_window_init (MarkerWindow *window)
     g_signal_connect (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (action_insert_image), window);
     const gchar *insertimage_accels[] = { "<Ctrl><Shift>i", NULL };
     gtk_application_set_accels_for_action (app, "win.insertimage", insertimage_accels);
+    g_action_map_add_action (G_ACTION_MAP (window), action);
+
+    action = G_ACTION (g_simple_action_new ("bulletlist", NULL));
+    g_signal_connect (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (action_bullet_list), window);
+    const gchar *bulletlist_accels[] = { "<Ctrl><Alt>l", NULL };
+    gtk_application_set_accels_for_action (app, "win.bulletlist", bulletlist_accels);
+    g_action_map_add_action (G_ACTION_MAP (window), action);
+
+    action = G_ACTION (g_simple_action_new ("numberedlist", NULL));
+    g_signal_connect (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (action_numbered_list), window);
+    const gchar *numberedlist_accels[] = { "<Ctrl><Alt>n", NULL };
+    gtk_application_set_accels_for_action (app, "win.numberedlist", numberedlist_accels);
     g_action_map_add_action (G_ACTION_MAP (window), action);
 
     action = G_ACTION (g_simple_action_new ("find", NULL));

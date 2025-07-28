@@ -463,6 +463,20 @@
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="visible">1</property>
+                <property name="accelerator">&lt;ctrl&gt;&lt;alt&gt;l</property>
+                <property name="title" translatable="yes" context="shortcut window">Convert to bullet list</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="visible">1</property>
+                <property name="accelerator">&lt;ctrl&gt;&lt;alt&gt;n</property>
+                <property name="title" translatable="yes" context="shortcut window">Convert to numbered list</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="visible">1</property>
                 <property name="accelerator">&lt;alt&gt;Up</property>
                 <property name="title" translatable="yes" context="shortcut window">Move line up</property>
               </object>

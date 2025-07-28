@@ -54,6 +54,14 @@
     <property name="icon_name">media-playlist-repeat-symbolic</property>
     <property name="icon_size">2</property>
   </object>
+  <object class="GtkImage" id="bullet-list">
+    <property name="icon_name">view-list-bullet-symbolic</property>
+    <property name="icon_size">2</property>
+  </object>
+  <object class="GtkImage" id="numbered-list">
+    <property name="icon_name">view-list-ordered-symbolic</property>
+    <property name="icon_size">2</property>
+  </object>
   
   <!-- Header Bar -->
   <object class="GtkHeaderBar" id="header_bar">
@@ -163,6 +171,28 @@
         <property name="image">insert-image</property>
         <property name="tooltip_text" translatable="yes">Insert image (Ctrl+Shift+I)</property>
         <property name="action-name">win.insertimage</property>
+      </object>
+      <packing>
+        <property name="pack_type">start</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkButton" id="bullet_list_btn">
+        <property name="visible">True</property>
+        <property name="image">bullet-list</property>
+        <property name="tooltip_text" translatable="yes">Convert to bullet list (Ctrl+Alt+L)</property>
+        <property name="action-name">win.bulletlist</property>
+      </object>
+      <packing>
+        <property name="pack_type">start</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkButton" id="numbered_list_btn">
+        <property name="visible">True</property>
+        <property name="image">numbered-list</property>
+        <property name="tooltip_text" translatable="yes">Convert to numbered list (Ctrl+Alt+N)</property>
+        <property name="action-name">win.numberedlist</property>
       </object>
       <packing>
         <property name="pack_type">start</property>

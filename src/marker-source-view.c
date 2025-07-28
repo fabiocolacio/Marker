@@ -534,3 +534,265 @@ marker_source_get_search_context (MarkerSourceView   *source_view)
 {
   return source_view->search_context;
 }
+
+void
+marker_source_view_convert_to_bullet_list (MarkerSourceView *source_view)
+{
+  g_assert (MARKER_IS_SOURCE_VIEW (source_view));
+  
+  GtkTextBuffer *buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (source_view));
+  GtkTextIter start, end;
+  
+  /* Check if there's a selection */
+  if (!gtk_text_buffer_get_selection_bounds (buffer, &start, &end))
+  {
+    /* No selection, just add bullet to current line */
+    GtkTextMark *insert_mark = gtk_text_buffer_get_insert (buffer);
+    gtk_text_buffer_get_iter_at_mark (buffer, &start, insert_mark);
+    gtk_text_iter_set_line_offset (&start, 0);
+    
+    /* Get the current line */
+    GtkTextIter line_end = start;
+    gtk_text_iter_forward_to_line_end (&line_end);
+    gchar *line_text = gtk_text_buffer_get_text (buffer, &start, &line_end, FALSE);
+    
+    /* Remove numbered list prefix if present */
+    GRegex *num_regex = g_regex_new ("^\\d+\\.\\s+", 0, 0, NULL);
+    gchar *cleaned_text = g_regex_replace (num_regex, line_text, -1, 0, "", 0, NULL);
+    g_regex_unref (num_regex);
+    
+    /* Check if line already starts with "- " */
+    if (!g_str_has_prefix (cleaned_text, "- "))
+    {
+      /* Delete the original line and insert with bullet */
+      gtk_text_buffer_begin_user_action (buffer);
+      gtk_text_buffer_delete (buffer, &start, &line_end);
+      gchar *new_line = g_strdup_printf ("- %s", cleaned_text);
+      gtk_text_buffer_insert (buffer, &start, new_line, -1);
+      
+      /* Select the entire line */
+      GtkTextIter new_end = start;
+      gtk_text_iter_forward_chars (&new_end, g_utf8_strlen (new_line, -1));
+      gtk_text_buffer_select_range (buffer, &start, &new_end);
+      
+      g_free (new_line);
+      gtk_text_buffer_end_user_action (buffer);
+    }
+    
+    g_free (cleaned_text);
+    g_free (line_text);
+    return;
+  }
+  
+  /* Process selected lines */
+  gtk_text_iter_set_line_offset (&start, 0);
+  if (!gtk_text_iter_starts_line (&end))
+    gtk_text_iter_forward_line (&end);
+  
+  /* Get the selected text */
+  gchar *selected_text = gtk_text_buffer_get_text (buffer, &start, &end, FALSE);
+  gchar **lines = g_strsplit (selected_text, "\n", -1);
+  
+  /* Build new text with bullets */
+  GString *new_text = g_string_new ("");
+  for (int i = 0; lines[i] != NULL; i++)
+  {
+    /* Skip empty lines at the end */
+    if (lines[i + 1] == NULL && strlen (lines[i]) == 0)
+      break;
+      
+    /* Check if line starts with numbered list pattern and remove it */
+    GRegex *num_regex = g_regex_new ("^\\d+\\.\\s+", 0, 0, NULL);
+    gchar *line_without_number = g_regex_replace (num_regex, lines[i], -1, 0, "", 0, NULL);
+    g_regex_unref (num_regex);
+    
+    /* Check if line already starts with "- " */
+    if (!g_str_has_prefix (line_without_number, "- "))
+    {
+      g_string_append (new_text, "- ");
+    }
+    g_string_append (new_text, line_without_number);
+    if (lines[i + 1] != NULL)
+      g_string_append_c (new_text, '\n');
+      
+    g_free (line_without_number);
+  }
+  
+  /* Replace the selection */
+  gtk_text_buffer_begin_user_action (buffer);
+  
+  /* Remember the start position */
+  GtkTextMark *start_mark = gtk_text_buffer_create_mark (buffer, NULL, &start, TRUE);
+  
+  gtk_text_buffer_delete (buffer, &start, &end);
+  gtk_text_buffer_insert (buffer, &start, new_text->str, -1);
+  
+  /* Get the start position from mark and calculate end */
+  GtkTextIter new_start, new_end;
+  gtk_text_buffer_get_iter_at_mark (buffer, &new_start, start_mark);
+  new_end = new_start;
+  gtk_text_iter_forward_chars (&new_end, g_utf8_strlen (new_text->str, -1));
+  
+  /* Select the new text */
+  gtk_text_buffer_select_range (buffer, &new_start, &new_end);
+  
+  /* Ensure the view has focus */
+  gtk_widget_grab_focus (GTK_WIDGET (source_view));
+  
+  gtk_text_buffer_delete_mark (buffer, start_mark);
+  gtk_text_buffer_end_user_action (buffer);
+  
+  /* Clean up */
+  g_string_free (new_text, TRUE);
+  g_strfreev (lines);
+  g_free (selected_text);
+}
+
+void
+marker_source_view_convert_to_numbered_list (MarkerSourceView *source_view)
+{
+  g_assert (MARKER_IS_SOURCE_VIEW (source_view));
+  
+  GtkTextBuffer *buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (source_view));
+  GtkTextIter start, end;
+  
+  /* Check if there's a selection */
+  if (!gtk_text_buffer_get_selection_bounds (buffer, &start, &end))
+  {
+    /* No selection, just add number to current line */
+    GtkTextMark *insert_mark = gtk_text_buffer_get_insert (buffer);
+    gtk_text_buffer_get_iter_at_mark (buffer, &start, insert_mark);
+    gtk_text_iter_set_line_offset (&start, 0);
+    
+    /* Get the current line */
+    GtkTextIter line_end = start;
+    gtk_text_iter_forward_to_line_end (&line_end);
+    gchar *line_text = gtk_text_buffer_get_text (buffer, &start, &line_end, FALSE);
+    
+    gchar *cleaned_text = line_text;
+    gboolean needs_free = FALSE;
+    
+    /* Remove bullet prefix if present */
+    if (g_str_has_prefix (line_text, "- "))
+    {
+      cleaned_text = line_text + 2;
+    }
+    /* Remove existing number if present */
+    else if (g_regex_match_simple ("^\\d+\\.\\s+", line_text, 0, 0))
+    {
+      GRegex *num_regex = g_regex_new ("^\\d+\\.\\s+", 0, 0, NULL);
+      cleaned_text = g_regex_replace (num_regex, line_text, -1, 0, "", 0, NULL);
+      g_regex_unref (num_regex);
+      needs_free = TRUE;
+    }
+    
+    /* If not already numbered, add number */
+    if (cleaned_text != line_text || needs_free)
+    {
+      gtk_text_buffer_begin_user_action (buffer);
+      gtk_text_buffer_delete (buffer, &start, &line_end);
+      gchar *new_line = g_strdup_printf ("1. %s", cleaned_text);
+      gtk_text_buffer_insert (buffer, &start, new_line, -1);
+      
+      /* Select the entire line */
+      GtkTextIter new_end = start;
+      gtk_text_iter_forward_chars (&new_end, g_utf8_strlen (new_line, -1));
+      gtk_text_buffer_select_range (buffer, &start, &new_end);
+      
+      g_free (new_line);
+      gtk_text_buffer_end_user_action (buffer);
+    }
+    else
+    {
+      /* Line has no list marker, just add number */
+      gtk_text_buffer_begin_user_action (buffer);
+      gtk_text_buffer_insert (buffer, &start, "1. ", -1);
+      
+      /* Select the entire line */
+      gtk_text_iter_forward_to_line_end (&line_end);
+      gtk_text_buffer_select_range (buffer, &start, &line_end);
+      gtk_text_buffer_end_user_action (buffer);
+    }
+    
+    if (needs_free)
+      g_free (cleaned_text);
+    g_free (line_text);
+    return;
+  }
+  
+  /* Process selected lines */
+  gtk_text_iter_set_line_offset (&start, 0);
+  if (!gtk_text_iter_starts_line (&end))
+    gtk_text_iter_forward_line (&end);
+  
+  /* Get the selected text */
+  gchar *selected_text = gtk_text_buffer_get_text (buffer, &start, &end, FALSE);
+  gchar **lines = g_strsplit (selected_text, "\n", -1);
+  
+  /* Build new text with numbers */
+  GString *new_text = g_string_new ("");
+  int line_num = 1;
+  for (int i = 0; lines[i] != NULL; i++)
+  {
+    /* Skip empty lines at the end */
+    if (lines[i + 1] == NULL && strlen (lines[i]) == 0)
+      break;
+      
+    gchar *cleaned_line = lines[i];
+    gboolean needs_free = FALSE;
+    
+    /* Remove bullet list marker if present */
+    if (g_str_has_prefix (lines[i], "- "))
+    {
+      cleaned_line = lines[i] + 2;
+    }
+    /* Remove existing number if present */
+    else if (g_regex_match_simple ("^\\d+\\.\\s+", lines[i], 0, 0))
+    {
+      GRegex *num_regex = g_regex_new ("^\\d+\\.\\s+", 0, 0, NULL);
+      cleaned_line = g_regex_replace (num_regex, lines[i], -1, 0, "", 0, NULL);
+      g_regex_unref (num_regex);
+      needs_free = TRUE;
+    }
+    
+    /* Add number */
+    g_string_append_printf (new_text, "%d. ", line_num);
+    g_string_append (new_text, cleaned_line);
+    if (lines[i + 1] != NULL)
+      g_string_append_c (new_text, '\n');
+      
+    if (needs_free)
+      g_free (cleaned_line);
+      
+    line_num++;
+  }
+  
+  /* Replace the selection */
+  gtk_text_buffer_begin_user_action (buffer);
+  
+  /* Remember the start position */
+  GtkTextMark *start_mark = gtk_text_buffer_create_mark (buffer, NULL, &start, TRUE);
+  
+  gtk_text_buffer_delete (buffer, &start, &end);
+  gtk_text_buffer_insert (buffer, &start, new_text->str, -1);
+  
+  /* Get the start position from mark and calculate end */
+  GtkTextIter new_start, new_end;
+  gtk_text_buffer_get_iter_at_mark (buffer, &new_start, start_mark);
+  new_end = new_start;
+  gtk_text_iter_forward_chars (&new_end, g_utf8_strlen (new_text->str, -1));
+  
+  /* Select the new text */
+  gtk_text_buffer_select_range (buffer, &new_start, &new_end);
+  
+  /* Ensure the view has focus */
+  gtk_widget_grab_focus (GTK_WIDGET (source_view));
+  
+  gtk_text_buffer_delete_mark (buffer, start_mark);
+  gtk_text_buffer_end_user_action (buffer);
+  
+  /* Clean up */
+  g_string_free (new_text, TRUE);
+  g_strfreev (lines);
+  g_free (selected_text);
+}
