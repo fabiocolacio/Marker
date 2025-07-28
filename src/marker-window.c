@@ -1227,7 +1227,12 @@ marker_window_init (MarkerWindow *window)
   window->main_paned = GTK_PANED(main_paned);
 
   /* Apply sidebar preference now that UI elements are initialized */
-  if (!marker_prefs_get_show_sidebar())
+  if (marker_prefs_get_show_sidebar())
+  {
+    /* Show sidebar if preference is to show it */
+    marker_window_show_sidebar(window);
+  }
+  else
   {
     /* Hide sidebar if preference is to not show it */
     marker_window_hide_sidebar(window);
@@ -1776,12 +1781,18 @@ marker_window_hide_sidebar (MarkerWindow *window)
   if (!GTK_IS_WIDGET (window->paned1) || !GTK_IS_PANED (window->main_paned))
     return;
   
-  /* Check if paned1 is actually a child of main_paned before removing */
+  /* Remove sidebar from paned to truly hide it */
   if (gtk_widget_get_parent (window->paned1) == GTK_WIDGET (window->main_paned)) {
     g_object_ref (window->paned1);
     gtk_container_remove (GTK_CONTAINER (window->main_paned), window->paned1);
     gtk_paned_set_position (window->main_paned, 0);
     window->sidebar_visible = FALSE;
+    
+    /* Update the action state to keep it in sync */
+    GAction *action = g_action_map_lookup_action (G_ACTION_MAP (window), "sidebar");
+    if (action) {
+      g_simple_action_set_state (G_SIMPLE_ACTION (action), g_variant_new_boolean (FALSE));
+    }
   }
 }
 
@@ -1790,22 +1801,39 @@ marker_window_show_sidebar (MarkerWindow *window)
 {
   g_return_if_fail (MARKER_IS_WINDOW (window));
   
-  if (window->sidebar_visible)
-    return;
-    
   if (!window->paned1 || !window->main_paned)
     return;
     
   if (!GTK_IS_WIDGET (window->paned1) || !GTK_IS_PANED (window->main_paned))
     return;
   
-  /* Check if paned1 is not already a child of main_paned */
+  gint current_pos = gtk_paned_get_position (window->main_paned);
+  
+  /* If sidebar is marked visible but position is 0, fix it */
+  if (window->sidebar_visible && current_pos == 0) {
+    gtk_paned_set_position (window->main_paned, 200);
+    return;
+  }
+  
+  if (window->sidebar_visible && current_pos > 0)
+    return;
+  
+  /* Add sidebar back to paned if not already there */
   if (gtk_widget_get_parent (window->paned1) == NULL) {
     gtk_paned_add1 (window->main_paned, window->paned1);
     if (g_object_is_floating (window->paned1)) {
       g_object_ref_sink (window->paned1);
     }
     g_object_unref (window->paned1);
+    gtk_paned_set_position (window->main_paned, 200);
+    window->sidebar_visible = TRUE;
+    
+    /* Update the action state to keep it in sync */
+    GAction *action = g_action_map_lookup_action (G_ACTION_MAP (window), "sidebar");
+    if (action) {
+      g_simple_action_set_state (G_SIMPLE_ACTION (action), g_variant_new_boolean (TRUE));
+    }
+  } else {
     gtk_paned_set_position (window->main_paned, 200);
     window->sidebar_visible = TRUE;
   }

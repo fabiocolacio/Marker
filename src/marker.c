@@ -110,9 +110,32 @@ typedef struct {
   GQueue *file_queue;
   guint process_id;
   GtkApplication *app;
+  gboolean multiple_files;
+  gboolean first_file;
+  MarkerWindow *target_window;
 } FileOpenContext;
 
+typedef struct {
+  MarkerWindow *window;
+} ShowSidebarData;
+
 static gboolean process_file_queue(gpointer user_data);
+
+static gboolean
+show_sidebar_idle(gpointer user_data)
+{
+  ShowSidebarData *data = (ShowSidebarData *)user_data;
+  if (data->window && MARKER_IS_WINDOW(data->window)) {
+    /* Directly trigger the sidebar action to ensure proper state sync */
+    GAction *action = g_action_map_lookup_action(G_ACTION_MAP(data->window), "sidebar");
+    if (action) {
+      /* This will trigger action_sidebar which handles everything properly */
+      g_action_change_state(action, g_variant_new_boolean(TRUE));
+    }
+  }
+  g_free(data);
+  return G_SOURCE_REMOVE;
+}
 
 static void
 activate(GtkApplication* app)
@@ -192,6 +215,9 @@ marker_open_directory(GtkApplication* app, GFile* directory)
     FileOpenContext *context = g_new0(FileOpenContext, 1);
     context->file_queue = g_queue_new();
     context->app = app;
+    context->multiple_files = (g_list_length(markdown_files) > 1);
+    context->first_file = TRUE;
+    context->target_window = NULL;
     
     /* Hold application while processing directory files */
     g_application_hold(G_APPLICATION(app));
@@ -253,17 +279,30 @@ process_file_queue(gpointer user_data)
     marker_open_directory(context->app, file);
   } else {
     /* For the first file, create a new window if needed */
-    static gboolean first_file = TRUE;
-    if (first_file) {
+    if (context->first_file) {
       GList *windows = gtk_application_get_windows(context->app);
       if (!windows || g_list_length(windows) == 0) {
         marker_create_new_window_from_file(file);
+        /* Get the newly created window */
+        windows = gtk_application_get_windows(context->app);
+        if (windows && g_list_last(windows)) {
+          context->target_window = MARKER_WINDOW(g_list_last(windows)->data);
+        }
       } else {
         marker_open_file(file);
+        context->target_window = MARKER_WINDOW(g_list_last(windows)->data);
       }
-      first_file = FALSE;
+      context->first_file = FALSE;
     } else {
       marker_open_file(file);
+    }
+    
+    /* Schedule sidebar to be shown after all files are loaded */
+    if (context->multiple_files && g_queue_is_empty(context->file_queue) && context->target_window) {
+      ShowSidebarData *data = g_new0(ShowSidebarData, 1);
+      data->window = context->target_window;
+      /* Use a longer delay to ensure window is fully initialized */
+      g_timeout_add(500, show_sidebar_idle, data);
     }
   }
   
@@ -306,6 +345,9 @@ marker_open(GtkApplication* app,
   FileOpenContext *context = g_new0(FileOpenContext, 1);
   context->file_queue = g_queue_new();
   context->app = app;
+  context->multiple_files = (num_files > 1);
+  context->first_file = TRUE;
+  context->target_window = NULL;
   
   /* Add all files to the queue */
   for (int i = 0; i < num_files; ++i)
