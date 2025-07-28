@@ -111,50 +111,6 @@
       </packing>
     </child>
     <child>
-      <object class="GtkToggleButton" id="spell_check_btn">
-        <property name="visible">True</property>
-        <property name="image">spell-check</property>
-        <property name="tooltip_text" translatable="yes">Toggle spell check (F7)</property>
-        <property name="action-name">win.togglespellcheck</property>
-      </object>
-      <packing>
-        <property name="pack_type">start</property>
-      </packing>
-    </child>
-    <child>
-      <object class="GtkToggleButton" id="line_numbers_btn">
-        <property name="visible">True</property>
-        <property name="image">line-numbers</property>
-        <property name="tooltip_text" translatable="yes">Toggle line numbers</property>
-        <property name="action-name">win.togglelinenumbers</property>
-      </object>
-      <packing>
-        <property name="pack_type">start</property>
-      </packing>
-    </child>
-    <child>
-      <object class="GtkToggleButton" id="wrap_text_btn">
-        <property name="visible">True</property>
-        <property name="image">wrap-text</property>
-        <property name="tooltip_text" translatable="yes">Toggle text wrapping</property>
-        <property name="action-name">win.togglewraptext</property>
-      </object>
-      <packing>
-        <property name="pack_type">start</property>
-      </packing>
-    </child>
-    <child>
-      <object class="GtkToggleButton" id="scroll_sync_btn">
-        <property name="visible">True</property>
-        <property name="image">scroll-sync</property>
-        <property name="tooltip_text" translatable="yes">Toggle scroll synchronization</property>
-        <property name="action-name">win.togglescrollsync</property>
-      </object>
-      <packing>
-        <property name="pack_type">start</property>
-      </packing>
-    </child>
-    <child>
       <object class="GtkButton" id="sketch_btn">
         <property name="visible">True</property>
         <property name="image">sketch</property>
