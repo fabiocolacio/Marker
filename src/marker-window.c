@@ -1649,26 +1649,49 @@ marker_window_toggle_sidebar (MarkerWindow *window)
 void
 marker_window_hide_sidebar (MarkerWindow *window)
 {
-  if (window->sidebar_visible && window->paned1 && window->main_paned) {
-    window->sidebar_visible = false;
-    if (GTK_IS_WIDGET(window->paned1)) {
-      g_object_ref (window->paned1);
-      gtk_container_remove (GTK_CONTAINER (window->main_paned), GTK_WIDGET (window->paned1));
-      gtk_paned_set_position (window->main_paned, 0);
-    }
+  g_return_if_fail (MARKER_IS_WINDOW (window));
+  
+  if (!window->sidebar_visible)
+    return;
+    
+  if (!window->paned1 || !window->main_paned)
+    return;
+    
+  if (!GTK_IS_WIDGET (window->paned1) || !GTK_IS_PANED (window->main_paned))
+    return;
+  
+  /* Check if paned1 is actually a child of main_paned before removing */
+  if (gtk_widget_get_parent (window->paned1) == GTK_WIDGET (window->main_paned)) {
+    g_object_ref (window->paned1);
+    gtk_container_remove (GTK_CONTAINER (window->main_paned), window->paned1);
+    gtk_paned_set_position (window->main_paned, 0);
+    window->sidebar_visible = FALSE;
   }
 }
 
 void
 marker_window_show_sidebar (MarkerWindow *window)
 {
-  if (!window->sidebar_visible && window->paned1 && window->main_paned) {
-    window->sidebar_visible = true;
-    if (GTK_IS_WIDGET(window->paned1)) {
-      gtk_paned_add1 (window->main_paned, GTK_WIDGET (window->paned1));
-      g_object_unref (window->paned1);
-      gtk_paned_set_position (window->main_paned, 200);
+  g_return_if_fail (MARKER_IS_WINDOW (window));
+  
+  if (window->sidebar_visible)
+    return;
+    
+  if (!window->paned1 || !window->main_paned)
+    return;
+    
+  if (!GTK_IS_WIDGET (window->paned1) || !GTK_IS_PANED (window->main_paned))
+    return;
+  
+  /* Check if paned1 is not already a child of main_paned */
+  if (gtk_widget_get_parent (window->paned1) == NULL) {
+    gtk_paned_add1 (window->main_paned, window->paned1);
+    if (g_object_is_floating (window->paned1)) {
+      g_object_ref_sink (window->paned1);
     }
+    g_object_unref (window->paned1);
+    gtk_paned_set_position (window->main_paned, 200);
+    window->sidebar_visible = TRUE;
   }
 }
 
