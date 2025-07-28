@@ -208,5 +208,11 @@
       <default>false</default>
       <summary>Whether the sidebar is shown</summary>
     </key>
+
+    <key name="enable-scroll-sync" type="b">
+      <default>false</default>
+      <summary>Enable scroll synchronization</summary>
+      <description>Synchronize scrolling between editor and preview panes.</description>
+    </key>
   </schema>
 </schemalist>

@@ -111,6 +111,18 @@ marker_prefs_set_show_sidebar(gboolean state)
 }
 
 gboolean
+marker_prefs_get_enable_scroll_sync()
+{
+  return g_settings_get_boolean(prefs.window_settings, "enable-scroll-sync");
+}
+
+void
+marker_prefs_set_enable_scroll_sync(gboolean state)
+{
+  g_settings_set_boolean(prefs.window_settings, "enable-scroll-sync", state);
+}
+
+gboolean
 marker_prefs_get_use_syntax_theme()
 {
   return g_settings_get_boolean(prefs.editor_settings, "enable-syntax-theme");
@@ -669,6 +681,15 @@ enable_dark_mode_toggled(GtkToggleButton* button,
 }
 
 static void
+enable_scroll_sync_toggled(GtkToggleButton* button,
+                           gpointer         user_data)
+{
+  gboolean state = gtk_toggle_button_get_active(button);
+  marker_prefs_set_enable_scroll_sync(state);
+  update_editors();
+}
+
+static void
 auto_indent_toggled(GtkToggleButton* button,
                     gpointer         user_data)
 {
@@ -973,6 +994,10 @@ marker_prefs_show_window()
   check_button =
     GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "enable_dark_mode_check_button"));
   gtk_toggle_button_set_active(check_button, marker_prefs_get_use_dark_theme());
+  
+  check_button =
+    GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "enable_scroll_sync_check_button"));
+  gtk_toggle_button_set_active(check_button, marker_prefs_get_enable_scroll_sync());
 
   check_button =
     GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "use_ctrl_wheel_zoom_check_button"));
@@ -1096,6 +1121,9 @@ marker_prefs_show_window()
   gtk_builder_add_callback_symbol(builder,
                                   "enable_dark_mode_toggled",
                                   G_CALLBACK(enable_dark_mode_toggled));
+  gtk_builder_add_callback_symbol(builder,
+                                  "enable_scroll_sync_toggled",
+                                  G_CALLBACK(enable_scroll_sync_toggled));
   gtk_builder_add_callback_symbol(builder,
                                   "editor_syntax_toggled",
                                   G_CALLBACK(editor_syntax_toggled));

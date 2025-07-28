@@ -52,6 +52,9 @@ struct _MarkerEditor
   guint                 timer_id;
 
   GtkTextIter          *text_iter;
+  
+  gboolean              scroll_sync_enabled;
+  guint                 scroll_sync_timer;
 };
 
 G_DEFINE_TYPE (MarkerEditor, marker_editor, GTK_TYPE_BOX);
@@ -78,6 +81,54 @@ refresh_timeout_cb (gpointer user_data)
   if (editor->needs_refresh)
     marker_editor_refresh_preview (editor);
   return G_SOURCE_CONTINUE;
+}
+
+static gboolean
+on_editor_scroll_sync_timeout (gpointer user_data)
+{
+  MarkerEditor *editor = MARKER_EDITOR (user_data);
+  editor->scroll_sync_timer = 0;
+  return G_SOURCE_REMOVE;
+}
+
+static void
+on_editor_scroll_event (GtkAdjustment *adj,
+                        gpointer       user_data)
+{
+  MarkerEditor *editor = MARKER_EDITOR (user_data);
+  
+  if (!editor->scroll_sync_enabled || editor->scroll_sync_timer)
+    return;
+    
+  if (editor->view_mode != DUAL_PANE_MODE)
+    return;
+  
+  GtkScrolledWindow *scrolled = editor->source_scroll;
+  GtkAdjustment *vadj = gtk_scrolled_window_get_vadjustment (scrolled);
+  
+  gdouble value = gtk_adjustment_get_value (vadj);
+  gdouble upper = gtk_adjustment_get_upper (vadj);
+  gdouble page_size = gtk_adjustment_get_page_size (vadj);
+  
+  /* Calculate scroll percentage */
+  gdouble percentage = 0.0;
+  if (upper > page_size) {
+    percentage = value / (upper - page_size);
+  }
+  
+  /* Apply percentage to preview */
+  gchar *script = g_strdup_printf (
+    "var body = document.body, html = document.documentElement; "
+    "var height = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight); "
+    "window.scrollTo(0, %f * (height - window.innerHeight));",
+    percentage
+  );
+  
+  webkit_web_view_run_javascript (WEBKIT_WEB_VIEW (editor->preview), script, NULL, NULL, NULL);
+  g_free (script);
+  
+  /* Prevent feedback loop */
+  editor->scroll_sync_timer = g_timeout_add (100, on_editor_scroll_sync_timeout, editor);
 }
 
 static gboolean
@@ -249,6 +300,8 @@ marker_editor_init (MarkerEditor *editor)
   editor->unsaved_changes = FALSE;
   editor->search_active = FALSE;
   editor->text_iter = NULL;
+  editor->scroll_sync_enabled = marker_prefs_get_enable_scroll_sync();
+  editor->scroll_sync_timer = 0;
 
   editor->paned = GTK_PANED (gtk_paned_new (GTK_ORIENTATION_HORIZONTAL));
   editor->vbox = GTK_BOX(gtk_box_new(GTK_ORIENTATION_VERTICAL, 0));
@@ -304,6 +357,10 @@ marker_editor_init (MarkerEditor *editor)
   gtk_container_add (GTK_CONTAINER (editor->source_scroll), GTK_WIDGET (editor->source_view));
   GtkTextBuffer *buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (editor->source_view));
   g_signal_connect (buffer, "changed", G_CALLBACK (buffer_changed_cb), editor);
+  
+  /* Connect scroll sync handler */
+  GtkAdjustment *vadj = gtk_scrolled_window_get_vadjustment (editor->source_scroll);
+  g_signal_connect (vadj, "value-changed", G_CALLBACK (on_editor_scroll_event), editor);
 
   gtk_box_pack_end(editor->vbox, GTK_WIDGET(editor->source_scroll), TRUE, TRUE, 0);
   gtk_widget_show(GTK_WIDGET (editor->vbox));
@@ -743,4 +800,13 @@ GtkSearchBar*
 marker_editor_get_search_bar (MarkerEditor       *editor)
 {
   return editor->search_bar;
+}
+
+void
+marker_editor_set_scroll_sync (MarkerEditor *editor,
+                               gboolean      enabled)
+{
+  g_assert (MARKER_IS_EDITOR (editor));
+  editor->scroll_sync_enabled = enabled;
+  marker_prefs_set_enable_scroll_sync (enabled);
 }

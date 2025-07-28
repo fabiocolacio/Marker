@@ -81,6 +81,7 @@ G_DEFINE_TYPE (MarkerWindow, marker_window, GTK_TYPE_APPLICATION_WINDOW);
 static void update_view_mode_button_icon (MarkerWindow *window, MarkerViewMode mode);
 static void action_toggle_line_numbers (GSimpleAction *action, GVariant *parameter, gpointer user_data);
 static void action_toggle_wrap_text (GSimpleAction *action, GVariant *parameter, gpointer user_data);
+static void action_toggle_scroll_sync (GSimpleAction *action, GVariant *parameter, gpointer user_data);
 
 gboolean
 get_current_iter(MarkerWindow *window,
@@ -502,6 +503,39 @@ action_toggle_wrap_text (GSimpleAction *action,
   }
 }
 
+static void
+action_toggle_scroll_sync (GSimpleAction *action,
+                           GVariant      *value,
+                           gpointer       user_data)
+{
+  gboolean state = g_variant_get_boolean (value);
+  g_simple_action_set_state (action, value);
+  
+  /* Save the scroll sync preference */
+  marker_prefs_set_enable_scroll_sync (state);
+  
+  /* Apply to all editors in all windows */
+  GtkApplication *app = marker_get_app();
+  if (!app) return;
+  
+  GList *windows = gtk_application_get_windows(app);
+  for (GList *win_item = windows; win_item != NULL; win_item = win_item->next) {
+    if (MARKER_IS_WINDOW(win_item->data)) {
+      MarkerWindow *win = MARKER_WINDOW(win_item->data);
+      
+      /* Get all editors in this window */
+      GList *children = gtk_container_get_children(GTK_CONTAINER(win->editors_stack));
+      for (GList *child = children; child != NULL; child = child->next) {
+        if (MARKER_IS_EDITOR(child->data)) {
+          MarkerEditor *editor = MARKER_EDITOR(child->data);
+          marker_editor_set_scroll_sync(editor, state);
+        }
+      }
+      g_list_free(children);
+    }
+  }
+}
+
 
 gchar *
 make_markup_title(MarkerEditor *editor,
@@ -888,6 +922,11 @@ marker_window_init (MarkerWindow *window)
     gboolean wrap_text_state = marker_prefs_get_wrap_text();
     action = G_ACTION (g_simple_action_new_stateful ("togglewraptext", NULL, g_variant_new_boolean (wrap_text_state)));
     g_signal_connect (G_SIMPLE_ACTION (action), "change-state", G_CALLBACK (action_toggle_wrap_text), window);
+    g_action_map_add_action (G_ACTION_MAP (window), action);
+    
+    gboolean scroll_sync_state = marker_prefs_get_enable_scroll_sync();
+    action = G_ACTION (g_simple_action_new_stateful ("togglescrollsync", NULL, g_variant_new_boolean (scroll_sync_state)));
+    g_signal_connect (G_SIMPLE_ACTION (action), "change-state", G_CALLBACK (action_toggle_scroll_sync), window);
     g_action_map_add_action (G_ACTION_MAP (window), action);
     
 

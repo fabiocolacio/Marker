@@ -42,6 +42,10 @@
     <property name="icon_name">applications-graphics-symbolic</property>
     <property name="icon_size">2</property>
   </object>
+  <object class="GtkImage" id="scroll-sync">
+    <property name="icon_name">view-continuous-symbolic</property>
+    <property name="icon_size">2</property>
+  </object>
   
   <!-- Header Bar -->
   <object class="GtkHeaderBar" id="header_bar">
@@ -107,6 +111,17 @@
         <property name="image">wrap-text</property>
         <property name="tooltip_text" translatable="yes">Toggle text wrapping</property>
         <property name="action-name">win.togglewraptext</property>
+      </object>
+      <packing>
+        <property name="pack_type">start</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkToggleButton" id="scroll_sync_btn">
+        <property name="visible">True</property>
+        <property name="image">scroll-sync</property>
+        <property name="tooltip_text" translatable="yes">Toggle scroll synchronization</property>
+        <property name="action-name">win.togglescrollsync</property>
       </object>
       <packing>
         <property name="pack_type">start</property>
