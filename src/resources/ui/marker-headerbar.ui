@@ -43,7 +43,7 @@
     <property name="icon_size">2</property>
   </object>
   <object class="GtkImage" id="scroll-sync">
-    <property name="icon_name">view-continuous-symbolic</property>
+    <property name="icon_name">media-playlist-repeat-symbolic</property>
     <property name="icon_size">2</property>
   </object>
   
