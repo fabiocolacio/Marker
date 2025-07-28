@@ -52,6 +52,9 @@ struct _MarkerWindow
   GtkButton            *zoom_original_btn;
   GtkButton            *view_mode_btn;
   GtkToggleButton      *spell_check_btn;
+  GtkToggleButton      *line_numbers_btn;
+  GtkToggleButton      *wrap_text_btn;
+  GtkToggleButton      *sidebar_btn;
 
   gboolean              is_fullscreen;
   GtkButton            *unfullscreen_btn;
@@ -76,6 +79,8 @@ G_DEFINE_TYPE (MarkerWindow, marker_window, GTK_TYPE_APPLICATION_WINDOW);
 
 /* Forward declarations */
 static void update_view_mode_button_icon (MarkerWindow *window, MarkerViewMode mode);
+static void action_toggle_line_numbers (GSimpleAction *action, GVariant *parameter, gpointer user_data);
+static void action_toggle_wrap_text (GSimpleAction *action, GVariant *parameter, gpointer user_data);
 
 gboolean
 get_current_iter(MarkerWindow *window,
@@ -185,6 +190,22 @@ action_sidebar (GSimpleAction *action,
     }
     else {
         marker_window_hide_sidebar (MARKER_WINDOW (window));
+    }
+    
+    /* Update button state across all windows */
+    GtkApplication *app = marker_get_app();
+    if (!app) return;
+    
+    GList *windows = gtk_application_get_windows(app);
+    for (GList *win_item = windows; win_item != NULL; win_item = win_item->next) {
+        if (MARKER_IS_WINDOW(win_item->data)) {
+            MarkerWindow *win = MARKER_WINDOW(win_item->data);
+            
+            /* Update button state in each window */
+            if (win->sidebar_btn) {
+                gtk_toggle_button_set_active (win->sidebar_btn, state);
+            }
+        }
     }
 }
 
@@ -435,6 +456,85 @@ action_toggle_spell_check (GSimpleAction *action,
     }
   }
 }
+
+static void
+action_toggle_line_numbers (GSimpleAction *action,
+                            GVariant      *parameter,
+                            gpointer       user_data)
+{
+  MarkerWindow *window = user_data;
+  
+  /* Toggle the line numbers preference */
+  gboolean current_state = marker_prefs_get_show_line_numbers();
+  gboolean new_state = !current_state;
+  marker_prefs_set_show_line_numbers (new_state);
+  
+  /* Apply to all editors in all windows and update buttons */
+  GtkApplication *app = marker_get_app();
+  if (!app) return;
+  
+  GList *windows = gtk_application_get_windows(app);
+  for (GList *win_item = windows; win_item != NULL; win_item = win_item->next) {
+    if (MARKER_IS_WINDOW(win_item->data)) {
+      MarkerWindow *win = MARKER_WINDOW(win_item->data);
+      
+      /* Update button state in each window */
+      if (win->line_numbers_btn) {
+        gtk_toggle_button_set_active (win->line_numbers_btn, new_state);
+      }
+      
+      /* Get all editors in this window */
+      GList *children = gtk_container_get_children(GTK_CONTAINER(win->editors_stack));
+      for (GList *child = children; child != NULL; child = child->next) {
+        if (MARKER_IS_EDITOR(child->data)) {
+          MarkerEditor *editor = MARKER_EDITOR(child->data);
+          marker_editor_apply_prefs(editor);
+        }
+      }
+      g_list_free(children);
+    }
+  }
+}
+
+static void
+action_toggle_wrap_text (GSimpleAction *action,
+                         GVariant      *parameter,
+                         gpointer       user_data)
+{
+  MarkerWindow *window = user_data;
+  
+  /* Toggle the wrap text preference */
+  gboolean current_state = marker_prefs_get_wrap_text();
+  gboolean new_state = !current_state;
+  marker_prefs_set_wrap_text (new_state);
+  
+  /* Apply to all editors in all windows and update buttons */
+  GtkApplication *app = marker_get_app();
+  if (!app) return;
+  
+  GList *windows = gtk_application_get_windows(app);
+  for (GList *win_item = windows; win_item != NULL; win_item = win_item->next) {
+    if (MARKER_IS_WINDOW(win_item->data)) {
+      MarkerWindow *win = MARKER_WINDOW(win_item->data);
+      
+      /* Update button state in each window */
+      if (win->wrap_text_btn) {
+        gtk_toggle_button_set_active (win->wrap_text_btn, new_state);
+      }
+      
+      /* Get all editors in this window */
+      GList *children = gtk_container_get_children(GTK_CONTAINER(win->editors_stack));
+      for (GList *child = children; child != NULL; child = child->next) {
+        if (MARKER_IS_EDITOR(child->data)) {
+          MarkerEditor *editor = MARKER_EDITOR(child->data);
+          marker_editor_apply_prefs(editor);
+        }
+      }
+      g_list_free(children);
+    }
+  }
+}
+
 
 gchar *
 make_markup_title(MarkerEditor *editor,
@@ -802,7 +902,7 @@ marker_window_init (MarkerWindow *window)
 
     action = G_ACTION (g_simple_action_new ("toggleviewmode", NULL));
     g_signal_connect (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (action_toggle_view_mode), window);
-    const gchar *toggleviewmode_accels[] = { "<Ctrl>Tab", NULL };
+    const gchar *toggleviewmode_accels[] = { "<Ctrl><Shift>l", NULL };
     gtk_application_set_accels_for_action (app, "win.toggleviewmode", toggleviewmode_accels);
     g_action_map_add_action (G_ACTION_MAP (window), action);
 
@@ -811,6 +911,15 @@ marker_window_init (MarkerWindow *window)
     const gchar *togglespellcheck_accels[] = { "F7", NULL };
     gtk_application_set_accels_for_action (app, "win.togglespellcheck", togglespellcheck_accels);
     g_action_map_add_action (G_ACTION_MAP (window), action);
+    
+    action = G_ACTION (g_simple_action_new ("togglelinenumbers", NULL));
+    g_signal_connect (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (action_toggle_line_numbers), window);
+    g_action_map_add_action (G_ACTION_MAP (window), action);
+    
+    action = G_ACTION (g_simple_action_new ("togglewraptext", NULL));
+    g_signal_connect (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (action_toggle_wrap_text), window);
+    g_action_map_add_action (G_ACTION_MAP (window), action);
+    
 
     action = G_ACTION (g_simple_action_new ("open", NULL));
     g_signal_connect_swapped (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (marker_window_open_file), window);
@@ -850,7 +959,7 @@ marker_window_init (MarkerWindow *window)
 
     action = G_ACTION (g_simple_action_new_stateful ("sidebar", NULL, g_variant_new_boolean (FALSE)));
     g_signal_connect (G_SIMPLE_ACTION (action), "change-state", G_CALLBACK (action_sidebar), window);
-    const gchar *sidebar_accels[] =  { "F12", NULL };
+    const gchar *sidebar_accels[] =  { "<Ctrl><Shift>b", "F12", NULL };
     gtk_application_set_accels_for_action (app, "win.sidebar", sidebar_accels);
     g_action_map_add_action (G_ACTION_MAP (window), action);
   }
@@ -965,6 +1074,29 @@ marker_window_init (MarkerWindow *window)
   /* Set initial state */
   if (window->spell_check_btn) {
     gtk_toggle_button_set_active (window->spell_check_btn, marker_prefs_get_spell_check());
+  }
+  
+  /** Line Numbers Button **/
+  window->line_numbers_btn = GTK_TOGGLE_BUTTON (gtk_builder_get_object (builder, "line_numbers_btn"));
+  /* Set initial state */
+  if (window->line_numbers_btn) {
+    gtk_toggle_button_set_active (window->line_numbers_btn, marker_prefs_get_show_line_numbers());
+  }
+  
+  /** Wrap Text Button **/
+  window->wrap_text_btn = GTK_TOGGLE_BUTTON (gtk_builder_get_object (builder, "wrap_text_btn"));
+  /* Set initial state */
+  if (window->wrap_text_btn) {
+    gtk_toggle_button_set_active (window->wrap_text_btn, marker_prefs_get_wrap_text());
+  }
+  
+  /** Sidebar Button **/
+  window->sidebar_btn = GTK_TOGGLE_BUTTON (gtk_builder_get_object (builder, "sidebar_btn"));
+  /* Set initial state from preferences */
+  if (window->sidebar_btn) {
+    gboolean sidebar_state = marker_prefs_get_show_sidebar();
+    gtk_toggle_button_set_active (window->sidebar_btn, sidebar_state);
+    window->sidebar_visible = sidebar_state;
   }
   
   /** Popover **/

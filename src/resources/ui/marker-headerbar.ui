@@ -6,6 +6,14 @@
     <property name="icon_name">open-menu-symbolic</property>
     <property name="icon_size">2</property>
   </object>
+  <object class="GtkImage" id="open-file">
+    <property name="icon_name">document-open-symbolic</property>
+    <property name="icon_size">2</property>
+  </object>
+  <object class="GtkImage" id="save-file">
+    <property name="icon_name">document-save-symbolic</property>
+    <property name="icon_size">2</property>
+  </object>
   <object class="GtkImage" id="restore-view">
     <property name="icon_name">view-restore-symbolic</property>
     <property name="icon_size">2</property>
@@ -18,14 +26,42 @@
     <property name="icon_name">tools-check-spelling-symbolic</property>
     <property name="icon_size">2</property>
   </object>
+  <object class="GtkImage" id="line-numbers">
+    <property name="icon_name">view-list-symbolic</property>
+    <property name="icon_size">2</property>
+  </object>
+  <object class="GtkImage" id="wrap-text">
+    <property name="icon_name">format-text-direction-ltr-symbolic</property>
+    <property name="icon_size">2</property>
+  </object>
+  <object class="GtkImage" id="sidebar">
+    <property name="icon_name">pan-end-symbolic</property>
+    <property name="icon_size">2</property>
+  </object>
+  <object class="GtkImage" id="sketch">
+    <property name="icon_name">applications-graphics-symbolic</property>
+    <property name="icon_size">2</property>
+  </object>
   
   <!-- Header Bar -->
   <object class="GtkHeaderBar" id="header_bar">
     <property name="visible">True</property>
     <child>
+      <object class="GtkToggleButton" id="sidebar_btn">
+        <property name="visible">True</property>
+        <property name="image">sidebar</property>
+        <property name="tooltip_text" translatable="yes">Toggle sidebar (Ctrl+Shift+B / F12)</property>
+        <property name="action-name">win.sidebar</property>
+      </object>
+      <packing>
+        <property name="pack_type">start</property>
+      </packing>
+    </child>
+    <child>
       <object class="GtkButton" id="open_btn">
         <property name="visible">True</property>
-        <property name="label" translatable="yes">Open…</property>
+        <property name="image">open-file</property>
+        <property name="tooltip_text" translatable="yes">Open file (Ctrl+O)</property>
         <property name="action-name">win.open</property>
       </object>
       <packing>
@@ -35,7 +71,8 @@
     <child>
       <object class="GtkButton" id="save_btn">
         <property name="visible">True</property>
-        <property name="label" translatable="yes">Save</property>
+        <property name="image">save-file</property>
+        <property name="tooltip_text" translatable="yes">Save file (Ctrl+S)</property>
         <property name="action-name">win.save</property>
       </object>
       <packing>
@@ -46,8 +83,41 @@
       <object class="GtkToggleButton" id="spell_check_btn">
         <property name="visible">True</property>
         <property name="image">spell-check</property>
-        <property name="tooltip_text" translatable="yes">Toggle spell check</property>
+        <property name="tooltip_text" translatable="yes">Toggle spell check (F7)</property>
         <property name="action-name">win.togglespellcheck</property>
+      </object>
+      <packing>
+        <property name="pack_type">start</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkToggleButton" id="line_numbers_btn">
+        <property name="visible">True</property>
+        <property name="image">line-numbers</property>
+        <property name="tooltip_text" translatable="yes">Toggle line numbers</property>
+        <property name="action-name">win.togglelinenumbers</property>
+      </object>
+      <packing>
+        <property name="pack_type">start</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkToggleButton" id="wrap_text_btn">
+        <property name="visible">True</property>
+        <property name="image">wrap-text</property>
+        <property name="tooltip_text" translatable="yes">Toggle text wrapping</property>
+        <property name="action-name">win.togglewraptext</property>
+      </object>
+      <packing>
+        <property name="pack_type">start</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkButton" id="sketch_btn">
+        <property name="visible">True</property>
+        <property name="image">sketch</property>
+        <property name="tooltip_text" translatable="yes">Draw sketch (Ctrl+D)</property>
+        <property name="action-name">win.sketcher</property>
       </object>
       <packing>
         <property name="pack_type">start</property>
@@ -57,7 +127,7 @@
       <object class="GtkButton" id="view_mode_btn">
         <property name="visible">True</property>
         <property name="image">view-mode</property>
-        <property name="tooltip_text" translatable="yes">Toggle view mode</property>
+        <property name="tooltip_text" translatable="yes">Cycle view mode (Ctrl+Shift+L)</property>
         <property name="action-name">win.toggleviewmode</property>
       </object>
       <packing>
