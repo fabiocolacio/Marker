@@ -387,6 +387,67 @@ on_size_allocate (GtkWidget     *widget,
   gtk_text_view_set_bottom_margin(GTK_TEXT_VIEW(widget), bottom_margin);
 }
 
+static gboolean
+on_key_press_event (GtkWidget   *widget,
+                    GdkEventKey *event,
+                    gpointer     user_data)
+{
+  /* Check for Ctrl+C */
+  if ((event->state & GDK_CONTROL_MASK) && 
+      (event->keyval == GDK_KEY_c || event->keyval == GDK_KEY_C))
+  {
+    GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(widget));
+    GtkTextIter start, end;
+    
+    /* Check if there's a selection */
+    if (!gtk_text_buffer_get_selection_bounds(buffer, &start, &end))
+    {
+      /* No selection - copy the current line */
+      GtkTextIter line_start, line_end;
+      GtkTextMark *insert_mark = gtk_text_buffer_get_insert(buffer);
+      gtk_text_buffer_get_iter_at_mark(buffer, &line_start, insert_mark);
+      
+      /* Move to start of line */
+      gtk_text_iter_set_line_offset(&line_start, 0);
+      
+      /* Copy line_start to line_end */
+      line_end = line_start;
+      
+      /* Move to end of line */
+      if (!gtk_text_iter_ends_line(&line_end))
+        gtk_text_iter_forward_to_line_end(&line_end);
+      
+      /* Include the newline character */
+      if (!gtk_text_iter_is_end(&line_end))
+        gtk_text_iter_forward_char(&line_end);
+      
+      /* Get the text with newline at beginning and end */
+      gchar *line_text = gtk_text_buffer_get_text(buffer, &line_start, &line_end, FALSE);
+      gchar *text_to_copy;
+      
+      /* Add newline at the beginning if we're not at the first line */
+      if (gtk_text_iter_get_line(&line_start) > 0) {
+        text_to_copy = g_strdup_printf("\n%s", line_text);
+      } else {
+        text_to_copy = g_strdup(line_text);
+      }
+      
+      /* Copy to clipboard */
+      GtkClipboard *clipboard = gtk_clipboard_get(GDK_SELECTION_CLIPBOARD);
+      gtk_clipboard_set_text(clipboard, text_to_copy, -1);
+      
+      g_free(line_text);
+      g_free(text_to_copy);
+      
+      /* Return TRUE to indicate we handled the event */
+      return TRUE;
+    }
+  }
+  
+  /* Return FALSE to let the default handler process the event */
+  return FALSE;
+}
+
 static void
 marker_source_view_init (MarkerSourceView *source_view)
 {
@@ -401,6 +462,9 @@ marker_source_view_init (MarkerSourceView *source_view)
   
   /* Connect size-allocate handler to dynamically adjust bottom margin */
   g_signal_connect(source_view, "size-allocate", G_CALLBACK(on_size_allocate), NULL);
+  
+  /* Connect key-press-event handler for copy current line functionality */
+  g_signal_connect(source_view, "key-press-event", G_CALLBACK(on_key_press_event), NULL);
   
   /* Connect scroll event handler for Ctrl+wheel zoom */
   g_signal_connect(source_view, "scroll-event", G_CALLBACK(on_scroll_event), NULL);
