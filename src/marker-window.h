@@ -57,6 +57,7 @@ void                 marker_window_new_editor_from_file          (MarkerWindow  
                                                                   GFile              *file);
 
 void                 marker_window_search                        (MarkerWindow       *window);
+void                 marker_window_go_to_line                    (MarkerWindow       *window);
 
 void 				 marker_window_refresh_all_preview			 (MarkerWindow       *window);
 

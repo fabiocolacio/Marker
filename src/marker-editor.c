@@ -815,3 +815,95 @@ marker_editor_set_scroll_sync (MarkerEditor *editor,
   editor->scroll_sync_enabled = enabled;
   marker_prefs_set_enable_scroll_sync (enabled);
 }
+
+void
+marker_editor_go_to_line (MarkerEditor *editor)
+{
+  g_assert (MARKER_IS_EDITOR (editor));
+  
+  GtkWidget *dialog;
+  GtkWidget *content_area;
+  GtkWidget *entry;
+  GtkWidget *label;
+  GtkWidget *hbox;
+  
+  /* Create the dialog */
+  dialog = gtk_dialog_new_with_buttons (_("Go to Line"),
+                                        GTK_WINDOW (gtk_widget_get_toplevel (GTK_WIDGET (editor))),
+                                        GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+                                        _("_Cancel"), GTK_RESPONSE_CANCEL,
+                                        _("_Go"), GTK_RESPONSE_OK,
+                                        NULL);
+  
+  /* Set default response */
+  gtk_dialog_set_default_response (GTK_DIALOG (dialog), GTK_RESPONSE_OK);
+  
+  /* Create content */
+  content_area = gtk_dialog_get_content_area (GTK_DIALOG (dialog));
+  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 12);
+  gtk_container_set_border_width (GTK_CONTAINER (hbox), 12);
+  gtk_box_pack_start (GTK_BOX (content_area), hbox, FALSE, FALSE, 0);
+  
+  label = gtk_label_new (_("Line number:"));
+  gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, FALSE, 0);
+  
+  entry = gtk_entry_new ();
+  gtk_entry_set_width_chars (GTK_ENTRY (entry), 10);
+  gtk_entry_set_input_purpose (GTK_ENTRY (entry), GTK_INPUT_PURPOSE_NUMBER);
+  gtk_box_pack_start (GTK_BOX (hbox), entry, TRUE, TRUE, 0);
+  
+  /* Get current line number for reference */
+  GtkTextBuffer *buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (editor->source_view));
+  GtkTextMark *insert_mark = gtk_text_buffer_get_insert (buffer);
+  GtkTextIter iter;
+  gtk_text_buffer_get_iter_at_mark (buffer, &iter, insert_mark);
+  gint current_line = gtk_text_iter_get_line (&iter) + 1;
+  gint total_lines = gtk_text_buffer_get_line_count (buffer);
+  
+  /* Set placeholder text showing current position */
+  gchar *placeholder = g_strdup_printf (_("Current: %d of %d"), current_line, total_lines);
+  gtk_entry_set_placeholder_text (GTK_ENTRY (entry), placeholder);
+  g_free (placeholder);
+  
+  /* Activate default response on Enter in entry */
+  gtk_entry_set_activates_default (GTK_ENTRY (entry), TRUE);
+  
+  gtk_widget_show_all (dialog);
+  
+  /* Focus the entry */
+  gtk_widget_grab_focus (entry);
+  
+  /* Run the dialog */
+  if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_OK)
+  {
+    const gchar *text = gtk_entry_get_text (GTK_ENTRY (entry));
+    gint line_number = atoi (text);
+    
+    if (line_number > 0)
+    {
+      /* Move to the specified line */
+      GtkTextIter target;
+      
+      if (line_number > total_lines)
+      {
+        /* Go to end of document if line number exceeds total lines */
+        gtk_text_buffer_get_end_iter (buffer, &target);
+      }
+      else
+      {
+        /* Go to the specified line */
+        gtk_text_buffer_get_iter_at_line (buffer, &target, line_number - 1);
+      }
+      
+      gtk_text_buffer_place_cursor (buffer, &target);
+      
+      /* Scroll to make the line visible */
+      gtk_text_view_scroll_to_iter (GTK_TEXT_VIEW (editor->source_view), &target, 0.25, FALSE, 0.0, 0.5);
+      
+      /* Give focus back to the editor */
+      gtk_widget_grab_focus (GTK_WIDGET (editor->source_view));
+    }
+  }
+  
+  gtk_widget_destroy (dialog);
+}

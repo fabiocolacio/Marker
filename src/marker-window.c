@@ -969,6 +969,12 @@ marker_window_init (MarkerWindow *window)
     gtk_application_set_accels_for_action (app, "win.find", find_accels);
     g_action_map_add_action (G_ACTION_MAP (window), action);
 
+    action = G_ACTION (g_simple_action_new ("gotoline", NULL));
+    g_signal_connect_swapped (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (marker_window_go_to_line), window);
+    const gchar *gotoline_accels[] = { "<Ctrl>g", NULL };
+    gtk_application_set_accels_for_action (app, "win.gotoline", gotoline_accels);
+    g_action_map_add_action (G_ACTION_MAP (window), action);
+
     action = G_ACTION (g_simple_action_new ("link", NULL));
     g_signal_connect (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (action_link), window);
     const gchar *link_accels[] = { "<Ctrl>k", NULL };
@@ -1845,6 +1851,15 @@ marker_window_search (MarkerWindow       *window)
   if (window->active_editor)
   {
     marker_editor_toggle_search_bar(window->active_editor);
+  }
+}
+
+void
+marker_window_go_to_line (MarkerWindow       *window)
+{
+  if (window->active_editor)
+  {
+    marker_editor_go_to_line(window->active_editor);
   }
 }
 
