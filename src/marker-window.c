@@ -1022,6 +1022,13 @@ marker_window_init (MarkerWindow *window)
 
   window->main_paned = GTK_PANED(main_paned);
 
+  /* Apply sidebar preference now that UI elements are initialized */
+  if (!marker_prefs_get_show_sidebar())
+  {
+    /* Hide sidebar if preference is to not show it */
+    marker_window_hide_sidebar(window);
+  }
+
   /** HeaderBar **/
   GtkBox *header_box = GTK_BOX (gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
   window->header_box = header_box;
@@ -1075,7 +1082,7 @@ marker_window_init (MarkerWindow *window)
   }
 
   /** Window **/
-  marker_window_hide_sidebar (window);
+  /* Don't hide sidebar here - let the preference handling below take care of it */
   guint width = marker_prefs_get_window_width();
   guint height = marker_prefs_get_window_height();
   g_print ("window size loaded from the preferences: %d x %d\n", width, height);
@@ -1099,11 +1106,7 @@ marker_window_init (MarkerWindow *window)
     gtk_window_move (GTK_WINDOW(window), pos_x, pos_y);
   }
 
-  if (marker_prefs_get_show_sidebar())
-  {
-    /* show sidebar and set the "Sidebar" button as activated */
-    g_action_group_activate_action(G_ACTION_GROUP (window), "sidebar", NULL);
-  }
+  /* Defer sidebar preference application until after UI is built */
   g_signal_connect(window, "delete-event", G_CALLBACK(window_deleted_event_cb), window);
 
   g_object_unref (builder);
@@ -1535,22 +1538,26 @@ marker_window_toggle_sidebar (MarkerWindow *window)
 void
 marker_window_hide_sidebar (MarkerWindow *window)
 {
-  if (window->sidebar_visible) {
+  if (window->sidebar_visible && window->paned1 && window->main_paned) {
     window->sidebar_visible = false;
-    g_object_ref (window->paned1);
-    gtk_container_remove (GTK_CONTAINER (window->main_paned), GTK_WIDGET (window->paned1));
-    gtk_paned_set_position (window->main_paned, 0);
+    if (GTK_IS_WIDGET(window->paned1)) {
+      g_object_ref (window->paned1);
+      gtk_container_remove (GTK_CONTAINER (window->main_paned), GTK_WIDGET (window->paned1));
+      gtk_paned_set_position (window->main_paned, 0);
+    }
   }
 }
 
 void
 marker_window_show_sidebar (MarkerWindow *window)
 {
-  if (!window->sidebar_visible) {
+  if (!window->sidebar_visible && window->paned1 && window->main_paned) {
     window->sidebar_visible = true;
-    gtk_paned_add1 (window->main_paned, GTK_WIDGET (window->paned1));
-    g_object_unref (window->paned1);
-    gtk_paned_set_position (window->main_paned, 200);
+    if (GTK_IS_WIDGET(window->paned1)) {
+      gtk_paned_add1 (window->main_paned, GTK_WIDGET (window->paned1));
+      g_object_unref (window->paned1);
+      gtk_paned_set_position (window->main_paned, 200);
+    }
   }
 }
 
