@@ -908,21 +908,27 @@ button_pressed_cb (GtkWidget *view,
   MarkerWindow * window = MARKER_WINDOW(gtk_widget_get_ancestor(view, MARKER_TYPE_WINDOW));
   gint x;
 
-  GtkTreePath * path = gtk_tree_path_new();
-  GtkTreeViewColumn * col = gtk_tree_view_column_new();
+  GtkTreePath * path = NULL;
+  GtkTreeViewColumn * col = NULL;
 
-  gtk_tree_view_get_path_at_pos (GTK_TREE_VIEW(view),
-                                 bevent->x,
-                                 bevent->y,
-                                 &path,
-                                 &col,
-                                 &x, NULL);
+  gboolean path_found = gtk_tree_view_get_path_at_pos (GTK_TREE_VIEW(view),
+                                                        bevent->x,
+                                                        bevent->y,
+                                                        &path,
+                                                        &col,
+                                                        &x, NULL);
 
-  gtk_tree_selection_select_path(gtk_tree_view_get_selection(GTK_TREE_VIEW(view)),
-                                 path);
+  if (path_found && path != NULL) {
+    gtk_tree_selection_select_path(gtk_tree_view_get_selection(GTK_TREE_VIEW(view)),
+                                   path);
+  }
 
   if (close_button_clicked(GTK_TREE_VIEW(view), col, x, cell_renderer))
     marker_window_close_current_document(window);
+  
+  if (path)
+    gtk_tree_path_free(path);
+  
   guint32 delta = bevent->time - window->last_click_;
   window->last_click_ = bevent->time;
   if (bevent->type == GDK_2BUTTON_PRESS || delta < 500)
@@ -1656,6 +1662,10 @@ marker_window_try_close (MarkerWindow *window)
   marker_prefs_set_window_position (pos_x, pos_y);
 
   guint editor_width = marker_editor_get_pane_width (window->active_editor);
+  /* Ensure minimum width of 300 to prevent issues with dual pane mode */
+  if (editor_width < 300) {
+    editor_width = 450; /* Use default width */
+  }
   g_print ("saved editor pane width: %d\n", editor_width);
   marker_prefs_set_editor_pane_width (editor_width);
 
