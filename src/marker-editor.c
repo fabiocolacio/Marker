@@ -180,6 +180,7 @@ buffer_changed_cb (GtkTextBuffer *buffer,
     editor->text_iter = NULL;
   }
   emit_signal_title_changed (editor);
+  g_signal_emit_by_name (editor, "content-changed");
 }
 
 static gboolean
@@ -391,6 +392,12 @@ marker_editor_class_init (MarkerEditorClass *class)
                 G_SIGNAL_RUN_LAST | G_SIGNAL_NO_RECURSE,
                 0, NULL, NULL, NULL,
                 G_TYPE_NONE, 1, G_TYPE_STRING);
+
+  g_signal_new ("content-changed",
+                G_TYPE_FROM_CLASS (class),
+                G_SIGNAL_RUN_LAST | G_SIGNAL_NO_RECURSE,
+                0, NULL, NULL, NULL,
+                G_TYPE_NONE, 0);
 }
 
 MarkerEditor *

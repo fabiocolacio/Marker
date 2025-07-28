@@ -43,6 +43,13 @@ enum {
   N_COLUMNS
 };
 
+enum {
+  OUTLINE_TITLE_COLUMN,
+  OUTLINE_LINE_COLUMN,
+  OUTLINE_LEVEL_COLUMN,
+  OUTLINE_N_COLUMNS
+};
+
 struct _MarkerWindow
 {
   GtkApplicationWindow  parent_instance;
@@ -65,6 +72,9 @@ struct _MarkerWindow
   GtkStack             *editors_stack;
   GtkTreeView          *documents_tree_view;
   GtkTreeStore         *documents_tree_store;
+  GtkTreeView          *outline_tree_view;
+  GtkTreeStore         *outline_tree_store;
+  GtkPaned             *sidebar_paned;
   GtkPaned             *main_paned;
   GtkWidget            *paned1;
   GtkWidget            *paned2;
@@ -90,6 +100,8 @@ static void on_preferences_changed (GSettings *settings, gchar *key, gpointer us
 static void action_insert_image (GSimpleAction *action, GVariant *parameter, gpointer user_data);
 static void action_bullet_list (GSimpleAction *action, GVariant *parameter, gpointer user_data);
 static void action_numbered_list (GSimpleAction *action, GVariant *parameter, gpointer user_data);
+static void update_outline_tree (MarkerWindow *window);
+static void on_outline_row_activated (GtkTreeView *tree_view, GtkTreePath *path, GtkTreeViewColumn *column, gpointer user_data);
 
 gboolean
 get_current_iter(MarkerWindow *window,
@@ -759,6 +771,19 @@ subtitle_changed_cb (MarkerEditor *editor,
 }
 
 static void
+content_changed_cb (MarkerEditor *editor,
+                    gpointer      user_data)
+{
+  MarkerWindow *window = MARKER_WINDOW (user_data);
+  
+  /* Only update outline if this is the active editor */
+  if (window->active_editor == editor)
+  {
+    update_outline_tree (window);
+  }
+}
+
+static void
 preview_zoom_changed_cb (MarkerPreview *preview,
                          gpointer       user_data)
 {
@@ -884,6 +909,9 @@ tree_selection_changed_cb(GtkTreeSelection *selection,
     gtk_stack_set_visible_child_full(window->editors_stack, name, GTK_STACK_TRANSITION_TYPE_CROSSFADE);
 
     window->active_editor = editor;
+    
+    /* Update the outline for the newly selected document */
+    update_outline_tree (window);
     g_autofree gchar *title = marker_editor_get_title (marker_window_get_active_editor (window));
     g_autofree gchar *subtitle = marker_editor_get_subtitle (marker_window_get_active_editor (window));
     gtk_header_bar_set_title (window->header_bar, title);
@@ -1262,6 +1290,31 @@ marker_window_init (MarkerWindow *window)
                     G_CALLBACK(button_pressed_cb),
                     renderer);
 
+  /** OUTLINE TREE **/
+  window->outline_tree_view = GTK_TREE_VIEW (gtk_builder_get_object (builder, "outline_tree_view"));
+  window->outline_tree_store = gtk_tree_store_new (OUTLINE_N_COLUMNS,
+                                                    G_TYPE_STRING,  /* Title */
+                                                    G_TYPE_INT,     /* Line number */
+                                                    G_TYPE_INT);    /* Header level */
+  
+  gtk_tree_view_set_model (window->outline_tree_view, GTK_TREE_MODEL (window->outline_tree_store));
+  
+  /* Create column for outline */
+  GtkTreeViewColumn *outline_column = gtk_tree_view_column_new ();
+  GtkCellRenderer *outline_renderer = gtk_cell_renderer_text_new ();
+  gtk_tree_view_column_pack_start (outline_column, outline_renderer, TRUE);
+  gtk_tree_view_column_set_attributes (outline_column, outline_renderer,
+                                        "text", OUTLINE_TITLE_COLUMN,
+                                        NULL);
+  gtk_tree_view_append_column (window->outline_tree_view, outline_column);
+  
+  /* Connect row activation signal */
+  g_signal_connect (window->outline_tree_view, "row-activated",
+                    G_CALLBACK (on_outline_row_activated), window);
+  
+  /* Get sidebar paned */
+  window->sidebar_paned = GTK_PANED (gtk_builder_get_object (builder, "sidebar_paned"));
+
   /** EDITOR STACKS **/
   window->editors_stack = GTK_STACK(gtk_builder_get_object(builder, "documents_stack"));
   gtk_widget_show(GTK_WIDGET(window->editors_stack));
@@ -1456,6 +1509,9 @@ marker_window_add_editor(MarkerWindow *window,
                    window);
   g_signal_connect(editor, "subtitle-changed",
                    G_CALLBACK(subtitle_changed_cb),
+                   window);
+  g_signal_connect(editor, "content-changed",
+                   G_CALLBACK(content_changed_cb),
                    window);
   g_signal_connect(marker_editor_get_preview(editor), "zoom-changed",
                    G_CALLBACK(preview_zoom_changed_cb),
@@ -1927,5 +1983,141 @@ marker_window_refresh_all_preview(MarkerWindow       *window)
         marker_editor_refresh_preview (editor);  
       }
     }
+  }
+}
+
+static void
+update_outline_tree (MarkerWindow *window)
+{
+  g_return_if_fail (MARKER_IS_WINDOW (window));
+  
+  if (!window->active_editor || !window->outline_tree_store)
+    return;
+  
+  /* Clear the outline tree */
+  gtk_tree_store_clear (window->outline_tree_store);
+  
+  /* Get the text from the active editor */
+  MarkerSourceView *source_view = marker_editor_get_source_view (window->active_editor);
+  gchar *text = marker_source_view_get_text (source_view, FALSE);
+  
+  if (!text || strlen (text) == 0)
+  {
+    g_free (text);
+    return;
+  }
+  
+  /* Split text into lines */
+  gchar **lines = g_strsplit (text, "\n", -1);
+  g_free (text);
+  
+  /* Stack to track parent iters for nested headers */
+  GArray *parent_stack = g_array_new (FALSE, FALSE, sizeof (GtkTreeIter));
+  GArray *level_stack = g_array_new (FALSE, FALSE, sizeof (gint));
+  
+  for (int i = 0; lines[i] != NULL; i++)
+  {
+    gchar *line = lines[i];
+    
+    /* Check if line is a markdown header */
+    if (g_str_has_prefix (line, "#"))
+    {
+      /* Count the number of # characters */
+      int level = 0;
+      while (line[level] == '#' && level < 6)
+        level++;
+      
+      /* Skip if it's more than 6 # or if there's no space after # */
+      if (level > 6 || (line[level] != ' ' && line[level] != '\0'))
+        continue;
+      
+      /* Get the header text (skip # and spaces) */
+      gchar *header_text = line + level;
+      while (*header_text == ' ')
+        header_text++;
+      
+      /* Skip empty headers */
+      if (strlen (header_text) == 0)
+        continue;
+      
+      /* Find the appropriate parent for this header */
+      GtkTreeIter parent_iter;
+      GtkTreeIter *parent_ptr = NULL;
+      
+      /* Pop items from stack until we find a suitable parent */
+      while (parent_stack->len > 0)
+      {
+        gint parent_level = g_array_index (level_stack, gint, level_stack->len - 1);
+        if (parent_level < level)
+        {
+          parent_iter = g_array_index (parent_stack, GtkTreeIter, parent_stack->len - 1);
+          parent_ptr = &parent_iter;
+          break;
+        }
+        g_array_remove_index (parent_stack, parent_stack->len - 1);
+        g_array_remove_index (level_stack, level_stack->len - 1);
+      }
+      
+      /* Add the header to the tree */
+      GtkTreeIter iter;
+      gtk_tree_store_append (window->outline_tree_store, &iter, parent_ptr);
+      
+      /* Format the header text with indentation */
+      gchar *display_text = g_strdup_printf ("%s", header_text);
+      
+      gtk_tree_store_set (window->outline_tree_store, &iter,
+                          OUTLINE_TITLE_COLUMN, display_text,
+                          OUTLINE_LINE_COLUMN, i,
+                          OUTLINE_LEVEL_COLUMN, level,
+                          -1);
+      
+      g_free (display_text);
+      
+      /* Push this header onto the stack */
+      g_array_append_val (parent_stack, iter);
+      g_array_append_val (level_stack, level);
+    }
+  }
+  
+  g_strfreev (lines);
+  g_array_free (parent_stack, TRUE);
+  g_array_free (level_stack, TRUE);
+  
+  /* Expand all nodes */
+  gtk_tree_view_expand_all (window->outline_tree_view);
+}
+
+static void
+on_outline_row_activated (GtkTreeView       *tree_view,
+                          GtkTreePath       *path,
+                          GtkTreeViewColumn *column,
+                          gpointer           user_data)
+{
+  MarkerWindow *window = MARKER_WINDOW (user_data);
+  
+  if (!window->active_editor)
+    return;
+  
+  GtkTreeIter iter;
+  if (gtk_tree_model_get_iter (GTK_TREE_MODEL (window->outline_tree_store), &iter, path))
+  {
+    gint line_number;
+    gtk_tree_model_get (GTK_TREE_MODEL (window->outline_tree_store), &iter,
+                        OUTLINE_LINE_COLUMN, &line_number,
+                        -1);
+    
+    /* Jump to the line in the editor */
+    MarkerSourceView *source_view = marker_editor_get_source_view (window->active_editor);
+    GtkTextBuffer *buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (source_view));
+    GtkTextIter target;
+    
+    gtk_text_buffer_get_iter_at_line (buffer, &target, line_number);
+    gtk_text_buffer_place_cursor (buffer, &target);
+    
+    /* Scroll to make the line visible */
+    gtk_text_view_scroll_to_iter (GTK_TEXT_VIEW (source_view), &target, 0.25, FALSE, 0.0, 0.5);
+    
+    /* Give focus to the editor */
+    gtk_widget_grab_focus (GTK_WIDGET (source_view));
   }
 }
