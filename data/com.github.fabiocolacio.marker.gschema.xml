@@ -115,6 +115,12 @@
       <summary>Use Ctrl + mouse wheel for font size</summary>
       <description>When enabled, Ctrl + mouse wheel will change the editor font size.</description>
     </key>
+
+    <key name="add-trailing-newline" type="b">
+      <default>true</default>
+      <summary>Add trailing newline</summary>
+      <description>Add a newline at the end of the file when saving if there isn't one already.</description>
+    </key>
   </schema>
 
   <schema path="/com/github/fabiocolacio/marker/preferences/preview/" id="com.github.fabiocolacio.marker.preferences.preview">

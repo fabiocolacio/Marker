@@ -587,7 +587,28 @@ marker_editor_save_file (MarkerEditor *editor)
   if (fp)
   {
     g_autofree gchar *buffer = marker_source_view_get_text (editor->source_view, false);
-    fputs (buffer, fp);
+    
+    /* Check if we need to add a trailing newline */
+    if (marker_prefs_get_add_trailing_newline ())
+    {
+      gsize len = strlen (buffer);
+      if (len > 0 && buffer[len - 1] != '\n')
+      {
+        /* Add trailing newline */
+        gchar *new_buffer = g_strdup_printf ("%s\n", buffer);
+        fputs (new_buffer, fp);
+        g_free (new_buffer);
+      }
+      else
+      {
+        fputs (buffer, fp);
+      }
+    }
+    else
+    {
+      fputs (buffer, fp);
+    }
+    
     fclose (fp);
   }
 

@@ -123,6 +123,18 @@ marker_prefs_set_enable_scroll_sync(gboolean state)
 }
 
 gboolean
+marker_prefs_get_add_trailing_newline()
+{
+  return g_settings_get_boolean(prefs.editor_settings, "add-trailing-newline");
+}
+
+void
+marker_prefs_set_add_trailing_newline(gboolean state)
+{
+  g_settings_set_boolean(prefs.editor_settings, "add-trailing-newline", state);
+}
+
+gboolean
 marker_prefs_get_use_syntax_theme()
 {
   return g_settings_get_boolean(prefs.editor_settings, "enable-syntax-theme");
@@ -732,6 +744,14 @@ replace_tabs_toggled(GtkToggleButton* button,
 }
 
 static void
+add_trailing_newline_toggled(GtkToggleButton* button,
+                             gpointer         user_data)
+{
+  gboolean state = gtk_toggle_button_get_active(button);
+  marker_prefs_set_add_trailing_newline(state);
+}
+
+static void
 tab_width_value_changed(GtkSpinButton *spin_button,
                         gpointer       user_data)
 {
@@ -988,6 +1008,10 @@ marker_prefs_show_window()
   gtk_toggle_button_set_active(check_button, marker_prefs_get_replace_tabs());
 
   check_button =
+    GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "add_trailing_newline_check_button"));
+  gtk_toggle_button_set_active(check_button, marker_prefs_get_add_trailing_newline());
+
+  check_button =
     GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "spell_check_check_button"));
   gtk_toggle_button_set_active(check_button, marker_prefs_get_spell_check());
 
@@ -1082,6 +1106,9 @@ marker_prefs_show_window()
   gtk_builder_add_callback_symbol(builder,
                                   "replace_tabs_toggled",
                                   G_CALLBACK(replace_tabs_toggled));
+  gtk_builder_add_callback_symbol(builder,
+                                  "add_trailing_newline_toggled",
+                                  G_CALLBACK(add_trailing_newline_toggled));
   gtk_builder_add_callback_symbol(builder,
                                   "auto_indent_toggled",
                                   G_CALLBACK(auto_indent_toggled));

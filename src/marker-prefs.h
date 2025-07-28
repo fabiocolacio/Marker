@@ -100,6 +100,8 @@ MarkerMathBackEnd    marker_prefs_get_math_backend               (void);
 void                 marker_prefs_set_math_backend               (MarkerMathBackEnd   backend);
 gboolean             marker_prefs_get_enable_scroll_sync         (void);
 void                 marker_prefs_set_enable_scroll_sync         (gboolean            state);
+gboolean             marker_prefs_get_add_trailing_newline       (void);
+void                 marker_prefs_set_add_trailing_newline       (gboolean            state);
 void                 marker_prefs_load                           (void);
 void                 marker_prefs_show_window                    (void);
 GList               *marker_prefs_get_available_stylesheets      (void);
