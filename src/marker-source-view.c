@@ -377,12 +377,30 @@ on_scroll_event(GtkWidget* widget, GdkEventScroll* event, gpointer user_data)
 }
 
 static void
+on_size_allocate (GtkWidget     *widget,
+                  GtkAllocation *allocation,
+                  gpointer       user_data)
+{
+  /* Set bottom margin to half the height of the editor window */
+  /* This allows scrolling past the end by half the window size */
+  gint bottom_margin = allocation->height / 2;
+  gtk_text_view_set_bottom_margin(GTK_TEXT_VIEW(widget), bottom_margin);
+}
+
+static void
 marker_source_view_init (MarkerSourceView *source_view)
 {
   GtkSourceSearchContext * search_context = gtk_source_search_context_new(GTK_SOURCE_BUFFER(gtk_text_view_get_buffer(GTK_TEXT_VIEW(source_view))),
                                                                           NULL);
   source_view->search_context = search_context;
   marker_source_view_set_language (source_view, "markdown");
+  
+  /* Enable scroll past end by setting an initial bottom margin */
+  /* This will be dynamically adjusted based on window size */
+  gtk_text_view_set_bottom_margin(GTK_TEXT_VIEW(source_view), 400);
+  
+  /* Connect size-allocate handler to dynamically adjust bottom margin */
+  g_signal_connect(source_view, "size-allocate", G_CALLBACK(on_size_allocate), NULL);
   
   /* Connect scroll event handler for Ctrl+wheel zoom */
   g_signal_connect(source_view, "scroll-event", G_CALLBACK(on_scroll_event), NULL);
