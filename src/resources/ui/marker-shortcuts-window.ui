@@ -426,6 +426,12 @@
                 <property name="title" translatable="yes" context="shortcut window">Delete word backward</property>
               </object>
             </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkShortcutsGroup">
+            <property name="visible">1</property>
+            <property name="title" translatable="yes" context="shortcut window">More Editor Actions</property>
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="visible">1</property>
@@ -445,6 +451,13 @@
                 <property name="visible">1</property>
                 <property name="accelerator">Return</property>
                 <property name="title" translatable="yes" context="shortcut window">Insert new line</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="visible">1</property>
+                <property name="accelerator">&lt;ctrl&gt;period</property>
+                <property name="title" translatable="yes" context="shortcut window">Insert emoji at cursor position</property>
               </object>
             </child>
             <child>
