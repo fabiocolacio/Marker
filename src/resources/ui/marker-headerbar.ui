@@ -6,6 +6,10 @@
     <property name="icon_name">open-menu-symbolic</property>
     <property name="icon_size">2</property>
   </object>
+  <object class="GtkImage" id="new-file">
+    <property name="icon_name">document-new-symbolic</property>
+    <property name="icon_size">2</property>
+  </object>
   <object class="GtkImage" id="open-file">
     <property name="icon_name">document-open-symbolic</property>
     <property name="icon_size">2</property>
@@ -60,6 +64,17 @@
         <property name="image">sidebar</property>
         <property name="tooltip_text" translatable="yes">Toggle sidebar (Ctrl+Shift+B / F12)</property>
         <property name="action-name">win.sidebar</property>
+      </object>
+      <packing>
+        <property name="pack_type">start</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkButton" id="new_btn">
+        <property name="visible">True</property>
+        <property name="image">new-file</property>
+        <property name="tooltip_text" translatable="yes">New file (Ctrl+N)</property>
+        <property name="action-name">win.neweditor</property>
       </object>
       <packing>
         <property name="pack_type">start</property>
