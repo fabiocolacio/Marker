@@ -5,22 +5,22 @@
   <object class="GtkImage" id="add_img">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="icon_name">insert-image-symbolic.symbolic</property>
+    <property name="icon_name">insert-object-symbolic</property>
   </object>
   <object class="GtkImage" id="add_text_img">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="icon_name">insert-text-symbolic.symbolic</property>
+    <property name="icon_name">insert-text-symbolic</property>
   </object>
   <object class="GtkImage" id="close_img">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="icon_name">window-close-symbolic.symbolic</property>
+    <property name="icon_name">window-close-symbolic</property>
   </object>
   <object class="GtkImage" id="close_text_img">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="icon_name">window-close-symbolic.symbolic</property>
+    <property name="icon_name">window-close-symbolic</property>
   </object>
   <object class="GtkPopover" id="text_popover">
     <property name="can_focus">False</property>
