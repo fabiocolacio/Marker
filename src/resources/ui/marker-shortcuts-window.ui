@@ -102,6 +102,13 @@
                <property name="title" translatable="yes" context="shortcut window">Search in the document</property>
              </object>
            </child>
+           <child>
+             <object class="GtkShortcutsShortcut">
+               <property name="visible">1</property>
+               <property name="accelerator">F7</property>
+               <property name="title" translatable="yes" context="shortcut window">Toggle spell check</property>
+             </object>
+           </child>
           </object>
         </child>
         <child>
@@ -113,6 +120,20 @@
                 <property name="visible">1</property>
                 <property name="accelerator">&lt;ctrl&gt;p</property>
                 <property name="title" translatable="yes" context="shortcut window">Print the document</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="visible">1</property>
+                <property name="accelerator">&lt;ctrl&gt;e</property>
+                <property name="title" translatable="yes" context="shortcut window">Export document</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="visible">1</property>
+                <property name="accelerator">&lt;ctrl&gt;r</property>
+                <property name="title" translatable="yes" context="shortcut window">Refresh preview</property>
               </object>
             </child>
           </object>
@@ -145,6 +166,20 @@
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="visible">1</property>
+                <property name="accelerator">&lt;ctrl&gt;&lt;shift&gt;b F12</property>
+                <property name="title" translatable="yes" context="shortcut window">Toggle sidebar</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="visible">1</property>
+                <property name="accelerator">&lt;ctrl&gt;&lt;shift&gt;l</property>
+                <property name="title" translatable="yes" context="shortcut window">Cycle view mode</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="visible">1</property>
                 <property name="accelerator">&lt;ctrl&gt;1</property>
                 <property name="title" translatable="yes" context="shortcut window">Switch to editor-only mode</property>
               </object>
@@ -168,13 +203,6 @@
                 <property name="visible">1</property>
                 <property name="accelerator">&lt;ctrl&gt;4</property>
                 <property name="title" translatable="yes" context="shortcut window">Switch to dual-window mode</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkShortcutsShortcut">
-                <property name="visible">1</property>
-                <property name="accelerator">&lt;ctrl&gt;q</property>
-                <property name="title" translatable="yes" context="shortcut window">Quit the application</property>
               </object>
             </child>
           </object>
