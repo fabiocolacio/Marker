@@ -73,6 +73,10 @@ struct _MarkerWindow
   gboolean              sidebar_visible;
 
   guint32               last_click_;
+  
+  /* GSettings for monitoring preference changes */
+  GSettings            *editor_settings;
+  GSettings            *window_settings;
 };
 
 G_DEFINE_TYPE (MarkerWindow, marker_window, GTK_TYPE_APPLICATION_WINDOW);
@@ -82,6 +86,7 @@ static void update_view_mode_button_icon (MarkerWindow *window, MarkerViewMode m
 static void action_toggle_line_numbers (GSimpleAction *action, GVariant *parameter, gpointer user_data);
 static void action_toggle_wrap_text (GSimpleAction *action, GVariant *parameter, gpointer user_data);
 static void action_toggle_scroll_sync (GSimpleAction *action, GVariant *parameter, gpointer user_data);
+static void on_preferences_changed (GSettings *settings, gchar *key, gpointer user_data);
 
 gboolean
 get_current_iter(MarkerWindow *window,
@@ -536,6 +541,47 @@ action_toggle_scroll_sync (GSimpleAction *action,
   }
 }
 
+static void
+on_preferences_changed (GSettings *settings,
+                        gchar     *key,
+                        gpointer   user_data)
+{
+  MarkerWindow *window = MARKER_WINDOW (user_data);
+  GAction *action;
+  
+  if (g_strcmp0 (key, "spell-check") == 0) {
+    action = g_action_map_lookup_action (G_ACTION_MAP (window), "togglespellcheck");
+    if (action) {
+      gboolean state = marker_prefs_get_spell_check();
+      g_simple_action_set_state (G_SIMPLE_ACTION (action), g_variant_new_boolean (state));
+    }
+  } else if (g_strcmp0 (key, "show-line-numbers") == 0) {
+    action = g_action_map_lookup_action (G_ACTION_MAP (window), "togglelinenumbers");
+    if (action) {
+      gboolean state = marker_prefs_get_show_line_numbers();
+      g_simple_action_set_state (G_SIMPLE_ACTION (action), g_variant_new_boolean (state));
+    }
+  } else if (g_strcmp0 (key, "wrap-text") == 0) {
+    action = g_action_map_lookup_action (G_ACTION_MAP (window), "togglewraptext");
+    if (action) {
+      gboolean state = marker_prefs_get_wrap_text();
+      g_simple_action_set_state (G_SIMPLE_ACTION (action), g_variant_new_boolean (state));
+    }
+  } else if (g_strcmp0 (key, "enable-scroll-sync") == 0) {
+    action = g_action_map_lookup_action (G_ACTION_MAP (window), "togglescrollsync");
+    if (action) {
+      gboolean state = marker_prefs_get_enable_scroll_sync();
+      g_simple_action_set_state (G_SIMPLE_ACTION (action), g_variant_new_boolean (state));
+    }
+  } else if (g_strcmp0 (key, "show-sidebar") == 0) {
+    action = g_action_map_lookup_action (G_ACTION_MAP (window), "sidebar");
+    if (action) {
+      gboolean state = marker_prefs_get_show_sidebar();
+      g_simple_action_set_state (G_SIMPLE_ACTION (action), g_variant_new_boolean (state));
+    }
+  }
+}
+
 
 gchar *
 make_markup_title(MarkerEditor *editor,
@@ -982,6 +1028,13 @@ marker_window_init (MarkerWindow *window)
   window->sidebar_visible = marker_prefs_get_show_sidebar();
   window->editors_counter = 0;
   window->last_click_ = 0;
+  
+  /* Initialize GSettings and connect change signals */
+  window->editor_settings = g_settings_new ("com.github.fabiocolacio.marker.preferences.editor");
+  window->window_settings = g_settings_new ("com.github.fabiocolacio.marker.preferences.window");
+  
+  g_signal_connect (window->editor_settings, "changed", G_CALLBACK (on_preferences_changed), window);
+  g_signal_connect (window->window_settings, "changed", G_CALLBACK (on_preferences_changed), window);
 
   GtkBuilder *builder = gtk_builder_new ();
 
@@ -1159,9 +1212,28 @@ marker_window_constructed (GObject *object)
 }
 
 static void
+marker_window_finalize (GObject *object)
+{
+  MarkerWindow *window = MARKER_WINDOW (object);
+  
+  if (window->editor_settings) {
+    g_object_unref (window->editor_settings);
+    window->editor_settings = NULL;
+  }
+  
+  if (window->window_settings) {
+    g_object_unref (window->window_settings);
+    window->window_settings = NULL;
+  }
+  
+  G_OBJECT_CLASS (marker_window_parent_class)->finalize (object);
+}
+
+static void
 marker_window_class_init (MarkerWindowClass *class)
 {
   G_OBJECT_CLASS (class)->constructed = marker_window_constructed;
+  G_OBJECT_CLASS (class)->finalize = marker_window_finalize;
 }
 
 
