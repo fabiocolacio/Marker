@@ -381,116 +381,131 @@ marker_editor_init (MarkerEditor *editor)
   g_signal_connect (vadj, "value-changed", G_CALLBACK (on_editor_scroll_event), editor);
 
   /* Create status bar */
-  editor->status_bar = GTK_BOX (gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2));
-  gtk_widget_set_margin_start (GTK_WIDGET (editor->status_bar), 4);
-  gtk_widget_set_margin_end (GTK_WIDGET (editor->status_bar), 4);
+  editor->status_bar = GTK_BOX (gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 1));
+  gtk_widget_set_margin_start (GTK_WIDGET (editor->status_bar), 2);
+  gtk_widget_set_margin_end (GTK_WIDGET (editor->status_bar), 2);
   gtk_widget_set_margin_top (GTK_WIDGET (editor->status_bar), 0);
   gtk_widget_set_margin_bottom (GTK_WIDGET (editor->status_bar), 0);
   
   /* Add counters */
   editor->line_count_label = GTK_LABEL (gtk_label_new ("Lines: 0"));
-  gtk_box_pack_start (editor->status_bar, GTK_WIDGET (editor->line_count_label), FALSE, FALSE, 0);
+  gtk_widget_set_size_request (GTK_WIDGET (editor->line_count_label), -1, 6);
+  gtk_style_context_add_class (gtk_widget_get_style_context (GTK_WIDGET (editor->line_count_label)), "status-label");
+  gtk_box_pack_start (GTK_BOX (editor->status_bar), GTK_WIDGET (editor->line_count_label), FALSE, FALSE, 0);
   
   GtkWidget *sep1 = gtk_separator_new (GTK_ORIENTATION_VERTICAL);
-  gtk_box_pack_start (editor->status_bar, sep1, FALSE, FALSE, 0);
+  gtk_widget_set_size_request (sep1, 1, 6);
+  gtk_box_pack_start (GTK_BOX (editor->status_bar), sep1, FALSE, FALSE, 0);
   
   editor->word_count_label = GTK_LABEL (gtk_label_new ("Words: 0"));
-  gtk_box_pack_start (editor->status_bar, GTK_WIDGET (editor->word_count_label), FALSE, FALSE, 0);
+  gtk_widget_set_size_request (GTK_WIDGET (editor->word_count_label), -1, 6);
+  gtk_style_context_add_class (gtk_widget_get_style_context (GTK_WIDGET (editor->word_count_label)), "status-label");
+  gtk_box_pack_start (GTK_BOX (editor->status_bar), GTK_WIDGET (editor->word_count_label), FALSE, FALSE, 0);
   
   GtkWidget *sep2 = gtk_separator_new (GTK_ORIENTATION_VERTICAL);
-  gtk_box_pack_start (editor->status_bar, sep2, FALSE, FALSE, 0);
+  gtk_widget_set_size_request (sep2, 1, 6);
+  gtk_box_pack_start (GTK_BOX (editor->status_bar), sep2, FALSE, FALSE, 0);
   
   editor->char_count_label = GTK_LABEL (gtk_label_new ("Characters: 0"));
-  gtk_box_pack_start (editor->status_bar, GTK_WIDGET (editor->char_count_label), FALSE, FALSE, 0);
+  gtk_widget_set_size_request (GTK_WIDGET (editor->char_count_label), -1, 6);
+  gtk_style_context_add_class (gtk_widget_get_style_context (GTK_WIDGET (editor->char_count_label)), "status-label");
+  gtk_box_pack_start (GTK_BOX (editor->status_bar), GTK_WIDGET (editor->char_count_label), FALSE, FALSE, 0);
   
   /* Add spacer */
   GtkWidget *spacer = gtk_label_new ("");
-  gtk_box_pack_start (editor->status_bar, spacer, TRUE, TRUE, 0);
+  gtk_widget_set_size_request (spacer, -1, 6);
+  gtk_box_pack_start (GTK_BOX (editor->status_bar), spacer, TRUE, TRUE, 0);
   
   /* Add toggle buttons */
   editor->line_numbers_btn = GTK_TOGGLE_BUTTON (gtk_toggle_button_new ());
   gtk_button_set_relief (GTK_BUTTON (editor->line_numbers_btn), GTK_RELIEF_NONE);
   gtk_button_set_image (GTK_BUTTON (editor->line_numbers_btn), 
                         gtk_image_new_from_icon_name ("format-justify-left-symbolic", GTK_ICON_SIZE_SMALL_TOOLBAR));
-  gtk_image_set_pixel_size (GTK_IMAGE (gtk_button_get_image (GTK_BUTTON (editor->line_numbers_btn))), 12);
+  gtk_image_set_pixel_size (GTK_IMAGE (gtk_button_get_image (GTK_BUTTON (editor->line_numbers_btn))), 8);
   gtk_widget_set_tooltip_text (GTK_WIDGET (editor->line_numbers_btn), "Toggle line numbers");
   gtk_toggle_button_set_active (editor->line_numbers_btn, marker_prefs_get_show_line_numbers ());
   g_signal_connect (editor->line_numbers_btn, "toggled", G_CALLBACK (on_line_numbers_toggled), editor);
-  gtk_box_pack_start (editor->status_bar, GTK_WIDGET (editor->line_numbers_btn), FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX (editor->status_bar), GTK_WIDGET (editor->line_numbers_btn), FALSE, FALSE, 0);
   
   editor->spell_check_btn = GTK_TOGGLE_BUTTON (gtk_toggle_button_new ());
   gtk_button_set_relief (GTK_BUTTON (editor->spell_check_btn), GTK_RELIEF_NONE);
   gtk_button_set_image (GTK_BUTTON (editor->spell_check_btn), 
                         gtk_image_new_from_icon_name ("tools-check-spelling-symbolic", GTK_ICON_SIZE_SMALL_TOOLBAR));
-  gtk_image_set_pixel_size (GTK_IMAGE (gtk_button_get_image (GTK_BUTTON (editor->spell_check_btn))), 12);
+  gtk_image_set_pixel_size (GTK_IMAGE (gtk_button_get_image (GTK_BUTTON (editor->spell_check_btn))), 8);
   gtk_widget_set_tooltip_text (GTK_WIDGET (editor->spell_check_btn), "Toggle spell checking");
   gtk_toggle_button_set_active (editor->spell_check_btn, marker_prefs_get_spell_check ());
   g_signal_connect (editor->spell_check_btn, "toggled", G_CALLBACK (on_spell_check_toggled), editor);
-  gtk_box_pack_start (editor->status_bar, GTK_WIDGET (editor->spell_check_btn), FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX (editor->status_bar), GTK_WIDGET (editor->spell_check_btn), FALSE, FALSE, 0);
   
   editor->wrap_text_btn = GTK_TOGGLE_BUTTON (gtk_toggle_button_new ());
   gtk_button_set_relief (GTK_BUTTON (editor->wrap_text_btn), GTK_RELIEF_NONE);
   gtk_button_set_image (GTK_BUTTON (editor->wrap_text_btn), 
                         gtk_image_new_from_icon_name ("format-text-direction-ltr-symbolic", GTK_ICON_SIZE_SMALL_TOOLBAR));
-  gtk_image_set_pixel_size (GTK_IMAGE (gtk_button_get_image (GTK_BUTTON (editor->wrap_text_btn))), 12);
+  gtk_image_set_pixel_size (GTK_IMAGE (gtk_button_get_image (GTK_BUTTON (editor->wrap_text_btn))), 8);
   gtk_widget_set_tooltip_text (GTK_WIDGET (editor->wrap_text_btn), "Toggle text wrapping");
   gtk_toggle_button_set_active (editor->wrap_text_btn, marker_prefs_get_wrap_text ());
   g_signal_connect (editor->wrap_text_btn, "toggled", G_CALLBACK (on_wrap_text_toggled), editor);
-  gtk_box_pack_start (editor->status_bar, GTK_WIDGET (editor->wrap_text_btn), FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX (editor->status_bar), GTK_WIDGET (editor->wrap_text_btn), FALSE, FALSE, 0);
   
   editor->scroll_sync_btn = GTK_TOGGLE_BUTTON (gtk_toggle_button_new ());
   gtk_button_set_relief (GTK_BUTTON (editor->scroll_sync_btn), GTK_RELIEF_NONE);
   gtk_button_set_image (GTK_BUTTON (editor->scroll_sync_btn), 
                         gtk_image_new_from_icon_name ("media-playlist-repeat-symbolic", GTK_ICON_SIZE_SMALL_TOOLBAR));
-  gtk_image_set_pixel_size (GTK_IMAGE (gtk_button_get_image (GTK_BUTTON (editor->scroll_sync_btn))), 12);
+  gtk_image_set_pixel_size (GTK_IMAGE (gtk_button_get_image (GTK_BUTTON (editor->scroll_sync_btn))), 8);
   gtk_widget_set_tooltip_text (GTK_WIDGET (editor->scroll_sync_btn), "Toggle scroll synchronization");
   gtk_toggle_button_set_active (editor->scroll_sync_btn, editor->scroll_sync_enabled);
   g_signal_connect (editor->scroll_sync_btn, "toggled", G_CALLBACK (on_scroll_sync_toggled), editor);
-  gtk_box_pack_start (editor->status_bar, GTK_WIDGET (editor->scroll_sync_btn), FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX (editor->status_bar), GTK_WIDGET (editor->scroll_sync_btn), FALSE, FALSE, 0);
   
   /* Apply CSS for status bar styling */
   GtkCssProvider *css_provider = gtk_css_provider_new ();
   gtk_css_provider_load_from_data (css_provider,
     ".editor-status-bar { "
-    "  background-color: @theme_bg_color; "
+    "  background: @theme_bg_color; "
     "  border-top: 1px solid @borders; "
-    "  padding: 1px 0px; "
-    "  min-height: 18px; "
-    "  max-height: 18px; "
-    "  font-size: 10px; "
+    "  padding: 0; "
+    "  margin: 0; "
+    "  min-height: 10px; "
+    "  font-size: 8px; "
     "}"
     ".editor-status-bar * { "
-    "  font-size: 10px !important; "
-    "  margin: 0px !important; "
-    "  padding: 0px !important; "
+    "  font-size: 8px; "
+    "  margin: 0; "
+    "  padding: 0; "
     "}"
-    ".editor-status-bar label { "
-    "  font-size: 10px !important; "
-    "  padding: 0px 3px !important; "
-    "  margin: 0px !important; "
-    "  min-height: 16px; "
+    ".editor-status-bar .status-label { "
+    "  font-size: 8px; "
+    "  padding-left: 2px; "
+    "  padding-right: 2px; " 
+    "  padding-top: 0; "
+    "  padding-bottom: 0; "
+    "  margin: 0; "
+    "  min-height: 8px; "
     "}"
     ".editor-status-bar button { "
-    "  padding: 0px !important; "
-    "  margin: 0px 1px !important; "
-    "  min-height: 16px !important; "
-    "  max-height: 16px !important; "
-    "  min-width: 16px !important; "
+    "  padding: 1px; "
+    "  margin-left: 1px; "
+    "  margin-right: 1px; "
+    "  margin-top: 0; "
+    "  margin-bottom: 0; "
+    "  min-height: 8px; "
+    "  min-width: 8px; "
     "  border: none; "
-    "  border-radius: 2px; "
+    "  border-radius: 1px; "
     "}"
     ".editor-status-bar button:hover { "
-    "  background-color: alpha(@theme_fg_color, 0.1); "
+    "  background: alpha(@theme_fg_color, 0.1); "
     "}"
     ".editor-status-bar separator { "
-    "  min-height: 12px; "
-    "  margin: 0px 2px !important; "
+    "  min-height: 6px; "
+    "  margin-left: 1px; "
+    "  margin-right: 1px; "
+    "  margin-top: 0; "
+    "  margin-bottom: 0; "
     "}"
     ".editor-status-bar image { "
-    "  min-height: 12px; "
-    "  max-height: 12px; "
-    "  min-width: 12px; "
-    "  max-width: 12px; "
+    "  min-height: 8px; "
+    "  min-width: 8px; "
     "}",
     -1, NULL);
   GtkStyleContext *context = gtk_widget_get_style_context (GTK_WIDGET (editor->status_bar));
@@ -515,11 +530,15 @@ marker_editor_init (MarkerEditor *editor)
   g_object_unref (css_provider);
   
   /* Force size requests on status bar and all buttons */
-  gtk_widget_set_size_request (GTK_WIDGET (editor->status_bar), -1, 18);
-  gtk_widget_set_size_request (GTK_WIDGET (editor->line_numbers_btn), 16, 16);
-  gtk_widget_set_size_request (GTK_WIDGET (editor->spell_check_btn), 16, 16);
-  gtk_widget_set_size_request (GTK_WIDGET (editor->wrap_text_btn), 16, 16);
-  gtk_widget_set_size_request (GTK_WIDGET (editor->scroll_sync_btn), 16, 16);
+  gtk_widget_set_size_request (GTK_WIDGET (editor->status_bar), -1, 10);
+  gtk_widget_set_size_request (GTK_WIDGET (editor->line_numbers_btn), 8, 8);
+  gtk_widget_set_size_request (GTK_WIDGET (editor->spell_check_btn), 8, 8);
+  gtk_widget_set_size_request (GTK_WIDGET (editor->wrap_text_btn), 8, 8);
+  gtk_widget_set_size_request (GTK_WIDGET (editor->scroll_sync_btn), 8, 8);
+  
+  /* Set vertical expand to FALSE to prevent status bar from expanding */
+  gtk_widget_set_vexpand (GTK_WIDGET (editor->status_bar), FALSE);
+  gtk_widget_set_valign (GTK_WIDGET (editor->status_bar), GTK_ALIGN_END);
   
   gtk_widget_show_all (GTK_WIDGET (editor->status_bar));
 
@@ -922,9 +941,9 @@ marker_editor_apply_prefs (MarkerEditor *editor)
   GtkSourceSpaceDrawer * space_drawer = gtk_source_view_get_space_drawer(source_view);
   if (state) {
     gtk_source_space_drawer_set_types_for_locations(space_drawer, GTK_SOURCE_SPACE_LOCATION_ALL,
-                                                    GTK_SOURCE_SPACE_TYPE_NBSP |
-                                                    GTK_SOURCE_SPACE_TYPE_SPACE |
-                                                    GTK_SOURCE_SPACE_TYPE_TAB);
+                                                  GTK_SOURCE_SPACE_TYPE_NBSP |
+                                                  GTK_SOURCE_SPACE_TYPE_SPACE |
+                                                  GTK_SOURCE_SPACE_TYPE_TAB);
   }
   gtk_source_space_drawer_set_enable_matrix(space_drawer, state);
 
@@ -998,7 +1017,7 @@ marker_editor_get_search_bar (MarkerEditor       *editor)
 
 void
 marker_editor_set_scroll_sync (MarkerEditor *editor,
-                               gboolean      enabled)
+                                gboolean      enabled)
 {
   g_assert (MARKER_IS_EDITOR (editor));
   editor->scroll_sync_enabled = enabled;
