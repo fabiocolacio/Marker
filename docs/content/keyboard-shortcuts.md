@@ -50,7 +50,6 @@ Marker provides extensive keyboard shortcuts to streamline your markdown editing
 | `Ctrl+1` | Editor Only | Show only the markdown editor |
 | `Ctrl+2` | Preview Only | Show only the rendered preview |
 | `Ctrl+3` | Dual Pane | Show editor and preview side-by-side |
-| `Ctrl+Shift+3` | Dual Pane Vertical | Show editor above and preview below |
 | `Ctrl+4` | Dual Window | Open editor and preview in separate windows |
 | `Ctrl+Shift+L` | Toggle View Mode | Cycle through all view modes |
 
@@ -76,8 +75,8 @@ Marker provides extensive keyboard shortcuts to streamline your markdown editing
 | Shortcut | Action | Description |
 |----------|--------|-------------|
 | `Ctrl+Shift+B` | Toggle Sidebar | Show/hide sidebar with outline |
-| `F12` | Toggle Sidebar | Alternative shortcut for sidebar |
-| `Ctrl+Shift+S` | Toggle Scratchpad | Show/hide scratchpad in sidebar |
+| `F9` | Toggle Sidebar | Alternative shortcut for sidebar |
+| `Ctrl+Alt+S` | Toggle Scratchpad | Show/hide scratchpad in sidebar |
 
 ## Tools and Features
 
@@ -93,7 +92,7 @@ Marker provides extensive keyboard shortcuts to streamline your markdown editing
 - Use `Ctrl+1` when writing first drafts to focus entirely on content
 - Switch to `Ctrl+2` for reviewing formatted output
 - Use `Ctrl+3` for simultaneous editing and preview
-- Try `Ctrl+Shift+3` for vertical layout on wide screens
+- Use dual pane vertical mode via the menu for vertical layout on wide screens
 - Use `Ctrl+4` for multi-monitor setups
 
 ### Quick Formatting

@@ -58,7 +58,7 @@
       <object class="GtkToggleButton" id="sidebar_btn">
         <property name="visible">True</property>
         <property name="image">sidebar</property>
-        <property name="tooltip_text" translatable="yes">Toggle sidebar (Ctrl+Shift+B / F12)</property>
+        <property name="tooltip_text" translatable="yes">Toggle sidebar (Ctrl+Shift+B / F9)</property>
         <property name="action-name">win.sidebar</property>
       </object>
       <packing>

@@ -30,7 +30,7 @@ The scratchpad is only visible when the **sidebar** is open. If you don't see it
 
 ### Toggle Scratchpad
 - **Menu**: Gear menu (⚙️) → **Scratchpad**
-- **Keyboard**: **Ctrl+Shift+S**
+- **Keyboard**: **Ctrl+Alt+S**
 
 ## Usage Examples
 

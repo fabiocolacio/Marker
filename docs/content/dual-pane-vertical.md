@@ -28,11 +28,11 @@ This view mode is ideal for users who prefer a stacked layout when working on wi
 2. Navigate to **View Modes**
 3. Select **Dual Pane Vertical**
 
-### Keyboard Shortcut
-Press **Ctrl+Shift+3** to quickly switch to dual pane vertical mode.
+### No Keyboard Shortcut
+Currently, dual pane vertical mode does not have a dedicated keyboard shortcut. Access it through the menu or view mode cycling.
 
 ### View Mode Cycling
-Use **Ctrl+M** to cycle through all view modes, including dual pane vertical.
+Use **Ctrl+Shift+L** to cycle through all view modes, including dual pane vertical.
 
 ## Usage Tips
 

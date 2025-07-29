@@ -1430,14 +1430,14 @@ marker_window_init (MarkerWindow *window)
     gboolean sidebar_visible = marker_prefs_get_show_sidebar();
     action = G_ACTION (g_simple_action_new_stateful ("sidebar", NULL, g_variant_new_boolean (sidebar_visible)));
     g_signal_connect (G_SIMPLE_ACTION (action), "change-state", G_CALLBACK (action_sidebar), window);
-    const gchar *sidebar_accels[] =  { "<Ctrl><Shift>b", "F12", NULL };
+    const gchar *sidebar_accels[] =  { "<Ctrl><Shift>b", "F9", NULL };
     gtk_application_set_accels_for_action (app, "win.sidebar", sidebar_accels);
     g_action_map_add_action (G_ACTION_MAP (window), action);
 
     gboolean scratchpad_visible = marker_prefs_get_show_scratchpad();
     action = G_ACTION (g_simple_action_new_stateful ("scratchpad", NULL, g_variant_new_boolean (scratchpad_visible)));
     g_signal_connect (G_SIMPLE_ACTION (action), "change-state", G_CALLBACK (action_scratchpad), window);
-    const gchar *scratchpad_accels[] = { "<Ctrl><Shift>s", NULL };
+    const gchar *scratchpad_accels[] = { "<Ctrl><Alt>s", NULL };
     gtk_application_set_accels_for_action (app, "win.scratchpad", scratchpad_accels);
     g_action_map_add_action (G_ACTION_MAP (window), action);
   }

@@ -208,8 +208,15 @@
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="visible">1</property>
-                <property name="accelerator">&lt;ctrl&gt;&lt;shift&gt;b F12</property>
+                <property name="accelerator">&lt;ctrl&gt;&lt;shift&gt;b F9</property>
                 <property name="title" translatable="yes" context="shortcut window">Toggle sidebar</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="visible">1</property>
+                <property name="accelerator">&lt;ctrl&gt;&lt;alt&gt;s</property>
+                <property name="title" translatable="yes" context="shortcut window">Toggle scratchpad</property>
               </object>
             </child>
             <child>
