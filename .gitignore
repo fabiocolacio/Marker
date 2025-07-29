@@ -5,3 +5,4 @@ resources.c
 _build
 *.sublime-project
 *.sublime-workspace
+docs/site
