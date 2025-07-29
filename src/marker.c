@@ -43,6 +43,7 @@ static gboolean editor_mode_arg = FALSE;
 static gboolean preview_mode_arg = FALSE;
 static gboolean dual_pane_mode_arg = FALSE;
 static gboolean dual_window_mode_arg = FALSE;
+static gboolean new_window_arg = FALSE;
 static gchar *outfile_arg = NULL;
 
 static const GOptionEntry CLI_OPTIONS[] =
@@ -51,6 +52,7 @@ static const GOptionEntry CLI_OPTIONS[] =
   { "preview", 'p', 0, G_OPTION_ARG_NONE, &preview_mode_arg, "Open in preview-only mode", NULL },
   { "dual-pane", 'd', 0, G_OPTION_ARG_NONE, &dual_pane_mode_arg, "Open in dual-pane mode", NULL },
   { "dual-window", 'w', 0, G_OPTION_ARG_NONE, &dual_window_mode_arg, "Open in dual-window mode", NULL },
+  { "new-window", 'n', 0, G_OPTION_ARG_NONE, &new_window_arg, "Open files in a new window", NULL },
   { "output", 'o', 0, G_OPTION_ARG_STRING, &outfile_arg, "Export the given markdown document as the given output file", NULL },
   { NULL }
 };
@@ -112,6 +114,7 @@ typedef struct {
   GtkApplication *app;
   gboolean multiple_files;
   gboolean first_file;
+  gboolean force_new_window;
   MarkerWindow *target_window;
 } FileOpenContext;
 
@@ -217,6 +220,7 @@ marker_open_directory(GtkApplication* app, GFile* directory)
     context->app = app;
     context->multiple_files = (g_list_length(markdown_files) > 1);
     context->first_file = TRUE;
+    context->force_new_window = new_window_arg;
     context->target_window = NULL;
     
     /* Hold application while processing directory files */
@@ -278,10 +282,11 @@ process_file_queue(gpointer user_data)
   if (file_type == G_FILE_TYPE_DIRECTORY) {
     marker_open_directory(context->app, file);
   } else {
-    /* For the first file, create a new window if needed */
+    /* For the first file, create a new window if needed or forced */
     if (context->first_file) {
       GList *windows = gtk_application_get_windows(context->app);
-      if (!windows || g_list_length(windows) == 0) {
+      /* Always create new window if forced, or if no windows exist */
+      if (context->force_new_window || !windows || g_list_length(windows) == 0) {
         marker_create_new_window_from_file(file);
         /* Get the newly created window */
         windows = gtk_application_get_windows(context->app);
@@ -294,7 +299,12 @@ process_file_queue(gpointer user_data)
       }
       context->first_file = FALSE;
     } else {
-      marker_open_file(file);
+      /* For subsequent files, create new windows if forced, otherwise add to existing */
+      if (context->force_new_window) {
+        marker_create_new_window_from_file(file);
+      } else {
+        marker_open_file(file);
+      }
     }
     
     /* Schedule sidebar to be shown after all files are loaded */
@@ -347,6 +357,7 @@ marker_open(GtkApplication* app,
   context->app = app;
   context->multiple_files = (num_files > 1);
   context->first_file = TRUE;
+  context->force_new_window = new_window_arg;
   context->target_window = NULL;
   
   /* Add all files to the queue */
@@ -557,6 +568,7 @@ marker_quit()
   }
 }
 
+
 int
 main(int    argc,
      char** argv)
@@ -567,8 +579,23 @@ main(int    argc,
   bind_textdomain_codeset ("marker", "UTF-8");
   textdomain ("marker");
 
-  app = gtk_application_new("com.github.fabiocolacio.marker",
-                            G_APPLICATION_HANDLES_OPEN);
+  /* Check for -n flag before creating application */
+  gboolean force_new_instance = FALSE;
+  for (int i = 1; i < argc; i++) {
+    if (g_strcmp0(argv[i], "-n") == 0 || g_strcmp0(argv[i], "--new-window") == 0) {
+      force_new_instance = TRUE;
+      break;
+    }
+  }
+  
+  if (force_new_instance) {
+    /* Create non-unique application - use NULL ID to disable uniqueness */
+    app = gtk_application_new(NULL, G_APPLICATION_HANDLES_OPEN | G_APPLICATION_NON_UNIQUE);
+  } else {
+    /* Create normal unique application */
+    app = gtk_application_new("com.github.fabiocolacio.marker", G_APPLICATION_HANDLES_OPEN);
+  }
+  
   g_signal_connect(app, "activate", G_CALLBACK(activate), NULL);
   g_signal_connect(app, "open", G_CALLBACK(marker_open), NULL);
 
