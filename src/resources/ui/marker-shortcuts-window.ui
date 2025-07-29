@@ -117,6 +117,20 @@
               </object>
             </child>
             <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="visible">1</property>
+                <property name="accelerator">&lt;ctrl&gt;&lt;shift&gt;d</property>
+                <property name="title" translatable="yes" context="shortcut window">Duplicate line</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="visible">1</property>
+                <property name="accelerator">&lt;ctrl&gt;&lt;shift&gt;k</property>
+                <property name="title" translatable="yes" context="shortcut window">Remove line</property>
+              </object>
+            </child>
+            <child>
              <object class="GtkShortcutsShortcut">
                <property name="visible">1</property>
                <property name="accelerator">&lt;ctrl&gt;f</property>

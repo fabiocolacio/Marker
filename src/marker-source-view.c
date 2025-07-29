@@ -23,6 +23,10 @@
 #include <stdlib.h>
 
 #include "marker-source-view.h"
+
+#ifndef MIN
+#define MIN(a,b) ((a) < (b) ? (a) : (b))
+#endif
 #include "marker-prefs.h"
 #include "marker-utils.h"
 #include "marker.h"
@@ -551,6 +555,80 @@ on_key_press_event (GtkWidget   *widget,
                     GdkEventKey *event,
                     gpointer     user_data)
 {
+  /* Check for Ctrl+Shift+D - duplicate line */
+  if ((event->state & (GDK_CONTROL_MASK | GDK_SHIFT_MASK)) == (GDK_CONTROL_MASK | GDK_SHIFT_MASK) &&
+      (event->keyval == GDK_KEY_d || event->keyval == GDK_KEY_D))
+  {
+    GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(widget));
+    GtkTextIter cursor_iter, line_start, line_end;
+    GtkTextMark *insert_mark = gtk_text_buffer_get_insert(buffer);
+    
+    /* Get current cursor position */
+    gtk_text_buffer_get_iter_at_mark(buffer, &cursor_iter, insert_mark);
+    gint cursor_offset = gtk_text_iter_get_line_offset(&cursor_iter);
+    
+    /* Get start and end of current line */
+    line_start = cursor_iter;
+    gtk_text_iter_set_line_offset(&line_start, 0);
+    
+    line_end = line_start;
+    if (!gtk_text_iter_ends_line(&line_end))
+      gtk_text_iter_forward_to_line_end(&line_end);
+    
+    /* Get the line text */
+    gchar *line_text = gtk_text_buffer_get_text(buffer, &line_start, &line_end, FALSE);
+    
+    /* Move to end of line and insert newline and duplicated text */
+    gtk_text_buffer_begin_user_action(buffer);
+    gtk_text_buffer_insert(buffer, &line_end, "\n", -1);
+    gtk_text_buffer_insert(buffer, &line_end, line_text, -1);
+    
+    /* Re-get cursor position after buffer modification */
+    gtk_text_buffer_get_iter_at_mark(buffer, &cursor_iter, insert_mark);
+    /* Move cursor to the same offset on the duplicated line */
+    gint line_chars = gtk_text_iter_get_chars_in_line(&cursor_iter);
+    gtk_text_iter_set_line_offset(&cursor_iter, MIN(cursor_offset, line_chars - 1));
+    gtk_text_buffer_place_cursor(buffer, &cursor_iter);
+    
+    gtk_text_buffer_end_user_action(buffer);
+    
+    g_free(line_text);
+    return TRUE;
+  }
+  
+  /* Check for Ctrl+Shift+K - remove line */
+  if ((event->state & (GDK_CONTROL_MASK | GDK_SHIFT_MASK)) == (GDK_CONTROL_MASK | GDK_SHIFT_MASK) &&
+      (event->keyval == GDK_KEY_k || event->keyval == GDK_KEY_K))
+  {
+    GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(widget));
+    GtkTextIter line_start, line_end;
+    GtkTextMark *insert_mark = gtk_text_buffer_get_insert(buffer);
+    
+    /* Get current line boundaries */
+    gtk_text_buffer_get_iter_at_mark(buffer, &line_start, insert_mark);
+    gtk_text_iter_set_line_offset(&line_start, 0);
+    
+    line_end = line_start;
+    gtk_text_iter_forward_line(&line_end);
+    
+    /* If we're not at the last line, remove including the newline */
+    /* If we are at the last line, check if there's a previous line */
+    if (gtk_text_iter_is_end(&line_end)) {
+      /* We're at the last line */
+      if (gtk_text_iter_get_line(&line_start) > 0) {
+        /* There are previous lines, include the newline from the previous line */
+        gtk_text_iter_backward_char(&line_start);
+      }
+    }
+    
+    /* Delete the line */
+    gtk_text_buffer_begin_user_action(buffer);
+    gtk_text_buffer_delete(buffer, &line_start, &line_end);
+    gtk_text_buffer_end_user_action(buffer);
+    
+    return TRUE;
+  }
+  
   /* Check for Ctrl+V - paste image from clipboard */
   if ((event->state & GDK_CONTROL_MASK) && 
       (event->keyval == GDK_KEY_v || event->keyval == GDK_KEY_V))
