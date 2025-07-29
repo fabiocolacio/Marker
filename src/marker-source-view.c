@@ -819,14 +819,17 @@ marker_source_view_align_table (MarkerSourceView *source_view)
       GtkTextIter line_end = start;
       gtk_text_iter_forward_to_line_end (&line_end);
       gchar *line = gtk_text_buffer_get_text (buffer, &start, &line_end, FALSE);
+      gchar *trimmed = g_strstrip (g_strdup (line));
       
-      if (!g_str_has_prefix (g_strstrip (line), "|"))
+      if (!g_str_has_prefix (trimmed, "|"))
       {
         g_free (line);
+        g_free (trimmed);
         gtk_text_iter_forward_line (&start);
         break;
       }
       g_free (line);
+      g_free (trimmed);
     }
     
     /* Find end of table (go down until we find a non-table line) */
@@ -839,13 +842,16 @@ marker_source_view_align_table (MarkerSourceView *source_view)
       GtkTextIter line_end = end;
       gtk_text_iter_forward_to_line_end (&line_end);
       gchar *line = gtk_text_buffer_get_text (buffer, &line_start, &line_end, FALSE);
+      gchar *trimmed = g_strstrip (g_strdup (line));
       
-      if (!g_str_has_prefix (g_strstrip (line), "|"))
+      if (!g_str_has_prefix (trimmed, "|"))
       {
         g_free (line);
+        g_free (trimmed);
         break;
       }
       g_free (line);
+      g_free (trimmed);
       end = line_end;
     }
   }
@@ -863,167 +869,181 @@ marker_source_view_align_table (MarkerSourceView *source_view)
   gchar **lines = g_strsplit (text, "\n", -1);
   g_free (text);
   
-  /* Parse table to find column widths */
-  GPtrArray *table_data = g_ptr_array_new ();
+  /* Parse table rows and cells */
+  GPtrArray *table_rows = g_ptr_array_new ();
   gint max_columns = 0;
   
-  /* First pass: parse all rows and find max columns */
+  /* First pass: extract all table rows and find maximum columns */
   for (gint i = 0; lines[i] != NULL; i++)
   {
     gchar *line = lines[i];
+    gchar *trimmed = g_strstrip (g_strdup (line));
     
-    /* Skip empty lines */
-    if (strlen (g_strstrip (line)) == 0)
-      continue;
-    
-    /* Check if it's a table line */
-    if (!g_str_has_prefix (g_strstrip (line), "|"))
-      continue;
-    
-    /* Split by | and clean cells */
-    gchar **cells = g_strsplit (line, "|", -1);
-    GPtrArray *cleaned_cells = g_ptr_array_new ();
-    
-    for (gint j = 0; cells[j] != NULL; j++)
+    /* Skip empty lines or non-table lines */
+    if (strlen (trimmed) == 0 || !g_str_has_prefix (trimmed, "|"))
     {
-      gchar *cell = g_strstrip (cells[j]);
-      if (j > 0 && cells[j + 1] != NULL) /* Skip first and last empty cells */
-        g_ptr_array_add (cleaned_cells, g_strdup (cell));
+      g_free (trimmed);
+      continue;
     }
     
-    if (cleaned_cells->len > max_columns)
-      max_columns = cleaned_cells->len;
+    /* Split by pipe and extract cells */
+    gchar **raw_cells = g_strsplit (trimmed, "|", -1);
+    GPtrArray *row_cells = g_ptr_array_new_with_free_func (g_free);
     
-    g_ptr_array_add (table_data, cleaned_cells);
-    g_strfreev (cells);
+    /* Process each cell (skip first and last which are usually empty) */
+    for (gint j = 1; raw_cells[j] != NULL && raw_cells[j + 1] != NULL; j++)
+    {
+      gchar *cell = g_strstrip (g_strdup (raw_cells[j]));
+      g_ptr_array_add (row_cells, cell);
+    }
+    
+    if (row_cells->len > max_columns)
+      max_columns = row_cells->len;
+    
+    g_ptr_array_add (table_rows, row_cells);
+    g_strfreev (raw_cells);
+    g_free (trimmed);
   }
   
-  /* Find maximum width for each column */
+  /* If no table found, return */
+  if (table_rows->len == 0 || max_columns == 0)
+  {
+    g_ptr_array_free (table_rows, TRUE);
+    g_strfreev (lines);
+    return;
+  }
+  
+  /* Calculate maximum width for each column */
   gint *column_widths = g_new0 (gint, max_columns);
   
-  for (gint i = 0; i < table_data->len; i++)
+  for (gint i = 0; i < table_rows->len; i++)
   {
-    GPtrArray *row = g_ptr_array_index (table_data, i);
+    GPtrArray *row = g_ptr_array_index (table_rows, i);
     for (gint j = 0; j < row->len && j < max_columns; j++)
     {
       gchar *cell = g_ptr_array_index (row, j);
-      gint len = g_utf8_strlen (cell, -1);
-      if (len > column_widths[j])
-        column_widths[j] = len;
+      gint cell_width = g_utf8_strlen (cell, -1);
+      
+      /* For separator rows, ensure minimum width of 3 for alignment markers */
+      if (g_strstr_len (cell, -1, "-") != NULL)
+      {
+        if (cell_width < 3)
+          cell_width = 3;
+      }
+      
+      if (cell_width > column_widths[j])
+        column_widths[j] = cell_width;
     }
   }
   
-  /* Build aligned table */
+  /* Build the aligned table */
   GString *aligned_table = g_string_new ("");
-  gboolean in_separator = FALSE;
-  gint table_row_index = 0;
+  gint table_line_index = 0;
   
   for (gint i = 0; lines[i] != NULL; i++)
   {
     gchar *line = lines[i];
+    gchar *trimmed = g_strstrip (g_strdup (line));
     
-    /* Skip empty lines */
-    if (strlen (g_strstrip (line)) == 0)
+    /* Handle non-table lines */
+    if (strlen (trimmed) == 0)
     {
+      /* Empty line */
       if (lines[i + 1] != NULL)
         g_string_append_c (aligned_table, '\n');
+      g_free (trimmed);
       continue;
     }
     
-    /* Check if it's a table line */
-    if (!g_str_has_prefix (g_strstrip (line), "|"))
+    if (!g_str_has_prefix (trimmed, "|"))
     {
+      /* Non-table line */
       g_string_append (aligned_table, line);
       if (lines[i + 1] != NULL)
         g_string_append_c (aligned_table, '\n');
+      g_free (trimmed);
       continue;
     }
+    g_free (trimmed);
     
-    /* Get the parsed row data */
-    GPtrArray *row_data = g_ptr_array_index (table_data, table_row_index++);
+    /* Process table row */
+    GPtrArray *row = g_ptr_array_index (table_rows, table_line_index++);
     
-    /* Check if this is a separator line */
-    if (row_data->len > 0)
+    /* Check if this is a separator row */
+    gboolean is_separator = FALSE;
+    if (row->len > 0)
     {
-      gchar *first_cell = g_ptr_array_index (row_data, 0);
-      in_separator = (g_strstr_len (first_cell, -1, "-") != NULL && 
-                     (g_strstr_len (first_cell, -1, "---") != NULL || 
-                      g_strstr_len (first_cell, -1, ":-") != NULL ||
-                      g_strstr_len (first_cell, -1, "-:") != NULL));
+      gchar *first_cell = g_ptr_array_index (row, 0);
+      is_separator = (g_strstr_len (first_cell, -1, "-") != NULL);
     }
     
-    /* Build aligned line */
-    GString *aligned_line = g_string_new ("| ");
+    /* Build the aligned row */
+    g_string_append (aligned_table, "|");
     
     for (gint j = 0; j < max_columns; j++)
     {
-      if (j < row_data->len)
+      g_string_append (aligned_table, " ");
+      
+      if (j < row->len)
       {
-        gchar *cell = g_ptr_array_index (row_data, j);
+        gchar *cell = g_ptr_array_index (row, j);
         
-        if (in_separator)
+        if (is_separator)
         {
-          /* Handle separator line specially */
+          /* Handle separator row with alignment markers */
           if (g_str_has_prefix (cell, ":") && g_str_has_suffix (cell, ":"))
           {
-            /* Center aligned */
-            g_string_append (aligned_line, ":");
-            for (gint k = 0; k < column_widths[j] - 2; k++)
-              g_string_append_c (aligned_line, '-');
-            g_string_append (aligned_line, ":");
+            /* Center alignment: :---: */
+            g_string_append (aligned_table, ":");
+            for (gint k = 1; k < column_widths[j] - 1; k++)
+              g_string_append_c (aligned_table, '-');
+            g_string_append (aligned_table, ":");
           }
           else if (g_str_has_suffix (cell, ":"))
           {
-            /* Right aligned */
+            /* Right alignment: ---: */
             for (gint k = 0; k < column_widths[j] - 1; k++)
-              g_string_append_c (aligned_line, '-');
-            g_string_append (aligned_line, ":");
+              g_string_append_c (aligned_table, '-');
+            g_string_append (aligned_table, ":");
           }
           else if (g_str_has_prefix (cell, ":"))
           {
-            /* Left aligned */
-            g_string_append (aligned_line, ":");
-            for (gint k = 0; k < column_widths[j] - 1; k++)
-              g_string_append_c (aligned_line, '-');
+            /* Left alignment: :--- */
+            g_string_append (aligned_table, ":");
+            for (gint k = 1; k < column_widths[j]; k++)
+              g_string_append_c (aligned_table, '-');
           }
           else
           {
-            /* Default */
+            /* Default alignment: --- */
             for (gint k = 0; k < column_widths[j]; k++)
-              g_string_append_c (aligned_line, '-');
+              g_string_append_c (aligned_table, '-');
           }
         }
         else
         {
-          /* Regular cell - pad with spaces */
+          /* Regular data cell - left align and pad with spaces */
           gint cell_len = g_utf8_strlen (cell, -1);
-          g_string_append (aligned_line, cell);
+          g_string_append (aligned_table, cell);
           for (gint k = cell_len; k < column_widths[j]; k++)
-            g_string_append_c (aligned_line, ' ');
+            g_string_append_c (aligned_table, ' ');
         }
       }
       else
       {
-        /* Empty cell */
+        /* Empty cell - fill with spaces */
         for (gint k = 0; k < column_widths[j]; k++)
-          g_string_append_c (aligned_line, ' ');
+          g_string_append_c (aligned_table, ' ');
       }
       
-      g_string_append (aligned_line, " | ");
+      g_string_append (aligned_table, " |");
     }
     
-    /* Remove trailing " | " and add just "|" */
-    g_string_truncate (aligned_line, aligned_line->len - 3);
-    g_string_append (aligned_line, " |");
-    
-    g_string_append (aligned_table, aligned_line->str);
     if (lines[i + 1] != NULL)
       g_string_append_c (aligned_table, '\n');
-    
-    g_string_free (aligned_line, TRUE);
   }
   
-  /* Replace the text */
+  /* Replace the text in the buffer */
   gtk_text_buffer_begin_user_action (buffer);
   gtk_text_buffer_delete (buffer, &start, &end);
   gtk_text_buffer_insert (buffer, &start, aligned_table->str, -1);
@@ -1031,14 +1051,12 @@ marker_source_view_align_table (MarkerSourceView *source_view)
   
   /* Clean up */
   g_free (column_widths);
-  for (gint i = 0; i < table_data->len; i++)
+  for (gint i = 0; i < table_rows->len; i++)
   {
-    GPtrArray *row = g_ptr_array_index (table_data, i);
-    for (gint j = 0; j < row->len; j++)
-      g_free (g_ptr_array_index (row, j));
+    GPtrArray *row = g_ptr_array_index (table_rows, i);
     g_ptr_array_free (row, TRUE);
   }
-  g_ptr_array_free (table_data, TRUE);
+  g_ptr_array_free (table_rows, TRUE);
   g_strfreev (lines);
   g_string_free (aligned_table, TRUE);
 }
