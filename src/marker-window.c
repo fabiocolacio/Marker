@@ -98,6 +98,7 @@ static void action_toggle_wrap_text (GSimpleAction *action, GVariant *parameter,
 static void action_toggle_scroll_sync (GSimpleAction *action, GVariant *parameter, gpointer user_data);
 static void on_preferences_changed (GSettings *settings, gchar *key, gpointer user_data);
 static void action_insert_image (GSimpleAction *action, GVariant *parameter, gpointer user_data);
+static void action_insert_table (GSimpleAction *action, GVariant *parameter, gpointer user_data);
 static void action_bullet_list (GSimpleAction *action, GVariant *parameter, gpointer user_data);
 static void action_numbered_list (GSimpleAction *action, GVariant *parameter, gpointer user_data);
 static void update_outline_tree (MarkerWindow *window);
@@ -319,6 +320,95 @@ action_insert_image (GSimpleAction *action,
         g_free (alt_text);
         g_free (relative_path);
         g_free (filename);
+    }
+    
+    gtk_widget_destroy (dialog);
+}
+
+static void
+action_insert_table (GSimpleAction *action,
+                     GVariant      *parameter,
+                     gpointer       user_data)
+{
+    MarkerWindow *window = MARKER_WINDOW (user_data);
+    MarkerEditor *editor = marker_window_get_active_editor (window);
+    if (!editor) return;
+    
+    MarkerSourceView *source_view = marker_editor_get_source_view (editor);
+    if (!source_view) return;
+    
+    /* Create dialog for table dimensions */
+    GtkWidget *dialog = gtk_dialog_new_with_buttons ("Insert Table",
+                                                      GTK_WINDOW (window),
+                                                      GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+                                                      "_Cancel", GTK_RESPONSE_CANCEL,
+                                                      "_Insert", GTK_RESPONSE_OK,
+                                                      NULL);
+    
+    GtkWidget *content_area = gtk_dialog_get_content_area (GTK_DIALOG (dialog));
+    
+    /* Create a grid for the input fields */
+    GtkWidget *grid = gtk_grid_new ();
+    gtk_grid_set_row_spacing (GTK_GRID (grid), 6);
+    gtk_grid_set_column_spacing (GTK_GRID (grid), 12);
+    gtk_container_set_border_width (GTK_CONTAINER (grid), 12);
+    
+    /* Columns input */
+    GtkWidget *columns_label = gtk_label_new ("Columns:");
+    gtk_widget_set_halign (columns_label, GTK_ALIGN_END);
+    GtkWidget *columns_spin = gtk_spin_button_new_with_range (1, 20, 1);
+    gtk_spin_button_set_value (GTK_SPIN_BUTTON (columns_spin), 3);
+    
+    /* Rows input */
+    GtkWidget *rows_label = gtk_label_new ("Rows:");
+    gtk_widget_set_halign (rows_label, GTK_ALIGN_END);
+    GtkWidget *rows_spin = gtk_spin_button_new_with_range (1, 50, 1);
+    gtk_spin_button_set_value (GTK_SPIN_BUTTON (rows_spin), 3);
+    
+    /* Add widgets to grid */
+    gtk_grid_attach (GTK_GRID (grid), columns_label, 0, 0, 1, 1);
+    gtk_grid_attach (GTK_GRID (grid), columns_spin, 1, 0, 1, 1);
+    gtk_grid_attach (GTK_GRID (grid), rows_label, 0, 1, 1, 1);
+    gtk_grid_attach (GTK_GRID (grid), rows_spin, 1, 1, 1, 1);
+    
+    gtk_container_add (GTK_CONTAINER (content_area), grid);
+    gtk_widget_show_all (grid);
+    
+    if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_OK) {
+        gint columns = gtk_spin_button_get_value_as_int (GTK_SPIN_BUTTON (columns_spin));
+        gint rows = gtk_spin_button_get_value_as_int (GTK_SPIN_BUTTON (rows_spin));
+        
+        /* Build the markdown table */
+        GString *table = g_string_new ("\n");
+        
+        /* Header row */
+        g_string_append (table, "|");
+        for (gint i = 0; i < columns; i++) {
+            g_string_append_printf (table, " Header %d |", i + 1);
+        }
+        g_string_append (table, "\n");
+        
+        /* Separator row */
+        g_string_append (table, "|");
+        for (gint i = 0; i < columns; i++) {
+            g_string_append (table, " --- |");
+        }
+        g_string_append (table, "\n");
+        
+        /* Data rows */
+        for (gint row = 0; row < rows; row++) {
+            g_string_append (table, "|");
+            for (gint col = 0; col < columns; col++) {
+                g_string_append (table, "     |");
+            }
+            g_string_append (table, "\n");
+        }
+        
+        /* Insert the table at cursor position */
+        GtkTextBuffer *buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (source_view));
+        gtk_text_buffer_insert_at_cursor (buffer, table->str, -1);
+        
+        g_string_free (table, TRUE);
     }
     
     gtk_widget_destroy (dialog);
@@ -1021,6 +1111,12 @@ marker_window_init (MarkerWindow *window)
     g_signal_connect (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (action_insert_image), window);
     const gchar *insertimage_accels[] = { "<Ctrl><Shift>i", NULL };
     gtk_application_set_accels_for_action (app, "win.insertimage", insertimage_accels);
+    g_action_map_add_action (G_ACTION_MAP (window), action);
+
+    action = G_ACTION (g_simple_action_new ("inserttable", NULL));
+    g_signal_connect (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (action_insert_table), window);
+    const gchar *inserttable_accels[] = { "<Ctrl><Shift>t", NULL };
+    gtk_application_set_accels_for_action (app, "win.inserttable", inserttable_accels);
     g_action_map_add_action (G_ACTION_MAP (window), action);
 
     action = G_ACTION (g_simple_action_new ("bulletlist", NULL));

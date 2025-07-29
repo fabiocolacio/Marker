@@ -50,6 +50,10 @@
     <property name="icon_name">insert-image-symbolic</property>
     <property name="icon_size">2</property>
   </object>
+  <object class="GtkImage" id="insert-table">
+    <property name="icon_name">x-office-spreadsheet-symbolic</property>
+    <property name="icon_size">2</property>
+  </object>
   <object class="GtkImage" id="scroll-sync">
     <property name="icon_name">media-playlist-repeat-symbolic</property>
     <property name="icon_size">2</property>
@@ -127,6 +131,17 @@
         <property name="image">insert-image</property>
         <property name="tooltip_text" translatable="yes">Insert image (Ctrl+Shift+I)</property>
         <property name="action-name">win.insertimage</property>
+      </object>
+      <packing>
+        <property name="pack_type">start</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkButton" id="insert_table_btn">
+        <property name="visible">True</property>
+        <property name="image">insert-table</property>
+        <property name="tooltip_text" translatable="yes">Insert table (Ctrl+Shift+T)</property>
+        <property name="action-name">win.inserttable</property>
       </object>
       <packing>
         <property name="pack_type">start</property>
