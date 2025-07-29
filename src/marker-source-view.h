@@ -56,6 +56,7 @@ int                      marker_source_view_get_cursor_position      (MarkerSour
 void                     marker_source_view_update_font              (MarkerSourceView   *source_view);
 void                     marker_source_view_convert_to_bullet_list   (MarkerSourceView   *source_view);
 void                     marker_source_view_convert_to_numbered_list (MarkerSourceView   *source_view);
+void                     marker_source_view_align_table              (MarkerSourceView   *source_view);
 
 GtkSourceSearchContext  *marker_source_get_search_context            (MarkerSourceView   *source_view);
 

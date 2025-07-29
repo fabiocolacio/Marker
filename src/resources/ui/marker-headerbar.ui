@@ -54,6 +54,10 @@
     <property name="icon_name">x-office-spreadsheet-symbolic</property>
     <property name="icon_size">2</property>
   </object>
+  <object class="GtkImage" id="align-table">
+    <property name="icon_name">view-sort-ascending-symbolic</property>
+    <property name="icon_size">2</property>
+  </object>
   <object class="GtkImage" id="scroll-sync">
     <property name="icon_name">media-playlist-repeat-symbolic</property>
     <property name="icon_size">2</property>
@@ -142,6 +146,17 @@
         <property name="image">insert-table</property>
         <property name="tooltip_text" translatable="yes">Insert table (Ctrl+Shift+T)</property>
         <property name="action-name">win.inserttable</property>
+      </object>
+      <packing>
+        <property name="pack_type">start</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkButton" id="align_table_btn">
+        <property name="visible">True</property>
+        <property name="image">align-table</property>
+        <property name="tooltip_text" translatable="yes">Align table (Ctrl+Shift+A)</property>
+        <property name="action-name">win.aligntable</property>
       </object>
       <packing>
         <property name="pack_type">start</property>
