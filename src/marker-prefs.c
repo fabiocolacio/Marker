@@ -545,6 +545,9 @@ is_font_monospace(PangoFontFamily* family)
   /* Create a font description from the first face */
   PangoFontDescription* desc = pango_font_face_describe(faces[0]);
   
+  /* Set a default size to avoid Pango assertion error */
+  pango_font_description_set_size(desc, 12 * PANGO_SCALE);
+  
   /* Create a context to get font metrics */
   PangoFontMap* font_map = pango_cairo_font_map_get_default();
   PangoContext* context = pango_font_map_create_context(font_map);
@@ -841,8 +844,11 @@ editor_font_size_changed(GtkSpinButton *spin_button,
                          gpointer       user_data)
 {
   guint value = gtk_spin_button_get_value_as_int (spin_button);
-  marker_prefs_set_editor_font_size(value);
-  update_editors ();
+  /* Ensure font size is within valid range */
+  if (value >= 6 && value <= 72) {
+    marker_prefs_set_editor_font_size(value);
+    update_editors ();
+  }
 }
 
 static void
@@ -1144,11 +1150,7 @@ marker_prefs_show_window()
   }
   g_free(current_family);
 
-  GtkWindow* window = GTK_WINDOW(gtk_builder_get_object(builder, "prefs_win"));
-	gtk_widget_show_all(GTK_WIDGET(window));
-  gtk_window_present(window);
-
-
+  /* Register all callbacks BEFORE showing window to avoid triggering with invalid data */
   gtk_builder_add_callback_symbol(builder,
                                   "syntax_chosen",
                                   G_CALLBACK(syntax_chosen));
@@ -1237,6 +1239,11 @@ marker_prefs_show_window()
                                   "use_ctrl_wheel_zoom_toggled",
                                   G_CALLBACK(use_ctrl_wheel_zoom_toggled));
   gtk_builder_connect_signals(builder, NULL);
+
+  /* Show window AFTER all callbacks are connected */
+  GtkWindow* window = GTK_WINDOW(gtk_builder_get_object(builder, "prefs_win"));
+  gtk_widget_show_all(GTK_WIDGET(window));
+  gtk_window_present(window);
 
   g_object_unref(builder);
 }
