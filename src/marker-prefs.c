@@ -529,6 +529,80 @@ marker_prefs_get_available_syntax_themes()
   return list;
 }
 
+static gboolean
+is_font_monospace(PangoFontFamily* family)
+{
+  /* Get the first face from this family */
+  PangoFontFace** faces;
+  int n_faces;
+  pango_font_family_list_faces(family, &faces, &n_faces);
+  
+  if (n_faces == 0) {
+    g_free(faces);
+    return FALSE;
+  }
+  
+  /* Create a font description from the first face */
+  PangoFontDescription* desc = pango_font_face_describe(faces[0]);
+  
+  /* Create a context to get font metrics */
+  PangoFontMap* font_map = pango_cairo_font_map_get_default();
+  PangoContext* context = pango_font_map_create_context(font_map);
+  pango_context_set_font_description(context, desc);
+  
+  /* Get metrics for both 'i' and 'W' characters */
+  PangoFontMetrics* metrics = pango_context_get_metrics(context, desc, NULL);
+  
+  /* Check if it's monospace by comparing approximate char width */
+  /* In monospace fonts, all characters should have the same width */
+  gboolean is_monospace = FALSE;
+  
+  /* Use a simple heuristic: check if the font family name contains common monospace indicators */
+  const char* family_name = pango_font_family_get_name(family);
+  if (family_name) {
+    gchar* family_lower = g_ascii_strdown(family_name, -1);
+    
+    /* Common patterns in monospace font names */
+    if (strstr(family_lower, "mono") != NULL ||
+        strstr(family_lower, "courier") != NULL ||
+        strstr(family_lower, "fixed") != NULL ||
+        strstr(family_lower, "terminal") != NULL ||
+        strstr(family_lower, "console") != NULL ||
+        strstr(family_lower, "typewriter") != NULL ||
+        strstr(family_lower, "code") != NULL ||
+        g_str_equal(family_lower, "menlo") ||
+        g_str_equal(family_lower, "monaco") ||
+        g_str_equal(family_lower, "consolas") ||
+        g_str_equal(family_lower, "dejavu sans mono") ||
+        g_str_equal(family_lower, "liberation mono") ||
+        g_str_equal(family_lower, "source code pro") ||
+        g_str_equal(family_lower, "ubuntu mono") ||
+        g_str_equal(family_lower, "droid sans mono") ||
+        g_str_equal(family_lower, "fira code") ||
+        g_str_equal(family_lower, "jetbrains mono") ||
+        g_str_equal(family_lower, "cascadia code") ||
+        g_str_equal(family_lower, "hack") ||
+        g_str_equal(family_lower, "inconsolata")) {
+      is_monospace = TRUE;
+    }
+    
+    g_free(family_lower);
+  }
+  
+  /* Alternative method: check if the font is actually monospace using Pango */
+  if (!is_monospace) {
+    is_monospace = pango_font_family_is_monospace(family);
+  }
+  
+  /* Clean up */
+  pango_font_metrics_unref(metrics);
+  g_object_unref(context);
+  pango_font_description_free(desc);
+  g_free(faces);
+  
+  return is_monospace;
+}
+
 static void
 populate_font_families(GtkComboBox* combo_box)
 {
@@ -546,11 +620,13 @@ populate_font_families(GtkComboBox* combo_box)
   gtk_list_store_append(store, &iter);
   gtk_list_store_set(store, &iter, 0, "System Default", -1);
   
-  /* Add all system font families */
+  /* Add only monospace font families */
   for (int i = 0; i < n_families; i++) {
-    const char* family_name = pango_font_family_get_name(families[i]);
-    gtk_list_store_append(store, &iter);
-    gtk_list_store_set(store, &iter, 0, family_name, -1);
+    if (is_font_monospace(families[i])) {
+      const char* family_name = pango_font_family_get_name(families[i]);
+      gtk_list_store_append(store, &iter);
+      gtk_list_store_set(store, &iter, 0, family_name, -1);
+    }
   }
   
   g_free(families);
