@@ -97,6 +97,22 @@
                 <property name="menu-name">recent</property>
               </object>
             </child>
+            <child>
+              <object class="GtkModelButton" id="find_btn">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="text" translatable="yes">Find</property>
+                <property name="action-name">win.find</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkModelButton" id="find_replace_btn">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="text" translatable="yes">Find &amp; Replace</property>
+                <property name="action-name">win.findreplace</property>
+              </object>
+            </child>
           </object>
         </child>
         <child>

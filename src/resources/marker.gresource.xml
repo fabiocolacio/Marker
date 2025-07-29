@@ -9,6 +9,7 @@
     <file>ui/marker-headerbar.ui</file>
     <file>ui/marker-appmenu.ui</file>
     <file>ui/marker-sketcher-window.ui</file>
-    <file>ui/marker-window-main-view.ui</file> 
+    <file>ui/marker-window-main-view.ui</file>
+    <file>ui/marker-find-replace-dialog.ui</file> 
   </gresource>
 </gresources>

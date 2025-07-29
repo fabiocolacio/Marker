@@ -1195,6 +1195,12 @@ marker_window_init (MarkerWindow *window)
     gtk_application_set_accels_for_action (app, "win.find", find_accels);
     g_action_map_add_action (G_ACTION_MAP (window), action);
 
+    action = G_ACTION (g_simple_action_new ("findreplace", NULL));
+    g_signal_connect_swapped (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (marker_window_find_replace), window);
+    const gchar *findreplace_accels[] = { "<Ctrl><Shift>f", NULL };
+    gtk_application_set_accels_for_action (app, "win.findreplace", findreplace_accels);
+    g_action_map_add_action (G_ACTION_MAP (window), action);
+
     action = G_ACTION (g_simple_action_new ("gotoline", NULL));
     g_signal_connect_swapped (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (marker_window_go_to_line), window);
     const gchar *gotoline_accels[] = { "<Ctrl>g", NULL };
@@ -2138,6 +2144,216 @@ marker_window_search (MarkerWindow       *window)
   {
     marker_editor_toggle_search_bar(window->active_editor);
   }
+}
+
+typedef struct {
+  MarkerWindow *window;
+  GtkDialog *dialog;
+  GtkEntry *find_entry;
+  GtkEntry *replace_entry;
+  GtkToggleButton *match_case;
+  GtkToggleButton *match_word;
+  GtkToggleButton *regex;
+  GtkToggleButton *search_backwards;
+  GtkToggleButton *wrap_around;
+  GtkButton *find_button;
+  GtkButton *replace_button;
+  GtkButton *replace_all_button;
+  GtkSourceSearchContext *search_context;
+  GtkSourceSearchSettings *search_settings;
+} FindReplaceDialog;
+
+static void
+find_replace_dialog_destroy (FindReplaceDialog *frd)
+{
+  if (frd->search_context)
+    g_object_unref (frd->search_context);
+  if (frd->search_settings)
+    g_object_unref (frd->search_settings);
+  g_free (frd);
+}
+
+static void
+on_find_entry_changed (GtkEntry *entry, FindReplaceDialog *frd)
+{
+  const gchar *text = gtk_entry_get_text (entry);
+  gboolean has_text = text && *text;
+  
+  gtk_widget_set_sensitive (GTK_WIDGET (frd->find_button), has_text);
+  gtk_widget_set_sensitive (GTK_WIDGET (frd->replace_button), has_text);
+  gtk_widget_set_sensitive (GTK_WIDGET (frd->replace_all_button), has_text);
+  
+  if (has_text && frd->search_settings)
+  {
+    gtk_source_search_settings_set_search_text (frd->search_settings, text);
+  }
+}
+
+static void
+on_search_option_changed (GtkToggleButton *button, FindReplaceDialog *frd)
+{
+  if (!frd->search_settings)
+    return;
+    
+  gtk_source_search_settings_set_case_sensitive (frd->search_settings,
+    gtk_toggle_button_get_active (frd->match_case));
+  gtk_source_search_settings_set_at_word_boundaries (frd->search_settings,
+    gtk_toggle_button_get_active (frd->match_word));
+  gtk_source_search_settings_set_regex_enabled (frd->search_settings,
+    gtk_toggle_button_get_active (frd->regex));
+  gtk_source_search_settings_set_wrap_around (frd->search_settings,
+    gtk_toggle_button_get_active (frd->wrap_around));
+}
+
+static void
+on_find_next (FindReplaceDialog *frd)
+{
+  if (!frd->window->active_editor || !frd->search_context)
+    return;
+    
+  MarkerSourceView *source_view = marker_editor_get_source_view (frd->window->active_editor);
+  GtkTextBuffer *buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (source_view));
+  GtkTextIter iter, match_start, match_end;
+  GtkTextMark *insert = gtk_text_buffer_get_insert (buffer);
+  
+  gtk_text_buffer_get_iter_at_mark (buffer, &iter, insert);
+  
+  gboolean found;
+  gboolean wrapped = FALSE;
+  if (gtk_toggle_button_get_active (frd->search_backwards))
+  {
+    found = gtk_source_search_context_backward2 (frd->search_context, &iter,
+                                                 &match_start, &match_end, &wrapped);
+  }
+  else
+  {
+    found = gtk_source_search_context_forward2 (frd->search_context, &iter,
+                                                &match_start, &match_end, &wrapped);
+  }
+  
+  if (found)
+  {
+    gtk_text_buffer_select_range (buffer, &match_start, &match_end);
+    gtk_text_view_scroll_mark_onscreen (GTK_TEXT_VIEW (source_view), insert);
+  }
+}
+
+static void
+on_replace (FindReplaceDialog *frd)
+{
+  if (!frd->window->active_editor || !frd->search_context)
+    return;
+    
+  MarkerSourceView *source_view = marker_editor_get_source_view (frd->window->active_editor);
+  GtkTextBuffer *buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (source_view));
+  GtkTextIter start, end;
+  
+  if (gtk_text_buffer_get_selection_bounds (buffer, &start, &end))
+  {
+    const gchar *replace_text = gtk_entry_get_text (frd->replace_entry);
+    gtk_source_search_context_replace2 (frd->search_context, &start, &end,
+                                       replace_text, -1, NULL);
+    on_find_next (frd);
+  }
+}
+
+static void
+on_replace_all (FindReplaceDialog *frd)
+{
+  if (!frd->window->active_editor || !frd->search_context)
+    return;
+    
+  const gchar *replace_text = gtk_entry_get_text (frd->replace_entry);
+  gtk_source_search_context_replace_all (frd->search_context, replace_text, -1, NULL);
+}
+
+static gboolean
+on_dialog_key_press (GtkWidget *widget, GdkEventKey *event, FindReplaceDialog *frd)
+{
+  if (event->keyval == GDK_KEY_Escape)
+  {
+    gtk_widget_destroy (GTK_WIDGET (frd->dialog));
+    return TRUE;
+  }
+  return FALSE;
+}
+
+static void
+on_dialog_response (GtkDialog *dialog, gint response_id, FindReplaceDialog *frd)
+{
+  switch (response_id)
+  {
+    case 1: /* Find */
+      on_find_next (frd);
+      break;
+    case 2: /* Replace */
+      on_replace (frd);
+      break;
+    case 3: /* Replace All */
+      on_replace_all (frd);
+      break;
+    default:
+      gtk_widget_destroy (GTK_WIDGET (dialog));
+      break;
+  }
+}
+
+void
+marker_window_find_replace (MarkerWindow *window)
+{
+  if (!window->active_editor)
+    return;
+    
+  GtkBuilder *builder = gtk_builder_new_from_resource (
+    "/com/github/fabiocolacio/marker/ui/marker-find-replace-dialog.ui");
+    
+  FindReplaceDialog *frd = g_new0 (FindReplaceDialog, 1);
+  frd->window = window;
+  frd->dialog = GTK_DIALOG (gtk_builder_get_object (builder, "find_replace_dialog"));
+  frd->find_entry = GTK_ENTRY (gtk_builder_get_object (builder, "find_entry"));
+  frd->replace_entry = GTK_ENTRY (gtk_builder_get_object (builder, "replace_entry"));
+  frd->match_case = GTK_TOGGLE_BUTTON (gtk_builder_get_object (builder, "match_case_check"));
+  frd->match_word = GTK_TOGGLE_BUTTON (gtk_builder_get_object (builder, "match_word_check"));
+  frd->regex = GTK_TOGGLE_BUTTON (gtk_builder_get_object (builder, "regex_check"));
+  frd->search_backwards = GTK_TOGGLE_BUTTON (gtk_builder_get_object (builder, "search_backwards_check"));
+  frd->wrap_around = GTK_TOGGLE_BUTTON (gtk_builder_get_object (builder, "wrap_around_check"));
+  frd->find_button = GTK_BUTTON (gtk_builder_get_object (builder, "find_button"));
+  frd->replace_button = GTK_BUTTON (gtk_builder_get_object (builder, "replace_button"));
+  frd->replace_all_button = GTK_BUTTON (gtk_builder_get_object (builder, "replace_all_button"));
+  
+  /* Set up search context */
+  MarkerSourceView *source_view = marker_editor_get_source_view (window->active_editor);
+  GtkSourceBuffer *buffer = GTK_SOURCE_BUFFER (gtk_text_view_get_buffer (GTK_TEXT_VIEW (source_view)));
+  
+  frd->search_settings = gtk_source_search_settings_new ();
+  frd->search_context = gtk_source_search_context_new (buffer, frd->search_settings);
+  
+  /* Connect signals */
+  gtk_builder_add_callback_symbol (builder, "on_find_entry_changed", G_CALLBACK (on_find_entry_changed));
+  gtk_builder_add_callback_symbol (builder, "on_search_option_changed", G_CALLBACK (on_search_option_changed));
+  gtk_builder_add_callback_symbol (builder, "on_find_next", G_CALLBACK (on_find_next));
+  gtk_builder_add_callback_symbol (builder, "on_replace_entry_activate", G_CALLBACK (on_replace));
+  gtk_builder_connect_signals (builder, frd);
+  
+  g_signal_connect (frd->dialog, "response", G_CALLBACK (on_dialog_response), frd);
+  g_signal_connect (frd->dialog, "key-press-event", G_CALLBACK (on_dialog_key_press), frd);
+  g_signal_connect_swapped (frd->dialog, "destroy", G_CALLBACK (find_replace_dialog_destroy), frd);
+  
+  /* Get selected text if any */
+  GtkTextBuffer *text_buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (source_view));
+  GtkTextIter start, end;
+  if (gtk_text_buffer_get_selection_bounds (text_buffer, &start, &end))
+  {
+    gchar *selected = gtk_text_buffer_get_text (text_buffer, &start, &end, FALSE);
+    gtk_entry_set_text (frd->find_entry, selected);
+    g_free (selected);
+  }
+  
+  gtk_window_set_transient_for (GTK_WINDOW (frd->dialog), GTK_WINDOW (window));
+  gtk_widget_show (GTK_WIDGET (frd->dialog));
+  gtk_widget_grab_focus (GTK_WIDGET (frd->find_entry));
+  
+  g_object_unref (builder);
 }
 
 void
