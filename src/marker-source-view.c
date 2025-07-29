@@ -478,6 +478,75 @@ paste_image_from_clipboard(GtkWidget *widget)
 }
 
 static gboolean
+is_image_file(const char *filename)
+{
+  const char *ext = strrchr(filename, '.');
+  if (!ext) return FALSE;
+  
+  /* Convert to lowercase for comparison */
+  char *lower_ext = g_ascii_strdown(ext, -1);
+  gboolean is_image = (g_strcmp0(lower_ext, ".png") == 0 ||
+                       g_strcmp0(lower_ext, ".jpg") == 0 ||
+                       g_strcmp0(lower_ext, ".jpeg") == 0 ||
+                       g_strcmp0(lower_ext, ".gif") == 0 ||
+                       g_strcmp0(lower_ext, ".bmp") == 0 ||
+                       g_strcmp0(lower_ext, ".svg") == 0 ||
+                       g_strcmp0(lower_ext, ".webp") == 0);
+  g_free(lower_ext);
+  return is_image;
+}
+
+static void
+on_drag_data_received(GtkWidget        *widget,
+                      GdkDragContext   *context,
+                      gint              x,
+                      gint              y,
+                      GtkSelectionData *data,
+                      guint             info,
+                      guint             time,
+                      gpointer          user_data)
+{
+  gchar **uris = gtk_selection_data_get_uris(data);
+  if (!uris) {
+    gtk_drag_finish(context, FALSE, FALSE, time);
+    return;
+  }
+  
+  gboolean success = FALSE;
+  
+  /* Process each dropped file */
+  for (int i = 0; uris[i] != NULL; i++) {
+    GFile *file = g_file_new_for_uri(uris[i]);
+    char *file_path = g_file_get_path(file);
+    
+    if (file_path && is_image_file(file_path)) {
+      /* Get cursor position at drop location */
+      GtkTextView *text_view = GTK_TEXT_VIEW(widget);
+      GtkTextBuffer *buffer = gtk_text_view_get_buffer(text_view);
+      GtkTextIter iter;
+      
+      /* Convert window coordinates to buffer coordinates */
+      gint buffer_x, buffer_y;
+      gtk_text_view_window_to_buffer_coords(text_view, GTK_TEXT_WINDOW_WIDGET, x, y, &buffer_x, &buffer_y);
+      gtk_text_view_get_iter_at_location(text_view, &iter, buffer_x, buffer_y);
+      
+      /* Insert HTML img tag at drop location */
+      gchar *img_tag = g_strdup_printf("<img src=\"%s\" width=\"600\">", file_path);
+      gtk_text_buffer_insert(buffer, &iter, img_tag, -1);
+      
+      g_free(img_tag);
+      success = TRUE;
+    }
+    
+    g_free(file_path);
+    g_object_unref(file);
+  }
+  
+  g_strfreev(uris);
+  gtk_drag_finish(context, success, FALSE, time);
+}
+
+static gboolean
 on_key_press_event (GtkWidget   *widget,
                     GdkEventKey *event,
                     gpointer     user_data)
@@ -566,6 +635,14 @@ marker_source_view_init (MarkerSourceView *source_view)
   
   /* Connect scroll event handler for Ctrl+wheel zoom */
   g_signal_connect(source_view, "scroll-event", G_CALLBACK(on_scroll_event), NULL);
+  
+  /* Setup drag and drop for image files */
+  gtk_drag_dest_set(GTK_WIDGET(source_view),
+                    GTK_DEST_DEFAULT_ALL,
+                    NULL, 0,
+                    GDK_ACTION_COPY);
+  gtk_drag_dest_add_uri_targets(GTK_WIDGET(source_view));
+  g_signal_connect(source_view, "drag-data-received", G_CALLBACK(on_drag_data_received), NULL);
   source_view->settings = g_settings_new ("org.gnome.desktop.interface");
   g_signal_connect (source_view->settings, "changed::monospace-font-name", G_CALLBACK (default_font_changed), source_view);
   
