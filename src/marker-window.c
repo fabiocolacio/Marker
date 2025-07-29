@@ -337,7 +337,7 @@ action_insert_image (GSimpleAction *action,
         if (dot) *dot = '\0';
         
         /* Insert HTML img tag */
-        gchar *img_tag = g_strdup_printf ("<img src=\"%s\" alt=\"%s\" width=\"800\" />", 
+        gchar *img_tag = g_strdup_printf ("<img src=\"%s\" alt=\"%s\" width=\"600\" />", 
                                           relative_path, alt_text);
         
         GtkTextBuffer *buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (source_view));

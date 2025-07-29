@@ -120,12 +120,19 @@ marker_source_view_insert_image (MarkerSourceView   *source_view,
 
   gtk_text_buffer_get_iter_at_mark(buffer, &start, gtk_text_buffer_get_insert(buffer));
 
-  gchar * img = g_strdup_printf("![](%s)", image_path);
+  /* Extract filename for alt text */
+  gchar *alt_text = g_path_get_basename(image_path);
+  /* Remove extension from alt text */
+  gchar *dot = strrchr(alt_text, '.');
+  if (dot) *dot = '\0';
+  
+  gchar * img = g_strdup_printf("<img src=\"%s\" alt=\"%s\" width=\"600\" />", image_path, alt_text);
 
   size_t len = strlen(img);
 
   gtk_text_buffer_insert(buffer, &start, img, len);
   g_free(img);
+  g_free(alt_text);
 }
 
 void
