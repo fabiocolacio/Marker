@@ -270,10 +270,11 @@ default_font_changed(GSettings*   settings,
   gchar* custom_family = marker_prefs_get_editor_font_family();
   gchar* fontname;
   
-  if (custom_family && strlen(custom_family) > 0 && g_strcmp0(custom_family, "System Default") != 0) {
+  if (custom_family && strlen(custom_family) > 0 && g_strcmp0(custom_family, "System Monospace") != 0) {
     fontname = g_strdup(custom_family);
   } else {
-    fontname = g_settings_get_string(settings, key);
+    /* Use "Monospace" alias which resolves to system default monospace font */
+    fontname = g_strdup("Monospace");
   }
   
   guint font_size = marker_prefs_get_editor_font_size();
@@ -474,10 +475,11 @@ marker_source_view_init (MarkerSourceView *source_view)
   gchar* custom_family = marker_prefs_get_editor_font_family();
   gchar* fontname;
   
-  if (custom_family && strlen(custom_family) > 0 && g_strcmp0(custom_family, "System Default") != 0) {
+  if (custom_family && strlen(custom_family) > 0 && g_strcmp0(custom_family, "System Monospace") != 0) {
     fontname = g_strdup(custom_family);
   } else {
-    fontname = g_settings_get_string(source_view->settings, "monospace-font-name");
+    /* Use "Monospace" alias which resolves to system default monospace font */
+    fontname = g_strdup("Monospace");
   }
   
   guint font_size = marker_prefs_get_editor_font_size();
@@ -516,10 +518,11 @@ marker_source_view_update_font(MarkerSourceView* source_view)
   gchar* custom_family = marker_prefs_get_editor_font_family();
   gchar* fontname;
   
-  if (custom_family && strlen(custom_family) > 0 && g_strcmp0(custom_family, "System Default") != 0) {
+  if (custom_family && strlen(custom_family) > 0 && g_strcmp0(custom_family, "System Monospace") != 0) {
     fontname = g_strdup(custom_family);
   } else {
-    fontname = g_settings_get_string(source_view->settings, "monospace-font-name");
+    /* Use "Monospace" alias which resolves to system default monospace font */
+    fontname = g_strdup("Monospace");
   }
   
   guint font_size = marker_prefs_get_editor_font_size();

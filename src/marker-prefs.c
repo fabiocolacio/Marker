@@ -615,10 +615,10 @@ populate_font_families(GtkComboBox* combo_box)
   GtkListStore* store = GTK_LIST_STORE(gtk_combo_box_get_model(combo_box));
   gtk_list_store_clear(store);
   
-  /* Add "System Default" option */
+  /* Add "System Monospace" option */
   GtkTreeIter iter;
   gtk_list_store_append(store, &iter);
-  gtk_list_store_set(store, &iter, 0, "System Default", -1);
+  gtk_list_store_set(store, &iter, 0, "System Monospace", -1);
   
   /* Add only monospace font families */
   for (int i = 0; i < n_families; i++) {
@@ -1140,7 +1140,7 @@ marker_prefs_show_window()
     gint model_len = gtk_tree_model_iter_n_children(model, NULL);
     marker_widget_combo_box_set_active_str(font_combo, current_family, model_len);
   } else {
-    gtk_combo_box_set_active(font_combo, 0); /* System Default */
+    gtk_combo_box_set_active(font_combo, 0); /* System Monospace */
   }
   g_free(current_family);
 
