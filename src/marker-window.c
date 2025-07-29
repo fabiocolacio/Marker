@@ -92,6 +92,32 @@ struct _MarkerWindow
 G_DEFINE_TYPE (MarkerWindow, marker_window, GTK_TYPE_APPLICATION_WINDOW);
 
 /* Forward declarations */
+static void
+on_main_paned_position_changed(GObject *object, GParamSpec *pspec, gpointer user_data)
+{
+  MarkerWindow *window = MARKER_WINDOW(user_data);
+  GtkPaned *paned = GTK_PANED(object);
+  
+  if (!window->sidebar_visible) {
+    return; /* Don't enforce when sidebar is hidden */
+  }
+  
+  gint position = gtk_paned_get_position(paned);
+  gint total_width = gtk_widget_get_allocated_width(GTK_WIDGET(paned));
+  
+  /* Enforce minimum 30px for left pane (sidebar) */
+  if (position < 30) {
+    gtk_paned_set_position(paned, 30);
+    return;
+  }
+  
+  /* Enforce minimum 30px for right pane (main content) */
+  if (total_width - position < 30) {
+    gtk_paned_set_position(paned, total_width - 30);
+    return;
+  }
+}
+
 static void update_view_mode_button_icon (MarkerWindow *window, MarkerViewMode mode);
 static void action_toggle_line_numbers (GSimpleAction *action, GVariant *parameter, gpointer user_data);
 static void action_toggle_wrap_text (GSimpleAction *action, GVariant *parameter, gpointer user_data);
@@ -1446,6 +1472,9 @@ marker_window_init (MarkerWindow *window)
   gtk_widget_show(main_paned);
 
   window->main_paned = GTK_PANED(main_paned);
+  
+  /* Connect signal to enforce minimum width constraints for main paned */
+  g_signal_connect(window->main_paned, "notify::position", G_CALLBACK(on_main_paned_position_changed), window);
 
   /* Apply sidebar preference now that UI elements are initialized */
   if (marker_prefs_get_show_sidebar())

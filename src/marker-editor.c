@@ -311,6 +311,32 @@ search_previous     (GtkEntry         *entry,
 }
 
 static void
+on_editor_paned_position_changed(GObject *object, GParamSpec *pspec, gpointer user_data)
+{
+  MarkerEditor *editor = MARKER_EDITOR(user_data);
+  GtkPaned *paned = GTK_PANED(object);
+  
+  if (editor->view_mode != DUAL_PANE_MODE) {
+    return; /* Only enforce in dual pane mode */
+  }
+  
+  gint position = gtk_paned_get_position(paned);
+  gint total_width = gtk_widget_get_allocated_width(GTK_WIDGET(paned));
+  
+  /* Enforce minimum 30px for left pane (editor) */
+  if (position < 30) {
+    gtk_paned_set_position(paned, 30);
+    return;
+  }
+  
+  /* Enforce minimum 30px for right pane (preview) */
+  if (total_width - position < 30) {
+    gtk_paned_set_position(paned, total_width - 30);
+    return;
+  }
+}
+
+static void
 marker_editor_init (MarkerEditor *editor)
 {
   editor->file = NULL;
@@ -323,6 +349,9 @@ marker_editor_init (MarkerEditor *editor)
 
   editor->paned = GTK_PANED (gtk_paned_new (GTK_ORIENTATION_HORIZONTAL));
   editor->vbox = GTK_BOX(gtk_box_new(GTK_ORIENTATION_VERTICAL, 0));
+  
+  /* Connect signal to enforce minimum width constraints */
+  g_signal_connect(editor->paned, "notify::position", G_CALLBACK(on_editor_paned_position_changed), editor);
 
   /** SEARCH TOOL BAR **/
   editor->search_entry = GTK_SEARCH_ENTRY(gtk_search_entry_new());
@@ -680,10 +709,11 @@ marker_editor_set_view_mode (MarkerEditor   *editor,
     case DUAL_PANE_MODE:
       gtk_paned_add1 (GTK_PANED (paned), source_scroll);
       gtk_paned_add2 (GTK_PANED (paned), preview);
+      
       // load saved pane width from the preferences
       guint pane_width = marker_prefs_get_editor_pane_width ();
-      /* Ensure minimum width of 300 to prevent invisible editor */
-      if (pane_width == 0 || pane_width < 300) {
+      /* Ensure minimum width of 30 to respect new minimum */
+      if (pane_width == 0 || pane_width < 30) {
         pane_width = 450; /* Use default width */
       }
       gtk_paned_set_position (GTK_PANED (paned), pane_width);
