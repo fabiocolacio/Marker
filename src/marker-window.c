@@ -435,6 +435,9 @@ action_insert_table (GSimpleAction *action,
         GtkTextBuffer *buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (source_view));
         gtk_text_buffer_insert_at_cursor (buffer, table->str, -1);
         
+        /* Automatically align the inserted table */
+        marker_source_view_align_table (source_view);
+        
         g_string_free (table, TRUE);
     }
     
