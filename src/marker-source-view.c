@@ -395,11 +395,101 @@ on_size_allocate (GtkWidget     *widget,
   gtk_text_view_set_bottom_margin(GTK_TEXT_VIEW(widget), bottom_margin);
 }
 
+static char *
+create_unique_image_name(const char *base_path)
+{
+  GRand *rand = g_rand_new();
+  int uuid = g_rand_int_range(rand, 0, 9999);
+  g_rand_free(rand);
+  
+  char *base_name = g_path_get_basename(base_path);
+  char *dir_name = g_path_get_dirname(base_path);
+  char *name_without_ext = g_strdup(base_name);
+  
+  /* Remove extension if present */
+  char *dot = strrchr(name_without_ext, '.');
+  if (dot) *dot = '\0';
+  
+  char *image_filename = g_strdup_printf("%s.%d.png", name_without_ext, uuid);
+  char *full_path = g_build_filename(dir_name, image_filename, NULL);
+  
+  g_free(base_name);
+  g_free(dir_name);
+  g_free(name_without_ext);
+  g_free(image_filename);
+  
+  return full_path;
+}
+
+static void
+paste_image_from_clipboard(GtkWidget *widget)
+{
+  GtkClipboard *clipboard = gtk_clipboard_get(GDK_SELECTION_CLIPBOARD);
+  GdkPixbuf *pixbuf = gtk_clipboard_wait_for_image(clipboard);
+  
+  if (!pixbuf) {
+    return; /* No image in clipboard */
+  }
+  
+  /* Get the current file path to determine where to save the image */
+  GtkWidget *window = gtk_widget_get_toplevel(widget);
+  if (!MARKER_IS_WINDOW(window)) {
+    g_object_unref(pixbuf);
+    return;
+  }
+  
+  MarkerWindow *marker_window = MARKER_WINDOW(window);
+  MarkerEditor *editor = marker_window_get_active_editor(marker_window);
+  GFile *current_file = marker_editor_get_file(editor);
+  
+  char *image_path;
+  if (current_file) {
+    char *file_path = g_file_get_path(current_file);
+    image_path = create_unique_image_name(file_path);
+    g_free(file_path);
+  } else {
+    /* No current file, save to temp directory */
+    char *temp_dir = g_get_tmp_dir();
+    char *temp_name = g_strdup_printf("marker-image.%d.png", g_random_int_range(0, 9999));
+    image_path = g_build_filename(temp_dir, temp_name, NULL);
+    g_free(temp_name);
+  }
+  
+  /* Save the pixbuf as PNG */
+  GError *error = NULL;
+  if (gdk_pixbuf_save(pixbuf, image_path, "png", &error, NULL)) {
+    /* Insert HTML img tag */
+    GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(widget));
+    GtkTextIter iter;
+    GtkTextMark *insert_mark = gtk_text_buffer_get_insert(buffer);
+    gtk_text_buffer_get_iter_at_mark(buffer, &iter, insert_mark);
+    
+    char *img_tag = g_strdup_printf("<img src=\"%s\" width=\"600\">", image_path);
+    gtk_text_buffer_insert(buffer, &iter, img_tag, -1);
+    
+    g_free(img_tag);
+  } else {
+    g_warning("Failed to save clipboard image: %s", error ? error->message : "Unknown error");
+    if (error) g_error_free(error);
+  }
+  
+  g_free(image_path);
+  g_object_unref(pixbuf);
+}
+
 static gboolean
 on_key_press_event (GtkWidget   *widget,
                     GdkEventKey *event,
                     gpointer     user_data)
 {
+  /* Check for Ctrl+V - paste image from clipboard */
+  if ((event->state & GDK_CONTROL_MASK) && 
+      (event->keyval == GDK_KEY_v || event->keyval == GDK_KEY_V))
+  {
+    paste_image_from_clipboard(widget);
+    /* Don't return TRUE here - let the default paste handler run too for text */
+  }
+  
   /* Check for Ctrl+C */
   if ((event->state & GDK_CONTROL_MASK) && 
       (event->keyval == GDK_KEY_c || event->keyval == GDK_KEY_C))
