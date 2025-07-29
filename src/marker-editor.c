@@ -39,6 +39,7 @@ struct _MarkerEditor
   gboolean              unsaved_changes;
 
   GtkPaned             *paned;
+  GtkPaned             *paned_vertical;
   GtkBox               *vbox;
   GtkSearchEntry       *search_entry;
   GtkSearchBar         *search_bar;
@@ -116,7 +117,7 @@ on_editor_scroll_event (GtkAdjustment *adj,
   if (!editor->scroll_sync_enabled || editor->scroll_sync_timer)
     return;
     
-  if (editor->view_mode != DUAL_PANE_MODE)
+  if (editor->view_mode != DUAL_PANE_MODE && editor->view_mode != DUAL_PANE_VERTICAL_MODE)
     return;
   
   GtkScrolledWindow *scrolled = editor->source_scroll;
@@ -337,6 +338,32 @@ on_editor_paned_position_changed(GObject *object, GParamSpec *pspec, gpointer us
 }
 
 static void
+on_editor_paned_vertical_position_changed(GObject *object, GParamSpec *pspec, gpointer user_data)
+{
+  MarkerEditor *editor = MARKER_EDITOR(user_data);
+  GtkPaned *paned = GTK_PANED(object);
+  
+  if (editor->view_mode != DUAL_PANE_VERTICAL_MODE) {
+    return; /* Only enforce in dual pane vertical mode */
+  }
+  
+  gint position = gtk_paned_get_position(paned);
+  gint total_height = gtk_widget_get_allocated_height(GTK_WIDGET(paned));
+  
+  /* Enforce minimum 30px for top pane (editor) */
+  if (position < 30) {
+    gtk_paned_set_position(paned, 30);
+    return;
+  }
+  
+  /* Enforce minimum 30px for bottom pane (preview) */
+  if (total_height - position < 30) {
+    gtk_paned_set_position(paned, total_height - 30);
+    return;
+  }
+}
+
+static void
 marker_editor_init (MarkerEditor *editor)
 {
   editor->file = NULL;
@@ -348,10 +375,12 @@ marker_editor_init (MarkerEditor *editor)
   editor->scroll_sync_timer = 0;
 
   editor->paned = GTK_PANED (gtk_paned_new (GTK_ORIENTATION_HORIZONTAL));
+  editor->paned_vertical = GTK_PANED (gtk_paned_new (GTK_ORIENTATION_VERTICAL));
   editor->vbox = GTK_BOX(gtk_box_new(GTK_ORIENTATION_VERTICAL, 0));
   
   /* Connect signal to enforce minimum width constraints */
   g_signal_connect(editor->paned, "notify::position", G_CALLBACK(on_editor_paned_position_changed), editor);
+  g_signal_connect(editor->paned_vertical, "notify::position", G_CALLBACK(on_editor_paned_vertical_position_changed), editor);
 
   /** SEARCH TOOL BAR **/
   editor->search_entry = GTK_SEARCH_ENTRY(gtk_search_entry_new());
@@ -393,6 +422,10 @@ marker_editor_init (MarkerEditor *editor)
   gtk_paned_set_position (editor->paned, 450);
   gtk_widget_show (GTK_WIDGET (editor->paned));
   gtk_box_pack_start (GTK_BOX (editor), GTK_WIDGET (editor->paned), TRUE, TRUE, 0);
+  
+  gtk_paned_set_position (editor->paned_vertical, 300);
+  gtk_widget_show (GTK_WIDGET (editor->paned_vertical));
+  gtk_box_pack_start (GTK_BOX (editor), GTK_WIDGET (editor->paned_vertical), TRUE, TRUE, 0);
 
   editor->preview = marker_preview_new ();
   gtk_widget_show (GTK_WIDGET (editor->preview));
@@ -697,16 +730,22 @@ marker_editor_set_view_mode (MarkerEditor   *editor,
   switch (view_mode)
   {
     case EDITOR_ONLY_MODE:
+      gtk_widget_hide (GTK_WIDGET (editor->paned_vertical));
+      gtk_widget_show (GTK_WIDGET (paned));
       gtk_paned_add1 (GTK_PANED (paned), source_scroll);
       gtk_widget_grab_focus (GTK_WIDGET (editor->source_view));
       break;
 
     case PREVIEW_ONLY_MODE:
+      gtk_widget_hide (GTK_WIDGET (editor->paned_vertical));
+      gtk_widget_show (GTK_WIDGET (paned));
       gtk_paned_add2 (GTK_PANED (paned), preview);
       gtk_widget_grab_focus (GTK_WIDGET (preview));
       break;
 
     case DUAL_PANE_MODE:
+      gtk_widget_hide (GTK_WIDGET (editor->paned_vertical));
+      gtk_widget_show (GTK_WIDGET (paned));
       gtk_paned_add1 (GTK_PANED (paned), source_scroll);
       gtk_paned_add2 (GTK_PANED (paned), preview);
       
@@ -720,7 +759,21 @@ marker_editor_set_view_mode (MarkerEditor   *editor,
       gtk_widget_grab_focus (GTK_WIDGET (editor->source_view));
       break;
 
+    case DUAL_PANE_VERTICAL_MODE:
+      gtk_widget_hide (GTK_WIDGET (paned));
+      gtk_widget_show (GTK_WIDGET (editor->paned_vertical));
+      gtk_paned_add1 (GTK_PANED (editor->paned_vertical), source_scroll);
+      gtk_paned_add2 (GTK_PANED (editor->paned_vertical), preview);
+      
+      // Use default height position for vertical layout
+      guint pane_height = 300;
+      gtk_paned_set_position (GTK_PANED (editor->paned_vertical), pane_height);
+      gtk_widget_grab_focus (GTK_WIDGET (editor->source_view));
+      break;
+
     case DUAL_WINDOW_MODE:
+      gtk_widget_hide (GTK_WIDGET (editor->paned_vertical));
+      gtk_widget_show (GTK_WIDGET (paned));
       gtk_paned_add1(GTK_PANED(paned), source_scroll);
 
       GtkWindow *preview_window = GTK_WINDOW (gtk_window_new (GTK_WINDOW_TOPLEVEL));
@@ -739,10 +792,15 @@ marker_editor_set_view_mode (MarkerEditor   *editor,
 guint
 marker_editor_get_pane_width (MarkerEditor *editor)
 {
-  // editor pane width is valid only for dual pane mode
+  // editor pane width is valid only for dual pane horizontal mode
   if(marker_editor_get_view_mode (editor) == DUAL_PANE_MODE)
   {
     return gtk_paned_get_position (GTK_PANED (editor->paned));
+  }
+  else if(marker_editor_get_view_mode (editor) == DUAL_PANE_VERTICAL_MODE)
+  {
+    // For vertical mode, return the height position instead
+    return gtk_paned_get_position (GTK_PANED (editor->paned_vertical));
   }
   else
   {

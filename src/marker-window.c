@@ -647,6 +647,10 @@ update_view_mode_button_icon (MarkerWindow *window, MarkerViewMode mode)
       break;
     case DUAL_PANE_MODE:
       icon_name = "view-dual-symbolic";
+      tooltip = "Switch to Dual Pane Vertical (Ctrl+Shift+L)";
+      break;
+    case DUAL_PANE_VERTICAL_MODE:
+      icon_name = "view-dual-symbolic"; /* TODO: Could use a different icon for vertical */
       tooltip = "Switch to Editor Only (Ctrl+Shift+L)";
       break;
     case DUAL_WINDOW_MODE:
@@ -676,7 +680,7 @@ action_toggle_view_mode (GSimpleAction *action,
   MarkerViewMode current_mode = marker_editor_get_view_mode (editor);
   MarkerViewMode new_mode;
   
-  /* Cycle through: EDITOR_ONLY -> PREVIEW_ONLY -> DUAL_PANE -> EDITOR_ONLY */
+  /* Cycle through: EDITOR_ONLY -> PREVIEW_ONLY -> DUAL_PANE -> DUAL_PANE_VERTICAL -> EDITOR_ONLY */
   switch (current_mode) {
     case EDITOR_ONLY_MODE:
       new_mode = PREVIEW_ONLY_MODE;
@@ -685,6 +689,9 @@ action_toggle_view_mode (GSimpleAction *action,
       new_mode = DUAL_PANE_MODE;
       break;
     case DUAL_PANE_MODE:
+      new_mode = DUAL_PANE_VERTICAL_MODE;
+      break;
+    case DUAL_PANE_VERTICAL_MODE:
       new_mode = EDITOR_ONLY_MODE;
       break;
     case DUAL_WINDOW_MODE:
