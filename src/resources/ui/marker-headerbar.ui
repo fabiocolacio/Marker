@@ -42,32 +42,12 @@
     <property name="icon_name">pan-end-symbolic</property>
     <property name="icon_size">2</property>
   </object>
-  <object class="GtkImage" id="sketch">
-    <property name="icon_name">applications-graphics-symbolic</property>
-    <property name="icon_size">2</property>
-  </object>
-  <object class="GtkImage" id="insert-image">
-    <property name="icon_name">insert-image-symbolic</property>
-    <property name="icon_size">2</property>
-  </object>
-  <object class="GtkImage" id="insert-table">
-    <property name="icon_name">x-office-spreadsheet-symbolic</property>
-    <property name="icon_size">2</property>
-  </object>
-  <object class="GtkImage" id="align-table">
-    <property name="icon_name">view-sort-ascending-symbolic</property>
+  <object class="GtkImage" id="tools-menu">
+    <property name="icon_name">applications-utilities-symbolic</property>
     <property name="icon_size">2</property>
   </object>
   <object class="GtkImage" id="scroll-sync">
     <property name="icon_name">media-playlist-repeat-symbolic</property>
-    <property name="icon_size">2</property>
-  </object>
-  <object class="GtkImage" id="bullet-list">
-    <property name="icon_name">view-list-bullet-symbolic</property>
-    <property name="icon_size">2</property>
-  </object>
-  <object class="GtkImage" id="numbered-list">
-    <property name="icon_name">view-list-ordered-symbolic</property>
     <property name="icon_size">2</property>
   </object>
   
@@ -119,66 +99,10 @@
       </packing>
     </child>
     <child>
-      <object class="GtkButton" id="sketch_btn">
+      <object class="GtkMenuButton" id="tools_menu_btn">
         <property name="visible">True</property>
-        <property name="image">sketch</property>
-        <property name="tooltip_text" translatable="yes">Draw sketch (Ctrl+D)</property>
-        <property name="action-name">win.sketcher</property>
-      </object>
-      <packing>
-        <property name="pack_type">start</property>
-      </packing>
-    </child>
-    <child>
-      <object class="GtkButton" id="insert_image_btn">
-        <property name="visible">True</property>
-        <property name="image">insert-image</property>
-        <property name="tooltip_text" translatable="yes">Insert image (Ctrl+Shift+I)</property>
-        <property name="action-name">win.insertimage</property>
-      </object>
-      <packing>
-        <property name="pack_type">start</property>
-      </packing>
-    </child>
-    <child>
-      <object class="GtkButton" id="insert_table_btn">
-        <property name="visible">True</property>
-        <property name="image">insert-table</property>
-        <property name="tooltip_text" translatable="yes">Insert table (Ctrl+Shift+T)</property>
-        <property name="action-name">win.inserttable</property>
-      </object>
-      <packing>
-        <property name="pack_type">start</property>
-      </packing>
-    </child>
-    <child>
-      <object class="GtkButton" id="align_table_btn">
-        <property name="visible">True</property>
-        <property name="image">align-table</property>
-        <property name="tooltip_text" translatable="yes">Align table (Ctrl+Shift+A)</property>
-        <property name="action-name">win.aligntable</property>
-      </object>
-      <packing>
-        <property name="pack_type">start</property>
-      </packing>
-    </child>
-    <child>
-      <object class="GtkButton" id="bullet_list_btn">
-        <property name="visible">True</property>
-        <property name="image">bullet-list</property>
-        <property name="tooltip_text" translatable="yes">Convert to bullet list (Ctrl+Alt+L)</property>
-        <property name="action-name">win.bulletlist</property>
-      </object>
-      <packing>
-        <property name="pack_type">start</property>
-      </packing>
-    </child>
-    <child>
-      <object class="GtkButton" id="numbered_list_btn">
-        <property name="visible">True</property>
-        <property name="image">numbered-list</property>
-        <property name="tooltip_text" translatable="yes">Convert to numbered list (Ctrl+Alt+N)</property>
-        <property name="action-name">win.numberedlist</property>
+        <property name="image">tools-menu</property>
+        <property name="tooltip_text" translatable="yes">Tools</property>
       </object>
       <packing>
         <property name="pack_type">start</property>

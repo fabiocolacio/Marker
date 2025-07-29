@@ -1518,14 +1518,26 @@ marker_window_init (MarkerWindow *window)
   /** Sidebar Button **/
   window->sidebar_btn = GTK_TOGGLE_BUTTON (gtk_builder_get_object (builder, "sidebar_btn"));
   
+  /** Tools Popover **/
+  GtkMenuButton *tools_menu_btn = GTK_MENU_BUTTON(gtk_builder_get_object(builder, "tools_menu_btn"));
+  gtk_builder_add_from_resource (builder, "/com/github/fabiocolacio/marker/ui/marker-tools-popover.ui", NULL);
+  GtkWidget *tools_popover = GTK_WIDGET (gtk_builder_get_object (builder, "tools_menu_popover"));
+  if (tools_menu_btn) {
+    gtk_menu_button_set_use_popover (tools_menu_btn, TRUE);
+    gtk_menu_button_set_popover (tools_menu_btn, tools_popover);
+    gtk_menu_button_set_direction (tools_menu_btn, GTK_ARROW_DOWN);
+  }
+
   /** Popover **/
   GtkMenuButton *menu_btn = GTK_MENU_BUTTON(gtk_builder_get_object(builder, "menu_btn"));
   gtk_builder_add_from_resource (builder, "/com/github/fabiocolacio/marker/ui/marker-gear-popover.ui", NULL);
   GtkWidget *popover = GTK_WIDGET (gtk_builder_get_object (builder, "gear_menu_popover"));
   window->zoom_original_btn = GTK_BUTTON (gtk_builder_get_object (builder, "zoom_original_btn"));
-  gtk_menu_button_set_use_popover (menu_btn, TRUE);
-  gtk_menu_button_set_popover (menu_btn, popover);
-  gtk_menu_button_set_direction (menu_btn, GTK_ARROW_DOWN);
+  if (menu_btn) {
+    gtk_menu_button_set_use_popover (menu_btn, TRUE);
+    gtk_menu_button_set_popover (menu_btn, popover);
+    gtk_menu_button_set_direction (menu_btn, GTK_ARROW_DOWN);
+  }
 
   if (!marker_has_app_menu ())
   {

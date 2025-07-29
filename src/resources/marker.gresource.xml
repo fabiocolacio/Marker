@@ -5,6 +5,7 @@
     <file>ui/marker-wysiwyg-toolbar.ui</file>
     <file>ui/marker-shortcuts-window.ui</file>
     <file>ui/marker-gear-popover.ui</file>
+    <file>ui/marker-tools-popover.ui</file>
     <file>ui/marker-headerbar.ui</file>
     <file>ui/marker-appmenu.ui</file>
     <file>ui/marker-sketcher-window.ui</file>
