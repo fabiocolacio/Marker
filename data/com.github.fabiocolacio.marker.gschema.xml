@@ -220,5 +220,11 @@
       <summary>Enable scroll synchronization</summary>
       <description>Synchronize scrolling between editor and preview panes.</description>
     </key>
+
+    <key name="recent-files" type="as">
+      <default>[]</default>
+      <summary>Recent files</summary>
+      <description>List of recently opened files (up to 5 entries).</description>
+    </key>
   </schema>
 </schemalist>

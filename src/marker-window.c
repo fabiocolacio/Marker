@@ -87,6 +87,10 @@ struct _MarkerWindow
   /* GSettings for monitoring preference changes */
   GSettings            *editor_settings;
   GSettings            *window_settings;
+  
+  /* Recent files UI elements */
+  GtkWidget            *recent_files_container;
+  GtkWidget            *recent_files_btn;
 };
 
 G_DEFINE_TYPE (MarkerWindow, marker_window, GTK_TYPE_APPLICATION_WINDOW);
@@ -130,6 +134,9 @@ static void action_bullet_list (GSimpleAction *action, GVariant *parameter, gpoi
 static void action_numbered_list (GSimpleAction *action, GVariant *parameter, gpointer user_data);
 static void update_outline_tree (MarkerWindow *window);
 static void on_outline_row_activated (GtkTreeView *tree_view, GtkTreePath *path, GtkTreeViewColumn *column, gpointer user_data);
+static void add_file_to_recent_list (const gchar *filepath);
+static void update_recent_files_menu (MarkerWindow *window);
+static void on_recent_file_activated (GtkModelButton *button, gpointer user_data);
 
 gboolean
 get_current_iter(MarkerWindow *window,
@@ -1536,11 +1543,19 @@ marker_window_init (MarkerWindow *window)
   gtk_builder_add_from_resource (builder, "/com/github/fabiocolacio/marker/ui/marker-gear-popover.ui", NULL);
   GtkWidget *popover = GTK_WIDGET (gtk_builder_get_object (builder, "gear_menu_popover"));
   window->zoom_original_btn = GTK_BUTTON (gtk_builder_get_object (builder, "zoom_original_btn"));
+  
+  /* Get recent files UI elements */
+  window->recent_files_container = GTK_WIDGET (gtk_builder_get_object (builder, "recent_files_container"));
+  window->recent_files_btn = GTK_WIDGET (gtk_builder_get_object (builder, "recent_files_btn"));
+  
   if (menu_btn) {
     gtk_menu_button_set_use_popover (menu_btn, TRUE);
     gtk_menu_button_set_popover (menu_btn, popover);
     gtk_menu_button_set_direction (menu_btn, GTK_ARROW_DOWN);
   }
+  
+  /* Initialize recent files menu */
+  update_recent_files_menu (window);
 
   if (!marker_has_app_menu ())
   {
@@ -1769,6 +1784,15 @@ marker_window_new_editor_from_file (MarkerWindow *window,
     }
     editor = marker_editor_new_from_file(file);
     marker_window_add_editor(window, editor);
+  }
+  
+  /* Add file to recent list and update menu */
+  gchar *filepath = g_file_get_path (file);
+  if (filepath)
+  {
+    add_file_to_recent_list (filepath);
+    update_recent_files_menu (window);
+    g_free (filepath);
   }
 }
 
@@ -2307,4 +2331,103 @@ on_outline_row_activated (GtkTreeView       *tree_view,
     /* Give focus to the editor */
     gtk_widget_grab_focus (GTK_WIDGET (source_view));
   }
+}
+
+/* Recent Files Management */
+static void
+add_file_to_recent_list (const gchar *filepath)
+{
+  GSettings *settings = g_settings_new ("com.github.fabiocolacio.marker.preferences.window");
+  gchar **recent_files = g_settings_get_strv (settings, "recent-files");
+  
+  /* Create a new list */
+  GPtrArray *new_list = g_ptr_array_new_with_free_func (g_free);
+  
+  /* Add the new file at the beginning */
+  g_ptr_array_add (new_list, g_strdup (filepath));
+  
+  /* Add existing files (excluding duplicates and limiting to 5) */
+  for (guint i = 0; recent_files[i] != NULL && new_list->len < 5; i++)
+  {
+    if (g_strcmp0 (recent_files[i], filepath) != 0)
+    {
+      g_ptr_array_add (new_list, g_strdup (recent_files[i]));
+    }
+  }
+  
+  /* Convert to null-terminated array */
+  g_ptr_array_add (new_list, NULL);
+  
+  /* Save to settings */
+  g_settings_set_strv (settings, "recent-files", (const gchar * const *) new_list->pdata);
+  
+  g_strfreev (recent_files);
+  g_ptr_array_free (new_list, TRUE);
+  g_object_unref (settings);
+}
+
+static void
+on_recent_file_activated (GtkModelButton *button, gpointer user_data)
+{
+  MarkerWindow *window = MARKER_WINDOW (user_data);
+  const gchar *filepath = g_object_get_data (G_OBJECT (button), "filepath");
+  
+  if (filepath)
+  {
+    GFile *file = g_file_new_for_path (filepath);
+    marker_window_new_editor_from_file (window, file);
+    g_object_unref (file);
+  }
+}
+
+static void
+update_recent_files_menu (MarkerWindow *window)
+{
+  GSettings *settings = g_settings_new ("com.github.fabiocolacio.marker.preferences.window");
+  gchar **recent_files = g_settings_get_strv (settings, "recent-files");
+  
+  /* Use the stored references */
+  GtkWidget *recent_container = window->recent_files_container;
+  GtkWidget *recent_btn = window->recent_files_btn;
+  
+  if (!recent_container || !recent_btn)
+  {
+    g_strfreev (recent_files);
+    g_object_unref (settings);
+    return;
+  }
+  
+  /* Clear existing items */
+  GList *children = gtk_container_get_children (GTK_CONTAINER (recent_container));
+  for (GList *child = children; child != NULL; child = child->next)
+  {
+    gtk_widget_destroy (GTK_WIDGET (child->data));
+  }
+  g_list_free (children);
+  
+  /* Add recent files */
+  gboolean has_recent_files = FALSE;
+  for (guint i = 0; recent_files[i] != NULL && i < 5; i++)
+  {
+    GFile *file = g_file_new_for_path (recent_files[i]);
+    if (g_file_query_exists (file, NULL))
+    {
+      gchar *basename = g_file_get_basename (file);
+      GtkWidget *button = gtk_model_button_new ();
+      gtk_button_set_label (GTK_BUTTON (button), basename);
+      g_object_set_data_full (G_OBJECT (button), "filepath", g_strdup (recent_files[i]), g_free);
+      g_signal_connect (button, "clicked", G_CALLBACK (on_recent_file_activated), window);
+      gtk_widget_show (button);
+      gtk_container_add (GTK_CONTAINER (recent_container), button);
+      has_recent_files = TRUE;
+      g_free (basename);
+    }
+    g_object_unref (file);
+  }
+  
+  /* Show/hide the recent files menu button based on whether we have recent files */
+  gtk_widget_set_visible (recent_btn, has_recent_files);
+  
+  g_strfreev (recent_files);
+  g_object_unref (settings);
 }

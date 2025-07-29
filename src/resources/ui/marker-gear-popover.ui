@@ -89,6 +89,14 @@
                 <property name="action-name">app.new</property>
               </object>
             </child>
+            <child>
+              <object class="GtkModelButton" id="recent_files_btn">
+                <property name="visible">False</property>
+                <property name="can_focus">True</property>
+                <property name="text" translatable="yes">Recent Files</property>
+                <property name="menu-name">recent</property>
+              </object>
+            </child>
           </object>
         </child>
         <child>
@@ -272,6 +280,35 @@
       </object>
       <packing>
         <property name="submenu">view</property>
+      </packing>
+    </child>
+    <child>
+      <!-- Recent Files Submenu -->
+      <object class="GtkBox">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="orientation">vertical</property>
+        <property name="margin">8</property>
+        <child>
+          <object class="GtkModelButton">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="text" translatable="yes">Recent Files</property>
+            <property name="inverted">True</property>
+            <property name="menu-name">main</property>
+            <property name="centered">True</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox" id="recent_files_container">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="orientation">vertical</property>
+          </object>
+        </child>
+      </object>
+      <packing>
+        <property name="submenu">recent</property>
       </packing>
     </child>
   </object>
