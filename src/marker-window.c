@@ -618,6 +618,17 @@ action_dual_pane_mode (GSimpleAction *action,
 }
 
 static void
+action_dual_pane_vertical_mode (GSimpleAction *action,
+                                GVariant      *parameter,
+                                gpointer       user_data)
+{
+  MarkerWindow *window = user_data;
+  MarkerEditor *editor = marker_window_get_active_editor (window);
+  marker_editor_set_view_mode (editor, DUAL_PANE_VERTICAL_MODE);
+  update_view_mode_button_icon (window, DUAL_PANE_VERTICAL_MODE);
+}
+
+static void
 action_dual_window_mode (GSimpleAction *action,
                          GVariant      *parameter,
                          gpointer       user_data)
@@ -1304,6 +1315,12 @@ marker_window_init (MarkerWindow *window)
     g_signal_connect (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (action_dual_pane_mode), window);
     const gchar *dualpanemode_accels[] = { "<Ctrl>3", NULL };
     gtk_application_set_accels_for_action (app, "win.dualpanemode", dualpanemode_accels);
+    g_action_map_add_action (G_ACTION_MAP (window), action);
+
+    action = G_ACTION (g_simple_action_new ("dualpaneverticalmode", NULL));
+    g_signal_connect (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (action_dual_pane_vertical_mode), window);
+    const gchar *dualpaneverticalmode_accels[] = { "<Ctrl><Shift>3", NULL };
+    gtk_application_set_accels_for_action (app, "win.dualpaneverticalmode", dualpaneverticalmode_accels);
     g_action_map_add_action (G_ACTION_MAP (window), action);
 
     action = G_ACTION (g_simple_action_new ("dualwindowmode", NULL));

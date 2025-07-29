@@ -57,6 +57,9 @@
         <col id="0" translatable="yes">Dual Pane</col>
       </row>
       <row>
+        <col id="0" translatable="yes">Dual Pane Vertical</col>
+      </row>
+      <row>
         <col id="0" translatable="yes">Dual Window</col>
       </row>
     </data>
@@ -858,7 +861,7 @@
             </child>
             <child>
               <object class="GtkCheckButton" id="enable_scroll_sync_check_button">
-                <property name="label" translatable="yes">Enable scroll synchronization (dual pane mode)</property>
+                <property name="label" translatable="yes">Enable scroll synchronization (dual pane modes)</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>

@@ -286,6 +286,14 @@
           </object>
         </child>
         <child>
+          <object class="GtkModelButton" id="dual_pane_vertical_mode_btn">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="text" translatable="yes">Dual Pane Vertical</property>
+            <property name="action-name">win.dualpaneverticalmode</property>
+          </object>
+        </child>
+        <child>
           <object class="GtkModelButton" id="dual_window_mode_btn">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
