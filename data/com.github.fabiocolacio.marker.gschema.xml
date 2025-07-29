@@ -225,7 +225,7 @@
     <key name="recent-files" type="as">
       <default>[]</default>
       <summary>Recent files</summary>
-      <description>List of recently opened files (up to 5 entries).</description>
+      <description>List of recently opened files (up to 10 entries).</description>
     </key>
 
     <key name="auto-save-on-focus-out" type="b">

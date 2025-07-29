@@ -2766,8 +2766,8 @@ add_file_to_recent_list (const gchar *filepath)
   /* Add the new file at the beginning */
   g_ptr_array_add (new_list, g_strdup (filepath));
   
-  /* Add existing files (excluding duplicates and limiting to 5) */
-  for (guint i = 0; recent_files[i] != NULL && new_list->len < 5; i++)
+  /* Add existing files (excluding duplicates and limiting to 10) */
+  for (guint i = 0; recent_files[i] != NULL && new_list->len < 10; i++)
   {
     if (g_strcmp0 (recent_files[i], filepath) != 0)
     {
@@ -2827,7 +2827,7 @@ update_recent_files_menu (MarkerWindow *window)
   
   /* Add recent files */
   gboolean has_recent_files = FALSE;
-  for (guint i = 0; recent_files[i] != NULL && i < 5; i++)
+  for (guint i = 0; recent_files[i] != NULL && i < 10; i++)
   {
     GFile *file = g_file_new_for_path (recent_files[i]);
     if (g_file_query_exists (file, NULL))

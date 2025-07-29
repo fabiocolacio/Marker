@@ -412,6 +412,7 @@ marker_about_cb(GSimpleAction* action,
   const gchar* authors[] = {
     "Fabio Colacio",
     "Martino Ferrari",
+    "Bruno Cesar Rocha @rochacbruno",
     NULL
   };
 
