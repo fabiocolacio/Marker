@@ -74,6 +74,9 @@ struct _MarkerWindow
   GtkTreeStore         *documents_tree_store;
   GtkTreeView          *outline_tree_view;
   GtkTreeStore         *outline_tree_store;
+  GtkWidget            *scratchpad_box;
+  GtkTextView          *scratchpad_text_view;
+  GtkTextBuffer        *scratchpad_text_buffer;
   GtkPaned             *sidebar_paned;
   GtkPaned             *main_paned;
   GtkWidget            *paned1;
@@ -81,6 +84,7 @@ struct _MarkerWindow
   guint                 editors_counter;
   guint                 untitled_files;
   gboolean              sidebar_visible;
+  gboolean              scratchpad_visible;
 
   guint32               last_click_;
   
@@ -137,6 +141,7 @@ static void action_bullet_list (GSimpleAction *action, GVariant *parameter, gpoi
 static void action_numbered_list (GSimpleAction *action, GVariant *parameter, gpointer user_data);
 static void update_outline_tree (MarkerWindow *window);
 static void on_outline_row_activated (GtkTreeView *tree_view, GtkTreePath *path, GtkTreeViewColumn *column, gpointer user_data);
+static void on_scratchpad_text_changed (GtkTextBuffer *buffer, gpointer user_data);
 static void add_file_to_recent_list (const gchar *filepath);
 static void update_recent_files_menu (MarkerWindow *window);
 static void on_recent_file_activated (GtkModelButton *button, gpointer user_data);
@@ -253,6 +258,28 @@ action_sidebar (GSimpleAction *action,
         marker_window_hide_sidebar (MARKER_WINDOW (window));
     }
     
+}
+
+static void
+action_scratchpad (GSimpleAction *action,
+                   GVariant      *value,
+                   gpointer       user_data)
+{
+    MarkerWindow *window = MARKER_WINDOW (user_data);
+    gboolean state = g_variant_get_boolean (value);
+
+    g_simple_action_set_state (action, value);
+    // save whether the scratchpad is shown
+    marker_prefs_set_show_scratchpad (state);
+
+    window->scratchpad_visible = state;
+    
+    if (state) {
+        gtk_widget_show (window->scratchpad_box);
+    }
+    else {
+        gtk_widget_hide (window->scratchpad_box);
+    }
 }
 
 static void
@@ -888,6 +915,12 @@ on_preferences_changed (GSettings *settings,
       gboolean state = marker_prefs_get_show_sidebar();
       g_simple_action_set_state (G_SIMPLE_ACTION (action), g_variant_new_boolean (state));
     }
+  } else if (g_strcmp0 (key, "show-scratchpad") == 0) {
+    action = g_action_map_lookup_action (G_ACTION_MAP (window), "scratchpad");
+    if (action) {
+      gboolean state = marker_prefs_get_show_scratchpad();
+      g_simple_action_set_state (G_SIMPLE_ACTION (action), g_variant_new_boolean (state));
+    }
   } else if (g_strcmp0 (key, "auto-save-periodic") == 0 || g_strcmp0 (key, "auto-save-period") == 0) {
     /* Restart auto save timer when periodic auto save settings change */
     start_auto_save_timer (window);
@@ -1400,6 +1433,13 @@ marker_window_init (MarkerWindow *window)
     const gchar *sidebar_accels[] =  { "<Ctrl><Shift>b", "F12", NULL };
     gtk_application_set_accels_for_action (app, "win.sidebar", sidebar_accels);
     g_action_map_add_action (G_ACTION_MAP (window), action);
+
+    gboolean scratchpad_visible = marker_prefs_get_show_scratchpad();
+    action = G_ACTION (g_simple_action_new_stateful ("scratchpad", NULL, g_variant_new_boolean (scratchpad_visible)));
+    g_signal_connect (G_SIMPLE_ACTION (action), "change-state", G_CALLBACK (action_scratchpad), window);
+    const gchar *scratchpad_accels[] = { "<Ctrl><Shift>s", NULL };
+    gtk_application_set_accels_for_action (app, "win.scratchpad", scratchpad_accels);
+    g_action_map_add_action (G_ACTION_MAP (window), action);
   }
 
   /** Add marker icon theme to the default icon theme **/
@@ -1408,6 +1448,7 @@ marker_window_init (MarkerWindow *window)
   window->is_fullscreen = FALSE;
 
   window->sidebar_visible = marker_prefs_get_show_sidebar();
+  window->scratchpad_visible = marker_prefs_get_show_scratchpad();
   window->editors_counter = 0;
   window->last_click_ = 0;
   
@@ -1504,6 +1545,22 @@ marker_window_init (MarkerWindow *window)
   g_signal_connect (window->outline_tree_view, "row-activated",
                     G_CALLBACK (on_outline_row_activated), window);
   
+  /** SCRATCHPAD **/
+  window->scratchpad_box = GTK_WIDGET (gtk_builder_get_object (builder, "scratchpad_box"));
+  window->scratchpad_text_view = GTK_TEXT_VIEW (gtk_builder_get_object (builder, "scratchpad_text_view"));
+  window->scratchpad_text_buffer = gtk_text_view_get_buffer (window->scratchpad_text_view);
+  
+  /* Load scratchpad text from preferences */
+  gchar *scratchpad_text = marker_prefs_get_scratchpad_text();
+  if (scratchpad_text) {
+    gtk_text_buffer_set_text (window->scratchpad_text_buffer, scratchpad_text, -1);
+    g_free (scratchpad_text);
+  }
+  
+  /* Connect text change signal to save automatically */
+  g_signal_connect (window->scratchpad_text_buffer, "changed",
+                    G_CALLBACK (on_scratchpad_text_changed), window);
+  
   /* Get sidebar paned */
   window->sidebar_paned = GTK_PANED (gtk_builder_get_object (builder, "sidebar_paned"));
 
@@ -1534,6 +1591,16 @@ marker_window_init (MarkerWindow *window)
   {
     /* Hide sidebar if preference is to not show it */
     marker_window_hide_sidebar(window);
+  }
+  
+  /* Apply scratchpad preference */
+  if (window->scratchpad_visible)
+  {
+    gtk_widget_show (window->scratchpad_box);
+  }
+  else
+  {
+    gtk_widget_hide (window->scratchpad_box);
   }
 
   /** HeaderBar **/
@@ -2632,6 +2699,23 @@ update_outline_tree (MarkerWindow *window)
   
   /* Expand all nodes */
   gtk_tree_view_expand_all (window->outline_tree_view);
+}
+
+static void
+on_scratchpad_text_changed (GtkTextBuffer *buffer,
+                            gpointer       user_data)
+{
+  MarkerWindow *window = MARKER_WINDOW (user_data);
+  
+  /* Get text from buffer */
+  GtkTextIter start, end;
+  gtk_text_buffer_get_bounds (buffer, &start, &end);
+  gchar *text = gtk_text_buffer_get_text (buffer, &start, &end, FALSE);
+  
+  /* Save to preferences */
+  marker_prefs_set_scratchpad_text (text);
+  
+  g_free (text);
 }
 
 static void

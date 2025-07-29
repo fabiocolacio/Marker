@@ -4,7 +4,8 @@
     <value nick="editor-only" value="0"/>
     <value nick="preview-only" value="1"/>
     <value nick="dual-pane" value="2"/>
-    <value nick="dual-window" value="3"/>
+    <value nick="dual-pane-vertical" value="3"/>
+    <value nick="dual-window" value="4"/>
   </enum>
 
   <enum id="com.github.fabiocolacio.marker.MathJS">
@@ -244,6 +245,18 @@
       <default>30</default>
       <summary>Auto save period in seconds</summary>
       <description>Time interval in seconds for periodic auto save (5-600 seconds).</description>
+    </key>
+
+    <key name="show-scratchpad" type="b">
+      <default>true</default>
+      <summary>Whether the scratchpad is shown</summary>
+      <description>Show or hide the scratchpad text area in the sidebar.</description>
+    </key>
+
+    <key name="scratchpad-text" type="s">
+      <default>''</default>
+      <summary>Scratchpad text content</summary>
+      <description>The text content of the scratchpad area.</description>
     </key>
   </schema>
 </schemalist>

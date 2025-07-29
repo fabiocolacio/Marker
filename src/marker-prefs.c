@@ -111,6 +111,30 @@ marker_prefs_set_show_sidebar(gboolean state)
 }
 
 gboolean
+marker_prefs_get_show_scratchpad()
+{
+  return g_settings_get_boolean(prefs.window_settings, "show-scratchpad");
+}
+
+void
+marker_prefs_set_show_scratchpad(gboolean state)
+{
+  g_settings_set_boolean(prefs.window_settings, "show-scratchpad", state);
+}
+
+gchar*
+marker_prefs_get_scratchpad_text()
+{
+  return g_settings_get_string(prefs.window_settings, "scratchpad-text");
+}
+
+void
+marker_prefs_set_scratchpad_text(const gchar* text)
+{
+  g_settings_set_string(prefs.window_settings, "scratchpad-text", text ? text : "");
+}
+
+gboolean
 marker_prefs_get_enable_scroll_sync()
 {
   return g_settings_get_boolean(prefs.window_settings, "enable-scroll-sync");

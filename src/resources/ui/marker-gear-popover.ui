@@ -146,6 +146,14 @@
               </object>
             </child>
             <child>
+              <object class="GtkModelButton" id="scratchpad_btn">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="text" translatable="yes">Scratchpad</property>
+                <property name="action-name">win.scratchpad</property>
+              </object>
+            </child>
+            <child>
               <object class="GtkSeparator">
                 <property name="visible">True</property>
                 <property name="orientation">horizontal</property>
