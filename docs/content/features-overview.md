@@ -10,6 +10,8 @@ pinned: true
 
 Marker is a comprehensive markdown editor for Linux built with GTK+3, offering a rich set of features for writing, editing, and publishing markdown documents.
 
+![Marker main window showing dual pane view with sidebar, outline, and scratchpad](./media/00_main_window_showing_dual_pane_sidebar_outline_scratchpad.png)
+
 ## Core Editing Features
 
 ### Markdown Support

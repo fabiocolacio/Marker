@@ -9,6 +9,8 @@ authors: marker
 
 The dual pane vertical layout provides an alternative to the traditional side-by-side dual pane mode, placing the editor at the top and the preview at the bottom of the window.
 
+![Vertical layout view with editor on top and preview below](./media/02_vertical_layout.png)
+
 ## Overview
 
 This view mode is ideal for users who prefer a stacked layout when working on wider screens or when vertical space is more valuable than horizontal space. It maintains all the benefits of dual pane editing while optimizing for vertical workflows.

@@ -11,6 +11,11 @@ Here's a code block that should not appear in outline:
 ## This is also NOT a header
 ```
 
+```mermaid
+graph LR
+    A[Start] --> B[End]
+```
+
 ### Real Header 3
 
 And here's an indented code block:
@@ -19,6 +24,13 @@ And here's an indented code block:
     ## Neither is this
 
 #### Real Header 4
+
+
+| Header 1 | Header 2 |
+| -------- | -------- |
+| s        | s        |
+| s        | s        |
+
 
 Another fenced code block with different syntax:
 
