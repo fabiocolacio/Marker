@@ -2177,9 +2177,34 @@ update_outline_tree (MarkerWindow *window)
   GArray *parent_stack = g_array_new (FALSE, FALSE, sizeof (GtkTreeIter));
   GArray *level_stack = g_array_new (FALSE, FALSE, sizeof (gint));
   
+  /* Track whether we're inside a code block */
+  gboolean in_code_block = FALSE;
+  
   for (int i = 0; lines[i] != NULL; i++)
   {
     gchar *line = lines[i];
+    gchar *trimmed_line = g_strstrip (g_strdup (line));
+    
+    /* Check for code block delimiters (``` or ~~~) */
+    if (g_str_has_prefix (trimmed_line, "```") || g_str_has_prefix (trimmed_line, "~~~"))
+    {
+      in_code_block = !in_code_block;
+      g_free (trimmed_line);
+      continue;
+    }
+    
+    g_free (trimmed_line);
+    
+    /* Skip header detection if we're inside a code block */
+    if (in_code_block)
+      continue;
+    
+    /* Check for indented code blocks (4 spaces or 1 tab at start of line) */
+    gchar *temp_stripped = g_strstrip (g_strdup (line));
+    gboolean is_indented_code = (g_str_has_prefix (line, "    ") || g_str_has_prefix (line, "\t")) && strlen (temp_stripped) > 0;
+    g_free (temp_stripped);
+    if (is_indented_code)
+      continue;
     
     /* Check if line is a markdown header */
     if (g_str_has_prefix (line, "#"))
