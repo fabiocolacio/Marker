@@ -135,6 +135,42 @@ marker_prefs_set_add_trailing_newline(gboolean state)
 }
 
 gboolean
+marker_prefs_get_auto_save_on_focus_out()
+{
+  return g_settings_get_boolean(prefs.window_settings, "auto-save-on-focus-out");
+}
+
+void
+marker_prefs_set_auto_save_on_focus_out(gboolean state)
+{
+  g_settings_set_boolean(prefs.window_settings, "auto-save-on-focus-out", state);
+}
+
+gboolean
+marker_prefs_get_auto_save_periodic()
+{
+  return g_settings_get_boolean(prefs.window_settings, "auto-save-periodic");
+}
+
+void
+marker_prefs_set_auto_save_periodic(gboolean state)
+{
+  g_settings_set_boolean(prefs.window_settings, "auto-save-periodic", state);
+}
+
+guint
+marker_prefs_get_auto_save_period()
+{
+  return g_settings_get_uint(prefs.window_settings, "auto-save-period");
+}
+
+void
+marker_prefs_set_auto_save_period(guint seconds)
+{
+  g_settings_set_uint(prefs.window_settings, "auto-save-period", seconds);
+}
+
+gboolean
 marker_prefs_get_use_syntax_theme()
 {
   return g_settings_get_boolean(prefs.editor_settings, "enable-syntax-theme");
@@ -831,6 +867,36 @@ add_trailing_newline_toggled(GtkToggleButton* button,
 }
 
 static void
+auto_save_on_focus_out_toggled(GtkToggleButton* button,
+                               gpointer         user_data)
+{
+  gboolean state = gtk_toggle_button_get_active(button);
+  marker_prefs_set_auto_save_on_focus_out(state);
+}
+
+static void
+auto_save_periodic_toggled(GtkToggleButton* button,
+                          gpointer         user_data)
+{
+  gboolean state = gtk_toggle_button_get_active(button);
+  marker_prefs_set_auto_save_periodic(state);
+  
+  /* Enable/disable the period spin button based on this setting */
+  if (user_data)
+  {
+    gtk_widget_set_sensitive(GTK_WIDGET(user_data), state);
+  }
+}
+
+static void
+auto_save_period_value_changed(GtkSpinButton *spin_button,
+                               gpointer       user_data)
+{
+  guint value = gtk_spin_button_get_value_as_int(spin_button);
+  marker_prefs_set_auto_save_period(value);
+}
+
+static void
 tab_width_value_changed(GtkSpinButton *spin_button,
                         gpointer       user_data)
 {
@@ -1094,6 +1160,27 @@ marker_prefs_show_window()
   gtk_toggle_button_set_active(check_button, marker_prefs_get_add_trailing_newline());
 
   check_button =
+    GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "auto_save_on_focus_out_check_button"));
+  gtk_toggle_button_set_active(check_button, marker_prefs_get_auto_save_on_focus_out());
+
+  check_button =
+    GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "auto_save_periodic_check_button"));
+  gtk_toggle_button_set_active(check_button, marker_prefs_get_auto_save_periodic());
+
+  /* Initialize auto save period spin button */
+  GtkSpinButton *auto_save_period_spin = 
+    GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "auto_save_period_spin_button"));
+  gtk_spin_button_set_value(auto_save_period_spin, marker_prefs_get_auto_save_period());
+  
+  /* Set sensitivity based on periodic auto save setting */
+  gtk_widget_set_sensitive(GTK_WIDGET(auto_save_period_spin), 
+                           marker_prefs_get_auto_save_periodic());
+  
+  /* Connect the auto save periodic toggle to control spin button sensitivity */
+  check_button = GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "auto_save_periodic_check_button"));
+  g_signal_connect(check_button, "toggled", G_CALLBACK(auto_save_periodic_toggled), auto_save_period_spin);
+
+  check_button =
     GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "spell_check_check_button"));
   gtk_toggle_button_set_active(check_button, marker_prefs_get_spell_check());
 
@@ -1187,6 +1274,15 @@ marker_prefs_show_window()
   gtk_builder_add_callback_symbol(builder,
                                   "add_trailing_newline_toggled",
                                   G_CALLBACK(add_trailing_newline_toggled));
+  gtk_builder_add_callback_symbol(builder,
+                                  "auto_save_on_focus_out_toggled",
+                                  G_CALLBACK(auto_save_on_focus_out_toggled));
+  gtk_builder_add_callback_symbol(builder,
+                                  "auto_save_periodic_toggled",
+                                  G_CALLBACK(auto_save_periodic_toggled));
+  gtk_builder_add_callback_symbol(builder,
+                                  "auto_save_period_value_changed",
+                                  G_CALLBACK(auto_save_period_value_changed));
   gtk_builder_add_callback_symbol(builder,
                                   "auto_indent_toggled",
                                   G_CALLBACK(auto_indent_toggled));

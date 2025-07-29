@@ -226,5 +226,24 @@
       <summary>Recent files</summary>
       <description>List of recently opened files (up to 5 entries).</description>
     </key>
+
+    <key name="auto-save-on-focus-out" type="b">
+      <default>false</default>
+      <summary>Auto save when focus is lost</summary>
+      <description>Automatically save unsaved files when the application loses focus.</description>
+    </key>
+
+    <key name="auto-save-periodic" type="b">
+      <default>false</default>
+      <summary>Enable periodic auto save</summary>
+      <description>Automatically save unsaved files at regular intervals.</description>
+    </key>
+
+    <key name="auto-save-period" type="u">
+      <range min="5" max="600"/>
+      <default>30</default>
+      <summary>Auto save period in seconds</summary>
+      <description>Time interval in seconds for periodic auto save (5-600 seconds).</description>
+    </key>
   </schema>
 </schemalist>

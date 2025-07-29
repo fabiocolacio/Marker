@@ -91,6 +91,9 @@ struct _MarkerWindow
   /* Recent files UI elements */
   GtkWidget            *recent_files_container;
   GtkWidget            *recent_files_btn;
+  
+  /* Auto save functionality */
+  guint                 auto_save_timer_id;
 };
 
 G_DEFINE_TYPE (MarkerWindow, marker_window, GTK_TYPE_APPLICATION_WINDOW);
@@ -137,6 +140,8 @@ static void on_outline_row_activated (GtkTreeView *tree_view, GtkTreePath *path,
 static void add_file_to_recent_list (const gchar *filepath);
 static void update_recent_files_menu (MarkerWindow *window);
 static void on_recent_file_activated (GtkModelButton *button, gpointer user_data);
+static void start_auto_save_timer (MarkerWindow *window);
+static gboolean on_window_focus_out (GtkWidget *widget, GdkEventFocus *event, gpointer user_data);
 
 gboolean
 get_current_iter(MarkerWindow *window,
@@ -865,6 +870,9 @@ on_preferences_changed (GSettings *settings,
       gboolean state = marker_prefs_get_show_sidebar();
       g_simple_action_set_state (G_SIMPLE_ACTION (action), g_variant_new_boolean (state));
     }
+  } else if (g_strcmp0 (key, "auto-save-periodic") == 0 || g_strcmp0 (key, "auto-save-period") == 0) {
+    /* Restart auto save timer when periodic auto save settings change */
+    start_auto_save_timer (window);
   }
 }
 
@@ -1604,6 +1612,15 @@ marker_window_init (MarkerWindow *window)
   /* Defer sidebar preference application until after UI is built */
   g_signal_connect(window, "delete-event", G_CALLBACK(window_deleted_event_cb), window);
 
+  /* Initialize auto save functionality */
+  window->auto_save_timer_id = 0;
+  
+  /* Connect focus-out signal for auto save on focus out */
+  g_signal_connect(window, "focus-out-event", G_CALLBACK(on_window_focus_out), window);
+  
+  /* Start periodic auto save timer if enabled */
+  start_auto_save_timer(window);
+
   g_object_unref (builder);
 }
 
@@ -1618,6 +1635,12 @@ static void
 marker_window_finalize (GObject *object)
 {
   MarkerWindow *window = MARKER_WINDOW (object);
+  
+  /* Clean up auto save timer */
+  if (window->auto_save_timer_id > 0) {
+    g_source_remove (window->auto_save_timer_id);
+    window->auto_save_timer_id = 0;
+  }
   
   if (window->editor_settings) {
     g_object_unref (window->editor_settings);
@@ -2386,6 +2409,79 @@ marker_window_refresh_all_preview(MarkerWindow       *window)
       }
     }
   }
+}
+
+static void
+auto_save_all_unsaved_files(MarkerWindow *window)
+{
+  GtkTreeModel *model = GTK_TREE_MODEL(window->documents_tree_store);
+  gint rows = gtk_tree_model_iter_n_children(model, NULL);
+
+  if (rows > 0)
+  {
+    gint i;
+    GtkTreeIter iter;
+    for (i = 0; i < rows; i++)
+    {
+      gtk_tree_model_get_iter(model, &iter, gtk_tree_path_new_from_indices(i, -1));
+      MarkerEditor *editor;
+      gtk_tree_model_get(model, &iter, EDITOR_COLUMN, &editor, -1);
+      
+      if (editor && marker_editor_has_unsaved_changes(editor))
+      {
+        GFile *file = marker_editor_get_file(editor);
+        if (file) /* Only save files that have been saved before */
+        {
+          marker_editor_save_file(editor);
+        }
+      }
+    }
+  }
+}
+
+static gboolean
+on_auto_save_timer(gpointer user_data)
+{
+  MarkerWindow *window = MARKER_WINDOW(user_data);
+  
+  if (marker_prefs_get_auto_save_periodic())
+  {
+    auto_save_all_unsaved_files(window);
+    return G_SOURCE_CONTINUE; /* Keep the timer running */
+  }
+  
+  /* Preference was disabled, stop the timer */
+  window->auto_save_timer_id = 0;
+  return G_SOURCE_REMOVE;
+}
+
+static void
+start_auto_save_timer(MarkerWindow *window)
+{
+  if (window->auto_save_timer_id > 0)
+  {
+    g_source_remove(window->auto_save_timer_id);
+    window->auto_save_timer_id = 0;
+  }
+  
+  if (marker_prefs_get_auto_save_periodic())
+  {
+    guint period = marker_prefs_get_auto_save_period();
+    window->auto_save_timer_id = g_timeout_add_seconds(period, on_auto_save_timer, window);
+  }
+}
+
+static gboolean
+on_window_focus_out(GtkWidget *widget, GdkEventFocus *event, gpointer user_data)
+{
+  MarkerWindow *window = MARKER_WINDOW(user_data);
+  
+  if (marker_prefs_get_auto_save_on_focus_out())
+  {
+    auto_save_all_unsaved_files(window);
+  }
+  
+  return FALSE; /* Allow other handlers to process the event */
 }
 
 static void
