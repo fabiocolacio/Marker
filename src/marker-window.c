@@ -29,6 +29,7 @@
 
 #include <glib.h>
 #include <glib/gprintf.h>
+#include <glib/gi18n.h>
 
 #define MIN_DELTA_T 1
 
