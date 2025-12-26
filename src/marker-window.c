@@ -276,6 +276,29 @@ action_print (GSimpleAction *action,
 }
 
 static void
+action_reload (GSimpleAction *action,
+               GVariant      *parameter,
+               gpointer       user_data)
+{
+  MarkerWindow *window = user_data;
+  MarkerEditor *editor = marker_window_get_active_editor (window);
+
+  g_return_if_fail (MARKER_IS_EDITOR (editor));
+
+  if (marker_editor_has_unsaved_changes (editor))
+  {
+    gboolean discard = show_unsaved_documents_warning (window);
+
+    if (!discard)
+    {
+      return;
+    }
+  }
+
+  marker_editor_reload_file (editor);
+}
+
+static void
 action_editor_only_mode (GSimpleAction *action,
                          GVariant      *parameter,
                          gpointer       user_data)
@@ -675,6 +698,12 @@ marker_window_init (MarkerWindow *window)
     g_signal_connect_swapped (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (marker_window_open_file), window);
     const gchar *open_accels[] = { "<Ctrl>o", NULL }; 
     gtk_application_set_accels_for_action (app, "win.open", open_accels);
+    g_action_map_add_action (G_ACTION_MAP (window), action);
+
+    action = G_ACTION (g_simple_action_new ("reload", NULL));
+    g_signal_connect (G_SIMPLE_ACTION (action), "activate", G_CALLBACK (action_reload), window);
+    const gchar *reload_accels[] = { "F5", "<Ctrl>r", NULL };
+    gtk_application_set_accels_for_action (app, "win.reload", reload_accels);
     g_action_map_add_action (G_ACTION_MAP (window), action);
 
     action = G_ACTION (g_simple_action_new ("save", NULL));

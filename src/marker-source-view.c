@@ -27,6 +27,8 @@
 #include "marker-utils.h"
 
 #include <glib.h>
+#include <gio/gio.h>
+#include <glib/gi18n.h>
 #include <gtkspell/gtkspell.h>
 
 struct _MarkerSourceView
@@ -253,6 +255,32 @@ default_font_changed(GSettings*   settings,
 }
 
 static void
+reload_menu_item_activate_cb (GtkMenuItem *menuitem,
+                              gpointer     user_data)
+{
+  MarkerSourceView *source_view = MARKER_SOURCE_VIEW (user_data);
+  GtkWidget *toplevel = gtk_widget_get_toplevel (GTK_WIDGET (source_view));
+
+  if (G_IS_ACTION_GROUP (toplevel))
+  {
+    g_action_group_activate_action (G_ACTION_GROUP (toplevel), "reload", NULL);
+  }
+}
+
+static void
+marker_source_view_populate_popup (GtkTextView *text_view,
+                                   GtkWidget   *menu,
+                                   gpointer     user_data)
+{
+  GtkWidget *reload_item = gtk_menu_item_new_with_mnemonic (_("_Reload from Disk"));
+  g_signal_connect (reload_item, "activate",
+                    G_CALLBACK (reload_menu_item_activate_cb), user_data);
+
+  gtk_menu_shell_append (GTK_MENU_SHELL (menu), reload_item);
+  gtk_widget_show (reload_item);
+}
+
+static void
 marker_source_view_init (MarkerSourceView *source_view)
 {
   GtkSourceSearchContext * search_context = gtk_source_search_context_new(GTK_SOURCE_BUFFER(gtk_text_view_get_buffer(GTK_TEXT_VIEW(source_view))),
@@ -277,6 +305,11 @@ marker_source_view_init (MarkerSourceView *source_view)
   if (marker_prefs_get_spell_check ()){
     gtk_spell_checker_attach (source_view->spell, GTK_TEXT_VIEW (source_view));
   }
+
+  g_signal_connect (source_view,
+                    "populate-popup",
+                    G_CALLBACK (marker_source_view_populate_popup),
+                    source_view);
 }
 
 static void

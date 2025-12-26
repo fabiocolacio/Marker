@@ -512,6 +512,51 @@ marker_editor_open_file (MarkerEditor *editor,
 }
 
 void
+marker_editor_reload_file (MarkerEditor *editor)
+{
+  g_assert (MARKER_IS_EDITOR (editor));
+
+  GFile *file = marker_editor_get_file (editor);
+
+  if (!file)
+  {
+    return;
+  }
+
+  g_autofree gchar *file_contents = NULL;
+  gsize file_size = 0;
+  GError *err = NULL;
+
+  g_file_load_contents (file, NULL, &file_contents, &file_size, NULL, &err);
+
+  if (err)
+  {
+    g_warning ("Unable to reload file: %s", err->message);
+    g_error_free (err);
+    return;
+  }
+
+  MarkerSourceView *source_view = editor->source_view;
+  GtkSourceBuffer *buffer =
+    GTK_SOURCE_BUFFER (gtk_text_view_get_buffer (GTK_TEXT_VIEW (source_view)));
+
+  g_signal_handlers_block_by_func (buffer, buffer_changed_cb, editor);
+
+  gtk_text_buffer_begin_user_action (GTK_TEXT_BUFFER (buffer));
+  marker_source_view_set_text (source_view, file_contents, file_size);
+  gtk_text_buffer_end_user_action (GTK_TEXT_BUFFER (buffer));
+
+  g_signal_handlers_unblock_by_func (buffer, buffer_changed_cb, editor);
+
+  editor->unsaved_changes = FALSE;
+  editor->needs_refresh = TRUE;
+  editor->text_iter = NULL;
+
+  emit_signal_title_changed (editor);
+  emit_signal_subtitle_changed (editor);
+}
+
+void
 marker_editor_save_file (MarkerEditor *editor)
 {
   g_assert (MARKER_IS_EDITOR (editor));
