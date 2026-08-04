@@ -318,6 +318,8 @@ main(int    argc,
   bind_textdomain_codeset ("marker", "UTF-8");
   textdomain ("marker");
 
+  gtk_source_init();
+
   app = gtk_application_new("com.github.fabiocolacio.marker",
                             G_APPLICATION_HANDLES_OPEN);
   g_signal_connect(app, "activate", G_CALLBACK(activate), NULL);
@@ -327,6 +329,8 @@ main(int    argc,
 
   int status = g_application_run(G_APPLICATION(app), argc, argv);
   g_object_unref(app);
+
+  gtk_source_finalize();
 
   return status;
 }

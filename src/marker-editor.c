@@ -184,7 +184,7 @@ search_next     (GtkEntry         *entry,
   gtk_text_buffer_get_start_iter(buffer, &start);
   gtk_text_buffer_get_start_iter(buffer, &end);
 
-  gtk_source_search_context_forward2(context, iter, &start, &end, NULL);
+  gtk_source_search_context_forward(context, iter, &start, &end, NULL);
 
   if (gtk_text_iter_compare(&start, &end) != 0){
     gtk_text_buffer_select_range(buffer, &start, &end);
@@ -229,7 +229,7 @@ search_previous     (GtkEntry         *entry,
   gtk_text_buffer_get_start_iter(buffer, &start);
   gtk_text_buffer_get_start_iter(buffer, &end);
 
-  gtk_source_search_context_backward2(context, iter, &start, &end, NULL);
+  gtk_source_search_context_backward(context, iter, &start, &end, NULL);
 
   if (gtk_text_iter_compare(&start, &end) != 0){
     gtk_text_buffer_select_range(buffer, &start, &end);
