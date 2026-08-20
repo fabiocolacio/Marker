@@ -79,22 +79,6 @@ marker_init(GtkApplication* app)
   const gchar *quit_accels[] = { "<Ctrl>q", NULL };
   gtk_application_set_accels_for_action (app, "app.quit", quit_accels);
 
-  if (gtk_application_prefers_app_menu(app))
-  {
-    GtkBuilder* builder =
-      gtk_builder_new_from_resource("/com/github/fabiocolacio/marker/ui/marker-appmenu.ui");
-
-    GMenuModel* app_menu =
-      G_MENU_MODEL(gtk_builder_get_object(builder, "app_menu"));
-    gtk_application_set_app_menu(app, app_menu);
-    g_action_map_add_action_entries(G_ACTION_MAP(app),
-                                    APP_MENU_ACTION_ENTRIES,
-                                    APP_MENU_ACTION_ENTRIES_LEN,
-                                    app);
-
-    g_object_unref(builder);
-  }
-
   g_object_set(gtk_settings_get_default(),
                "gtk-application-prefer-dark-theme",
                marker_prefs_get_use_dark_theme(),
