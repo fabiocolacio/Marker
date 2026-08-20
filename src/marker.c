@@ -72,6 +72,10 @@ marker_init(GtkApplication* app)
 {
   marker_prefs_load();
 
+  g_set_application_name ("Marker");
+  g_set_prgname ("com.github.fabiocolacio.marker");
+  gtk_window_set_default_icon_name ("com.github.fabiocolacio.marker");
+
   const gchar *quit_accels[] = { "<Ctrl>q", NULL };
   gtk_application_set_accels_for_action (app, "app.quit", quit_accels);
 
