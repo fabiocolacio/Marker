@@ -138,6 +138,14 @@
               </object>
             </child>
             <child>
+              <object class="GtkModelButton" id="reload_btn">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="text" translatable="yes">Reload from Disk</property>
+                <property name="action-name">win.reload</property>
+              </object>
+            </child>
+            <child>
               <object class="GtkModelButton" id="export_btn">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
