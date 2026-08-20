@@ -68,13 +68,17 @@ Marker is a markdown editor for linux made with GTK+-3.0
 
 ### Build Instructions
 
-**NOTE: MAKE SURE TO CLEAN THE EXTENSIONS BEFORE UPDATING: rm /usr/share/com.github.fabiocolacio.marker/extensions/**
+**NOTE: MAKE SURE TO CLEAN THE EXTENSIONS BEFORE UPDATING:
+
+```bash
+rm /usr/share/com.github.fabiocolacio.marker/extensions/**
+```
 
 **Note:** For a more stable experience, users are recommended download
 [release tarball](https://github.com/fabiocolacio/Marker/releases) rather
 than cloning from master.
 
-```
+```bash
 $ git clone https://github.com/fabiocolacio/Marker.git
 $ cd Marker
 $ git submodule update --init --recursive
