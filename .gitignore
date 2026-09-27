@@ -4,4 +4,5 @@ resources.c
 .vscode
 _build
 *.sublime-project
-*.sublime-workspace
+*.sublime-workspace.flatpak-builder
+build-flatpak

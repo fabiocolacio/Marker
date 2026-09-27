@@ -61,7 +61,7 @@ void                 marker_editor_save_file_as                  (MarkerEditor  
                                                                   GFile              *file);
 void                 marker_editor_reload_file                   (MarkerEditor       *editor);
 gboolean             marker_editor_rename_file                   (MarkerEditor       *editor,
-                                                                  gchar*              name);
+                                                                  const gchar        *name);
 GFile               *marker_editor_get_file                      (MarkerEditor       *editor);
 gboolean             marker_editor_has_unsaved_changes           (MarkerEditor       *editor);
 gchar               *marker_editor_get_title                     (MarkerEditor       *editor);

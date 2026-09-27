@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface domain="marker">
+  <requires lib="gtk" version="4.14"/>
+  <requires lib="libadwaita" version="1.6"/>
+
+  <menu id="gear_menu">
+    <section>
+      <item>
+        <attribute name="custom">zoom</attribute>
+      </item>
+    </section>
+    <section>
+      <item>
+        <attribute name="label" translatable="yes">New Window</attribute>
+        <attribute name="action">app.new</attribute>
+      </item>
+    </section>
+    <section>
+      <item>
+        <attribute name="label" translatable="yes">Fullscreen</attribute>
+        <attribute name="action">win.fullscreen</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">Sidebar</attribute>
+        <attribute name="action">win.sidebar</attribute>
+      </item>
+    </section>
+    <section>
+      <item>
+        <attribute name="label" translatable="yes">Save As…</attribute>
+        <attribute name="action">win.saveas</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">Reload from Disk</attribute>
+        <attribute name="action">win.reload</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">Export…</attribute>
+        <attribute name="action">win.export</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">Print…</attribute>
+        <attribute name="action">win.print</attribute>
+      </item>
+    </section>
+    <section>
+      <submenu>
+        <attribute name="label" translatable="yes">View Mode</attribute>
+        <item>
+          <attribute name="label" translatable="yes">Editor Only</attribute>
+          <attribute name="action">win.editoronlymode</attribute>
+        </item>
+        <item>
+          <attribute name="label" translatable="yes">Preview Only</attribute>
+          <attribute name="action">win.previewonlymode</attribute>
+        </item>
+        <item>
+          <attribute name="label" translatable="yes">Dual Pane</attribute>
+          <attribute name="action">win.dualpanemode</attribute>
+        </item>
+        <item>
+          <attribute name="label" translatable="yes">Dual Window</attribute>
+          <attribute name="action">win.dualwindowmode</attribute>
+        </item>
+      </submenu>
+    </section>
+    <section>
+      <item>
+        <attribute name="label" translatable="yes">Preferences</attribute>
+        <attribute name="action">app.prefs</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">Keyboard Shortcuts</attribute>
+        <attribute name="action">app.shortcuts</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">Help</attribute>
+        <attribute name="action">app.help</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">About Marker</attribute>
+        <attribute name="action">app.about</attribute>
+      </item>
+    </section>
+  </menu>
+
+  <object class="GtkBox" id="zoom_box">
+    <property name="orientation">horizontal</property>
+    <property name="homogeneous">true</property>
+    <property name="margin-start">6</property>
+    <property name="margin-end">6</property>
+    <property name="margin-top">6</property>
+    <property name="margin-bottom">6</property>
+    <style>
+      <class name="linked"/>
+    </style>
+    <child>
+      <object class="GtkButton" id="zoom_out_btn">
+        <property name="icon-name">zoom-out-symbolic</property>
+        <property name="action-name">win.zoomout</property>
+        <property name="tooltip-text" translatable="yes">Zoom Out</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkButton" id="zoom_original_btn">
+        <property name="label">100%</property>
+        <property name="action-name">win.zoomoriginal</property>
+        <property name="tooltip-text" translatable="yes">Zoom Reset</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkButton" id="zoom_in_btn">
+        <property name="icon-name">zoom-in-symbolic</property>
+        <property name="action-name">win.zoomin</property>
+        <property name="tooltip-text" translatable="yes">Zoom In</property>
+      </object>
+    </child>
+  </object>
+
+  <template class="MarkerWindow" parent="AdwApplicationWindow">
+    <property name="default-width">900</property>
+    <property name="default-height">600</property>
+    <property name="content">
+      <object class="AdwToolbarView" id="toolbar_view">
+        <child type="top">
+          <object class="AdwHeaderBar" id="header_bar">
+            <property name="title-widget">
+              <object class="AdwWindowTitle" id="window_title"/>
+            </property>
+            <child type="start">
+              <object class="GtkButton" id="open_btn">
+                <property name="label" translatable="yes">Open…</property>
+                <property name="action-name">win.open</property>
+              </object>
+            </child>
+            <child type="start">
+              <object class="GtkButton" id="save_btn">
+                <property name="label" translatable="yes">Save</property>
+                <property name="action-name">win.save</property>
+              </object>
+            </child>
+            <child type="end">
+              <object class="GtkMenuButton" id="menu_btn">
+                <property name="icon-name">open-menu-symbolic</property>
+                <property name="primary">true</property>
+                <property name="menu-model">gear_menu</property>
+                <property name="tooltip-text" translatable="yes">Main Menu</property>
+              </object>
+            </child>
+            <child type="end">
+              <object class="GtkButton" id="unfullscreen_btn">
+                <property name="icon-name">view-restore-symbolic</property>
+                <property name="action-name">win.fullscreen</property>
+                <property name="visible">false</property>
+                <property name="tooltip-text" translatable="yes">Leave Fullscreen</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <property name="content">
+          <object class="AdwOverlaySplitView" id="split_view">
+            <property name="show-sidebar">false</property>
+            <property name="min-sidebar-width">160</property>
+            <property name="max-sidebar-width">320</property>
+            <property name="sidebar-width-fraction">0.22</property>
+            <property name="sidebar">
+              <object class="GtkScrolledWindow">
+                <property name="hscrollbar-policy">never</property>
+                <property name="child">
+                  <object class="GtkListView" id="documents_list">
+                    <style>
+                      <class name="navigation-sidebar"/>
+                    </style>
+                  </object>
+                </property>
+              </object>
+            </property>
+            <property name="content">
+              <object class="GtkStack" id="editors_stack">
+                <property name="transition-type">crossfade</property>
+                <property name="hexpand">true</property>
+                <property name="vexpand">true</property>
+              </object>
+            </property>
+          </object>
+        </property>
+      </object>
+    </property>
+  </template>
+</interface>

@@ -21,14 +21,14 @@
 
 #include <gtk/gtk.h>
 #include <gtksourceview/gtksource.h>
-#include <gtkspell/gtkspell.h>
+#include <libspelling.h>
+#include <adwaita.h>
 
 #include <dirent.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "marker.h"
-#include "marker-widget.h"
 #include "marker-string.h"
 #include "marker-window.h"
 
@@ -70,20 +70,6 @@ void
 marker_prefs_set_window_height(guint height)
 {
   g_settings_set_uint(prefs.window_settings, "window-height", height);
-}
-
-void
-marker_prefs_get_window_position(gint *pos_x,
-                                 gint *pos_y)
-{
-  g_settings_get(prefs.window_settings, "window-position", "(ii)", pos_x, pos_y);
-}
-
-void
-marker_prefs_set_window_position(gint pos_x,
-                                 gint pos_y)
-{
-  g_settings_set(prefs.window_settings, "window-position", "(ii)", pos_x, pos_y);
 }
 
 guint
@@ -443,13 +429,6 @@ marker_prefs_get_available_highlight_themes()
 }
 
 GList*
-marker_prefs_get_available_languages()
-{
-  GList* list = gtk_spell_checker_get_language_list ();
-  return list;
-}
-
-GList*
 marker_prefs_get_available_syntax_themes()
 {
   GList* list = NULL;
@@ -469,522 +448,350 @@ marker_prefs_get_available_syntax_themes()
   return list;
 }
 
-static void
-update_editors ()
+void
+marker_prefs_apply_color_scheme (void)
 {
-  GtkApplication *app = marker_get_app();
-  GList *windows = gtk_application_get_windows(app);
+  AdwStyleManager *manager = adw_style_manager_get_default ();
+  adw_style_manager_set_color_scheme (manager,
+                                      marker_prefs_get_use_dark_theme ()
+                                        ? ADW_COLOR_SCHEME_FORCE_DARK
+                                        : ADW_COLOR_SCHEME_DEFAULT);
+}
+
+static void
+update_editors (void)
+{
+  GtkApplication *app = marker_get_app ();
+  GList *windows = gtk_application_get_windows (app);
   for (GList *item = windows; item != NULL; item = item->next)
   {
-    if (MARKER_IS_WINDOW(item->data))
+    if (MARKER_IS_WINDOW (item->data))
     {
-      MarkerWindow *window = item->data;
-      MarkerEditor *editor = marker_window_get_active_editor (window);
-      marker_editor_apply_prefs (editor);
+      MarkerEditor *editor = marker_window_get_active_editor (MARKER_WINDOW (item->data));
+      if (editor)
+        marker_editor_apply_prefs (editor);
     }
   }
 }
 
 static void
-refresh_preview ()
+refresh_preview (void)
 {
-  GtkApplication *app = marker_get_app();
-  GList *windows = gtk_application_get_windows(app);
+  GtkApplication *app = marker_get_app ();
+  GList *windows = gtk_application_get_windows (app);
   for (GList *item = windows; item != NULL; item = item->next)
   {
-    if (MARKER_IS_WINDOW(item->data))
-    {
-      MarkerWindow *window = item->data;
-      marker_window_refresh_all_preview(window);
-    }
+    if (MARKER_IS_WINDOW (item->data))
+      marker_window_refresh_all_preview (MARKER_WINDOW (item->data));
   }
 }
 
-static void
-show_line_numbers_toggled(GtkToggleButton* button,
-                          gpointer         user_data)
+/* ------------------------------------------------------------------------- */
+/* Preferences dialog                                                         */
+/* ------------------------------------------------------------------------- */
+
+typedef enum
 {
-  gboolean state = gtk_toggle_button_get_active(button);
-  marker_prefs_set_show_line_numbers(state);
-  update_editors ();
-}
+  AFTER_NOTHING,
+  AFTER_UPDATE_EDITORS,
+  AFTER_REFRESH_PREVIEW
+} AfterChange;
 
 static void
-editor_syntax_toggled(GtkToggleButton* button,
-                      gpointer         user_data)
+run_after (AfterChange after)
 {
-  gboolean state = gtk_toggle_button_get_active(button);
-  marker_prefs_set_use_syntax_theme(state);
-
-  marker_prefs_set_use_highlight(state);
-  if (user_data)
+  switch (after)
   {
-    gtk_widget_set_sensitive(GTK_WIDGET(user_data), state);
+    case AFTER_UPDATE_EDITORS:  update_editors ();  break;
+    case AFTER_REFRESH_PREVIEW: refresh_preview (); break;
+    default: break;
   }
-
-  update_editors ();
 }
 
 static void
-css_toggled(GtkToggleButton* button,
-            gpointer         user_data)
+switch_changed_cb (GObject    *row,
+                   GParamSpec *pspec,
+                   gpointer    user_data)
 {
-  gboolean state = gtk_toggle_button_get_active(button);
-  marker_prefs_set_use_css_theme(state);
-
-  if (user_data)
-  {
-    gtk_widget_set_sensitive(GTK_WIDGET(user_data), state);
-  }
-
-  refresh_preview();
+  run_after (GPOINTER_TO_INT (user_data));
 }
 
 static void
-highlight_current_line_toggled(GtkToggleButton* button,
-                               gpointer         user_data)
+bind_switch (GtkBuilder  *builder,
+             const gchar *id,
+             GSettings   *settings,
+             const gchar *key,
+             AfterChange  after)
 {
-  gboolean state = gtk_toggle_button_get_active(button);
-  marker_prefs_set_highlight_current_line(state);
-  update_editors ();
+  GObject *row = gtk_builder_get_object (builder, id);
+  g_return_if_fail (row != NULL);
+  g_settings_bind (settings, key, row, "active", G_SETTINGS_BIND_DEFAULT);
+  g_signal_connect (row, "notify::active", G_CALLBACK (switch_changed_cb), GINT_TO_POINTER (after));
 }
 
 static void
-enable_mathjs_toggled(GtkToggleButton* button,
-                       gpointer         user_data)
+bind_spin (GtkBuilder  *builder,
+           const gchar *id,
+           GSettings   *settings,
+           const gchar *key,
+           AfterChange  after)
 {
-  gboolean state = gtk_toggle_button_get_active(button);
-  marker_prefs_set_use_mathjs(state);
-  if (user_data)
-    gtk_widget_set_sensitive(GTK_WIDGET(user_data), state);
-  refresh_preview();
+  GObject *row = gtk_builder_get_object (builder, id);
+  g_return_if_fail (row != NULL);
+  g_settings_bind (settings, key, row, "value", G_SETTINGS_BIND_DEFAULT);
+  g_signal_connect (row, "notify::value", G_CALLBACK (switch_changed_cb), GINT_TO_POINTER (after));
 }
 
 static void
-enable_mermaid_toggled(GtkToggleButton* button,
-                       gpointer         user_data)
+bind_sensitivity (GtkBuilder  *builder,
+                  const gchar *switch_id,
+                  const gchar *target_id)
 {
-  gboolean state = gtk_toggle_button_get_active(button);
-  marker_prefs_set_use_mermaid(state);
-  refresh_preview();
+  GObject *sw = gtk_builder_get_object (builder, switch_id);
+  GObject *target = gtk_builder_get_object (builder, target_id);
+  g_return_if_fail (sw != NULL && target != NULL);
+  g_object_bind_property (sw, "active", target, "sensitive", G_BINDING_SYNC_CREATE);
 }
 
-static void
-enable_charter_toggled(GtkToggleButton* button,
-                       gpointer         user_data)
+/* String combo rows: the displayed model is a GtkStringList; an optional
+ * "values" GtkStringList (same length) holds the value written to GSettings. */
+
+typedef struct
 {
-  gboolean state = gtk_toggle_button_get_active(button);
-  marker_prefs_set_use_charter(state);
-  refresh_preview();
-}
+  GSettings   *settings;
+  const gchar *key;
+  AfterChange  after;
+} StringComboBinding;
 
 static void
-wrap_text_toggled(GtkToggleButton* button,
-                  gpointer         user_data)
-{
-  gboolean state = gtk_toggle_button_get_active(button);
-  marker_prefs_set_wrap_text(state);
-  update_editors ();
-}
-
-static void
-show_spaces_toggled(GtkToggleButton* button,
-                    gpointer         user_data)
-{
-  gboolean state = gtk_toggle_button_get_active(button);
-  marker_prefs_set_show_spaces(state);
-  update_editors ();
-}
-
-static void
-enable_dark_mode_toggled(GtkToggleButton* button,
-                         gpointer         user_data)
-{
-  gboolean state = gtk_toggle_button_get_active(button);
-  marker_prefs_set_use_dark_theme(state);
-  g_object_set(gtk_settings_get_default(), "gtk-application-prefer-dark-theme", state, NULL);
-}
-
-static void
-auto_indent_toggled(GtkToggleButton* button,
-                    gpointer         user_data)
-{
-  gboolean state = gtk_toggle_button_get_active(button);
-  marker_prefs_set_auto_indent(state);
-  update_editors ();
-}
-
-static void
-spell_lang_chosen(GtkComboBox* combo_box,
-              gpointer     user_data)
-{
-  char* choice = marker_widget_combo_box_get_active_str(combo_box);
-  marker_prefs_set_spell_check_language(choice);
-  update_editors ();
-}
-
-static void
-spell_check_toggled(GtkToggleButton* button,
-                     gpointer         user_data)
-{
-  gboolean state = gtk_toggle_button_get_active(button);
-  marker_prefs_set_spell_check(state);
-
-  if (user_data)
-  {
-    gtk_widget_set_sensitive(GTK_WIDGET(user_data), state);
-  }
-
-  update_editors ();
-}
-
-static void
-replace_tabs_toggled(GtkToggleButton* button,
-                     gpointer         user_data)
-{
-  gboolean state = gtk_toggle_button_get_active(button);
-  marker_prefs_set_replace_tabs(state);
-  update_editors ();
-}
-
-static void
-tab_width_value_changed(GtkSpinButton *spin_button,
-                        gpointer       user_data)
-{
-  guint value = gtk_spin_button_get_value_as_int (spin_button);
-  marker_prefs_set_tab_width(value);
-  update_editors ();
-}
-
-static void
-right_margin_position_value_changed(GtkSpinButton* spin_button,
-                                    gpointer       user_data)
-{
-  guint value = gtk_spin_button_get_value_as_int(spin_button);
-  marker_prefs_set_right_margin_position(value);
-  update_editors ();
-}
-
-static void
-show_right_margin_toggled(GtkToggleButton* button,
-                          gpointer         user_data)
-{
-  gboolean state = gtk_toggle_button_get_active(button);
-  marker_prefs_set_show_right_margin(state);
-
-  if (user_data)
-  {
-    gtk_widget_set_sensitive(GTK_WIDGET(user_data), state);
-  }
-
-  update_editors ();
-}
-
-static void
-syntax_chosen(GtkComboBox* combo_box,
-              gpointer     user_data)
-{
-  g_autofree gchar* choice = marker_widget_combo_box_get_active_str(combo_box);
-  marker_prefs_set_syntax_theme (choice);
-  update_editors ();
-}
-
-static void
-css_chosen(GtkComboBox* combo_box,
-           gpointer     user_data)
-{
-  char* choice = marker_widget_combo_box_get_active_str(combo_box);
-
-  marker_prefs_set_css_theme(choice);
-
-  free(choice);
-  refresh_preview();
-}
-
-static void
-highlight_css_chosen(GtkComboBox* combo_box,
-                     gpointer     user_data)
-{
-  char* choice = marker_widget_combo_box_get_active_str(combo_box);
-  marker_prefs_set_highlight_theme(choice);
-
-  free(choice);
-
-  refresh_preview();
-}
-
-static void
-code_highlight_toggled(GtkToggleButton* button,
-                       gpointer user_data)
-{
-  gboolean state = gtk_toggle_button_get_active(button);
-  marker_prefs_set_use_highlight(state);
-
-  if (user_data)
-  {
-    gtk_widget_set_sensitive(GTK_WIDGET(user_data), state);
-  }
-
-  refresh_preview();
-}
-
-static void
-default_view_mode_chosen(GtkComboBox* combo_box,
+string_combo_changed_cb (AdwComboRow *row,
+                         GParamSpec  *pspec,
                          gpointer     user_data)
 {
-  MarkerViewMode mode = gtk_combo_box_get_active(combo_box);
-  marker_prefs_set_default_view_mode(mode);
+  StringComboBinding *binding = user_data;
+  guint selected = adw_combo_row_get_selected (row);
+  if (selected == GTK_INVALID_LIST_POSITION)
+    return;
+
+  GtkStringList *values = g_object_get_data (G_OBJECT (row), "values");
+  if (!values)
+    values = GTK_STRING_LIST (adw_combo_row_get_model (row));
+
+  const gchar *value = gtk_string_list_get_string (values, selected);
+  if (!value)
+    return;
+
+  g_settings_set_string (binding->settings, binding->key, value);
+  run_after (binding->after);
 }
 
 static void
-math_backend_changed (GtkComboBox* combo_box,
-                         gpointer     user_data)
+bind_string_combo (GtkBuilder  *builder,
+                   const gchar *id,
+                   GList       *display_items,
+                   GList       *value_items,   /* may be NULL: same as display */
+                   GSettings   *settings,
+                   const gchar *key,
+                   const gchar *current,
+                   AfterChange  after)
 {
-  MarkerMathBackEnd backend = gtk_combo_box_get_active(combo_box);
-  marker_prefs_set_math_backend(backend);
-  refresh_preview();
+  AdwComboRow *row = ADW_COMBO_ROW (gtk_builder_get_object (builder, id));
+  g_return_if_fail (row != NULL);
+
+  GtkStringList *display = gtk_string_list_new (NULL);
+  GtkStringList *values = value_items ? gtk_string_list_new (NULL) : NULL;
+
+  guint selected = 0, i = 0;
+  GList *d = display_items, *v = value_items;
+  for (; d != NULL; d = d->next, v = v ? v->next : NULL, ++i)
+  {
+    const gchar *value = v ? v->data : d->data;
+    gtk_string_list_append (display, d->data);
+    if (values)
+      gtk_string_list_append (values, value);
+    if (current && g_strcmp0 (value, current) == 0)
+      selected = i;
+  }
+
+  adw_combo_row_set_model (row, G_LIST_MODEL (display));
+  g_object_unref (display);
+  if (values)
+    g_object_set_data_full (G_OBJECT (row), "values", values, g_object_unref);
+
+  adw_combo_row_set_selected (row, selected);
+
+  StringComboBinding *binding = g_new0 (StringComboBinding, 1);
+  binding->settings = settings;
+  binding->key = key;
+  binding->after = after;
+  g_object_set_data_full (G_OBJECT (row), "binding", binding, g_free);
+  g_signal_connect (row, "notify::selected", G_CALLBACK (string_combo_changed_cb), binding);
+}
+
+/* Enum combo rows: selected index == enum value */
+
+static void
+enum_combo_changed_cb (AdwComboRow *row,
+                       GParamSpec  *pspec,
+                       gpointer     user_data)
+{
+  StringComboBinding *binding = user_data;
+  guint selected = adw_combo_row_get_selected (row);
+  if (selected == GTK_INVALID_LIST_POSITION)
+    return;
+  g_settings_set_enum (binding->settings, binding->key, selected);
+  run_after (binding->after);
+}
+
+static void
+bind_enum_combo (GtkBuilder  *builder,
+                 const gchar *id,
+                 GSettings   *settings,
+                 const gchar *key,
+                 AfterChange  after)
+{
+  AdwComboRow *row = ADW_COMBO_ROW (gtk_builder_get_object (builder, id));
+  g_return_if_fail (row != NULL);
+
+  adw_combo_row_set_selected (row, g_settings_get_enum (settings, key));
+
+  StringComboBinding *binding = g_new0 (StringComboBinding, 1);
+  binding->settings = settings;
+  binding->key = key;
+  binding->after = after;
+  g_object_set_data_full (G_OBJECT (row), "binding", binding, g_free);
+  g_signal_connect (row, "notify::selected", G_CALLBACK (enum_combo_changed_cb), binding);
+}
+
+static void
+dark_mode_changed_cb (GObject    *row,
+                      GParamSpec *pspec,
+                      gpointer    user_data)
+{
+  marker_prefs_apply_color_scheme ();
+}
+
+static gint
+compare_strings (gconstpointer a, gconstpointer b)
+{
+  return g_ascii_strcasecmp (a, b);
+}
+
+static void
+list_spelling_languages (GList **names,
+                         GList **codes)
+{
+  *names = NULL;
+  *codes = NULL;
+
+  SpellingProvider *provider = spelling_provider_get_default ();
+  GListModel *languages = spelling_provider_list_languages (provider);
+  if (!languages)
+    return;
+
+  guint n = g_list_model_get_n_items (languages);
+  for (guint i = 0; i < n; ++i)
+  {
+    g_autoptr (SpellingLanguage) info = g_list_model_get_item (languages, i);
+    const gchar *code = spelling_language_get_code (info);
+    const gchar *name = spelling_language_get_name (info);
+    if (!code)
+      continue;
+    *codes = g_list_append (*codes, g_strdup (code));
+    *names = g_list_append (*names, g_strdup_printf ("%s (%s)", name ? name : code, code));
+  }
+  g_object_unref (languages);
 }
 
 void
-marker_prefs_show_window()
+marker_prefs_show_window (void)
 {
-  GtkBuilder* builder =
-    gtk_builder_new_from_resource(
-      "/com/github/fabiocolacio/marker/ui/marker-prefs-window.ui");
+  GtkBuilder *builder =
+    gtk_builder_new_from_resource ("/com/github/fabiocolacio/marker/ui/marker-prefs-dialog.ui");
 
-  GList *list = NULL;
-  GtkComboBox* combo_box;
-  GtkToggleButton* check_button;
-  GtkSpinButton* spin_button;
+  GSettings *editor = prefs.editor_settings;
+  GSettings *preview = prefs.preview_settings;
+  GSettings *window = prefs.window_settings;
 
-  combo_box = GTK_COMBO_BOX(gtk_builder_get_object(builder, "syntax_chooser"));
-  list = marker_prefs_get_available_syntax_themes();
-  marker_widget_populate_combo_box_with_strings(combo_box, list);
-  char* syntax = marker_prefs_get_syntax_theme();
-  marker_widget_combo_box_set_active_str(combo_box,syntax, g_list_length(list));
-  gtk_widget_set_sensitive(GTK_WIDGET(combo_box), marker_prefs_get_use_highlight());
-  g_free(syntax);
-  g_list_free_full(list, free);
-  list = NULL;
+  /* ---- Editor ---- */
+  bind_switch (builder, "show_line_numbers_row",      editor, "show-line-numbers",      AFTER_UPDATE_EDITORS);
+  bind_switch (builder, "wrap_text_row",              editor, "wrap-text",              AFTER_UPDATE_EDITORS);
+  bind_switch (builder, "show_spaces_row",            editor, "show-spaces",            AFTER_UPDATE_EDITORS);
+  bind_switch (builder, "highlight_current_line_row", editor, "highlight-current-line", AFTER_UPDATE_EDITORS);
+  bind_switch (builder, "show_right_margin_row",      editor, "show-right-margin",      AFTER_UPDATE_EDITORS);
+  bind_spin   (builder, "right_margin_position_row",  editor, "show-right-margin-position", AFTER_UPDATE_EDITORS);
+  bind_sensitivity (builder, "show_right_margin_row", "right_margin_position_row");
 
-  combo_box = GTK_COMBO_BOX(gtk_builder_get_object(builder, "css_chooser"));
-  list = marker_prefs_get_available_stylesheets();
-  marker_widget_populate_combo_box_with_strings(combo_box, list);
-  char* css = marker_prefs_get_css_theme();
-  char* css_filename = marker_string_filename_get_name(css);
-  marker_widget_combo_box_set_active_str(combo_box, css_filename, g_list_length(list));
-  gtk_widget_set_sensitive(GTK_WIDGET(combo_box), marker_prefs_get_use_css_theme());
-  free(css_filename);
-  g_free(css);
-  g_list_free_full(list, free);
-  list = NULL;
+  bind_switch (builder, "editor_syntax_row",          editor, "enable-syntax-theme",    AFTER_UPDATE_EDITORS);
+  {
+    GList *themes = g_list_sort (marker_prefs_get_available_syntax_themes (), compare_strings);
+    g_autofree gchar *current = marker_prefs_get_syntax_theme ();
+    bind_string_combo (builder, "syntax_chooser_row", themes, NULL, editor, "syntax-theme", current, AFTER_UPDATE_EDITORS);
+    g_list_free_full (themes, free);
+  }
+  bind_sensitivity (builder, "editor_syntax_row", "syntax_chooser_row");
 
-  combo_box = GTK_COMBO_BOX(gtk_builder_get_object(builder, "highlight_css_chooser"));
-  list = marker_prefs_get_available_highlight_themes();
-  marker_widget_populate_combo_box_with_strings(combo_box, list);
-  char* theme = marker_prefs_get_highlight_theme();
-  marker_widget_combo_box_set_active_str(combo_box, theme, g_list_length(list));
-  gtk_widget_set_sensitive(GTK_WIDGET(combo_box), marker_prefs_get_use_highlight());
-  g_free(theme);
-  g_list_free_full(list, free);
-  list = NULL;
+  bind_switch (builder, "spell_check_row",            editor, "spell-check",            AFTER_UPDATE_EDITORS);
+  {
+    GList *names = NULL, *codes = NULL;
+    list_spelling_languages (&names, &codes);
+    g_autofree gchar *current = marker_prefs_get_spell_check_language ();
+    bind_string_combo (builder, "spell_lang_row", names, codes, editor, "spell-check-lang", current, AFTER_UPDATE_EDITORS);
+    g_list_free_full (names, g_free);
+    g_list_free_full (codes, g_free);
+  }
+  bind_sensitivity (builder, "spell_check_row", "spell_lang_row");
 
-  combo_box = GTK_COMBO_BOX(gtk_builder_get_object(builder, "view_mode_chooser"));
-  GtkCellRenderer* cell_renderer = gtk_cell_renderer_text_new();
-  gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(combo_box), cell_renderer, TRUE);
-  gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(combo_box),
-                                 cell_renderer,
-                                 "text", 0,
-                                 NULL);
-  gtk_combo_box_set_active(combo_box, marker_prefs_get_default_view_mode());
+  bind_switch (builder, "auto_indent_row",            editor, "auto-indent",            AFTER_UPDATE_EDITORS);
+  bind_switch (builder, "replace_tabs_row",           editor, "replace-tabs",           AFTER_UPDATE_EDITORS);
+  bind_spin   (builder, "tab_width_row",              editor, "tab-width",              AFTER_UPDATE_EDITORS);
 
-  combo_box = GTK_COMBO_BOX(gtk_builder_get_object(builder, "math_backends_combo"));
-  cell_renderer = gtk_cell_renderer_text_new();
-  gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(combo_box), cell_renderer, TRUE);
-  gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(combo_box),
-                                 cell_renderer,
-                                 "text", 0,
-                                 NULL);
-  gtk_combo_box_set_active(combo_box, marker_prefs_get_math_backend());
-  gtk_widget_set_sensitive(GTK_WIDGET(combo_box), marker_prefs_get_use_mathjs());
+  /* ---- Preview ---- */
+  bind_switch (builder, "css_row",                    preview, "css-toggle",            AFTER_REFRESH_PREVIEW);
+  {
+    GList *sheets = g_list_sort (marker_prefs_get_available_stylesheets (), compare_strings);
+    g_autofree gchar *css = marker_prefs_get_css_theme ();
+    g_autofree gchar *current = marker_string_filename_get_name (css);
+    bind_string_combo (builder, "css_chooser_row", sheets, NULL, preview, "css-theme", current, AFTER_REFRESH_PREVIEW);
+    g_list_free_full (sheets, free);
+  }
+  bind_sensitivity (builder, "css_row", "css_chooser_row");
 
-  combo_box = GTK_COMBO_BOX(gtk_builder_get_object(builder, "spell_lang_chooser"));
-  list = marker_prefs_get_available_languages();
-  marker_widget_populate_combo_box_with_strings(combo_box, list);
-  char* lang = marker_prefs_get_spell_check_language();
-  marker_widget_combo_box_set_active_str(combo_box, lang, g_list_length(list));
-  gtk_widget_set_sensitive(GTK_WIDGET(combo_box), marker_prefs_get_spell_check());
-  g_free(lang);
-  g_list_free_full(list, free);
-  list = NULL;
+  bind_switch (builder, "code_highlight_row",         preview, "highlight-toggle",      AFTER_REFRESH_PREVIEW);
+  {
+    GList *themes = g_list_sort (marker_prefs_get_available_highlight_themes (), compare_strings);
+    g_autofree gchar *current = marker_prefs_get_highlight_theme ();
+    bind_string_combo (builder, "highlight_css_chooser_row", themes, NULL, preview, "highlight-theme", current, AFTER_REFRESH_PREVIEW);
+    g_list_free_full (themes, free);
+  }
+  bind_sensitivity (builder, "code_highlight_row", "highlight_css_chooser_row");
 
-  check_button =
-    GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "editor_syntax_check_button"));
-  gtk_toggle_button_set_active(check_button, marker_prefs_get_use_highlight());
+  bind_switch (builder, "mermaid_row",                preview, "mermaid-toggle",        AFTER_REFRESH_PREVIEW);
+  bind_switch (builder, "charter_row",                preview, "charter-toggle",        AFTER_REFRESH_PREVIEW);
+  bind_switch (builder, "mathjs_row",                 preview, "mathjs-toggle",         AFTER_REFRESH_PREVIEW);
+  bind_enum_combo (builder, "math_backend_row",       preview, "math-backend",          AFTER_REFRESH_PREVIEW);
+  bind_sensitivity (builder, "mathjs_row", "math_backend_row");
 
-  check_button =
-    GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "css_check_button"));
-  gtk_toggle_button_set_active(check_button, marker_prefs_get_use_css_theme());
+  /* ---- Window ---- */
+  bind_enum_combo (builder, "view_mode_row",          window, "view-mode",              AFTER_NOTHING);
+  bind_switch (builder, "dark_mode_row",              window, "enable-dark-mode",       AFTER_NOTHING);
+  g_signal_connect (gtk_builder_get_object (builder, "dark_mode_row"), "notify::active",
+                    G_CALLBACK (dark_mode_changed_cb), NULL);
 
-  check_button =
-    GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "editor_syntax_check_button"));
-  gtk_toggle_button_set_active(check_button, marker_prefs_get_use_syntax_theme());
+  AdwDialog *dialog = ADW_DIALOG (gtk_builder_get_object (builder, "prefs_dialog"));
+  GtkWindow *parent = gtk_application_get_active_window (marker_get_app ());
+  adw_dialog_present (dialog, parent ? GTK_WIDGET (parent) : NULL);
 
-  check_button =
-    GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "mathjs_check_button"));
-  gtk_toggle_button_set_active(check_button, marker_prefs_get_use_mathjs());
-
-  check_button =
-    GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "mermaid_check_button"));
-  gtk_toggle_button_set_active(check_button, marker_prefs_get_use_mermaid());
-
-  check_button =
-    GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "charter_check_button"));
-  gtk_toggle_button_set_active(check_button, marker_prefs_get_use_charter());
-
-  check_button =
-    GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "code_highlight_check_button"));
-  gtk_toggle_button_set_active(check_button, marker_prefs_get_use_highlight());
-
-  check_button =
-    GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "show_line_numbers_check_button"));
-  gtk_toggle_button_set_active(check_button, marker_prefs_get_show_line_numbers());
-
-  check_button =
-    GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "show_right_margin_check_button"));
-  gtk_toggle_button_set_active(check_button, marker_prefs_get_show_right_margin());
-
-  check_button =
-    GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "wrap_text_check_button"));
-  gtk_toggle_button_set_active(check_button, marker_prefs_get_wrap_text());
-
-  check_button =
-    GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "show_spaces_check_button"));
-  gtk_toggle_button_set_active(check_button, marker_prefs_get_show_spaces());
-
-  check_button =
-    GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "highlight_current_line_check_button"));
-  gtk_toggle_button_set_active(check_button, marker_prefs_get_highlight_current_line());
-
-  check_button =
-    GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "auto_indent_check_button"));
-  gtk_toggle_button_set_active(check_button, marker_prefs_get_auto_indent());
-
-  check_button =
-    GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "replace_tabs_check_button"));
-  gtk_toggle_button_set_active(check_button, marker_prefs_get_replace_tabs());
-
-  check_button =
-    GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "spell_check_check_button"));
-  gtk_toggle_button_set_active(check_button, marker_prefs_get_spell_check());
-
-  check_button =
-    GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "enable_dark_mode_check_button"));
-  gtk_toggle_button_set_active(check_button, marker_prefs_get_use_dark_theme());
-
-  spin_button =
-    GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "right_margin_position_spin_button"));
-  gtk_widget_set_sensitive(GTK_WIDGET(spin_button), marker_prefs_get_show_right_margin());
-  gtk_spin_button_set_range(spin_button, 1, 1000);
-  gtk_spin_button_set_increments(spin_button, 1, 0);
-  gtk_spin_button_set_value(spin_button, marker_prefs_get_right_margin_position());
-
-  spin_button =
-    GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "tab_width_spin_button"));
-  gtk_spin_button_set_range(spin_button, 1, 12);
-  gtk_spin_button_set_increments(spin_button, 1, 0);
-  gtk_spin_button_set_value(spin_button, marker_prefs_get_tab_width());
-
-  GtkWindow* window = GTK_WINDOW(gtk_builder_get_object(builder, "prefs_win"));
-	gtk_widget_show_all(GTK_WIDGET(window));
-  gtk_window_present(window);
-
-
-  gtk_builder_add_callback_symbol(builder,
-                                  "syntax_chosen",
-                                  G_CALLBACK(syntax_chosen));
-  gtk_builder_add_callback_symbol(builder,
-                                  "editor_syntax_toggled",
-                                  G_CALLBACK(editor_syntax_toggled));
-  gtk_builder_add_callback_symbol(builder,
-                                  "css_chosen",
-                                  G_CALLBACK(css_chosen));
-  gtk_builder_add_callback_symbol(builder,
-                                  "css_toggled",
-                                  G_CALLBACK(css_toggled));
-  gtk_builder_add_callback_symbol(builder,
-                                  "highlight_css_chosen",
-                                  G_CALLBACK(highlight_css_chosen));
-  gtk_builder_add_callback_symbol(builder,
-                                  "code_highlight_toggled",
-                                  G_CALLBACK(code_highlight_toggled));
-  gtk_builder_add_callback_symbol(builder,
-                                  "default_view_mode_chosen",
-                                  G_CALLBACK(default_view_mode_chosen));
-  gtk_builder_add_callback_symbol(builder,
-                                  "math_backends_combo_changed_cb",
-                                  G_CALLBACK(math_backend_changed));
-  gtk_builder_add_callback_symbol(builder,
-                                  "show_line_numbers_toggled",
-                                  G_CALLBACK(show_line_numbers_toggled));
-  gtk_builder_add_callback_symbol(builder,
-                                  "highlight_current_line_toggled",
-                                  G_CALLBACK(highlight_current_line_toggled));
-  gtk_builder_add_callback_symbol(builder,
-                                  "replace_tabs_toggled",
-                                  G_CALLBACK(replace_tabs_toggled));
-  gtk_builder_add_callback_symbol(builder,
-                                  "auto_indent_toggled",
-                                  G_CALLBACK(auto_indent_toggled));
-  gtk_builder_add_callback_symbol(builder,
-                                  "spell_check_toggled",
-                                  G_CALLBACK(spell_check_toggled));
-  gtk_builder_add_callback_symbol(builder,
-                                  "spell_lang_chosen",
-                                  G_CALLBACK(spell_lang_chosen));
-  gtk_builder_add_callback_symbol(builder,
-                                  "tab_width_value_changed",
-                                  G_CALLBACK(tab_width_value_changed));
-  gtk_builder_add_callback_symbol(builder,
-                                  "right_margin_position_value_changed",
-                                  G_CALLBACK(right_margin_position_value_changed));
-  gtk_builder_add_callback_symbol(builder,
-                                  "enable_mathjs_toggled",
-                                  G_CALLBACK(enable_mathjs_toggled));
-  gtk_builder_add_callback_symbol(builder,
-                                  "enable_mermaid_toggled",
-                                  G_CALLBACK(enable_mermaid_toggled));
-  gtk_builder_add_callback_symbol(builder,
-                                  "wrap_text_toggled",
-                                  G_CALLBACK(wrap_text_toggled));
-  gtk_builder_add_callback_symbol(builder,
-                                  "show_spaces_toggled",
-                                  G_CALLBACK(show_spaces_toggled));
-  gtk_builder_add_callback_symbol(builder,
-                                  "show_right_margin_toggled",
-                                  G_CALLBACK(show_right_margin_toggled));
-  gtk_builder_add_callback_symbol(builder,
-                                  "enable_dark_mode_toggled",
-                                  G_CALLBACK(enable_dark_mode_toggled));
-  gtk_builder_add_callback_symbol(builder,
-                                  "editor_syntax_toggled",
-                                  G_CALLBACK(editor_syntax_toggled));
-  gtk_builder_add_callback_symbol(builder,
-                                  "enable_charter_toggled",
-                                  G_CALLBACK(enable_charter_toggled));
-  gtk_builder_connect_signals(builder, NULL);
-
-  g_object_unref(builder);
+  g_object_unref (builder);
 }
 
 void
-marker_prefs_load()
+marker_prefs_load (void)
 {
   prefs.editor_settings =
-    g_settings_new("com.github.fabiocolacio.marker.preferences.editor");
+    g_settings_new ("com.github.fabiocolacio.marker.preferences.editor");
   prefs.preview_settings =
-    g_settings_new("com.github.fabiocolacio.marker.preferences.preview");
+    g_settings_new ("com.github.fabiocolacio.marker.preferences.preview");
   prefs.window_settings =
-    g_settings_new("com.github.fabiocolacio.marker.preferences.window");
+    g_settings_new ("com.github.fabiocolacio.marker.preferences.window");
 }
-

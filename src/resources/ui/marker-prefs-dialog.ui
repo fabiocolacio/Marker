@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface domain="marker">
+  <requires lib="gtk" version="4.14"/>
+  <requires lib="libadwaita" version="1.6"/>
+
+  <object class="GtkStringList" id="math_backends">
+    <items>
+      <item>KaTeX</item>
+      <item>MathJax</item>
+    </items>
+  </object>
+  <object class="GtkStringList" id="view_modes">
+    <items>
+      <item translatable="yes">Editor Only</item>
+      <item translatable="yes">Preview Only</item>
+      <item translatable="yes">Dual Pane</item>
+      <item translatable="yes">Dual Window</item>
+    </items>
+  </object>
+
+  <object class="AdwPreferencesDialog" id="prefs_dialog">
+    <property name="title" translatable="yes">Preferences</property>
+    <property name="search-enabled">true</property>
+
+    <!-- ===================== EDITOR ===================== -->
+    <child>
+      <object class="AdwPreferencesPage">
+        <property name="title" translatable="yes">Editor</property>
+        <property name="icon-name">document-edit-symbolic</property>
+        <child>
+          <object class="AdwPreferencesGroup">
+            <property name="title" translatable="yes">Display</property>
+            <child>
+              <object class="AdwSwitchRow" id="show_line_numbers_row">
+                <property name="title" translatable="yes">Show line numbers</property>
+              </object>
+            </child>
+            <child>
+              <object class="AdwSwitchRow" id="wrap_text_row">
+                <property name="title" translatable="yes">Wrap text</property>
+              </object>
+            </child>
+            <child>
+              <object class="AdwSwitchRow" id="show_spaces_row">
+                <property name="title" translatable="yes">Show spaces</property>
+              </object>
+            </child>
+            <child>
+              <object class="AdwSwitchRow" id="highlight_current_line_row">
+                <property name="title" translatable="yes">Highlight current line</property>
+              </object>
+            </child>
+            <child>
+              <object class="AdwSwitchRow" id="show_right_margin_row">
+                <property name="title" translatable="yes">Show right margin</property>
+              </object>
+            </child>
+            <child>
+              <object class="AdwSpinRow" id="right_margin_position_row">
+                <property name="title" translatable="yes">Right margin column</property>
+                <property name="adjustment">
+                  <object class="GtkAdjustment">
+                    <property name="lower">1</property>
+                    <property name="upper">1000</property>
+                    <property name="step-increment">1</property>
+                    <property name="page-increment">10</property>
+                  </object>
+                </property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="AdwPreferencesGroup">
+            <property name="title" translatable="yes">Highlighting</property>
+            <child>
+              <object class="AdwSwitchRow" id="editor_syntax_row">
+                <property name="title" translatable="yes">Highlight syntax</property>
+              </object>
+            </child>
+            <child>
+              <object class="AdwComboRow" id="syntax_chooser_row">
+                <property name="title" translatable="yes">Syntax theme</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="AdwPreferencesGroup">
+            <property name="title" translatable="yes">Spell Checking</property>
+            <child>
+              <object class="AdwSwitchRow" id="spell_check_row">
+                <property name="title" translatable="yes">Check spelling</property>
+              </object>
+            </child>
+            <child>
+              <object class="AdwComboRow" id="spell_lang_row">
+                <property name="title" translatable="yes">Language</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="AdwPreferencesGroup">
+            <property name="title" translatable="yes">Tab Stops</property>
+            <child>
+              <object class="AdwSwitchRow" id="auto_indent_row">
+                <property name="title" translatable="yes">Enable automatic indentation</property>
+              </object>
+            </child>
+            <child>
+              <object class="AdwSwitchRow" id="replace_tabs_row">
+                <property name="title" translatable="yes">Insert spaces instead of tabs</property>
+              </object>
+            </child>
+            <child>
+              <object class="AdwSpinRow" id="tab_width_row">
+                <property name="title" translatable="yes">Tabulation width</property>
+                <property name="adjustment">
+                  <object class="GtkAdjustment">
+                    <property name="lower">1</property>
+                    <property name="upper">12</property>
+                    <property name="step-increment">1</property>
+                    <property name="page-increment">2</property>
+                  </object>
+                </property>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+
+    <!-- ===================== PREVIEW ===================== -->
+    <child>
+      <object class="AdwPreferencesPage">
+        <property name="title" translatable="yes">Preview</property>
+        <property name="icon-name">view-reveal-symbolic</property>
+        <child>
+          <object class="AdwPreferencesGroup">
+            <property name="title" translatable="yes">Style</property>
+            <child>
+              <object class="AdwSwitchRow" id="css_row">
+                <property name="title" translatable="yes">Use CSS theme</property>
+              </object>
+            </child>
+            <child>
+              <object class="AdwComboRow" id="css_chooser_row">
+                <property name="title" translatable="yes">CSS theme</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="AdwPreferencesGroup">
+            <property name="title" translatable="yes">Code</property>
+            <child>
+              <object class="AdwSwitchRow" id="code_highlight_row">
+                <property name="title" translatable="yes">Highlight code blocks</property>
+              </object>
+            </child>
+            <child>
+              <object class="AdwComboRow" id="highlight_css_chooser_row">
+                <property name="title" translatable="yes">Highlight theme</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="AdwPreferencesGroup">
+            <property name="title" translatable="yes">Extensions</property>
+            <child>
+              <object class="AdwSwitchRow" id="mermaid_row">
+                <property name="title" translatable="yes">Enable Mermaid</property>
+                <property name="subtitle" translatable="yes">Render diagrams from mermaid code blocks</property>
+              </object>
+            </child>
+            <child>
+              <object class="AdwSwitchRow" id="charter_row">
+                <property name="title" translatable="yes">Enable Charter</property>
+                <property name="subtitle" translatable="yes">Render plots from charter code blocks</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="AdwPreferencesGroup">
+            <property name="title" translatable="yes">Math</property>
+            <child>
+              <object class="AdwSwitchRow" id="mathjs_row">
+                <property name="title" translatable="yes">Render math</property>
+              </object>
+            </child>
+            <child>
+              <object class="AdwComboRow" id="math_backend_row">
+                <property name="title" translatable="yes">Math back-end</property>
+                <property name="model">math_backends</property>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+
+    <!-- ===================== WINDOW ===================== -->
+    <child>
+      <object class="AdwPreferencesPage">
+        <property name="title" translatable="yes">Window</property>
+        <property name="icon-name">window-new-symbolic</property>
+        <child>
+          <object class="AdwPreferencesGroup">
+            <child>
+              <object class="AdwComboRow" id="view_mode_row">
+                <property name="title" translatable="yes">Default view mode</property>
+                <property name="model">view_modes</property>
+              </object>
+            </child>
+            <child>
+              <object class="AdwSwitchRow" id="dark_mode_row">
+                <property name="title" translatable="yes">Enable dark mode</property>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>
