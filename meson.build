@@ -1,25 +1,25 @@
 project('Marker', 'c',
-  version : '2020.04.04',
-  license : 'GPL3'
+  version : '2026.09.27',
+  license : 'GPL3',
+  default_options : ['c_std=gnu11', 'warning_level=1']
 )
+
+APP_ID = 'com.github.fabiocolacio.marker'
 
 PREFIX = get_option('prefix')
 DATA_DIR = join_paths(PREFIX, 'share')
-LIBS_DIR = join_paths(PREFIX, 'lib')
-APP_DIR = join_paths(DATA_DIR, 'com.github.fabiocolacio.marker')
+APP_DIR = join_paths(DATA_DIR, APP_ID)
 ICONS_DIR = join_paths(APP_DIR, 'icons')
 STYLES_DIR = join_paths(APP_DIR, 'styles')
 COMMON_DIR = join_paths(APP_DIR, 'common')
 SCRIPTS_DIR = join_paths(APP_DIR, 'scripts')
-HIGHLIGHT_STYLES_DIR = join_paths(join_paths(SCRIPTS_DIR, 'highlight'),'styles')
-WEB_EXTENSIONS_DIRECTORY = join_paths(LIBS_DIR, 'Marker.extensions')
+HIGHLIGHT_STYLES_DIR = join_paths(join_paths(SCRIPTS_DIR, 'highlight'), 'styles')
 APPDATA_DIR = join_paths(DATA_DIR, 'metainfo')
 LOCALE_DIR = join_paths(PREFIX, get_option('localedir'))
 
 EXECUTABLE_NAME = 'marker'
 
 gnome = import('gnome')
-
 i18n = import('i18n')
 subdir('help')
 subdir('po')
@@ -39,19 +39,10 @@ marker_sources = [
   'src/marker-prefs.c',
   'src/marker-source-view.c',
   'src/marker-preview.c',
-  'src/marker-string.c',
-  'src/marker-widget.c',
   'src/marker-sketcher-window.c',
+  'src/marker-string.c',
   'src/marker-utils.c',
   res
-]
-
-scroll_extension = [
-  'src/webkit-extension/scroll-extension.c'
-]
-
-click_extension = [
-  'src/webkit-extension/click-extension.c'
 ]
 
 hoedown_sources = [
@@ -79,89 +70,64 @@ hoedown_sources = [
 ]
 
 deps = [
-  dependency('gtk+-3.0', version : '>=3.20'),
+  dependency('gtk4', version : '>=4.14'),
+  dependency('libadwaita-1', version : '>=1.6'),
   dependency('glib-2.0'),
-  dependency('gtksourceview-4'),
-  dependency('webkit2gtk-4.1'),
-  dependency('gtkspell3-3.0')
+  dependency('gio-2.0'),
+  dependency('gtksourceview-5'),
+  dependency('webkitgtk-6.0'),
+  dependency('libspelling-1')
 ]
 
-ext_deps =[
-  dependency('webkit2gtk-4.1')
-]
-
-add_global_arguments(
+add_project_arguments(
+  '-DAPP_ID="@0@"'.format(APP_ID),
   '-DSTYLES_DIR="@0@/"'.format(STYLES_DIR),
-  '-DSCRIPTS_DIR="@0@/"'.format(SCRIPTS_DIR),
   '-DICONS_DIR="@0@/"'.format(ICONS_DIR),
+  '-DSCRIPTS_DIR="@0@/"'.format(SCRIPTS_DIR),
   '-DHIGHLIGHT_STYLES_DIR="@0@/"'.format(HIGHLIGHT_STYLES_DIR),
   '-DMARKER_VERSION="@0@"'.format(meson.project_version()),
   '-DLOCALE_DIR="@0@"'.format(LOCALE_DIR),
   '-DCOMMON_DIR="@0@/"'.format(COMMON_DIR),
-  '-DWEB_EXTENSIONS_DIRECTORY="@0@"'.format(WEB_EXTENSIONS_DIRECTORY),
+  '-Werror=implicit-function-declaration',
   language : 'c'
-)
-
-shared_library(
-  'scroll-extension',
-  sources : [scroll_extension],
-  dependencies : ext_deps,
-  install : true,
-  link_args: '-lm',
-  install_dir: WEB_EXTENSIONS_DIRECTORY
 )
 
 executable(
   EXECUTABLE_NAME,
   sources : [marker_sources, hoedown_sources],
   dependencies : deps,
-  link_args: '-lm',
+  link_args : '-lm',
   install : true
 )
 
 install_data(
-  'data/com.github.fabiocolacio.marker.svg',
+  'data/@0@.svg'.format(APP_ID),
   install_dir : join_paths(DATA_DIR, 'icons/hicolor/scalable/apps')
 )
 
 install_data(
-  'data/com.github.fabiocolacio.marker-symbolic.svg',
+  'data/@0@-symbolic.svg'.format(APP_ID),
   install_dir : join_paths(DATA_DIR, 'icons/hicolor/symbolic/apps')
 )
 
 install_data(
-  'data/com.github.fabiocolacio.marker.desktop',
+  'data/@0@.desktop'.format(APP_ID),
   install_dir : join_paths(DATA_DIR, 'applications')
 )
 
 install_data(
-  'data/com.github.fabiocolacio.marker.gschema.xml',
+  'data/@0@.gschema.xml'.format(APP_ID),
   install_dir : join_paths(DATA_DIR, 'glib-2.0/schemas')
 )
 
 install_data(
-  'data/com.github.fabiocolacio.marker.appdata.xml',
+  'data/@0@.appdata.xml'.format(APP_ID),
   install_dir : APPDATA_DIR
 )
 
-install_subdir(
-  'data/styles',
-  install_dir : APP_DIR
-)
-
-install_subdir(
-  'data/common',
-  install_dir : APP_DIR
-)
-
-install_subdir(
-  'data/scripts',
-  install_dir : APP_DIR
-)
-
-install_subdir(
-  'data/icons',
-  install_dir : APP_DIR
-)
+install_subdir('data/styles', install_dir : APP_DIR)
+install_subdir('data/common', install_dir : APP_DIR)
+install_subdir('data/scripts', install_dir : APP_DIR)
+install_subdir('data/icons', install_dir : APP_DIR)
 
 meson.add_install_script('post-install.sh')

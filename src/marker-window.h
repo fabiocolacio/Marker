@@ -24,6 +24,7 @@
 
 #include <gio/gio.h>
 #include <gtk/gtk.h>
+#include <adwaita.h>
 
 #include "marker-editor.h"
 
@@ -31,7 +32,7 @@ G_BEGIN_DECLS
 
 #define MARKER_TYPE_WINDOW (marker_window_get_type ())
 
-G_DECLARE_FINAL_TYPE (MarkerWindow, marker_window, MARKER, WINDOW, GtkApplicationWindow)
+G_DECLARE_FINAL_TYPE (MarkerWindow, marker_window, MARKER, WINDOW, AdwApplicationWindow)
 
 MarkerWindow        *marker_window_new                           (GtkApplication     *app);
 MarkerWindow        *marker_window_new_from_file                 (GtkApplication     *app,
@@ -45,21 +46,19 @@ void                 marker_window_open_file                     (MarkerWindow  
 void                 marker_window_open_file_in_new_window       (MarkerWindow       *window);
 void                 marker_window_save_active_file              (MarkerWindow       *window);
 void                 marker_window_save_active_file_as           (MarkerWindow       *window);
-void                 marker_window_open_sketcher                 (MarkerWindow       *window);
 gboolean             marker_window_try_close                     (MarkerWindow       *window);
 void                 marker_window_close_current_document        (MarkerWindow       *window);
+void                 marker_window_close_editor                  (MarkerWindow       *window,
+                                                                  MarkerEditor       *editor);
 void                 marker_window_toggle_sidebar                (MarkerWindow       *window);
 void                 marker_window_hide_sidebar                  (MarkerWindow       *window);
 void                 marker_window_show_sidebar                  (MarkerWindow       *window);
-
 void                 marker_window_new_editor                    (MarkerWindow       *window);
 void                 marker_window_new_editor_from_file          (MarkerWindow       *window,
                                                                   GFile              *file);
-
+void                 marker_window_open_sketcher                 (MarkerWindow       *window);
 void                 marker_window_search                        (MarkerWindow       *window);
-
-void 				 marker_window_refresh_all_preview			 (MarkerWindow       *window);
-
+void                 marker_window_refresh_all_preview           (MarkerWindow       *window);
 
 G_END_DECLS
 

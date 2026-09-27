@@ -1,6 +1,6 @@
 # <img width="30" src="data/com.github.fabiocolacio.marker.svg"/>Marker
 
-Marker is a markdown editor for linux made with GTK+-3.0
+Marker is a markdown editor for linux made with GTK4 and libadwaita
 
 **NOTE:** Issues regarding markdown parsing should go to the [scidown repo](https://github.com/mandarancio/scidown).
 
@@ -29,7 +29,7 @@ Marker is a markdown editor for linux made with GTK+-3.0
   * DOCX
 * Custom CSS themes
 * Custom syntax themes
-* Native GTK+3 application
+* Native GTK4 / libadwaita application
 
 ## Screenshots
 
@@ -58,21 +58,22 @@ Marker is a markdown editor for linux made with GTK+-3.0
 
 ### Dependencies
 
-* meson >= 0.37.0 (install only)
-* gtk3-devel >= 3.20
-* gtksourceview3-devel
-* webkitgtk4-devel
+* meson >= 0.59 (install only)
+* gtk4-devel >= 4.14
+* libadwaita-devel >= 1.6
+* gtksourceview5-devel
+* webkitgtk6.0-devel
+* libspelling-devel
 * pandoc
-* gtkspell
 * itstool
+
+On Debian/Ubuntu: `libgtk-4-dev libadwaita-1-dev libgtksourceview-5-dev libwebkitgtk-6.0-dev libspelling-1-dev meson ninja-build itstool gettext pandoc`
 
 ### Build Instructions
 
-**NOTE: MAKE SURE TO CLEAN THE EXTENSIONS BEFORE UPDATING:
-
-```bash
-rm /usr/share/com.github.fabiocolacio.marker/extensions/**
-```
+**Note:** Marker no longer installs a WebKit web extension; if you are
+updating from a GTK3 build you can remove the old
+`<prefix>/lib/Marker.extensions` directory.
 
 **Note:** For a more stable experience, users are recommended download
 [release tarball](https://github.com/fabiocolacio/Marker/releases) rather

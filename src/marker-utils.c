@@ -32,14 +32,13 @@ gchar *
 marker_utils_read_file (const char* infile, long *out_size)
 {
   gchar *contents = NULL;
-  FILE *file = fopen (infile, "r");
-  fseek (file, 0, SEEK_END);
-  long size = ftell (file);
-  *out_size = size;
-  rewind (file);
-  contents = g_malloc (size);
-  fread (contents, size, 1, file);
-  fclose (file);
+  gsize length = 0;
+  if (!g_file_get_contents (infile, &contents, &length, NULL))
+  {
+    *out_size = 0;
+    return NULL;
+  }
+  *out_size = (long) length;
   return contents;
 }
 
@@ -83,43 +82,6 @@ marker_utils_escape_file_path(char* filename)
     ++j;
   }
   return clean_str;
-}
-
-char*
-marker_utils_combo_box_get_active_str(GtkComboBox* combo_box)
-{
-  GtkTreeIter iter;
-  if (gtk_combo_box_get_active_iter(combo_box, &iter))
-  {
-    GtkTreeModel* model = NULL;
-    model = gtk_combo_box_get_model(combo_box);
-    GValue value = G_VALUE_INIT;
-    if (model)
-    {
-      gtk_tree_model_get_value(model, &iter, 0, &value);
-      const char* str = g_value_get_string(&value);
-      size_t str_len = strlen(str) + 1;
-      char* ret = malloc(str_len);
-      memset(ret, 0, str_len);
-      memcpy(ret, str, str_len - 1);
-      return ret;
-    }
-  }
-  return NULL;
-}
-
-void
-marker_utils_combo_box_set_model(GtkComboBox*  combo_box,
-                                  GtkTreeModel* model)
-{
-  gtk_combo_box_set_model(combo_box, model);
-  GtkCellRenderer* cell_renderer = gtk_cell_renderer_text_new();
-  gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(combo_box), cell_renderer, TRUE);
-  gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(combo_box),
-                                 cell_renderer,
-                                 "text", 0,
-                                 NULL);
-  gtk_combo_box_set_active(combo_box, 0);
 }
 
 int

@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gresources>
   <gresource prefix="/com/github/fabiocolacio/marker">
-    <file>ui/marker-prefs-window.ui</file>
-    <file>ui/marker-wysiwyg-toolbar.ui</file>
-    <file>ui/marker-shortcuts-window.ui</file>
-    <file>ui/marker-gear-popover.ui</file>
-    <file>ui/marker-headerbar.ui</file>
-    <file>ui/marker-sketcher-window.ui</file>
-    <file>ui/marker-window-main-view.ui</file> 
+    <file preprocess="xml-stripblanks">ui/marker-window.ui</file>
+    <file preprocess="xml-stripblanks">ui/marker-prefs-dialog.ui</file>
+    <file preprocess="xml-stripblanks">ui/marker-shortcuts-dialog.ui</file>
+    <file preprocess="xml-stripblanks">ui/marker-sketcher-window.ui</file>
   </gresource>
 </gresources>

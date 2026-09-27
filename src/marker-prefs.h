@@ -36,10 +36,6 @@ guint                marker_prefs_get_window_width               (void);
 void                 marker_prefs_set_window_width               (guint               width);
 guint                marker_prefs_get_window_height              (void);
 void                 marker_prefs_set_window_height              (guint               height);
-void                 marker_prefs_get_window_position            (gint               *pos_x,
-                                                                  gint               *pos_y);
-void                 marker_prefs_set_window_position            (gint                pos_x,
-                                                                  gint                pos_y);
 guint                marker_prefs_get_editor_pane_width          (void);
 void                 marker_prefs_set_editor_pane_width          (guint               width);
 gboolean             marker_prefs_get_show_sidebar               (void);
@@ -86,14 +82,13 @@ gboolean             marker_prefs_get_use_mermaid                (void);
 void                 marker_prefs_set_use_mermaid                (gboolean            state);
 gboolean             marker_prefs_get_use_charter                (void);
 void                 marker_prefs_set_use_charter                (gboolean            state);
-gboolean             marker_prefs_get_gnome_appmenu              (void);
-void                 marker_prefs_set_gnome_appmenu              (gboolean            state);
 MarkerViewMode       marker_prefs_get_default_view_mode          (void);
 void                 marker_prefs_set_default_view_mode          (MarkerViewMode      view_mode);
 MarkerMathBackEnd    marker_prefs_get_math_backend               (void);
 void                 marker_prefs_set_math_backend               (MarkerMathBackEnd   backend);
 void                 marker_prefs_load                           (void);
 void                 marker_prefs_show_window                    (void);
+void                 marker_prefs_apply_color_scheme             (void);
 GList               *marker_prefs_get_available_stylesheets      (void);
 GList               *marker_prefs_get_available_syntax_themes    (void);
 

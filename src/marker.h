@@ -23,6 +23,7 @@
 #define __MARKER_H__
 
 #include <gtk/gtk.h>
+#include <adwaita.h>
 
 GtkApplication      *marker_get_app                              (void);
 void                 marker_create_new_window                    (void);
@@ -47,9 +48,5 @@ void                 new_cb                                      (GSimpleAction 
 void                 marker_shortcuts_cb                         (GSimpleAction      *action,
                                                                   GVariant           *parameter,
                                                                   gpointer            user_data);
-gboolean             marker_has_app_menu                         (void);
-
-extern const int APP_MENU_ACTION_ENTRIES_LEN;
-extern const GActionEntry APP_MENU_ACTION_ENTRIES[];
 
 #endif

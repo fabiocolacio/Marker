@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface domain="marker">
+  <requires lib="gtk" version="4.14"/>
+  <requires lib="libadwaita" version="1.8"/>
+  <object class="AdwShortcutsDialog" id="shortcuts">
+    <child>
+      <object class="AdwShortcutsSection">
+        <property name="title" translatable="yes" context="shortcut window">Documents</property>
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title" translatable="yes" context="shortcut window">Create a new document</property>
+            <property name="accelerator">&lt;ctrl&gt;n</property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title" translatable="yes" context="shortcut window">Open a document</property>
+            <property name="accelerator">&lt;ctrl&gt;o</property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title" translatable="yes" context="shortcut window">Open a document in a new window</property>
+            <property name="accelerator">&lt;ctrl&gt;&lt;shift&gt;o</property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title" translatable="yes" context="shortcut window">Reload document from disk</property>
+            <property name="accelerator">F5 &lt;ctrl&gt;r</property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title" translatable="yes" context="shortcut window">Save the document</property>
+            <property name="accelerator">&lt;ctrl&gt;s</property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title" translatable="yes" context="shortcut window">Save the document with a new filename</property>
+            <property name="accelerator">&lt;ctrl&gt;&lt;shift&gt;s</property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title" translatable="yes" context="shortcut window">Export the document</property>
+            <property name="accelerator">&lt;ctrl&gt;e</property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title" translatable="yes" context="shortcut window">Close the document</property>
+            <property name="accelerator">&lt;ctrl&gt;w</property>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="AdwShortcutsSection">
+        <property name="title" translatable="yes" context="shortcut window">Editing</property>
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title" translatable="yes" context="shortcut window">Make selection bold</property>
+            <property name="accelerator">&lt;ctrl&gt;b</property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title" translatable="yes" context="shortcut window">Make selection italic</property>
+            <property name="accelerator">&lt;ctrl&gt;i</property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title" translatable="yes" context="shortcut window">Make selection monospace</property>
+            <property name="accelerator">&lt;ctrl&gt;m</property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title" translatable="yes" context="shortcut window">Insert link</property>
+            <property name="accelerator">&lt;ctrl&gt;k</property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title" translatable="yes" context="shortcut window">Search in the document</property>
+            <property name="accelerator">&lt;ctrl&gt;f</property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title" translatable="yes" context="shortcut window">Draw a sketch</property>
+            <property name="accelerator">&lt;ctrl&gt;d</property>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="AdwShortcutsSection">
+        <property name="title" translatable="yes" context="shortcut window">Preview</property>
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title" translatable="yes" context="shortcut window">Zoom in</property>
+            <property name="accelerator">&lt;ctrl&gt;plus</property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title" translatable="yes" context="shortcut window">Zoom out</property>
+            <property name="accelerator">&lt;ctrl&gt;minus</property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title" translatable="yes" context="shortcut window">Reset zoom</property>
+            <property name="accelerator">&lt;ctrl&gt;equal</property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title" translatable="yes" context="shortcut window">Print the document</property>
+            <property name="accelerator">&lt;ctrl&gt;p</property>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="AdwShortcutsSection">
+        <property name="title" translatable="yes" context="shortcut window">Window</property>
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title" translatable="yes" context="shortcut window">Open a new window</property>
+            <property name="accelerator">&lt;ctrl&gt;&lt;shift&gt;n</property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title" translatable="yes" context="shortcut window">Close the window</property>
+            <property name="accelerator">&lt;ctrl&gt;&lt;shift&gt;w</property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title" translatable="yes" context="shortcut window">Toggle fullscreen mode</property>
+            <property name="accelerator">F11</property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title" translatable="yes" context="shortcut window">Toggle the documents sidebar</property>
+            <property name="accelerator">F12</property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title" translatable="yes" context="shortcut window">Switch to editor-only mode</property>
+            <property name="accelerator">&lt;ctrl&gt;1</property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title" translatable="yes" context="shortcut window">Switch to preview-only mode</property>
+            <property name="accelerator">&lt;ctrl&gt;2</property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title" translatable="yes" context="shortcut window">Switch to dual-pane mode</property>
+            <property name="accelerator">&lt;ctrl&gt;3</property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title" translatable="yes" context="shortcut window">Switch to dual-window mode</property>
+            <property name="accelerator">&lt;ctrl&gt;4</property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title" translatable="yes" context="shortcut window">Quit the application</property>
+            <property name="accelerator">&lt;ctrl&gt;q</property>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>

@@ -1,12 +1,10 @@
 data/com.github.fabiocolacio.marker.desktop
 data/com.github.fabiocolacio.marker.appdata.xml
 data/com.github.fabiocolacio.marker.gschema.xml
-src/resources/ui/marker-prefs-window.ui
-src/resources/ui/marker-shortcuts-window.ui
+src/resources/ui/marker-prefs-dialog.ui
+src/resources/ui/marker-shortcuts-dialog.ui
 src/resources/ui/marker-sketcher-window.ui
-src/resources/ui/marker-gear-popover.ui
-src/resources/ui/marker-window-main-view.ui
-src/resources/ui/marker-headerbar.ui
+src/resources/ui/marker-window.ui
 src/marker.c
 src/marker-editor.c
 src/marker-exporter.c
