@@ -481,6 +481,13 @@ marker_editor_open_file (MarkerEditor *editor,
   if (G_IS_FILE (editor->file))
     g_object_unref (editor->file);
 
+  /* drop the monitor of the previously opened file, if any */
+  if (editor->file_monitor != NULL)
+    {
+      g_file_monitor_cancel (editor->file_monitor);
+      g_clear_object (&editor->file_monitor);
+    }
+
   editor->file = file;
   editor->title = g_file_get_basename(file);
   editor->needs_refresh = TRUE;
@@ -506,6 +513,20 @@ marker_editor_open_file (MarkerEditor *editor,
   }
 
   editor->unsaved_changes = FALSE;
+
+  /* watch for external changes right away, so that preview-only mode
+   * auto-reloads even when the application started directly in that
+   * mode (marker_editor_set_view_mode only fires on a real mode
+   * switch) */
+  if (editor->view_mode == PREVIEW_ONLY_MODE
+      && editor->file_monitor == NULL)
+    {
+      editor->file_monitor = g_file_monitor_file (file,
+                                                  G_FILE_MONITOR_NONE,
+                                                  NULL, NULL);
+      g_signal_connect (editor->file_monitor, "changed",
+                        G_CALLBACK (file_changed_cb), editor);
+    }
 
   emit_signal_title_changed (editor);
   emit_signal_subtitle_changed (editor);
